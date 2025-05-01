@@ -1,0 +1,14 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copy package files
+COPY package.json package-lock.json* ./
+RUN npm ci --only=production
+
+# Copy Socket.IO server file
+COPY socketServer.js ./
+
+EXPOSE 4000
+
+CMD ["node", "socketServer.js"] 

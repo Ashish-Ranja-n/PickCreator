@@ -1,0 +1,100 @@
+.deconstructed {
+    position: relative;
+    margin: auto;
+    font-family: 'Cambay', sans-serif;
+    font-size: 30px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: transparent;
+    height: 1em;
+}
+  
+.deconstructed > div {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: linear-gradient(
+        135deg,
+        rgb(19, 198, 252) 0%,
+        rgb(255, 24, 97) 25%,
+        rgb(16, 255, 139) 50%,
+        rgb(158, 79, 255) 75%,
+        rgb(30, 202, 255) 100%
+    );
+    background-size: 400% 400%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: holographicShift 12s linear infinite;
+    filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.3));
+}
+
+@keyframes holographicShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+  
+.deconstructed > div:nth-child(1) {
+    opacity: 1;
+    transform: translateX(0);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    animation: holographicShift 12s linear infinite, glitchEffect 6s infinite step-end;
+}
+  
+.deconstructed > div:nth-child(2) {
+    opacity: 0.9;
+    transform: translateX(0);
+    filter: hue-rotate(45deg) drop-shadow(0 0 2px rgba(255, 65, 125, 0.5));
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    animation: holographicShift 12s linear infinite, glitchEffect 6s infinite step-end;
+    animation-delay: 0.1s;
+}
+  
+.deconstructed > div:nth-child(3) {
+    opacity: 0.8;
+    transform: translateX(0);
+    filter: hue-rotate(90deg) drop-shadow(0 0 2px rgba(42, 252, 152, 0.5));
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    animation: holographicShift 12s linear infinite, glitchEffect 6s infinite step-end;
+    animation-delay: 0.2s;
+}
+  
+.deconstructed > div:nth-child(4) {
+    opacity: 0.7;
+    transform: translateX(0);
+    filter: hue-rotate(135deg) drop-shadow(0 0 2px rgba(186, 131, 255, 0.5));
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    animation: holographicShift 12s linear infinite, glitchEffect 6s infinite step-end;
+    animation-delay: 0.3s;
+}
+  
+@keyframes glitchEffect {
+    0%, 90% {
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+        transform: translate(0);
+    }
+    91% {
+        clip-path: polygon(0 15%, 100% 15%, 100% 80%, 0 80%);
+        transform: translate(-2px, 2px);
+    }
+    93% {
+        clip-path: polygon(0 10%, 100% 10%, 100% 75%, 0 75%);
+        transform: translate(3px, -3px);
+    }
+    95% {
+        clip-path: polygon(0 30%, 100% 30%, 100% 65%, 0 65%);
+        transform: translate(3px, 1px);
+    }
+    97% {
+        clip-path: polygon(0 30%, 100% 30%, 100% 90%, 0 90%);
+        transform: translate(-3px, 3px);
+    }
+    99% {
+        clip-path: polygon(0 5%, 100% 5%, 100% 70%, 0 70%);
+        transform: translate(-5px, -2px);
+    }
+}

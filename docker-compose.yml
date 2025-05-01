@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  nextjs:
+    build:
+      context: .
+      dockerfile: Dockerfile.nextjs
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_SOCKET_SERVER_URL=http://socketio:4000
+    depends_on:
+      - socketio
+    networks:
+      - app-network
+
+  socketio:
+    build:
+      context: .
+      dockerfile: Dockerfile.socketio
+    ports:
+      - "4000:4000"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge 

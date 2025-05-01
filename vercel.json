@@ -1,0 +1,19 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/update-instagram-data",
+      "schedule": "0 0 * * *"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/api/cron/update-instagram-data",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    }
+  ]
+} 
