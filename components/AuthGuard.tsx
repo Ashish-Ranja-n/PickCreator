@@ -200,10 +200,10 @@ export const AuthGuard = React.memo(({ children, requiredRole }: AuthGuardProps)
   // Show loading state with force continue option
   if ((isLoading && !shouldForceContinue) || !isClient || isRetrying || checkingInstagram) {
     return (
-      <div className="flex h-screen items-center justify-center">
+      <div className="flex h-screen items-center justify-center bg-black">
         <div className="text-center">
           <Loader2 className="h-8 w-8 animate-spin text-purple-600 mx-auto mb-4" />
-          <p className="text-gray-500">
+          <p className="text-gray-200">
             {isRetrying 
               ? `Retrying... (${retryCount}/${MAX_RETRIES})` 
               : checkingInstagram 
