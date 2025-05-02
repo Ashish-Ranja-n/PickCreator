@@ -431,6 +431,19 @@
   }
 }
 
+/* Slow gradient animation for profile header */
+@keyframes gradient-slow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
 /* Post card glow animation */
 @keyframes postCardGlow {
   0% {
@@ -546,4 +559,9 @@
   );
   background-size: 400% 400%; /* Make the background larger than the element */
   animation: premiumGradientShift 15s ease infinite; /* Apply the shifting animation */
+}
+
+.animate-gradient-slow {
+  background-size: 200% 200%;
+  animation: gradient-slow 8s ease infinite;
 }

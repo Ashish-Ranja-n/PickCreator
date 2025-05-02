@@ -259,161 +259,190 @@ const ProfilePage = () => {
   return (
     <div className="container py-16 bg-black min-h-screen overflow-x-hidden">
       <div className="space-y-8">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 p-4 bg-zinc-900/90 rounded-lg shadow-md border border-zinc-800 backdrop-blur-sm">
-          <div>
-            <div className="flex items-center justify-between space-x-2">
-            <h1 className="text-3xl font-bold tracking-tight text-white">My Profile</h1>
-            <div className="flex items-center space-x-2">
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button variant="outline" className="bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700 hover:border-zinc-600 py-4 px-4 text-base">
-                  <Settings className="h-5 w-5 mr-2" />
-                  Settings
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="bg-black border-zinc-800 text-white max-w-md">
-                <DialogHeader>
-                  <DialogTitle className="text-xl font-bold bg-gradient-to-r from-violet-400 to-fuchsia-500 bg-clip-text text-transparent">
-                    Settings
-                  </DialogTitle>
-                  <DialogDescription className="text-zinc-400">
-                    Manage your profile and account settings
-                  </DialogDescription>
-                </DialogHeader>
+        {/* Modern Header with Gradient Background */}
+        <div className="relative overflow-hidden rounded-xl">
+          {/* Background with animated gradient */}
+          <div className="absolute inset-0 bg-gradient-to-r from-violet-900/30 via-black to-fuchsia-900/30 animate-gradient-slow"></div>
 
-                <div className="grid gap-4 py-4">
-                  <div className="grid grid-cols-1 gap-2">
-                    <Button
-                      variant="ghost"
-                      onClick={() => setIsEditing(true)}
-                      className="flex justify-start items-center w-full text-white hover:bg-zinc-800 hover:text-white"
-                    >
-                      <Edit className="h-5 w-5 mr-3" />
-                      <span>Edit Profile</span>
-                    </Button>
-
-                    {isSupported && !isSubscribed && (
-                      <Button
-                        variant="ghost"
-                        onClick={handleEnableNotifications}
-                        className="flex justify-start items-center w-full text-white hover:bg-zinc-800 hover:text-white"
-                      >
-                        <BellIcon className="h-5 w-5 mr-3" />
-                        <span>Enable Push Notifications</span>
-                      </Button>
-                    )}
-
-                    <Button
-                      variant="ghost"
-                      onClick={handleFaqsClick}
-                      className="flex justify-start items-center w-full text-white hover:bg-zinc-800 hover:text-white"
-                    >
-                      <MessageSquare className="h-5 w-5 mr-3" />
-                      <span>FAQs</span>
-                    </Button>
-
-                    <Button
-                      variant="ghost"
-                      onClick={handleContactClick}
-                      className="flex justify-start items-center w-full text-white hover:bg-zinc-800 hover:text-white"
-                    >
-                      <Mail className="h-5 w-5 mr-3" />
-                      <span>Contact Support</span>
-                    </Button>
-
-                    <Button
-                      variant="ghost"
-                      onClick={() => router.push('/password-reset')}
-                      className="flex justify-start items-center w-full text-white hover:bg-zinc-800 hover:text-white"
-                    >
-                      <KeyRoundIcon className="h-5 w-5 mr-3" />
-                      <span>Reset Password</span>
-                    </Button>
-
-                    <Button
-                      variant="ghost"
-                      onClick={() => router.push('/legal/privacy-policy')}
-                      className="flex justify-start items-center w-full text-white hover:bg-zinc-800 hover:text-white"
-                    >
-                      <LinkIcon className="h-5 w-5 mr-3" />
-                      <span>Privacy Policy</span>
-                    </Button>
-
-                    <Button
-                      variant="ghost"
-                      onClick={() => router.push('/legal/terms-of-service')}
-                      className="flex justify-start items-center w-full text-white hover:bg-zinc-800 hover:text-white"
-                    >
-                      <User className="h-5 w-5 mr-3" />
-                      <span>Terms of Service</span>
-                    </Button>
-                  </div>
-                </div>
-
-                <Separator className="bg-zinc-800 my-2" />
-
-                <div className="grid grid-cols-1 gap-2 mt-2">
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        className="flex justify-start items-center w-full text-white hover:bg-zinc-800 hover:text-white"
-                      >
-                        <LogOut className="h-5 w-5 mr-3" />
-                        <span>Log Out</span>
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="bg-zinc-900 border-zinc-800">
-                      <DialogHeader>
-                        <DialogTitle className="text-white">Log Out</DialogTitle>
-                        <DialogDescription className="text-zinc-400">
-                          Are you sure you want to log out of your account?
-                        </DialogDescription>
-                      </DialogHeader>
-                      <DialogFooter>
-                        <Button variant="outline" onClick={handleLogout} className="bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700 hover:border-zinc-600">
-                          Yes, Log Out
-                        </Button>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
-
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        className="flex justify-start items-center w-full text-red-500 hover:bg-red-900/20 hover:text-red-400"
-                      >
-                        <UserRoundX className="h-5 w-5 mr-3" />
-                        <span>Delete Account</span>
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="bg-zinc-900 border-zinc-800">
-                      <DialogHeader>
-                        <DialogTitle className="text-white">Delete Account</DialogTitle>
-                        <DialogDescription className="text-zinc-400">
-                          Are you sure you want to delete your account? This action cannot be undone.
-                        </DialogDescription>
-                      </DialogHeader>
-                      <DialogFooter>
-                        <Button variant="destructive" onClick={() => handleDeleteAccount()}>
-                          Yes, Delete Account
-                        </Button>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
-                </div>
-              </DialogContent>
-            </Dialog>
+          {/* Subtle pattern overlay */}
+          <div className="absolute inset-0 opacity-5 mix-blend-overlay">
+            <svg viewBox="0 0 1024 1024" className="absolute inset-0 h-full w-full" xmlns="http://www.w3.org/2000/svg">
+              <filter id="noise">
+                <feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="4" stitchTiles="stitch" />
+              </filter>
+              <rect width="100%" height="100%" filter="url(#noise)" />
+            </svg>
           </div>
+
+          {/* Floating orbs for visual interest */}
+          <div className="absolute -left-10 -top-10 w-40 h-40 rounded-full bg-violet-600/10 blur-3xl"></div>
+          <div className="absolute right-10 top-5 w-20 h-20 rounded-full bg-fuchsia-600/10 blur-2xl"></div>
+
+          {/* Content with glass effect */}
+          <div className="relative backdrop-blur-sm p-6 md:p-8 z-10">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+              {/* Left side with title and description */}
+              <div className="flex-1">
+                <div className="flex items-center space-x-3 mb-2">
+                  <div className="h-8 w-1 bg-gradient-to-b from-violet-500 to-fuchsia-500 rounded-full"></div>
+                  <h1 className="text-3xl md:text-4xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-fuchsia-100 to-white">
+                    My Profile
+                  </h1>
+                </div>
+                <p className="text-zinc-300 ml-4 pl-3 border-l border-zinc-700/50">
+                  Manage your profile information and Instagram connection
+                </p>
+              </div>
+
+              {/* Right side with settings button */}
+              <div className="flex items-center">
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="bg-zinc-900/70 border-zinc-700/50 text-white hover:bg-zinc-800 hover:border-violet-500/50 py-4 px-5 text-base rounded-xl transition-all duration-300 backdrop-blur-sm"
+                    >
+                      <Settings className="h-5 w-5 mr-2 text-violet-400" />
+                      <span>Settings</span>
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="bg-black border-zinc-800 text-white max-w-md">
+                    <DialogHeader>
+                      <DialogTitle className="text-xl font-bold bg-gradient-to-r from-violet-400 to-fuchsia-500 bg-clip-text text-transparent">
+                        Settings
+                      </DialogTitle>
+                      <DialogDescription className="text-zinc-400">
+                        Manage your profile and account settings
+                      </DialogDescription>
+                    </DialogHeader>
+
+                    <div className="grid gap-4 py-4">
+                      <div className="grid grid-cols-1 gap-2">
+                        <Button
+                          variant="ghost"
+                          onClick={() => setIsEditing(true)}
+                          className="flex justify-start items-center w-full text-white hover:bg-zinc-800 hover:text-white"
+                        >
+                          <Edit className="h-5 w-5 mr-3" />
+                          <span>Edit Profile</span>
+                        </Button>
+
+                        {isSupported && !isSubscribed && (
+                          <Button
+                            variant="ghost"
+                            onClick={handleEnableNotifications}
+                            className="flex justify-start items-center w-full text-white hover:bg-zinc-800 hover:text-white"
+                          >
+                            <BellIcon className="h-5 w-5 mr-3" />
+                            <span>Enable Push Notifications</span>
+                          </Button>
+                        )}
+
+                        <Button
+                          variant="ghost"
+                          onClick={handleFaqsClick}
+                          className="flex justify-start items-center w-full text-white hover:bg-zinc-800 hover:text-white"
+                        >
+                          <MessageSquare className="h-5 w-5 mr-3" />
+                          <span>FAQs</span>
+                        </Button>
+
+                        <Button
+                          variant="ghost"
+                          onClick={handleContactClick}
+                          className="flex justify-start items-center w-full text-white hover:bg-zinc-800 hover:text-white"
+                        >
+                          <Mail className="h-5 w-5 mr-3" />
+                          <span>Contact Support</span>
+                        </Button>
+
+                        <Button
+                          variant="ghost"
+                          onClick={() => router.push('/password-reset')}
+                          className="flex justify-start items-center w-full text-white hover:bg-zinc-800 hover:text-white"
+                        >
+                          <KeyRoundIcon className="h-5 w-5 mr-3" />
+                          <span>Reset Password</span>
+                        </Button>
+
+                        <Button
+                          variant="ghost"
+                          onClick={() => router.push('/legal/privacy-policy')}
+                          className="flex justify-start items-center w-full text-white hover:bg-zinc-800 hover:text-white"
+                        >
+                          <LinkIcon className="h-5 w-5 mr-3" />
+                          <span>Privacy Policy</span>
+                        </Button>
+
+                        <Button
+                          variant="ghost"
+                          onClick={() => router.push('/legal/terms-of-service')}
+                          className="flex justify-start items-center w-full text-white hover:bg-zinc-800 hover:text-white"
+                        >
+                          <User className="h-5 w-5 mr-3" />
+                          <span>Terms of Service</span>
+                        </Button>
+                      </div>
+                    </div>
+
+                    <Separator className="bg-zinc-800 my-2" />
+
+                    <div className="grid grid-cols-1 gap-2 mt-2">
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            className="flex justify-start items-center w-full text-white hover:bg-zinc-800 hover:text-white"
+                          >
+                            <LogOut className="h-5 w-5 mr-3" />
+                            <span>Log Out</span>
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="bg-zinc-900 border-zinc-800">
+                          <DialogHeader>
+                            <DialogTitle className="text-white">Log Out</DialogTitle>
+                            <DialogDescription className="text-zinc-400">
+                              Are you sure you want to log out of your account?
+                            </DialogDescription>
+                          </DialogHeader>
+                          <DialogFooter>
+                            <Button variant="outline" onClick={handleLogout} className="bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700 hover:border-zinc-600">
+                              Yes, Log Out
+                            </Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            className="flex justify-start items-center w-full text-red-500 hover:bg-red-900/20 hover:text-red-400"
+                          >
+                            <UserRoundX className="h-5 w-5 mr-3" />
+                            <span>Delete Account</span>
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="bg-zinc-900 border-zinc-800">
+                          <DialogHeader>
+                            <DialogTitle className="text-white">Delete Account</DialogTitle>
+                            <DialogDescription className="text-zinc-400">
+                              Are you sure you want to delete your account? This action cannot be undone.
+                            </DialogDescription>
+                          </DialogHeader>
+                          <DialogFooter>
+                            <Button variant="destructive" onClick={() => handleDeleteAccount()}>
+                              Yes, Delete Account
+                            </Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
             </div>
-            <p className="text-zinc-400">
-              Manage your profile information and Instagram connection
-            </p>
           </div>
-
-
         </div>
 
         <Tabs defaultValue="profile">
@@ -424,192 +453,244 @@ const ProfilePage = () => {
           </TabsList>
 
           <TabsContent value="profile" className="space-y-0 pt-8 pb-16">
-            {/* Organic Main Container - background and particles removed */}
-            <div className="relative transform-gpu will-change-transform backface-visibility-hidden" id="profile-container">
-              {/* Decorative elements and dynamic background removed */}
-
-              {/* Profile Header - Reimagined */}
-              <div className="relative mb-16 transform-gpu">
+            {/* Modern Profile Container */}
+            <div className="relative" id="profile-container">
+              {/* Profile Header - Modern Design */}
+              <div className="relative mb-12">
                 <div className="flex flex-col items-center">
-                  {/* Profile Image with Layered Effect - Simplified */}
-                  <div className="relative mb-4">
-                    <div className="absolute -inset-1 bg-gradient-to-r from-fuchsia-600 via-violet-600 to-fuchsia-600 rounded-full opacity-80 animate-pulse"></div>
+                  {/* Profile Image with Subtle Glow */}
+                  <div className="relative mb-6 group">
+                    <div className="absolute inset-0 bg-gradient-to-r from-violet-600 to-fuchsia-600 rounded-full opacity-70 blur-md group-hover:opacity-90 transition-opacity duration-300"></div>
                     {instagramData?.isConnected && instagramData.profile?.profile_picture_url ? (
                       <Image
                         src={instagramData.profile.profile_picture_url}
                         alt={profileData?.name || 'Profile'}
-                        width={140}
-                        height={140}
-                        className="relative rounded-full object-cover border-4 border-black shadow-xl z-10"
+                        width={150}
+                        height={150}
+                        className="relative rounded-full object-cover border-2 border-black/50 shadow-lg z-10 group-hover:scale-[1.02] transition-transform duration-300"
                       />
                     ) : (
-                      <div className="relative w-36 h-36 bg-zinc-900 rounded-full flex items-center justify-center border-4 border-black shadow-xl z-10">
+                      <div className="relative w-[150px] h-[150px] bg-zinc-900 rounded-full flex items-center justify-center border-2 border-zinc-800 shadow-lg z-10 group-hover:scale-[1.02] transition-transform duration-300">
                         <User className="h-16 w-16 text-zinc-600" />
                       </div>
                     )}
                   </div>
 
-                  {/* Name with floating edit button */}
+                  {/* Name and Info with Modern Typography */}
                   <div className="text-center relative">
-                    <h1 className="text-3xl md:text-4xl font-bold mb-2">
-                      <span className="bg-clip-text text-transparent bg-gradient-to-r from-fuchsia-500 via-violet-500 to-fuchsia-500">
+                    <h1 className="text-3xl md:text-4xl font-bold mb-2 tracking-tight">
+                      <span className="bg-clip-text text-transparent bg-gradient-to-r from-fuchsia-400 via-violet-400 to-fuchsia-400">
                         {profileData?.name || 'Your Name'}
                       </span>
                     </h1>
-                    <p className="text-zinc-400 max-w-md mx-auto">
+                    <p className="text-zinc-400 max-w-md mx-auto text-sm md:text-base">
                       {profileData?.email}
                     </p>
 
-                    {/* Instagram Connection Badge */}
+                    {/* Instagram Connection Badge - Subtle Modern Design */}
                     {instagramData?.isConnected && instagramData.profile && (
-                      <div className="mt-3 inline-flex items-center px-3 py-1 bg-gradient-to-r from-fuchsia-500/20 to-violet-500/20 border border-fuchsia-500/30 rounded-full">
-                        <Instagram className="h-3.5 w-3.5 text-fuchsia-400 mr-1.5" />
-                        <span className="text-xs font-medium text-fuchsia-300">@{instagramData.profile.username}</span>
+                      <div className="mt-4 inline-flex items-center px-3 py-1.5 bg-zinc-900/80 backdrop-blur-sm border border-violet-500/20 rounded-full hover:border-violet-500/40 transition-colors duration-300">
+                        <Instagram className="h-3.5 w-3.5 text-fuchsia-400 mr-2" />
+                        <span className="text-xs font-medium text-zinc-300">@{instagramData.profile.username}</span>
                       </div>
-                      )}
-                    </div>
+                    )}
                   </div>
                 </div>
+              </div>
 
-              {/* Main Content with Organic, Flowing Sections */}
-              <div className="space-y-24">
-                {/* Support Hub Section - Optimized */}
-                <section className="relative transform-gpu will-change-transform" id="support-hub">
-                  <div className="max-w-5xl mx-auto">
-                    <div className="flex-1 relative">
-                      <div className="bg-zinc-900/80 backdrop-blur-sm rounded-3xl p-8 border border-zinc-800/70">
-                        <div className="flex items-center mb-6">
-                          <div className="h-10 w-10 rounded-full bg-gradient-to-br from-violet-600 to-fuchsia-600 flex items-center justify-center text-white">
-                            <MessageSquare className="h-5 w-5" />
-                          </div>
-                          <h2 className="text-2xl font-bold ml-4 text-white">Support Hub</h2>
+              {/* Main Content with Modern Card Layout */}
+              <div className="space-y-16 max-w-6xl mx-auto">
+                {/* Performance Stats - Modern Card Layout */}
+                <section className="relative" id="performance-stats">
+                  <div className="mb-8">
+                    <h2 className="text-xl font-bold text-white inline-flex items-center">
+                      <BarChart3 className="h-5 w-5 mr-2 text-violet-400" />
+                      Performance Stats
+                    </h2>
+                    <div className="h-px w-full bg-gradient-to-r from-violet-500/50 to-fuchsia-500/50 mt-2"></div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {/* Rating Card */}
+                    <div className="bg-zinc-900/70 backdrop-blur-sm rounded-xl overflow-hidden group hover:bg-zinc-900/90 transition-colors duration-300">
+                      <div className="h-1 bg-gradient-to-r from-violet-500 to-fuchsia-500"></div>
+                      <div className="p-6">
+                        <div className="flex items-center justify-between mb-3">
+                          <h3 className="text-sm font-medium text-zinc-400 uppercase tracking-wider">Rating</h3>
+                          <Star className="h-4 w-4 text-amber-400" />
                         </div>
-
-                        <div className="space-y-4">
-                          <button
-                            onClick={handleFaqsClick}
-                            className="w-full flex items-center py-4 px-5 bg-black/50 backdrop-blur-sm rounded-xl border border-zinc-800/70 shadow-md hover:shadow-lg transition-all hover:border-fuchsia-500/30 group"
-                          >
-                            <div className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center">
-                              <MessageSquare className="h-5 w-5 text-fuchsia-400" />
-                            </div>
-                            <span className="ml-4 font-medium text-white">Frequently Asked Questions</span>
-                          </button>
-
-                          <button
-                            onClick={handleContactClick}
-                            className="w-full flex items-center py-4 px-5 bg-black/50 backdrop-blur-sm rounded-xl border border-zinc-800/70 shadow-md hover:shadow-lg transition-all hover:border-fuchsia-500/30 group"
-                          >
-                            <div className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center">
-                              <Mail className="h-5 w-5 text-fuchsia-400" />
-                            </div>
-                            <span className="ml-4 font-medium text-white">Contact Support</span>
-                          </button>
+                        <div className="text-3xl font-bold text-white group-hover:scale-105 transition-transform duration-300">
+                          {profileData?.rating || 0}
                         </div>
+                        <div className="mt-2 text-xs text-zinc-500">Based on client reviews</div>
+                      </div>
+                    </div>
+
+                    {/* Completed Deals Card */}
+                    <div className="bg-zinc-900/70 backdrop-blur-sm rounded-xl overflow-hidden group hover:bg-zinc-900/90 transition-colors duration-300">
+                      <div className="h-1 bg-gradient-to-r from-fuchsia-500 to-violet-500"></div>
+                      <div className="p-6">
+                        <div className="flex items-center justify-between mb-3">
+                          <h3 className="text-sm font-medium text-zinc-400 uppercase tracking-wider">Completed Deals</h3>
+                          <Briefcase className="h-4 w-4 text-violet-400" />
+                        </div>
+                        <div className="text-3xl font-bold text-white group-hover:scale-105 transition-transform duration-300">
+                          {profileData?.completedDeals || 0}
+                        </div>
+                        <div className="mt-2 text-xs text-zinc-500">Total successful collaborations</div>
+                      </div>
+                    </div>
+
+                    {/* Earnings Card (Placeholder) */}
+                    <div className="bg-zinc-900/70 backdrop-blur-sm rounded-xl overflow-hidden group hover:bg-zinc-900/90 transition-colors duration-300">
+                      <div className="h-1 bg-gradient-to-r from-violet-500 to-fuchsia-500"></div>
+                      <div className="p-6">
+                        <div className="flex items-center justify-between mb-3">
+                          <h3 className="text-sm font-medium text-zinc-400 uppercase tracking-wider">Earnings</h3>
+                          <BadgeIndianRupee className="h-4 w-4 text-green-400" />
+                        </div>
+                        <div className="text-3xl font-bold text-white group-hover:scale-105 transition-transform duration-300">
+                          ₹0
+                        </div>
+                        <div className="mt-2 text-xs text-zinc-500">Total earnings to date</div>
+                      </div>
+                    </div>
+
+                    {/* Account Age Card */}
+                    <div className="bg-zinc-900/70 backdrop-blur-sm rounded-xl overflow-hidden group hover:bg-zinc-900/90 transition-colors duration-300">
+                      <div className="h-1 bg-gradient-to-r from-fuchsia-500 to-violet-500"></div>
+                      <div className="p-6">
+                        <div className="flex items-center justify-between mb-3">
+                          <h3 className="text-sm font-medium text-zinc-400 uppercase tracking-wider">Account Age</h3>
+                          <Calendar className="h-4 w-4 text-blue-400" />
+                        </div>
+                        <div className="text-3xl font-bold text-white group-hover:scale-105 transition-transform duration-300">
+                          0 days
+                        </div>
+                        <div className="mt-2 text-xs text-zinc-500">Member since N/A</div>
                       </div>
                     </div>
                   </div>
                 </section>
 
-                {/* Performance Metrics - Floating Stats */}
-                <section className="relative transform-gpu will-change-transform" id="performance-stats">
-                  <div className="max-w-4xl mx-auto">
-                    <div className="flex flex-col lg:flex-row items-center gap-8 justify-center">
-                      {/* Stats Title */}
-                      <div className="lg:absolute lg:-left-4 lg:top-12 z-20">
-                        <h2 className="text-xl font-bold text-fuchsia-400">
-                          Performance Stats
-                        </h2>
-                      </div>
+                {/* Support Hub - Modern Card Design */}
+                <section className="relative" id="support-hub">
+                  <div className="mb-8">
+                    <h2 className="text-xl font-bold text-white inline-flex items-center">
+                      <MessageSquare className="h-5 w-5 mr-2 text-violet-400" />
+                      Support Hub
+                    </h2>
+                    <div className="h-px w-full bg-gradient-to-r from-violet-500/50 to-fuchsia-500/50 mt-2"></div>
+                  </div>
 
-                      {/* Rating Bubble - Optimized */}
-                      <div className="relative">
-                        <div className="w-40 h-40 rounded-full bg-zinc-900/80 border border-fuchsia-500/30 shadow-xl flex flex-col items-center justify-center p-6 hover:border-fuchsia-500/50 transition-colors">
-                          <div className="text-4xl font-bold text-white">
-                            {profileData?.rating || 0}
-                          </div>
-                          <div className="text-xs font-medium text-fuchsia-400 uppercase tracking-wider mt-3">
-                            Rating
-                          </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <button
+                      onClick={handleFaqsClick}
+                      className="group bg-zinc-900/70 backdrop-blur-sm rounded-xl overflow-hidden hover:bg-zinc-900/90 transition-colors duration-300 p-6 text-left"
+                    >
+                      <div className="flex items-center mb-4">
+                        <div className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center group-hover:bg-violet-900/30 transition-colors duration-300">
+                          <MessageSquare className="h-5 w-5 text-violet-400" />
                         </div>
+                        <h3 className="text-lg font-semibold ml-4 text-white">Frequently Asked Questions</h3>
                       </div>
+                      <p className="text-sm text-zinc-400 ml-14">Find answers to common questions about the platform, deals, and payments</p>
+                    </button>
 
-                      {/* Completed Deals Bubble - Optimized */}
-                      <div className="relative">
-                        <div className="w-40 h-40 rounded-full bg-zinc-900/80 border border-violet-500/30 shadow-xl flex flex-col items-center justify-center p-6 hover:border-violet-500/50 transition-colors">
-                          <div className="text-4xl font-bold text-white">
-                            {profileData?.completedDeals || 0}
-                          </div>
-                          <div className="text-xs font-medium text-violet-400 uppercase tracking-wider mt-3">
-                            Completed Deals
-                          </div>
+                    <button
+                      onClick={handleContactClick}
+                      className="group bg-zinc-900/70 backdrop-blur-sm rounded-xl overflow-hidden hover:bg-zinc-900/90 transition-colors duration-300 p-6 text-left"
+                    >
+                      <div className="flex items-center mb-4">
+                        <div className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center group-hover:bg-fuchsia-900/30 transition-colors duration-300">
+                          <Mail className="h-5 w-5 text-fuchsia-400" />
                         </div>
+                        <h3 className="text-lg font-semibold ml-4 text-white">Contact Support</h3>
                       </div>
-                    </div>
+                      <p className="text-sm text-zinc-400 ml-14">Get in touch with our support team for personalized assistance</p>
+                    </button>
                   </div>
                 </section>
 
-                {/* Notifications Hub - Separated */}
-                <section className="relative transform-gpu will-change-transform" id="notifications-hub">
-                  <div className="max-w-5xl mx-auto">
-                    <div className="flex-1 relative lg:transform-gpu">
-                      <div className="bg-zinc-900/80 backdrop-blur-sm rounded-3xl p-8 border border-zinc-800/70">
-                        <div className="flex items-center mb-6">
-                          <div className="h-10 w-10 rounded-full bg-gradient-to-br from-violet-600 to-fuchsia-600 flex items-center justify-center text-white">
-                            <BellIcon className="h-5 w-5" />
+                {/* Notifications Hub - Modern Design */}
+                <section className="relative" id="notifications-hub">
+                  <div className="mb-8">
+                    <h2 className="text-xl font-bold text-white inline-flex items-center">
+                      <BellIcon className="h-5 w-5 mr-2 text-violet-400" />
+                      Notifications
+                    </h2>
+                    <div className="h-px w-full bg-gradient-to-r from-violet-500/50 to-fuchsia-500/50 mt-2"></div>
+                  </div>
+
+                  <div className="bg-zinc-900/70 backdrop-blur-sm rounded-xl overflow-hidden p-6">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                      <div>
+                        <h3 className="font-semibold text-white text-lg">Push Notifications</h3>
+                        <p className="text-sm text-zinc-400 mt-1">Get real-time updates on deals, messages, and platform activity</p>
+                      </div>
+
+                      {isSupported ? (
+                        isSubscribed ? (
+                          <div className="flex items-center gap-2 bg-zinc-800 border border-green-500/30 text-white px-4 py-2 rounded-lg">
+                            <Check className="h-5 w-5 text-green-400" />
+                            <span className="font-medium">Notifications Enabled</span>
                           </div>
-                          <h2 className="text-2xl font-bold ml-4 text-white">Notifications</h2>
+                        ) : (
+                          <button
+                            onClick={handleEnableNotifications}
+                            className="inline-flex items-center px-5 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg border border-violet-500/30 hover:border-violet-500/50 transition-all duration-300"
+                          >
+                            <BellIcon className="h-4 w-4 mr-2 text-violet-400" />
+                            <span>Enable Notifications</span>
+                          </button>
+                        )
+                      ) : (
+                        <div className="bg-zinc-800 text-zinc-400 px-4 py-2 rounded-lg text-sm border border-zinc-700">
+                          Not supported in your browser
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="relative">
+                      <h3 className="font-medium text-white mb-4">Notification Categories:</h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div className="flex items-center p-4 bg-zinc-800/50 rounded-lg border border-zinc-700/30 hover:border-violet-500/30 transition-colors duration-300">
+                          <div className="w-8 h-8 rounded-full bg-violet-900/30 flex items-center justify-center mr-3">
+                            <Briefcase className="h-4 w-4 text-violet-400" />
+                          </div>
+                          <div>
+                            <span className="text-sm font-medium text-white">Deal Offers</span>
+                            <p className="text-xs text-zinc-500 mt-1">New collaboration opportunities</p>
+                          </div>
                         </div>
 
-                        <div className="mb-6 p-5 bg-black/50 backdrop-blur-sm rounded-xl border border-zinc-800/70 shadow-lg">
-                          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                            <div>
-                              <h3 className="font-semibold text-white">Push Notifications</h3>
-                              <p className="text-sm text-zinc-400 mt-1">Get updates on deals, messages, and more</p>
-                            </div>
-
-                            {isSupported ? (
-                              isSubscribed ? (
-                                <div className="flex items-center gap-2 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white px-4 py-2 rounded-full shadow-md">
-                                  <Check className="h-5 w-5" />
-                                  <span className="font-medium">Enabled</span>
-                                </div>
-                              ) : (
-                                <button
-                                  onClick={handleEnableNotifications}
-                                  className="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700 text-white rounded-full shadow-md hover:shadow-lg transition-all duration-300"
-                                >
-                                  <BellIcon className="h-4 w-4 mr-2" />
-                                  <span>Enable Now</span>
-                                </button>
-                              )
-                            ) : (
-                              <div className="bg-zinc-800 text-white px-4 py-2 rounded-full text-sm font-medium shadow-md border border-zinc-700">
-                                Not supported
-                              </div>
-                            )}
+                        <div className="flex items-center p-4 bg-zinc-800/50 rounded-lg border border-zinc-700/30 hover:border-violet-500/30 transition-colors duration-300">
+                          <div className="w-8 h-8 rounded-full bg-fuchsia-900/30 flex items-center justify-center mr-3">
+                            <RefreshCw className="h-4 w-4 text-fuchsia-400" />
+                          </div>
+                          <div>
+                            <span className="text-sm font-medium text-white">Status Updates</span>
+                            <p className="text-xs text-zinc-500 mt-1">Changes to your active deals</p>
                           </div>
                         </div>
 
-                        <div className="relative">
-                          <h3 className="font-medium text-white mb-3">You'll receive alerts for:</h3>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div className="flex items-center space-x-3 p-3 bg-black/50 backdrop-blur-sm rounded-lg border border-zinc-800/70 shadow-md">
-                              <div className="w-2 h-2 rounded-full bg-fuchsia-500"></div>
-                              <span className="text-sm text-white">New deal offers</span>
-                            </div>
-                            <div className="flex items-center space-x-3 p-3 bg-black/50 backdrop-blur-sm rounded-lg border border-zinc-800/70 shadow-md">
-                              <div className="w-2 h-2 rounded-full bg-violet-500"></div>
-                              <span className="text-sm text-white">Deal status updates</span>
-                            </div>
-                            <div className="flex items-center space-x-3 p-3 bg-black/50 backdrop-blur-sm rounded-lg border border-zinc-800/70 shadow-md">
-                              <div className="w-2 h-2 rounded-full bg-fuchsia-500"></div>
-                              <span className="text-sm text-white">New messages</span>
-                            </div>
-                            <div className="flex items-center space-x-3 p-3 bg-black/50 backdrop-blur-sm rounded-lg border border-zinc-800/70 shadow-md">
-                              <div className="w-2 h-2 rounded-full bg-violet-500"></div>
-                              <span className="text-sm text-white">Payment updates</span>
-                            </div>
+                        <div className="flex items-center p-4 bg-zinc-800/50 rounded-lg border border-zinc-700/30 hover:border-violet-500/30 transition-colors duration-300">
+                          <div className="w-8 h-8 rounded-full bg-violet-900/30 flex items-center justify-center mr-3">
+                            <MessageSquare className="h-4 w-4 text-violet-400" />
+                          </div>
+                          <div>
+                            <span className="text-sm font-medium text-white">Messages</span>
+                            <p className="text-xs text-zinc-500 mt-1">New messages from brands</p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center p-4 bg-zinc-800/50 rounded-lg border border-zinc-700/30 hover:border-violet-500/30 transition-colors duration-300">
+                          <div className="w-8 h-8 rounded-full bg-fuchsia-900/30 flex items-center justify-center mr-3">
+                            <BadgeIndianRupee className="h-4 w-4 text-fuchsia-400" />
+                          </div>
+                          <div>
+                            <span className="text-sm font-medium text-white">Payments</span>
+                            <p className="text-xs text-zinc-500 mt-1">Payment confirmations and updates</p>
                           </div>
                         </div>
                       </div>
