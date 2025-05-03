@@ -8,11 +8,11 @@ import AnalyticsTab from "@/components/influencer/analytics/AnalyticsTab";
 // Page is a server component
 export default function InfluencerPage() {
   return (
-    <div className="container m-0 px-1 min-h-screen bg-black">
+    <div className="container mx-auto px-1 min-h-screen bg-black ">
       <Tabs defaultValue="analytics" className="w-full flex flex-col h-full">
         {/* Fixed tab bar at the top */}
         <div className="sticky top-[50px] left-0 right-0 z-10 bg-black/95 backdrop-blur-sm pt-2 pb-1 border-b border-zinc-800/50">
-          <TabsList className="grid w-full grid-cols-4 bg-transparent bg-zinc-900 p-1 rounded-lg shadow-inner">
+          <TabsList className="grid grid-cols-4 bg-transparent bg-zinc-900 p-1 rounded-lg shadow-inner">
             <TabsTrigger
               value="analytics"
               className="font-medium text-white transition-all duration-200

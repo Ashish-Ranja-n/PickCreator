@@ -9,7 +9,7 @@ const Chat: NextPage = () =>{
  
   return (
     <>
-    <div className="h-full pt-16 pb-20">
+    <div className="h-full pt-16 pb-20 md:pt-0 md:pb-0">
       <ChatList />
     </div>
     </>
