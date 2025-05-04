@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Providers } from './providers';
 import { ServiceWorkerRegistration } from './ServiceWorkerRegistration';
 import { SessionRefresher } from './SessionRefresher';
+import { ThemeProvider } from "@/components/theme/theme-provider";
 
 const kanit = Kanit({
   weight: ["400"],
@@ -89,10 +90,12 @@ export default function RootLayout({
         className={`${kanit.variable} ${RubikMonoOne.variable} ${cambay.variable} h-screen antialiased m-0 p-0 `}
       >
         <Providers>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <ServiceWorkerRegistration />
             <SessionRefresher />
             {children}
             <Toaster />
+          </ThemeProvider>
         </Providers>
       </body>
     </html>

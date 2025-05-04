@@ -301,9 +301,9 @@ export default function InfluencerFeedClient() {
   };
 
   return (
-    <div className="relative w-full mx-auto min-h-screen bg-zinc-950">
+    <div className="relative w-full mx-auto min-h-screen bg-white dark:bg-zinc-950">
       {/* Fixed header with buttons - using fixed positioning */}
-      <div className="fixed top-[100px] md:top-[122px] left-0 right-0 z-30 py-3 px-4 bg-zinc-950/95 backdrop-blur-md border-b border-zinc-800/50 flex justify-between items-center shadow-md">
+      <div className="fixed top-[100px] md:top-[122px] left-0 right-0 z-30 py-3 px-4 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md border-b border-gray-200/50 dark:border-zinc-800/50 flex justify-between items-center shadow-md">
         <div className="w-full mx-auto flex justify-between items-center px-2">
           <div className="flex items-center gap-2">
             <TooltipProvider>
@@ -313,45 +313,45 @@ export default function InfluencerFeedClient() {
                     variant="ghost"
                     size="sm"
                     className={`h-9 w-9 rounded-full transition-all duration-300 ${showMyPosts
-                      ? 'bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-md ring-1 ring-fuchsia-500/30 scale-105'
-                      : 'bg-zinc-900 text-white hover:text-white hover:bg-zinc-800 hover:shadow-[0_0_10px_rgba(192,38,211,0.3)]'}`}
+                      ? 'bg-gradient-to-r from-violet-500 to-fuchsia-500 dark:from-violet-600 dark:to-fuchsia-600 text-white shadow-md ring-1 ring-fuchsia-500/30 scale-105'
+                      : 'bg-gray-100 dark:bg-zinc-900 text-gray-700 dark:text-white hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-zinc-800 hover:shadow-[0_0_10px_rgba(192,38,211,0.3)]'}`}
                     onClick={() => setShowMyPosts(!showMyPosts)}
                   >
                     <User size={16} className={`${showMyPosts ? 'scale-110' : ''} transition-transform duration-300`} />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent side="bottom" className="bg-zinc-900 text-white border-zinc-800 shadow-lg">
+                <TooltipContent side="bottom" className="bg-white dark:bg-zinc-900 text-gray-900 dark:text-white border-gray-200 dark:border-zinc-800 shadow-lg">
                   <p>{showMyPosts ? 'Viewing your posts' : 'View your posts'}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
 
-            <h2 className="text-base font-medium text-white block">
+            <h2 className="text-base font-medium text-gray-900 dark:text-white block">
               {showMyPosts ? 'My Posts' : 'Influencer Community'}
             </h2>
           </div>
 
-          <div className="flex items-center space-x-1 bg-zinc-900 p-0.5 rounded-full shadow-md border border-zinc-800/50">
+          <div className="flex items-center space-x-1 bg-gray-100 dark:bg-zinc-900 p-0.5 rounded-full shadow-md border border-gray-200/50 dark:border-zinc-800/50">
             <Button
               variant="ghost"
               size="sm"
               className={`h-8 rounded-full px-3 text-xs font-medium transition-all duration-300 ${feedType === 'live'
-                ? 'bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-md'
-                : 'text-white hover:text-white hover:bg-zinc-800'}`}
+                ? 'bg-gradient-to-r from-violet-500 to-fuchsia-500 dark:from-violet-600 dark:to-fuchsia-600 text-white shadow-md'
+                : 'text-gray-700 dark:text-white hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-zinc-800'}`}
               onClick={() => setFeedType("live")}
             >
-              <Zap size={14} className={`mr-1.5 ${feedType === 'live' ? 'text-white animate-pulse' : 'text-fuchsia-400'}`} />
+              <Zap size={14} className={`mr-1.5 ${feedType === 'live' ? 'text-white animate-pulse' : 'text-fuchsia-500 dark:text-fuchsia-400'}`} />
               Live
             </Button>
             <Button
               variant="ghost"
               size="sm"
               className={`h-8 rounded-full px-3 text-xs font-medium transition-all duration-300 ${feedType === 'top'
-                ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-md'
-                : 'text-white hover:text-white hover:bg-zinc-800'}`}
+                ? 'bg-gradient-to-r from-blue-500 to-cyan-500 dark:from-blue-600 dark:to-cyan-600 text-white shadow-md'
+                : 'text-gray-700 dark:text-white hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-zinc-800'}`}
               onClick={() => setFeedType("top")}
             >
-              <TrendingUp size={14} className={`mr-1.5 ${feedType === 'top' ? 'text-white' : 'text-blue-400'}`} />
+              <TrendingUp size={14} className={`mr-1.5 ${feedType === 'top' ? 'text-white' : 'text-blue-500 dark:text-blue-400'}`} />
               Top
             </Button>
           </div>
@@ -371,19 +371,19 @@ export default function InfluencerFeedClient() {
           <div className="flex justify-center py-12">
             <div className="flex flex-col items-center">
               <Loader2 className="h-10 w-10 animate-spin text-fuchsia-500 mb-4 drop-shadow-[0_0_8px_rgba(192,38,211,0.5)]" />
-              <p className="text-zinc-400">Loading posts...</p>
+              <p className="text-gray-500 dark:text-zinc-400">Loading posts...</p>
             </div>
           </div>
         )}
 
         {/* Error message */}
         {error && !loading && (
-          <div className="bg-red-900/20 border border-red-800/30 rounded-xl p-4 text-center shadow-md">
-            <p className="text-red-400">{error}</p>
+          <div className="bg-red-100/50 dark:bg-red-900/20 border border-red-200/50 dark:border-red-800/30 rounded-xl p-4 text-center shadow-md">
+            <p className="text-red-500 dark:text-red-400">{error}</p>
             <Button
               variant="outline"
               size="sm"
-              className="mt-2 text-xs bg-slate-800 border-red-700/50 text-red-400 hover:bg-slate-700 hover:text-red-300"
+              className="mt-2 text-xs bg-white dark:bg-slate-800 border-red-300/50 dark:border-red-700/50 text-red-500 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-slate-700 hover:text-red-600 dark:hover:text-red-300"
               onClick={() => fetchPosts()}
             >
               Try Again
@@ -399,16 +399,16 @@ export default function InfluencerFeedClient() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3, delay: index * 0.05 }}
-              className="bg-zinc-900 backdrop-blur-sm rounded-xl border border-fuchsia-500/30 overflow-hidden transition-all duration-300 shadow-[0_0_15px_rgba(192,38,211,0.3)]"
+              className="bg-white dark:bg-zinc-900 backdrop-blur-sm rounded-xl border border-fuchsia-200/50 dark:border-fuchsia-500/30 overflow-hidden transition-all duration-300 shadow-md dark:shadow-[0_0_15px_rgba(192,38,211,0.3)]"
             >
               {/* Post header */}
-              <div className="p-4 flex justify-between items-center border-b border-zinc-800/30">
+              <div className="p-4 flex justify-between items-center border-b border-gray-200/50 dark:border-zinc-800/30">
                 <div className="flex items-center space-x-3">
                   {/* Avatar with Instagram link */}
                   <div className="relative group">
-                    <Avatar className="h-10 w-10 ring-2 ring-fuchsia-500/30 ring-offset-2 ring-offset-zinc-900 transition-all duration-300 group-hover:ring-fuchsia-500/70 shadow-[0_0_10px_rgba(192,38,211,0.2)]">
+                    <Avatar className="h-10 w-10 ring-2 ring-fuchsia-300/50 dark:ring-fuchsia-500/30 ring-offset-2 ring-offset-white dark:ring-offset-zinc-900 transition-all duration-300 group-hover:ring-fuchsia-400/70 dark:group-hover:ring-fuchsia-500/70 shadow-sm dark:shadow-[0_0_10px_rgba(192,38,211,0.2)]">
                       <AvatarImage src={getProfilePicture(post.author)} alt={post.author?.name || "User"} />
-                      <AvatarFallback className="bg-gradient-to-br from-violet-600 to-fuchsia-600 text-white">
+                      <AvatarFallback className="bg-gradient-to-br from-violet-500 to-fuchsia-500 dark:from-violet-600 dark:to-fuchsia-600 text-white">
                         {post.author?.name ? post.author.name.charAt(0) : "U"}
                       </AvatarFallback>
                     </Avatar>
@@ -433,36 +433,36 @@ export default function InfluencerFeedClient() {
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="font-medium text-white">{post.author?.name || "User"}</h3>
+                      <h3 className="font-medium text-gray-900 dark:text-white">{post.author?.name || "User"}</h3>
                       {/* Instagram username with link */}
                       {post.author?.instagramUsername ? (
                         <Link
                           href={getInstagramProfileUrl(post.author.instagramUsername) || '#'}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-xs text-zinc-400 hover:text-fuchsia-400 transition-colors flex items-center group"
+                          className="text-xs text-gray-500 dark:text-zinc-400 hover:text-fuchsia-500 dark:hover:text-fuchsia-400 transition-colors flex items-center group"
                         >
                           @{post.author.instagramUsername}
                           <ExternalLink size={10} className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
                         </Link>
                       ) : (
-                        <span className="text-xs text-zinc-400">@{post.author?.username || "user"}</span>
+                        <span className="text-xs text-gray-500 dark:text-zinc-400">@{post.author?.username || "user"}</span>
                       )}
                     </div>
-                    <p className="text-xs text-zinc-500">{formatTimeAgo(post.createdAt)}</p>
+                    <p className="text-xs text-gray-400 dark:text-zinc-500">{formatTimeAgo(post.createdAt)}</p>
                   </div>
                 </div>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="rounded-full text-white hover:bg-zinc-800 hover:text-fuchsia-400 transition-colors">
+                    <Button variant="ghost" size="icon" className="rounded-full text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-800 hover:text-fuchsia-500 dark:hover:text-fuchsia-400 transition-colors">
                       <MoreHorizontal size={18} />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="bg-zinc-900 border-zinc-800 text-white">
+                  <DropdownMenuContent align="end" className="bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-800 text-gray-900 dark:text-white">
                     {currentUser && post.author && post.author._id === currentUser._id && (
                       <DropdownMenuItem
                         onClick={() => openDeleteDialog(post._id)}
-                        className="text-red-400 hover:text-red-300 hover:bg-zinc-800 focus:bg-zinc-800 cursor-pointer"
+                        className="text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 hover:bg-gray-100 dark:hover:bg-zinc-800 focus:bg-gray-100 dark:focus:bg-zinc-800 cursor-pointer"
                       >
                         <Trash2 className="h-4 w-4 mr-2" />
                         Delete Post
@@ -474,7 +474,7 @@ export default function InfluencerFeedClient() {
 
               {/* Post content */}
               <div className="px-4 py-3">
-                <p className="text-white whitespace-pre-wrap leading-relaxed">{post.content}</p>
+                <p className="text-gray-900 dark:text-white whitespace-pre-wrap leading-relaxed">{post.content}</p>
 
                 {/* Hashtags */}
                 {post.hashtags && post.hashtags.length > 0 && (
@@ -483,7 +483,7 @@ export default function InfluencerFeedClient() {
                       <Badge
                         key={tag}
                         variant="secondary"
-                        className="bg-fuchsia-900/30 text-fuchsia-300 hover:bg-fuchsia-800/40 border border-fuchsia-700/50 transition-all duration-300 hover:shadow-[0_0_8px_rgba(192,38,211,0.3)] hover:border-fuchsia-500/50 hover:scale-105"
+                        className="bg-fuchsia-100/70 dark:bg-fuchsia-900/30 text-fuchsia-600 dark:text-fuchsia-300 hover:bg-fuchsia-200/70 dark:hover:bg-fuchsia-800/40 border border-fuchsia-300/50 dark:border-fuchsia-700/50 transition-all duration-300 hover:shadow-sm dark:hover:shadow-[0_0_8px_rgba(192,38,211,0.3)] hover:border-fuchsia-400/50 dark:hover:border-fuchsia-500/50 hover:scale-105"
                       >
                         #{tag}
                       </Badge>
@@ -529,12 +529,12 @@ export default function InfluencerFeedClient() {
               )}
 
               {/* Post actions */}
-              <div className="px-4 py-3 border-t border-zinc-800/30 flex justify-between items-center bg-zinc-900/70">
+              <div className="px-4 py-3 border-t border-gray-200/50 dark:border-zinc-800/30 flex justify-between items-center bg-gray-50/70 dark:bg-zinc-900/70">
                 <div className="flex space-x-6">
                   <Button
                     variant="ghost"
                     size="sm"
-                    className={`text-white hover:text-pink-400 hover:bg-zinc-800 rounded-full px-2.5 py-1 h-auto transition-all duration-300 hover:shadow-[0_0_8px_rgba(236,72,153,0.3)] ${likedPosts[post._id] ? 'text-pink-400' : ''}`}
+                    className={`text-gray-700 dark:text-white hover:text-pink-500 dark:hover:text-pink-400 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-full px-2.5 py-1 h-auto transition-all duration-300 hover:shadow-sm dark:hover:shadow-[0_0_8px_rgba(236,72,153,0.3)] ${likedPosts[post._id] ? 'text-pink-500 dark:text-pink-400' : ''}`}
                     onClick={() => handleLike(post._id)}
                   >
                     <Heart size={18} className={`mr-1.5 transition-transform hover:scale-110 ${likedPosts[post._id] ? 'fill-current animate-heartBeat' : ''}`} />
@@ -543,13 +543,13 @@ export default function InfluencerFeedClient() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className={`text-white hover:text-fuchsia-400 hover:bg-zinc-800 rounded-full px-2.5 py-1 h-auto transition-all duration-300 hover:shadow-[0_0_8px_rgba(192,38,211,0.3)] ${activeCommentPostId === post._id && commentSheetOpen ? 'text-fuchsia-400 bg-zinc-800/70' : ''}`}
+                    className={`text-gray-700 dark:text-white hover:text-fuchsia-500 dark:hover:text-fuchsia-400 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-full px-2.5 py-1 h-auto transition-all duration-300 hover:shadow-sm dark:hover:shadow-[0_0_8px_rgba(192,38,211,0.3)] ${activeCommentPostId === post._id && commentSheetOpen ? 'text-fuchsia-500 dark:text-fuchsia-400 bg-gray-100/70 dark:bg-zinc-800/70' : ''}`}
                     onClick={() => toggleComments(post._id)}
                   >
                     <MessageCircle size={18} className="mr-1.5 transition-transform hover:scale-110" />
                     <span className="text-xs font-medium">{post.commentCount}</span>
                   </Button>
-                  <div className="flex items-center text-white text-xs">
+                  <div className="flex items-center text-gray-700 dark:text-white text-xs">
                     <Eye size={16} className="mr-1.5" />
                     <span>{post.views || 0}</span>
                   </div>
@@ -557,7 +557,7 @@ export default function InfluencerFeedClient() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-white hover:text-blue-400 hover:bg-zinc-800 rounded-full p-1.5 h-8 w-8 transition-all duration-300 hover:shadow-[0_0_8px_rgba(59,130,246,0.3)]"
+                  className="text-gray-700 dark:text-white hover:text-blue-500 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-full p-1.5 h-8 w-8 transition-all duration-300 hover:shadow-sm dark:hover:shadow-[0_0_8px_rgba(59,130,246,0.3)]"
                 >
                   <Bookmark size={16} className="transition-transform hover:scale-110" />
                 </Button>
@@ -569,14 +569,14 @@ export default function InfluencerFeedClient() {
         </AnimatePresence>
 
         {!loading && posts.length === 0 && !error && (
-          <div className="flex flex-col items-center justify-center py-12 text-center bg-zinc-900 backdrop-blur-sm rounded-2xl shadow-md border border-zinc-800/50 p-8 mt-8">
-            <div className="w-16 h-16 bg-gradient-to-br from-violet-600 to-fuchsia-600 rounded-full flex items-center justify-center mb-4 shadow-lg shadow-fuchsia-500/20">
+          <div className="flex flex-col items-center justify-center py-12 text-center bg-white dark:bg-zinc-900 backdrop-blur-sm rounded-2xl shadow-md border border-gray-200/50 dark:border-zinc-800/50 p-8 mt-8">
+            <div className="w-16 h-16 bg-gradient-to-br from-violet-500 to-fuchsia-500 dark:from-violet-600 dark:to-fuchsia-600 rounded-full flex items-center justify-center mb-4 shadow-lg shadow-fuchsia-300/20 dark:shadow-fuchsia-500/20">
               <PlusCircle size={24} className="text-white animate-pulse" />
             </div>
-            <h3 className="text-lg font-medium text-white mb-2">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
               {showMyPosts ? "You haven't created any posts yet" : "No posts found"}
             </h3>
-            <p className="text-zinc-400 max-w-md">
+            <p className="text-gray-500 dark:text-zinc-400 max-w-md">
               {showMyPosts
                 ? "Start your journey by creating your first post"
                 : "Be the first to start a conversation in this community"}
@@ -591,7 +591,7 @@ export default function InfluencerFeedClient() {
               variant="outline"
               size="sm"
               onClick={() => fetchPosts(page + 1, true)}
-              className="text-xs bg-zinc-900 border-zinc-800 text-white hover:bg-zinc-800 hover:text-white hover:border-fuchsia-500/50 hover:shadow-[0_0_10px_rgba(192,38,211,0.2)] transition-all duration-300"
+              className="text-xs bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-800 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-800 hover:text-gray-900 dark:hover:text-white hover:border-fuchsia-300/50 dark:hover:border-fuchsia-500/50 hover:shadow-sm dark:hover:shadow-[0_0_10px_rgba(192,38,211,0.2)] transition-all duration-300"
             >
               Load more posts
             </Button>
@@ -606,7 +606,7 @@ export default function InfluencerFeedClient() {
       <div className="fixed bottom-24 right-6 md:bottom-24 md:right-10 z-40">
         <Button
           onClick={() => setIsCreatePostOpen(true)}
-          className="w-14 h-14 rounded-full bg-gradient-to-tr from-violet-600 to-fuchsia-600 text-white shadow-md hover:scale-105 transition-all duration-300"
+          className="w-14 h-14 rounded-full bg-gradient-to-tr from-violet-500 to-fuchsia-500 dark:from-violet-600 dark:to-fuchsia-600 text-white shadow-md hover:scale-105 transition-all duration-300"
           aria-label="Create Post"
         >
           <PlusCircle size={22} />
@@ -622,7 +622,7 @@ export default function InfluencerFeedClient() {
 
       {/* Full-screen image viewer */}
       <Dialog open={imageViewerOpen} onOpenChange={setImageViewerOpen}>
-        <DialogContent className="max-w-full w-full h-[100dvh] p-0 m-0 border-none bg-zinc-950/98 rounded-none">
+        <DialogContent className="max-w-full w-full h-[100dvh] p-0 m-0 border-none bg-gray-50/98 dark:bg-zinc-950/98 rounded-none">
           <div className="relative w-full h-full flex flex-col">
             {/* Header with close button */}
             <div className="absolute top-4 right-4 z-50">
@@ -630,7 +630,7 @@ export default function InfluencerFeedClient() {
                 variant="ghost"
                 size="icon"
                 onClick={() => setImageViewerOpen(false)}
-                className="rounded-full bg-zinc-900/70 text-white hover:bg-zinc-800 hover:text-white hover:shadow-[0_0_10px_rgba(192,38,211,0.3)]"
+                className="rounded-full bg-white/70 dark:bg-zinc-900/70 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-800 hover:text-gray-900 dark:hover:text-white hover:shadow-sm dark:hover:shadow-[0_0_10px_rgba(192,38,211,0.3)]"
               >
                 <X className="h-6 w-6" />
               </Button>
@@ -640,13 +640,13 @@ export default function InfluencerFeedClient() {
             <div className="flex-1 flex items-center justify-center p-4">
               {currentImage && (
                 <div className="relative max-h-full max-w-full group">
-                  <div className="absolute inset-0 bg-fuchsia-500/5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="absolute inset-0 bg-fuchsia-300/5 dark:bg-fuchsia-500/5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   <Image
                     src={currentImage}
                     alt="Full-screen image"
                     width={1200}
                     height={1200}
-                    className="max-h-[90vh] w-auto object-contain rounded-lg shadow-[0_0_30px_rgba(192,38,211,0.15)]"
+                    className="max-h-[90vh] w-auto object-contain rounded-lg shadow-md dark:shadow-[0_0_30px_rgba(192,38,211,0.15)]"
                     unoptimized
                   />
                 </div>
@@ -658,10 +658,10 @@ export default function InfluencerFeedClient() {
 
       {/* Delete Post Confirmation Dialog */}
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent className="bg-zinc-900 border-zinc-800 text-white">
+        <DialogContent className="bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-800 text-gray-900 dark:text-white">
           <DialogHeader>
-            <DialogTitle className="text-white">Delete Post</DialogTitle>
-            <DialogDescription className="text-zinc-400">
+            <DialogTitle className="text-gray-900 dark:text-white">Delete Post</DialogTitle>
+            <DialogDescription className="text-gray-500 dark:text-zinc-400">
               Are you sure you want to delete this post? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
@@ -669,14 +669,14 @@ export default function InfluencerFeedClient() {
             <Button
               variant="outline"
               onClick={() => setDeleteDialogOpen(false)}
-              className="bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700 hover:border-zinc-600"
+              className="bg-white dark:bg-zinc-800 border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-700 hover:border-gray-300 dark:hover:border-zinc-600"
             >
               Cancel
             </Button>
             <Button
               variant="destructive"
               onClick={handleDeletePost}
-              className="bg-red-600 hover:bg-red-700"
+              className="bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-700"
             >
               Delete
             </Button>

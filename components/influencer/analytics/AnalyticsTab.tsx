@@ -45,24 +45,24 @@ export default function AnalyticsTab() {
 
   return (
     <div className="py-4">
-      <div className="bg-zinc-800/70 border-zinc-500/50 shadow-md rounded-lg p-4 mb-6">
+      <div className="bg-gray-100/70 dark:bg-zinc-800/70 border-gray-300/50 dark:border-zinc-500/50 shadow-md rounded-lg p-4 mb-6">
         <div className="space-y-2">
           <div className="flex items-center">
-            <p className="text-white font-medium">Total Brands - </p>
-            <p className="text-fuchsia-400 font-medium ml-1">{analytics?.totalBrands || 0}</p>
-            
+            <p className="text-gray-900 dark:text-white font-medium">Total Brands - </p>
+            <p className="text-fuchsia-500 dark:text-fuchsia-400 font-medium ml-1">{analytics?.totalBrands || 0}</p>
+
           </div>
           <div className="flex items-center">
-            <p className="text-white font-medium">Total Influencers - </p>
-            <p className="text-fuchsia-400 font-medium ml-1">{analytics?.totalInfluencers || 0}</p>
-            
+            <p className="text-gray-900 dark:text-white font-medium">Total Influencers - </p>
+            <p className="text-fuchsia-500 dark:text-fuchsia-400 font-medium ml-1">{analytics?.totalInfluencers || 0}</p>
+
           </div>
         </div>
       </div>
 
       <div className="mt-6">
-        <h3 className="text-lg font-semibold mb-2 text-white">Upcoming Features</h3>
-        <ul className="list-disc list-inside space-y-2 text-zinc-400">
+        <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-white">Upcoming Features</h3>
+        <ul className="list-disc list-inside space-y-2 text-gray-600 dark:text-zinc-400">
           <li>Detailed analytics dashboard</li>
           <li>Industry news and updates</li>
           <li>Performance metrics</li>

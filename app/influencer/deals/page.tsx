@@ -193,32 +193,32 @@ const InfluencerDealsPage = () => {
   const getStatusColor = (status: Deal['status']) => {
     switch (status) {
       case 'requested':
-        return 'bg-blue-900/30 text-blue-300 border border-blue-700/50';
+        return 'bg-blue-100/80 text-blue-700 border border-blue-300/50 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-700/50';
       case 'counter-offered':
-        return 'bg-indigo-900/30 text-indigo-300 border border-indigo-700/50';
+        return 'bg-indigo-100/80 text-indigo-700 border border-indigo-300/50 dark:bg-indigo-900/30 dark:text-indigo-300 dark:border-indigo-700/50';
       case 'accepted':
-        return 'bg-yellow-900/30 text-yellow-300 border border-yellow-700/50';
+        return 'bg-yellow-100/80 text-yellow-700 border border-yellow-300/50 dark:bg-yellow-900/30 dark:text-yellow-300 dark:border-yellow-700/50';
       case 'ongoing':
-        return 'bg-green-900/30 text-green-300 border border-green-700/50';
+        return 'bg-green-100/80 text-green-700 border border-green-300/50 dark:bg-green-900/30 dark:text-green-300 dark:border-green-700/50';
       case 'content_approved':
-        return 'bg-teal-900/30 text-teal-300 border border-teal-700/50';
+        return 'bg-teal-100/80 text-teal-700 border border-teal-300/50 dark:bg-teal-900/30 dark:text-teal-300 dark:border-teal-700/50';
       case 'completed':
-        return 'bg-violet-900/30 text-violet-300 border border-violet-700/50';
+        return 'bg-violet-100/80 text-violet-700 border border-violet-300/50 dark:bg-violet-900/30 dark:text-violet-300 dark:border-violet-700/50';
       case 'cancelled':
-        return 'bg-red-900/30 text-red-300 border border-red-700/50';
+        return 'bg-red-100/80 text-red-700 border border-red-300/50 dark:bg-red-900/30 dark:text-red-300 dark:border-red-700/50';
       default:
-        return 'bg-zinc-800 text-zinc-300 border border-zinc-700';
+        return 'bg-gray-100 text-gray-700 border border-gray-300 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700';
     }
   };
 
   const getPaymentStatusColor = (status: Deal['paymentStatus']) => {
     switch (status) {
       case 'unpaid':
-        return 'bg-yellow-900/30 text-yellow-300 border border-yellow-700/50';
+        return 'bg-yellow-100/80 text-yellow-700 border border-yellow-300/50 dark:bg-yellow-900/30 dark:text-yellow-300 dark:border-yellow-700/50';
       case 'paid':
-        return 'bg-green-900/30 text-green-300 border border-green-700/50';
+        return 'bg-green-100/80 text-green-700 border border-green-300/50 dark:bg-green-900/30 dark:text-green-300 dark:border-green-700/50';
       default:
-        return 'bg-zinc-800 text-zinc-300 border border-zinc-700';
+        return 'bg-gray-100 text-gray-700 border border-gray-300 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700';
     }
   };
 
@@ -288,10 +288,10 @@ const InfluencerDealsPage = () => {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-black">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-white dark:bg-black">
         <div className="flex items-center space-x-2">
           <Loader2Icon className="h-8 w-8 animate-spin text-fuchsia-500" />
-          <span className="text-lg font-medium text-white">Loading deals...</span>
+          <span className="text-lg font-medium text-gray-900 dark:text-white">Loading deals...</span>
         </div>
       </div>
     );
@@ -299,9 +299,9 @@ const InfluencerDealsPage = () => {
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-black">
-        <p className="text-red-400 mb-4">{error}</p>
-        <Button onClick={fetchDeals} className="bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-white dark:bg-black">
+        <p className="text-red-500 dark:text-red-400 mb-4">{error}</p>
+        <Button onClick={fetchDeals} className="bg-gray-100 hover:bg-gray-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-gray-800 dark:text-white border border-gray-200 dark:border-zinc-700">
           Try Again
         </Button>
       </div>
@@ -309,12 +309,12 @@ const InfluencerDealsPage = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-16 min-h-screen overflow-y-auto bg-black text-white">
+    <div className="container mx-auto px-4 py-16 min-h-screen overflow-y-auto bg-white dark:bg-black text-gray-900 dark:text-white">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold bg-gradient-to-r from-fuchsia-400 to-violet-400 bg-clip-text text-transparent">My Deals</h1>
         <Button
           onClick={fetchDeals}
-          className="bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700"
+          className="bg-gray-100 hover:bg-gray-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-gray-800 dark:text-white border border-gray-200 dark:border-zinc-700"
         >
           <RefreshCw className="h-4 w-4 mr-2" /> Refresh
         </Button>
@@ -324,28 +324,28 @@ const InfluencerDealsPage = () => {
         setActiveTab(value);
         router.push(`/influencer/deals?tab=${value}`);
       }}>
-        <TabsList className="grid w-full grid-cols-4 mb-8 bg-zinc-900 border border-zinc-800 p-1">
+        <TabsList className="grid w-full grid-cols-4 mb-8 bg-gray-100 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 p-1">
           <TabsTrigger
             value="requested"
-            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-600 data-[state=active]:to-fuchsia-600 data-[state=active]:text-white data-[state=active]:border-0"
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-500 data-[state=active]:to-fuchsia-500 dark:data-[state=active]:from-violet-600 dark:data-[state=active]:to-fuchsia-600 data-[state=active]:text-white data-[state=active]:border-0"
           >
             Requested
           </TabsTrigger>
           <TabsTrigger
             value="pending"
-            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-600 data-[state=active]:to-fuchsia-600 data-[state=active]:text-white data-[state=active]:border-0"
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-500 data-[state=active]:to-fuchsia-500 dark:data-[state=active]:from-violet-600 dark:data-[state=active]:to-fuchsia-600 data-[state=active]:text-white data-[state=active]:border-0"
           >
             Pending
           </TabsTrigger>
           <TabsTrigger
             value="ongoing"
-            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-600 data-[state=active]:to-fuchsia-600 data-[state=active]:text-white data-[state=active]:border-0"
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-500 data-[state=active]:to-fuchsia-500 dark:data-[state=active]:from-violet-600 dark:data-[state=active]:to-fuchsia-600 data-[state=active]:text-white data-[state=active]:border-0"
           >
             Ongoing
           </TabsTrigger>
           <TabsTrigger
             value="history"
-            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-600 data-[state=active]:to-fuchsia-600 data-[state=active]:text-white data-[state=active]:border-0"
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-500 data-[state=active]:to-fuchsia-500 dark:data-[state=active]:from-violet-600 dark:data-[state=active]:to-fuchsia-600 data-[state=active]:text-white data-[state=active]:border-0"
           >
             History
           </TabsTrigger>
@@ -355,12 +355,12 @@ const InfluencerDealsPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredDeals.length > 0 ? (
               filteredDeals.map((deal) => (
-                <Card key={deal._id} className="hover:shadow-lg transition-shadow bg-zinc-900 border-zinc-800">
-                  <CardHeader className="border-b border-zinc-800">
+                <Card key={deal._id} className="hover:shadow-lg transition-shadow bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-800">
+                  <CardHeader className="border-b border-gray-200 dark:border-zinc-800">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         {/* Brand Profile Picture */}
-                        <div className="w-10 h-10 rounded-full overflow-hidden bg-zinc-800 border border-zinc-700">
+                        <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-100 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700">
                           {deal.brandProfilePic ? (
                             <Image
                               src={deal.brandProfilePic}
@@ -370,12 +370,12 @@ const InfluencerDealsPage = () => {
                               height={40}
                             />
                           ) : (
-                            <Building2 className="w-full h-full p-2 text-zinc-500" />
+                            <Building2 className="w-full h-full p-2 text-gray-400 dark:text-zinc-500" />
                           )}
                         </div>
                         {/* Brand Name and Deal Title */}
                         <div>
-                          <CardTitle className="text-lg text-white">{deal.brandName}</CardTitle>
+                          <CardTitle className="text-lg text-gray-900 dark:text-white">{deal.brandName}</CardTitle>
                         </div>
                       </div>
                       <Badge className={getStatusColor(deal.status)}>
@@ -389,15 +389,15 @@ const InfluencerDealsPage = () => {
                       {deal.status === 'counter-offered' ? (
                         <>
                           <div className="flex items-center justify-between">
-                            <span className="text-sm text-zinc-400">Original Amount</span>
-                            <span className="font-semibold flex items-center text-white">
+                            <span className="text-sm text-gray-500 dark:text-zinc-400">Original Amount</span>
+                            <span className="font-semibold flex items-center text-gray-900 dark:text-white">
                               <IndianRupee className="h-4 w-4 mr-1" />
                               {formatAmount(deal.totalAmount)}
                             </span>
                           </div>
                           <div className="flex items-center justify-between">
-                            <span className="text-sm text-zinc-400">Your Counter Offer</span>
-                            <span className="font-semibold flex items-center text-fuchsia-400">
+                            <span className="text-sm text-gray-500 dark:text-zinc-400">Your Counter Offer</span>
+                            <span className="font-semibold flex items-center text-fuchsia-500 dark:text-fuchsia-400">
                               <IndianRupee className="h-4 w-4 mr-1" />
                               {formatAmount(deal.influencers[0].counterOffer)}
                             </span>
@@ -405,8 +405,8 @@ const InfluencerDealsPage = () => {
                         </>
                       ) : (
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-zinc-400">Total Amount</span>
-                          <span className="font-semibold flex items-center text-white">
+                          <span className="text-sm text-gray-500 dark:text-zinc-400">Total Amount</span>
+                          <span className="font-semibold flex items-center text-gray-900 dark:text-white">
                             <IndianRupee className="h-4 w-4 mr-1" />
                             {formatAmount(deal.totalAmount)}
                           </span>
@@ -416,64 +416,64 @@ const InfluencerDealsPage = () => {
                       {/* Content Requirements - Block Style */}
                       <div className="flex flex-wrap gap-3 mt-2">
                         {deal.contentRequirements.reels > 0 && (
-                          <div className="w-24 h-24 flex flex-col items-center justify-center bg-zinc-800 rounded-md p-2 border border-zinc-700">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-fuchsia-400 mb-1">
+                          <div className="w-24 h-24 flex flex-col items-center justify-center bg-gray-100 dark:bg-zinc-800 rounded-md p-2 border border-gray-200 dark:border-zinc-700">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-fuchsia-500 dark:text-fuchsia-400 mb-1">
                               <path d="M19 2H5a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2Z"></path>
                               <path d="m15 11-5-3v6l5-3Z"></path>
                             </svg>
-                            <span className="text-xl font-medium text-white">{deal.contentRequirements.reels}</span>
-                            <span className="text-sm text-zinc-400">Reels</span>
+                            <span className="text-xl font-medium text-gray-900 dark:text-white">{deal.contentRequirements.reels}</span>
+                            <span className="text-sm text-gray-500 dark:text-zinc-400">Reels</span>
                           </div>
                         )}
                         {deal.contentRequirements.posts > 0 && (
-                          <div className="w-24 h-24 flex flex-col items-center justify-center bg-zinc-800 rounded-md p-2 border border-zinc-700">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-violet-400 mb-1">
+                          <div className="w-24 h-24 flex flex-col items-center justify-center bg-gray-100 dark:bg-zinc-800 rounded-md p-2 border border-gray-200 dark:border-zinc-700">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-violet-500 dark:text-violet-400 mb-1">
                               <rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect>
                               <circle cx="9" cy="9" r="2"></circle>
                               <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path>
                             </svg>
-                            <span className="text-xl font-medium text-white">{deal.contentRequirements.posts}</span>
-                            <span className="text-sm text-zinc-400">Posts</span>
+                            <span className="text-xl font-medium text-gray-900 dark:text-white">{deal.contentRequirements.posts}</span>
+                            <span className="text-sm text-gray-500 dark:text-zinc-400">Posts</span>
                           </div>
                         )}
                         {deal.contentRequirements.stories > 0 && (
-                          <div className="w-24 h-24 flex flex-col items-center justify-center bg-zinc-800 rounded-md p-2 border border-zinc-700">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-400 mb-1">
+                          <div className="w-24 h-24 flex flex-col items-center justify-center bg-gray-100 dark:bg-zinc-800 rounded-md p-2 border border-gray-200 dark:border-zinc-700">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-500 dark:text-blue-400 mb-1">
                               <circle cx="12" cy="12" r="10"></circle>
                               <path d="M12 8v8"></path>
                               <path d="M8 12h8"></path>
                             </svg>
-                            <span className="text-xl font-medium text-white">{deal.contentRequirements.stories}</span>
-                            <span className="text-sm text-zinc-400">Stories</span>
+                            <span className="text-xl font-medium text-gray-900 dark:text-white">{deal.contentRequirements.stories}</span>
+                            <span className="text-sm text-gray-500 dark:text-zinc-400">Stories</span>
                           </div>
                         )}
                         {deal.contentRequirements.lives > 0 && (
-                          <div className="w-24 h-24 flex flex-col items-center justify-center bg-zinc-800 rounded-md p-2 border border-zinc-700">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-red-400 mb-1">
+                          <div className="w-24 h-24 flex flex-col items-center justify-center bg-gray-100 dark:bg-zinc-800 rounded-md p-2 border border-gray-200 dark:border-zinc-700">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-red-500 dark:text-red-400 mb-1">
                               <path d="m22 8-6 4 6 4V8Z"></path>
                               <rect width="14" height="12" x="2" y="6" rx="2" ry="2"></rect>
                             </svg>
-                            <span className="text-xl font-medium text-white">{deal.contentRequirements.lives}</span>
-                            <span className="text-sm text-zinc-400">Lives</span>
+                            <span className="text-xl font-medium text-gray-900 dark:text-white">{deal.contentRequirements.lives}</span>
+                            <span className="text-sm text-gray-500 dark:text-zinc-400">Lives</span>
                           </div>
                         )}
                       </div>
 
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-zinc-400">Created</span>
-                        <span className="text-sm text-white">
+                        <span className="text-sm text-gray-500 dark:text-zinc-400">Created</span>
+                        <span className="text-sm text-gray-900 dark:text-white">
                           {formatDate(deal.createdAt)}
                         </span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-zinc-400">Payment Status</span>
+                        <span className="text-sm text-gray-500 dark:text-zinc-400">Payment Status</span>
                         <Badge className={getPaymentStatusColor(deal.paymentStatus)}>
                           {deal.paymentStatus?.charAt(0).toUpperCase() + deal.paymentStatus?.slice(1) || 'Unknown'}
                         </Badge>
                       </div>
                     </div>
                   </CardContent>
-                  <CardFooter className="flex justify-between border-t border-zinc-800 pt-4">
+                  <CardFooter className="flex justify-between border-t border-gray-200 dark:border-zinc-800 pt-4">
                     {deal.status === 'requested' && (
                       <>
                         {deal.isNegotiating ? (
@@ -483,7 +483,7 @@ const InfluencerDealsPage = () => {
                                 <input
                                   type="number"
                                   placeholder="Enter counter offer amount"
-                                  className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-md text-white"
+                                  className="w-full px-3 py-2 bg-white dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 rounded-md text-gray-900 dark:text-white"
                                   onChange={(e) => {
                                     const currentDeal = deals.find((d: Deal) => d._id === deal._id);
                                     if (currentDeal) {
@@ -499,7 +499,7 @@ const InfluencerDealsPage = () => {
                                     handleDealAction(deal._id, 'counter-offer', currentDeal.influencers[0].counterOffer);
                                   }
                                 }}
-                                className="bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700"
+                                className="bg-gradient-to-r from-violet-500 to-fuchsia-500 dark:from-violet-600 dark:to-fuchsia-600 hover:from-violet-600 hover:to-fuchsia-600 dark:hover:from-violet-700 dark:hover:to-fuchsia-700 text-white"
                               >
                                 Send Counter Offer
                               </Button>
@@ -507,13 +507,13 @@ const InfluencerDealsPage = () => {
                             <div className="flex w-full gap-4">
                               <Button
                                 variant="outline"
-                                className="flex-1 border-red-600 text-red-400 hover:bg-red-900/20"
+                                className="flex-1 border-red-500 dark:border-red-600 text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
                                 onClick={() => handleDealAction(deal._id, 'reject')}
                               >
                                 Reject
                               </Button>
                               <Button
-                                className="flex-1 bg-green-600 hover:bg-green-700"
+                                className="flex-1 bg-green-500 dark:bg-green-600 hover:bg-green-600 dark:hover:bg-green-700 text-white"
                                 onClick={() => handleDealAction(deal._id, 'accept')}
                               >
                                 Accept Original Offer
@@ -524,13 +524,13 @@ const InfluencerDealsPage = () => {
                           <div className="flex w-full gap-4">
                             <Button
                               variant="outline"
-                              className="flex-1 border-red-600 text-red-400 hover:bg-red-900/20"
+                              className="flex-1 border-red-500 dark:border-red-600 text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
                               onClick={() => handleDealAction(deal._id, 'reject')}
                             >
                               Reject
                             </Button>
                             <Button
-                              className="flex-1 bg-green-600 hover:bg-green-700"
+                              className="flex-1 bg-green-500 dark:bg-green-600 hover:bg-green-600 dark:hover:bg-green-700 text-white"
                               onClick={() => handleDealAction(deal._id, 'accept')}
                             >
                               Accept
@@ -540,12 +540,12 @@ const InfluencerDealsPage = () => {
                       </>
                     )}
                     {deal.status === 'counter-offered' && (
-                      <div className="w-full p-4 bg-zinc-800 rounded-md text-center text-zinc-300 border border-zinc-700">
+                      <div className="w-full p-4 bg-gray-50 dark:bg-zinc-800 rounded-md text-center text-gray-600 dark:text-zinc-300 border border-gray-200 dark:border-zinc-700">
                         Waiting for brand's response to your counter offer
                       </div>
                     )}
                     {deal.status === 'accepted' && (
-                      <div className="w-full p-4 bg-zinc-800 rounded-md text-center text-zinc-300 border border-zinc-700">
+                      <div className="w-full p-4 bg-gray-50 dark:bg-zinc-800 rounded-md text-center text-gray-600 dark:text-zinc-300 border border-gray-200 dark:border-zinc-700">
                         Waiting for brand payment
                       </div>
                     )}
@@ -554,13 +554,13 @@ const InfluencerDealsPage = () => {
               ))
             ) : (
               <div className="col-span-full flex justify-center items-center py-16">
-                <div className="bg-zinc-900 border border-zinc-800 rounded-xl px-8 py-10 max-w-md shadow-lg">
+                <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-xl px-8 py-10 max-w-md shadow-lg">
                   <div className="flex flex-col items-center text-center">
-                    <div className="bg-blue-900/30 p-3 rounded-full mb-4 border border-blue-700/50">
-                      <Building2 className="h-6 w-6 text-blue-400" />
+                    <div className="bg-blue-100/80 dark:bg-blue-900/30 p-3 rounded-full mb-4 border border-blue-300/50 dark:border-blue-700/50">
+                      <Building2 className="h-6 w-6 text-blue-500 dark:text-blue-400" />
                     </div>
-                    <h3 className="text-lg font-medium text-white mb-2">No requested deals</h3>
-                    <p className="text-zinc-400">Brand deal requests will appear here for your review.</p>
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No requested deals</h3>
+                    <p className="text-gray-500 dark:text-zinc-400">Brand deal requests will appear here for your review.</p>
                   </div>
                 </div>
               </div>
@@ -572,12 +572,12 @@ const InfluencerDealsPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredDeals.length > 0 ? (
               filteredDeals.map((deal) => (
-                <Card key={deal._id} className="hover:shadow-lg transition-shadow">
-                  <CardHeader>
+                <Card key={deal._id} className="hover:shadow-lg transition-shadow bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-800">
+                  <CardHeader className="border-b border-gray-200 dark:border-zinc-800">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         {/* Brand Profile Picture */}
-                        <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-100">
+                        <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-100 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700">
                           {deal.brandProfilePic ? (
                             <Image
                               src={deal.brandProfilePic}
@@ -587,12 +587,12 @@ const InfluencerDealsPage = () => {
                               height={40}
                             />
                           ) : (
-                            <Building2 className="w-full h-full p-2 text-gray-400" />
+                            <Building2 className="w-full h-full p-2 text-gray-400 dark:text-zinc-500" />
                           )}
                         </div>
                         {/* Brand Name and Deal Title */}
                         <div>
-                          <CardTitle className="text-lg">{deal.brandName}</CardTitle>
+                          <CardTitle className="text-lg text-gray-900 dark:text-white">{deal.brandName}</CardTitle>
                         </div>
                       </div>
                       <Badge className={getStatusColor(deal.status)}>
@@ -604,29 +604,29 @@ const InfluencerDealsPage = () => {
                   <CardContent>
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-500">Total Amount</span>
-                        <span className="font-semibold flex items-center">
+                        <span className="text-sm text-gray-500 dark:text-zinc-400">Total Amount</span>
+                        <span className="font-semibold flex items-center text-gray-900 dark:text-white">
                           <IndianRupee className="h-4 w-4 mr-1" />
                           {formatAmount(deal.totalAmount)}
                         </span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-500">Created</span>
-                        <span className="text-sm">
+                        <span className="text-sm text-gray-500 dark:text-zinc-400">Created</span>
+                        <span className="text-sm text-gray-900 dark:text-white">
                           {formatDate(deal.createdAt)}
                         </span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-500">Payment Status</span>
+                        <span className="text-sm text-gray-500 dark:text-zinc-400">Payment Status</span>
                         <Badge className={getPaymentStatusColor(deal.paymentStatus)}>
                           {deal.paymentStatus?.charAt(0).toUpperCase() + deal.paymentStatus?.slice(1) || 'Unknown'}
                         </Badge>
                       </div>
                     </div>
                   </CardContent>
-                  <CardFooter className="flex justify-between">
+                  <CardFooter className="flex justify-between border-t border-gray-200 dark:border-zinc-800 pt-4">
                     {deal.status === 'accepted' && (
-                      <div className="w-full p-4 bg-gray-50 rounded-md text-center text-gray-600">
+                      <div className="w-full p-4 bg-gray-50 dark:bg-zinc-800 rounded-md text-center text-gray-600 dark:text-zinc-300 border border-gray-200 dark:border-zinc-700">
                         Waiting for brand payment
                       </div>
                     )}
@@ -635,13 +635,13 @@ const InfluencerDealsPage = () => {
               ))
             ) : (
               <div className="col-span-full flex justify-center items-center py-16">
-                <div className="bg-gray-50 border border-gray-200 rounded-xl px-8 py-10 max-w-md shadow-sm">
+                <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-xl px-8 py-10 max-w-md shadow-sm">
                   <div className="flex flex-col items-center text-center">
-                    <div className="bg-yellow-100 p-3 rounded-full mb-4">
-                      <AlertCircle className="h-6 w-6 text-yellow-600" />
+                    <div className="bg-yellow-100/80 dark:bg-yellow-900/30 p-3 rounded-full mb-4 border border-yellow-300/50 dark:border-yellow-700/50">
+                      <AlertCircle className="h-6 w-6 text-yellow-600 dark:text-yellow-500" />
                     </div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No pending deals</h3>
-                    <p className="text-gray-500">Deals you've accepted that are awaiting brand confirmation will appear here.</p>
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No pending deals</h3>
+                    <p className="text-gray-500 dark:text-zinc-400">Deals you've accepted that are awaiting brand confirmation will appear here.</p>
                   </div>
                 </div>
               </div>
@@ -748,9 +748,9 @@ const InfluencerDealsPage = () => {
                             <h4 className="font-medium mb-2">Submit Content</h4>
                             <div className="space-y-3">
                               <div>
-                                <label className="block text-sm font-medium mb-1">Content Type</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Content Type</label>
                                 <select
-                                  className="w-full p-2 border rounded-md"
+                                  className="w-full p-2 border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white rounded-md"
                                   value={contentFormData.contentType}
                                   onChange={(e) => setContentFormData({
                                     ...contentFormData,
@@ -764,10 +764,10 @@ const InfluencerDealsPage = () => {
                                 </select>
                               </div>
                               <div>
-                                <label className="block text-sm font-medium mb-1">Content URL</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Content URL</label>
                                 <input
                                   type="text"
-                                  className="w-full p-2 border rounded-md"
+                                  className="w-full p-2 border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white rounded-md"
                                   placeholder="Paste Instagram link here"
                                   value={contentFormData.contentUrl}
                                   onChange={(e) => setContentFormData({
@@ -777,7 +777,7 @@ const InfluencerDealsPage = () => {
                                 />
                               </div>
                               <Button
-                                className="w-full bg-blue-600 hover:bg-blue-700"
+                                className="w-full bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white"
                                 disabled={submittingContent || !contentFormData.contentUrl.trim()}
                                 onClick={() => handleContentSubmission(deal._id)}
                               >
@@ -867,13 +867,13 @@ const InfluencerDealsPage = () => {
               })
             ) : (
               <div className="col-span-full flex justify-center items-center py-16">
-                <div className="bg-gray-50 border border-gray-200 rounded-xl px-8 py-10 max-w-md shadow-sm">
+                <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-xl px-8 py-10 max-w-md shadow-sm">
                   <div className="flex flex-col items-center text-center">
-                    <div className="bg-green-100 p-3 rounded-full mb-4">
-                      <Loader2 className="h-6 w-6 text-green-600" />
+                    <div className="bg-green-100/80 dark:bg-green-900/30 p-3 rounded-full mb-4 border border-green-300/50 dark:border-green-700/50">
+                      <Loader2 className="h-6 w-6 text-green-600 dark:text-green-500" />
                     </div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No ongoing deals</h3>
-                    <p className="text-gray-500">Deals that are currently in progress will appear here.</p>
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No ongoing deals</h3>
+                    <p className="text-gray-500 dark:text-zinc-400">Deals that are currently in progress will appear here.</p>
                   </div>
                 </div>
               </div>
@@ -885,12 +885,12 @@ const InfluencerDealsPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredDeals.length > 0 ? (
               filteredDeals.map((deal) => (
-                <Card key={deal._id} className="hover:shadow-lg transition-shadow">
-                  <CardHeader>
+                <Card key={deal._id} className="hover:shadow-lg transition-shadow bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-800">
+                  <CardHeader className="border-b border-gray-200 dark:border-zinc-800">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         {/* Brand Profile Picture */}
-                        <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-100">
+                        <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-100 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700">
                           {deal.brandProfilePic ? (
                             <Image
                               src={deal.brandProfilePic}
@@ -900,12 +900,12 @@ const InfluencerDealsPage = () => {
                               height={40}
                             />
                           ) : (
-                            <Building2 className="w-full h-full p-2 text-gray-400" />
+                            <Building2 className="w-full h-full p-2 text-gray-400 dark:text-zinc-500" />
                           )}
                         </div>
                         {/* Brand Name and Deal Title */}
                         <div>
-                          <CardTitle className="text-lg">{deal.brandName}</CardTitle>
+                          <CardTitle className="text-lg text-gray-900 dark:text-white">{deal.brandName}</CardTitle>
                         </div>
                       </div>
                       <Badge className={getStatusColor(deal.status)}>
@@ -917,30 +917,30 @@ const InfluencerDealsPage = () => {
                   <CardContent>
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-500">Total Amount</span>
-                        <span className="font-semibold flex items-center">
+                        <span className="text-sm text-gray-500 dark:text-zinc-400">Total Amount</span>
+                        <span className="font-semibold flex items-center text-gray-900 dark:text-white">
                           <IndianRupee className="h-4 w-4 mr-1" />
                           {formatAmount(deal.totalAmount)}
                         </span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-500">Created</span>
-                        <span className="text-sm">
+                        <span className="text-sm text-gray-500 dark:text-zinc-400">Created</span>
+                        <span className="text-sm text-gray-900 dark:text-white">
                           {formatDate(deal.createdAt)}
                         </span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-500">Payment Status</span>
+                        <span className="text-sm text-gray-500 dark:text-zinc-400">Payment Status</span>
                         <Badge className={getPaymentStatusColor(deal.paymentStatus)}>
                           {deal.paymentStatus?.charAt(0).toUpperCase() + deal.paymentStatus?.slice(1) || 'Unknown'}
                         </Badge>
                       </div>
                     </div>
                   </CardContent>
-                  <CardFooter>
+                  <CardFooter className="border-t border-gray-200 dark:border-zinc-800 pt-4">
                     <Button
                       variant="outline"
-                      className="w-full"
+                      className="w-full bg-white dark:bg-zinc-800 border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-700"
                       onClick={() => router.push(`/influencer/deals/${deal._id}`)}
                     >
                       View Details
@@ -950,13 +950,13 @@ const InfluencerDealsPage = () => {
               ))
             ) : (
               <div className="col-span-full flex justify-center items-center py-16">
-                <div className="bg-gray-50 border border-gray-200 rounded-xl px-8 py-10 max-w-md shadow-sm">
+                <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-xl px-8 py-10 max-w-md shadow-sm">
                   <div className="flex flex-col items-center text-center">
-                    <div className="bg-purple-100 p-3 rounded-full mb-4">
-                      <CheckCircle2 className="h-6 w-6 text-purple-600" />
+                    <div className="bg-purple-100/80 dark:bg-purple-900/30 p-3 rounded-full mb-4 border border-purple-300/50 dark:border-purple-700/50">
+                      <CheckCircle2 className="h-6 w-6 text-purple-600 dark:text-purple-500" />
                     </div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No completed deals</h3>
-                    <p className="text-gray-500">Your deal history will appear here once deals are completed or cancelled.</p>
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No completed deals</h3>
+                    <p className="text-gray-500 dark:text-zinc-400">Your deal history will appear here once deals are completed or cancelled.</p>
                   </div>
                 </div>
               </div>

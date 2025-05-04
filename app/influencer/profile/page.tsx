@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -33,7 +33,9 @@ import {
   MessageSquare,
   RefreshCw,
   Loader,
-  KeyRoundIcon
+  KeyRoundIcon,
+  Moon,
+  Sun
 } from 'lucide-react';
 import { useCurrentUser } from '@/hook/useCurrentUser';
 import { useInfluencerData, useInstagramData, useOnboardingData } from '@/hook/useInfluencerData';
@@ -48,12 +50,14 @@ import { useToast } from '@/components/ui/use-toast';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import InstagramDebugInfo from '@/components/instagram/InstagramDebugInfo';
 import { useLogout } from '@/hook/useLogout';
+import { useTheme } from 'next-themes';
 
 const ProfilePage = () => {
   const { toast } = useToast();
   const router = useRouter();
   const currentUser = useCurrentUser();
   const userId = currentUser?._id;
+  const { theme, setTheme } = useTheme();
 
   // Always call hooks at the top level unconditionally
   const logout = useLogout();
@@ -61,6 +65,11 @@ const ProfilePage = () => {
 
   // Add state for connection loading
   const [isConnecting, setIsConnecting] = useState(false);
+
+  // Log theme information when component mounts
+  useEffect(() => {
+    console.log('Theme from useTheme:', theme);
+  }, [theme]);
 
   // Define logout handler with useCallback at the top level with other hooks
   const handleLogout = useCallback(() => {
@@ -86,18 +95,18 @@ const ProfilePage = () => {
 
   // Add a clear loading state component
   const LoadingState = () => (
-    <div className="container py-8 h-screen bg-black">
+    <div className="container py-8 h-screen bg-white dark:bg-black">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="flex items-center gap-3">
-          <div className="h-9 bg-zinc-800 rounded-md w-32 animate-pulse"></div>
+          <div className="h-9 bg-gray-200 dark:bg-zinc-800 rounded-md w-32 animate-pulse"></div>
         </div>
       </div>
       <div className="mt-8 space-y-6">
-        <div className="h-10 bg-zinc-800 rounded-md w-full max-w-xs animate-pulse"></div>
-        <div className="h-40 bg-zinc-800 rounded-lg w-full animate-pulse"></div>
-        <div className="h-40 bg-zinc-800 rounded-lg w-full animate-pulse"></div>
-        <div className="h-40 bg-zinc-800 rounded-lg w-full animate-pulse"></div>
-        <div className="h-40 bg-zinc-800 rounded-lg w-full animate-pulse"></div>
+        <div className="h-10 bg-gray-200 dark:bg-zinc-800 rounded-md w-full max-w-xs animate-pulse"></div>
+        <div className="h-40 bg-gray-200 dark:bg-zinc-800 rounded-lg w-full animate-pulse"></div>
+        <div className="h-40 bg-gray-200 dark:bg-zinc-800 rounded-lg w-full animate-pulse"></div>
+        <div className="h-40 bg-gray-200 dark:bg-zinc-800 rounded-lg w-full animate-pulse"></div>
+        <div className="h-40 bg-gray-200 dark:bg-zinc-800 rounded-lg w-full animate-pulse"></div>
       </div>
     </div>
   );
@@ -257,12 +266,12 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="container py-16 bg-black min-h-screen overflow-x-hidden">
+    <div className="container py-16 bg-white dark:bg-black min-h-screen overflow-x-hidden">
       <div className="space-y-8">
         {/* Modern Header with Gradient Background */}
         <div className="relative overflow-hidden rounded-xl">
           {/* Background with animated gradient */}
-          <div className="absolute inset-0 bg-gradient-to-r from-violet-900/30 via-black to-fuchsia-900/30 animate-gradient-slow"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-violet-100/50 via-white to-fuchsia-100/50 dark:from-violet-900/30 dark:via-black dark:to-fuchsia-900/30 animate-gradient-slow"></div>
 
           {/* Subtle pattern overlay */}
           <div className="absolute inset-0 opacity-5 mix-blend-overlay">
@@ -275,8 +284,8 @@ const ProfilePage = () => {
           </div>
 
           {/* Floating orbs for visual interest */}
-          <div className="absolute -left-10 -top-10 w-40 h-40 rounded-full bg-violet-600/10 blur-3xl"></div>
-          <div className="absolute right-10 top-5 w-20 h-20 rounded-full bg-fuchsia-600/10 blur-2xl"></div>
+          <div className="absolute -left-10 -top-10 w-40 h-40 rounded-full bg-violet-400/10 dark:bg-violet-600/10 blur-3xl"></div>
+          <div className="absolute right-10 top-5 w-20 h-20 rounded-full bg-fuchsia-400/10 dark:bg-fuchsia-600/10 blur-2xl"></div>
 
           {/* Content with glass effect */}
           <div className="relative backdrop-blur-sm p-6 md:p-8 z-10">
@@ -284,12 +293,12 @@ const ProfilePage = () => {
               {/* Left side with title and description */}
               <div className="flex-1">
                 <div className="flex items-center space-x-3 mb-2">
-                  <div className="h-8 w-1 bg-gradient-to-b from-violet-500 to-fuchsia-500 rounded-full"></div>
-                  <h1 className="text-3xl md:text-4xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-fuchsia-100 to-white">
+                  <div className="h-8 w-1 bg-gradient-to-b from-violet-400 to-fuchsia-400 dark:from-violet-500 dark:to-fuchsia-500 rounded-full"></div>
+                  <h1 className="text-3xl md:text-4xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-gray-900 via-fuchsia-500 to-gray-900 dark:from-white dark:via-fuchsia-100 dark:to-white">
                     My Profile
                   </h1>
                 </div>
-                <p className="text-zinc-300 ml-4 pl-3 border-l border-zinc-700/50">
+                <p className="text-gray-600 dark:text-zinc-300 ml-4 pl-3 border-l border-gray-300/50 dark:border-zinc-700/50">
                   Manage your profile information and Instagram connection
                 </p>
               </div>
@@ -300,18 +309,18 @@ const ProfilePage = () => {
                   <DialogTrigger asChild>
                     <Button
                       variant="outline"
-                      className="bg-zinc-900/70 border-zinc-700/50 text-white hover:bg-zinc-800 hover:border-violet-500/50 py-4 px-5 text-base rounded-xl transition-all duration-300 backdrop-blur-sm"
+                      className="bg-gray-100/70 dark:bg-zinc-900/70 border-gray-300/50 dark:border-zinc-700/50 text-gray-700 dark:text-white hover:bg-gray-200 dark:hover:bg-zinc-800 hover:border-violet-400/50 dark:hover:border-violet-500/50 py-4 px-5 text-base rounded-xl transition-all duration-300 backdrop-blur-sm"
                     >
-                      <Settings className="h-5 w-5 mr-2 text-violet-400" />
+                      <Settings className="h-5 w-5 mr-2 text-violet-500 dark:text-violet-400" />
                       <span>Settings</span>
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="bg-black border-zinc-800 text-white max-w-md">
+                  <DialogContent className="bg-white dark:bg-black border-gray-200 dark:border-zinc-800 text-gray-900 dark:text-white max-w-md">
                     <DialogHeader>
                       <DialogTitle className="text-xl font-bold bg-gradient-to-r from-violet-400 to-fuchsia-500 bg-clip-text text-transparent">
                         Settings
                       </DialogTitle>
-                      <DialogDescription className="text-zinc-400">
+                      <DialogDescription className="text-gray-500 dark:text-zinc-400">
                         Manage your profile and account settings
                       </DialogDescription>
                     </DialogHeader>
@@ -321,7 +330,7 @@ const ProfilePage = () => {
                         <Button
                           variant="ghost"
                           onClick={() => setIsEditing(true)}
-                          className="flex justify-start items-center w-full text-white hover:bg-zinc-800 hover:text-white"
+                          className="flex justify-start items-center w-full text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-800 hover:text-gray-900 dark:hover:text-white"
                         >
                           <Edit className="h-5 w-5 mr-3" />
                           <span>Edit Profile</span>
@@ -331,7 +340,7 @@ const ProfilePage = () => {
                           <Button
                             variant="ghost"
                             onClick={handleEnableNotifications}
-                            className="flex justify-start items-center w-full text-white hover:bg-zinc-800 hover:text-white"
+                            className="flex justify-start items-center w-full text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-800 hover:text-gray-900 dark:hover:text-white"
                           >
                             <BellIcon className="h-5 w-5 mr-3" />
                             <span>Enable Push Notifications</span>
@@ -341,7 +350,7 @@ const ProfilePage = () => {
                         <Button
                           variant="ghost"
                           onClick={handleFaqsClick}
-                          className="flex justify-start items-center w-full text-white hover:bg-zinc-800 hover:text-white"
+                          className="flex justify-start items-center w-full text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-800 hover:text-gray-900 dark:hover:text-white"
                         >
                           <MessageSquare className="h-5 w-5 mr-3" />
                           <span>FAQs</span>
@@ -350,7 +359,7 @@ const ProfilePage = () => {
                         <Button
                           variant="ghost"
                           onClick={handleContactClick}
-                          className="flex justify-start items-center w-full text-white hover:bg-zinc-800 hover:text-white"
+                          className="flex justify-start items-center w-full text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-800 hover:text-gray-900 dark:hover:text-white"
                         >
                           <Mail className="h-5 w-5 mr-3" />
                           <span>Contact Support</span>
@@ -359,7 +368,7 @@ const ProfilePage = () => {
                         <Button
                           variant="ghost"
                           onClick={() => router.push('/password-reset')}
-                          className="flex justify-start items-center w-full text-white hover:bg-zinc-800 hover:text-white"
+                          className="flex justify-start items-center w-full text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-800 hover:text-gray-900 dark:hover:text-white"
                         >
                           <KeyRoundIcon className="h-5 w-5 mr-3" />
                           <span>Reset Password</span>
@@ -368,7 +377,7 @@ const ProfilePage = () => {
                         <Button
                           variant="ghost"
                           onClick={() => router.push('/legal/privacy-policy')}
-                          className="flex justify-start items-center w-full text-white hover:bg-zinc-800 hover:text-white"
+                          className="flex justify-start items-center w-full text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-800 hover:text-gray-900 dark:hover:text-white"
                         >
                           <LinkIcon className="h-5 w-5 mr-3" />
                           <span>Privacy Policy</span>
@@ -377,36 +386,59 @@ const ProfilePage = () => {
                         <Button
                           variant="ghost"
                           onClick={() => router.push('/legal/terms-of-service')}
-                          className="flex justify-start items-center w-full text-white hover:bg-zinc-800 hover:text-white"
+                          className="flex justify-start items-center w-full text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-800 hover:text-gray-900 dark:hover:text-white"
                         >
                           <User className="h-5 w-5 mr-3" />
                           <span>Terms of Service</span>
                         </Button>
+
+                        <Button
+                          variant="ghost"
+                          onClick={() => {
+                            console.log('Current theme:', theme);
+                            const newTheme = theme === 'dark' ? 'light' : 'dark';
+                            console.log('Setting theme to:', newTheme);
+                            setTheme(newTheme);
+                          }}
+                          className="flex justify-start items-center w-full text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-800 hover:text-gray-900 dark:hover:text-white"
+                        >
+                          {theme === 'dark' ? (
+                            <>
+                              <Sun className="h-5 w-5 mr-3 text-amber-500" />
+                              <span>Light Mode</span>
+                            </>
+                          ) : (
+                            <>
+                              <Moon className="h-5 w-5 mr-3 text-indigo-500" />
+                              <span>Dark Mode</span>
+                            </>
+                          )}
+                        </Button>
                       </div>
                     </div>
 
-                    <Separator className="bg-zinc-800 my-2" />
+                    <Separator className="bg-gray-200 dark:bg-zinc-800 my-2" />
 
                     <div className="grid grid-cols-1 gap-2 mt-2">
                       <Dialog>
                         <DialogTrigger asChild>
                           <Button
                             variant="ghost"
-                            className="flex justify-start items-center w-full text-white hover:bg-zinc-800 hover:text-white"
+                            className="flex justify-start items-center w-full text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-800 hover:text-gray-900 dark:hover:text-white"
                           >
                             <LogOut className="h-5 w-5 mr-3" />
                             <span>Log Out</span>
                           </Button>
                         </DialogTrigger>
-                        <DialogContent className="bg-zinc-900 border-zinc-800">
+                        <DialogContent className="bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-800">
                           <DialogHeader>
-                            <DialogTitle className="text-white">Log Out</DialogTitle>
-                            <DialogDescription className="text-zinc-400">
+                            <DialogTitle className="text-gray-900 dark:text-white">Log Out</DialogTitle>
+                            <DialogDescription className="text-gray-500 dark:text-zinc-400">
                               Are you sure you want to log out of your account?
                             </DialogDescription>
                           </DialogHeader>
                           <DialogFooter>
-                            <Button variant="outline" onClick={handleLogout} className="bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700 hover:border-zinc-600">
+                            <Button variant="outline" onClick={handleLogout} className="bg-white dark:bg-zinc-800 border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-700 hover:border-gray-400 dark:hover:border-zinc-600">
                               Yes, Log Out
                             </Button>
                           </DialogFooter>
@@ -417,16 +449,16 @@ const ProfilePage = () => {
                         <DialogTrigger asChild>
                           <Button
                             variant="ghost"
-                            className="flex justify-start items-center w-full text-red-500 hover:bg-red-900/20 hover:text-red-400"
+                            className="flex justify-start items-center w-full text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400"
                           >
                             <UserRoundX className="h-5 w-5 mr-3" />
                             <span>Delete Account</span>
                           </Button>
                         </DialogTrigger>
-                        <DialogContent className="bg-zinc-900 border-zinc-800">
+                        <DialogContent className="bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-800">
                           <DialogHeader>
-                            <DialogTitle className="text-white">Delete Account</DialogTitle>
-                            <DialogDescription className="text-zinc-400">
+                            <DialogTitle className="text-gray-900 dark:text-white">Delete Account</DialogTitle>
+                            <DialogDescription className="text-gray-500 dark:text-zinc-400">
                               Are you sure you want to delete your account? This action cannot be undone.
                             </DialogDescription>
                           </DialogHeader>
@@ -446,10 +478,10 @@ const ProfilePage = () => {
         </div>
 
         <Tabs defaultValue="profile">
-          <TabsList className="grid w-full md:w-auto grid-cols-3 bg-zinc-900 p-1 rounded-lg border border-zinc-800">
-            <TabsTrigger value="profile" className="text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-600 data-[state=active]:to-fuchsia-600 data-[state=active]:text-white data-[state=active]:shadow-md">Profile</TabsTrigger>
-            <TabsTrigger value="instagram" className="text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-600 data-[state=active]:to-fuchsia-600 data-[state=active]:text-white data-[state=active]:shadow-md">Instagram</TabsTrigger>
-            <TabsTrigger value="onboarding" className="text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-600 data-[state=active]:to-fuchsia-600 data-[state=active]:text-white data-[state=active]:shadow-md">Onboarding</TabsTrigger>
+          <TabsList className="grid w-full md:w-auto grid-cols-3 bg-gray-100 dark:bg-zinc-900 p-1 rounded-lg border border-gray-200 dark:border-zinc-800">
+            <TabsTrigger value="profile" className="text-gray-700 dark:text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-500 data-[state=active]:to-fuchsia-500 dark:data-[state=active]:from-violet-600 dark:data-[state=active]:to-fuchsia-600 data-[state=active]:text-white data-[state=active]:shadow-md">Profile</TabsTrigger>
+            <TabsTrigger value="instagram" className="text-gray-700 dark:text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-500 data-[state=active]:to-fuchsia-500 dark:data-[state=active]:from-violet-600 dark:data-[state=active]:to-fuchsia-600 data-[state=active]:text-white data-[state=active]:shadow-md">Instagram</TabsTrigger>
+            <TabsTrigger value="onboarding" className="text-gray-700 dark:text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-500 data-[state=active]:to-fuchsia-500 dark:data-[state=active]:from-violet-600 dark:data-[state=active]:to-fuchsia-600 data-[state=active]:text-white data-[state=active]:shadow-md">Onboarding</TabsTrigger>
           </TabsList>
 
           <TabsContent value="profile" className="space-y-0 pt-8 pb-16">
@@ -460,18 +492,18 @@ const ProfilePage = () => {
                 <div className="flex flex-col items-center">
                   {/* Profile Image with Subtle Glow */}
                   <div className="relative mb-6 group">
-                    <div className="absolute inset-0 bg-gradient-to-r from-violet-600 to-fuchsia-600 rounded-full opacity-70 blur-md group-hover:opacity-90 transition-opacity duration-300"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-violet-500 to-fuchsia-500 dark:from-violet-600 dark:to-fuchsia-600 rounded-full opacity-70 blur-md group-hover:opacity-90 transition-opacity duration-300"></div>
                     {instagramData?.isConnected && instagramData.profile?.profile_picture_url ? (
                       <Image
                         src={instagramData.profile.profile_picture_url}
                         alt={profileData?.name || 'Profile'}
                         width={150}
                         height={150}
-                        className="relative rounded-full object-cover border-2 border-black/50 shadow-lg z-10 group-hover:scale-[1.02] transition-transform duration-300"
+                        className="relative rounded-full object-cover border-2 border-white/50 dark:border-black/50 shadow-lg z-10 group-hover:scale-[1.02] transition-transform duration-300"
                       />
                     ) : (
-                      <div className="relative w-[150px] h-[150px] bg-zinc-900 rounded-full flex items-center justify-center border-2 border-zinc-800 shadow-lg z-10 group-hover:scale-[1.02] transition-transform duration-300">
-                        <User className="h-16 w-16 text-zinc-600" />
+                      <div className="relative w-[150px] h-[150px] bg-gray-100 dark:bg-zinc-900 rounded-full flex items-center justify-center border-2 border-gray-200 dark:border-zinc-800 shadow-lg z-10 group-hover:scale-[1.02] transition-transform duration-300">
+                        <User className="h-16 w-16 text-gray-400 dark:text-zinc-600" />
                       </div>
                     )}
                   </div>
@@ -483,15 +515,15 @@ const ProfilePage = () => {
                         {profileData?.name || 'Your Name'}
                       </span>
                     </h1>
-                    <p className="text-zinc-400 max-w-md mx-auto text-sm md:text-base">
+                    <p className="text-gray-500 dark:text-zinc-400 max-w-md mx-auto text-sm md:text-base">
                       {profileData?.email}
                     </p>
 
                     {/* Instagram Connection Badge - Subtle Modern Design */}
                     {instagramData?.isConnected && instagramData.profile && (
-                      <div className="mt-4 inline-flex items-center px-3 py-1.5 bg-zinc-900/80 backdrop-blur-sm border border-violet-500/20 rounded-full hover:border-violet-500/40 transition-colors duration-300">
-                        <Instagram className="h-3.5 w-3.5 text-fuchsia-400 mr-2" />
-                        <span className="text-xs font-medium text-zinc-300">@{instagramData.profile.username}</span>
+                      <div className="mt-4 inline-flex items-center px-3 py-1.5 bg-gray-100/80 dark:bg-zinc-900/80 backdrop-blur-sm border border-violet-300/20 dark:border-violet-500/20 rounded-full hover:border-violet-300/40 dark:hover:border-violet-500/40 transition-colors duration-300">
+                        <Instagram className="h-3.5 w-3.5 text-fuchsia-500 dark:text-fuchsia-400 mr-2" />
+                        <span className="text-xs font-medium text-gray-700 dark:text-zinc-300">@{instagramData.profile.username}</span>
                       </div>
                     )}
                   </div>
@@ -503,71 +535,71 @@ const ProfilePage = () => {
                 {/* Performance Stats - Modern Card Layout */}
                 <section className="relative" id="performance-stats">
                   <div className="mb-8">
-                    <h2 className="text-xl font-bold text-white inline-flex items-center">
-                      <BarChart3 className="h-5 w-5 mr-2 text-violet-400" />
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white inline-flex items-center">
+                      <BarChart3 className="h-5 w-5 mr-2 text-violet-500 dark:text-violet-400" />
                       Performance Stats
                     </h2>
-                    <div className="h-px w-full bg-gradient-to-r from-violet-500/50 to-fuchsia-500/50 mt-2"></div>
+                    <div className="h-px w-full bg-gradient-to-r from-violet-400/50 to-fuchsia-400/50 dark:from-violet-500/50 dark:to-fuchsia-500/50 mt-2"></div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     {/* Rating Card */}
-                    <div className="bg-zinc-900/70 backdrop-blur-sm rounded-xl overflow-hidden group hover:bg-zinc-900/90 transition-colors duration-300">
-                      <div className="h-1 bg-gradient-to-r from-violet-500 to-fuchsia-500"></div>
+                    <div className="bg-white/70 dark:bg-zinc-900/70 backdrop-blur-sm rounded-xl overflow-hidden group hover:bg-white/90 dark:hover:bg-zinc-900/90 transition-colors duration-300 border border-gray-200/50 dark:border-zinc-800/50 shadow-sm">
+                      <div className="h-1 bg-gradient-to-r from-violet-400 to-fuchsia-400 dark:from-violet-500 dark:to-fuchsia-500"></div>
                       <div className="p-6">
                         <div className="flex items-center justify-between mb-3">
-                          <h3 className="text-sm font-medium text-zinc-400 uppercase tracking-wider">Rating</h3>
-                          <Star className="h-4 w-4 text-amber-400" />
+                          <h3 className="text-sm font-medium text-gray-500 dark:text-zinc-400 uppercase tracking-wider">Rating</h3>
+                          <Star className="h-4 w-4 text-amber-500 dark:text-amber-400" />
                         </div>
-                        <div className="text-3xl font-bold text-white group-hover:scale-105 transition-transform duration-300">
+                        <div className="text-3xl font-bold text-gray-900 dark:text-white group-hover:scale-105 transition-transform duration-300">
                           {profileData?.rating || 0}
                         </div>
-                        <div className="mt-2 text-xs text-zinc-500">Based on client reviews</div>
+                        <div className="mt-2 text-xs text-gray-500 dark:text-zinc-500">Based on client reviews</div>
                       </div>
                     </div>
 
                     {/* Completed Deals Card */}
-                    <div className="bg-zinc-900/70 backdrop-blur-sm rounded-xl overflow-hidden group hover:bg-zinc-900/90 transition-colors duration-300">
-                      <div className="h-1 bg-gradient-to-r from-fuchsia-500 to-violet-500"></div>
+                    <div className="bg-white/70 dark:bg-zinc-900/70 backdrop-blur-sm rounded-xl overflow-hidden group hover:bg-white/90 dark:hover:bg-zinc-900/90 transition-colors duration-300 border border-gray-200/50 dark:border-zinc-800/50 shadow-sm">
+                      <div className="h-1 bg-gradient-to-r from-fuchsia-400 to-violet-400 dark:from-fuchsia-500 dark:to-violet-500"></div>
                       <div className="p-6">
                         <div className="flex items-center justify-between mb-3">
-                          <h3 className="text-sm font-medium text-zinc-400 uppercase tracking-wider">Completed Deals</h3>
-                          <Briefcase className="h-4 w-4 text-violet-400" />
+                          <h3 className="text-sm font-medium text-gray-500 dark:text-zinc-400 uppercase tracking-wider">Completed Deals</h3>
+                          <Briefcase className="h-4 w-4 text-violet-500 dark:text-violet-400" />
                         </div>
-                        <div className="text-3xl font-bold text-white group-hover:scale-105 transition-transform duration-300">
+                        <div className="text-3xl font-bold text-gray-900 dark:text-white group-hover:scale-105 transition-transform duration-300">
                           {profileData?.completedDeals || 0}
                         </div>
-                        <div className="mt-2 text-xs text-zinc-500">Total successful collaborations</div>
+                        <div className="mt-2 text-xs text-gray-500 dark:text-zinc-500">Total successful collaborations</div>
                       </div>
                     </div>
 
                     {/* Earnings Card (Placeholder) */}
-                    <div className="bg-zinc-900/70 backdrop-blur-sm rounded-xl overflow-hidden group hover:bg-zinc-900/90 transition-colors duration-300">
-                      <div className="h-1 bg-gradient-to-r from-violet-500 to-fuchsia-500"></div>
+                    <div className="bg-white/70 dark:bg-zinc-900/70 backdrop-blur-sm rounded-xl overflow-hidden group hover:bg-white/90 dark:hover:bg-zinc-900/90 transition-colors duration-300 border border-gray-200/50 dark:border-zinc-800/50 shadow-sm">
+                      <div className="h-1 bg-gradient-to-r from-violet-400 to-fuchsia-400 dark:from-violet-500 dark:to-fuchsia-500"></div>
                       <div className="p-6">
                         <div className="flex items-center justify-between mb-3">
-                          <h3 className="text-sm font-medium text-zinc-400 uppercase tracking-wider">Earnings</h3>
-                          <BadgeIndianRupee className="h-4 w-4 text-green-400" />
+                          <h3 className="text-sm font-medium text-gray-500 dark:text-zinc-400 uppercase tracking-wider">Earnings</h3>
+                          <BadgeIndianRupee className="h-4 w-4 text-green-500 dark:text-green-400" />
                         </div>
-                        <div className="text-3xl font-bold text-white group-hover:scale-105 transition-transform duration-300">
+                        <div className="text-3xl font-bold text-gray-900 dark:text-white group-hover:scale-105 transition-transform duration-300">
                           ₹0
                         </div>
-                        <div className="mt-2 text-xs text-zinc-500">Total earnings to date</div>
+                        <div className="mt-2 text-xs text-gray-500 dark:text-zinc-500">Total earnings to date</div>
                       </div>
                     </div>
 
                     {/* Account Age Card */}
-                    <div className="bg-zinc-900/70 backdrop-blur-sm rounded-xl overflow-hidden group hover:bg-zinc-900/90 transition-colors duration-300">
-                      <div className="h-1 bg-gradient-to-r from-fuchsia-500 to-violet-500"></div>
+                    <div className="bg-white/70 dark:bg-zinc-900/70 backdrop-blur-sm rounded-xl overflow-hidden group hover:bg-white/90 dark:hover:bg-zinc-900/90 transition-colors duration-300 border border-gray-200/50 dark:border-zinc-800/50 shadow-sm">
+                      <div className="h-1 bg-gradient-to-r from-fuchsia-400 to-violet-400 dark:from-fuchsia-500 dark:to-violet-500"></div>
                       <div className="p-6">
                         <div className="flex items-center justify-between mb-3">
-                          <h3 className="text-sm font-medium text-zinc-400 uppercase tracking-wider">Account Age</h3>
-                          <Calendar className="h-4 w-4 text-blue-400" />
+                          <h3 className="text-sm font-medium text-gray-500 dark:text-zinc-400 uppercase tracking-wider">Account Age</h3>
+                          <Calendar className="h-4 w-4 text-blue-500 dark:text-blue-400" />
                         </div>
-                        <div className="text-3xl font-bold text-white group-hover:scale-105 transition-transform duration-300">
+                        <div className="text-3xl font-bold text-gray-900 dark:text-white group-hover:scale-105 transition-transform duration-300">
                           0 days
                         </div>
-                        <div className="mt-2 text-xs text-zinc-500">Member since N/A</div>
+                        <div className="mt-2 text-xs text-gray-500 dark:text-zinc-500">Member since N/A</div>
                       </div>
                     </div>
                   </div>
