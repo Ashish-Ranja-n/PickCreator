@@ -90,7 +90,7 @@ export default function RootLayout({
         className={`${kanit.variable} ${RubikMonoOne.variable} ${cambay.variable} h-screen antialiased m-0 p-0 `}
       >
         <Providers>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
             <ServiceWorkerRegistration />
             <SessionRefresher />
             {children}
