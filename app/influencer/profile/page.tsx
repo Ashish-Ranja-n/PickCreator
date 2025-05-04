@@ -11,8 +11,6 @@ import {
   Edit,
   LogOut,
   UserRoundX,
-  Save,
-  X,
   Star,
   LinkIcon,
   Play,
