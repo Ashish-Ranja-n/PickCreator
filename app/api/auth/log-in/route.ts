@@ -1,5 +1,6 @@
 import {connect} from "@/lib/mongoose";
 import User from "@/models/user";
+import { Influencer } from "@/models/influencer";
 import bcryptjs from "bcryptjs";
 import { NextResponse } from "next/server";
 import { SignJWT } from "jose";
@@ -20,23 +21,39 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "Invalid Password" }, { status: 490 });
         }
 
+        // For Influencers, get the Instagram connection status from the Influencer model
+        let instagramConnected = false;
+        let onboardingCompleted = false;
+
+        if (user.role === 'Influencer') {
+            // Query the Influencer model to get the correct Instagram connection status
+            const influencer = await Influencer.findById(user._id);
+            if (influencer) {
+                instagramConnected = influencer.instagramConnected === true;
+                onboardingCompleted = influencer.onboardingCompleted === true;
+                console.log(`Login: Found influencer record, Instagram connected: ${instagramConnected}`);
+            } else {
+                console.log("Login: No influencer record found for this user");
+            }
+        }
+
         // Create token data with both id and _id to ensure compatibility
         const tokenData = {
             id: user._id, // Add id field for compatibility
             _id: user._id,
             email: user.email,
             role: user.role,
-            // Add role-specific fields for Influencers
+            // Add role-specific fields for Influencers with correct values from Influencer model
             ...(user.role === 'Influencer' ? {
-                instagramConnected: user.instagramConnected || false,
-                onboardingCompleted: user.onboardingCompleted || false
+                instagramConnected,
+                onboardingCompleted
             } : {})
         }
 
         // Sign token using jose
         const token = await new SignJWT(tokenData)
             .setProtectedHeader({ alg: 'HS256' })
-            .setExpirationTime('1d')
+            .setExpirationTime('7d')
             .sign(new TextEncoder().encode(process.env.JWT_SECRET!));
 
         const response = NextResponse.json({
@@ -47,7 +64,7 @@ export async function POST(request: Request) {
         response.cookies.set("token", token, {
             httpOnly: true,
             secure: true,
-            maxAge: 24 * 60 * 60, // 1 day in seconds
+            maxAge: 7 * 24 * 60 * 60, // 7 day in seconds
         });
 
         return response;
