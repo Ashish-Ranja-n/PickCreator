@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import axios from 'axios';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { format } from 'date-fns';
@@ -92,9 +92,24 @@ interface ContentSubmissionFormData {
   contentUrl: string;
 }
 
+// Client component that handles the search params
+const TabHandler = ({
+  setActiveTab
+}: {
+  setActiveTab: (tab: string) => void
+}) => {
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const tab = searchParams?.get('tab') || 'requested';
+    setActiveTab(tab);
+  }, [searchParams, setActiveTab]);
+
+  return null; // This component doesn't render anything
+};
+
 const InfluencerDealsPage = () => {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const user = useCurrentUser();
   const { toast } = useToast();
   const [deals, setDeals] = useState<Deal[]>([]);
@@ -106,11 +121,6 @@ const InfluencerDealsPage = () => {
     contentUrl: ''
   });
   const [submittingContent, setSubmittingContent] = useState(false);
-
-  useEffect(() => {
-    const tab = searchParams?.get('tab') || 'requested';
-    setActiveTab(tab);
-  }, [searchParams]);
 
   useEffect(() => {
     fetchDeals();
@@ -310,6 +320,11 @@ const InfluencerDealsPage = () => {
 
   return (
     <div className="container mx-auto px-4 py-16 min-h-screen overflow-y-auto bg-white dark:bg-black text-gray-900 dark:text-white">
+      {/* Wrap the TabHandler in a Suspense boundary */}
+      <Suspense fallback={null}>
+        <TabHandler setActiveTab={setActiveTab} />
+      </Suspense>
+
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold bg-gradient-to-r from-fuchsia-400 to-violet-400 bg-clip-text text-transparent">My Deals</h1>
         <Button

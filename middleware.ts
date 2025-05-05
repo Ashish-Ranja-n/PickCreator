@@ -64,7 +64,7 @@ export async function middleware(request: NextRequest) {
                     return NextResponse.redirect(`${baseUrl}/brand`);
                 }
                 if(role === 'Influencer') {
-                    //auth guard will handle the redirect to connect-instagram page
+                    // Middleware will handle the redirect to connect-instagram page if needed
                     return NextResponse.redirect(`${baseUrl}/influencer`);
                 }
                 if(role === 'Admin') {
@@ -136,15 +136,27 @@ export async function middleware(request: NextRequest) {
                 return NextResponse.redirect(`${baseUrl}/brand`);
             }
 
+            // Check Instagram connection for influencers
+            // We can now do this directly from the token without database queries
+            if(path.startsWith('/influencer') && role === 'Influencer') {
+                // Skip this check for the onboarding paths
+                if(!path.includes('/onboarding') && !path.includes('/connect-instagram')) {
+                    // Check if Instagram is connected using the token data
+                    const instagramConnected = payload?.instagramConnected === true;
+
+                    if(!instagramConnected) {
+                        console.log("Middleware: Instagram not connected, redirecting to connect-instagram");
+                        return NextResponse.redirect(`${baseUrl}/connect-instagram`);
+                    }
+                }
+            }
+
             if(path.startsWith('/admin') && role !== 'Admin') {
                 if(role === 'Brand') {
                     return NextResponse.redirect(`${baseUrl}/brand`);
                 }
                 return NextResponse.redirect(`${baseUrl}/influencer`);
             }
-
-            // Instagram connection check will be handled by the page component
-            // We can't do database checks in middleware (Edge runtime)
 
             return NextResponse.next();
         } catch (error: any) {

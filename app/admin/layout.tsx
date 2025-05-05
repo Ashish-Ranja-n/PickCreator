@@ -23,7 +23,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = React.memo((props) => {
       {isMobile && !hideNavbar && <Navbar />}
       <div className="bg-background">
         {!hideNavbar && <AdminDesktopNav />}
-        <div className="h-full">{props.children}</div>
+        <div className={`${isMobile && !hideNavbar ? 'pt-16' : ''} h-screen`}>{props.children}</div>
       </div>
       {!hideNavbar && <AdminMobileNav />}
     </AuthGuard>

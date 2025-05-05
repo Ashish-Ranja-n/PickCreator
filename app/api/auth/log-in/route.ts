@@ -19,15 +19,20 @@ export async function POST(request: Request) {
         if (!validPassword) {
             return NextResponse.json({ error: "Invalid Password" }, { status: 490 });
         }
-        
+
         // Create token data with both id and _id to ensure compatibility
         const tokenData = {
             id: user._id, // Add id field for compatibility
             _id: user._id,
             email: user.email,
             role: user.role,
+            // Add role-specific fields for Influencers
+            ...(user.role === 'Influencer' ? {
+                instagramConnected: user.instagramConnected || false,
+                onboardingCompleted: user.onboardingCompleted || false
+            } : {})
         }
-        
+
         // Sign token using jose
         const token = await new SignJWT(tokenData)
             .setProtectedHeader({ alg: 'HS256' })
@@ -50,5 +55,5 @@ export async function POST(request: Request) {
     } catch (error: any) {
         console.log(error);
         return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
-    }   
+    }
 }

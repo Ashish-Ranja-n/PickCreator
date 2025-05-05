@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,13 +15,26 @@ enum PaymentStatus {
   ERROR = 'error'
 }
 
-export default function PaymentCallbackPage() {
-  const router = useRouter();
+// Client component that handles the search params
+const PaymentParamsHandler = ({
+  setStatus,
+  setMessage,
+  setDealId,
+  setMerchantOrderId,
+  checkPaymentStatus,
+  verifyPaymentByTransactionId,
+  verifyPaymentByDealId
+}: {
+  setStatus: (status: PaymentStatus) => void;
+  setMessage: (message: string) => void;
+  setDealId: (dealId: string | null) => void;
+  setMerchantOrderId: (merchantOrderId: string | null) => void;
+  checkPaymentStatus: (orderId: string) => void;
+  verifyPaymentByTransactionId: (transactionId: string, dealId: string | null) => void;
+  verifyPaymentByDealId: (dealId: string) => void;
+}) => {
   const searchParams = useSearchParams();
-  const [status, setStatus] = useState<PaymentStatus>(PaymentStatus.LOADING);
-  const [message, setMessage] = useState<string>('Verifying payment status...');
-  const [dealId, setDealId] = useState<string | null>(null);
-  const [merchantOrderId, setMerchantOrderId] = useState<string | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const dealIdParam = searchParams?.get('dealId');
@@ -60,8 +73,17 @@ export default function PaymentCallbackPage() {
       setStatus(PaymentStatus.ERROR);
       setMessage('Missing payment information. Please contact support.');
     }
-  // Define the functions outside useEffect to avoid dependency issues
-  }, [searchParams, router]);
+  }, [searchParams, router, setStatus, setMessage, setDealId, setMerchantOrderId, checkPaymentStatus, verifyPaymentByTransactionId, verifyPaymentByDealId]);
+
+  return null; // This component doesn't render anything
+};
+
+export default function PaymentCallbackPage() {
+  const router = useRouter();
+  const [status, setStatus] = useState<PaymentStatus>(PaymentStatus.LOADING);
+  const [message, setMessage] = useState<string>('Verifying payment status...');
+  const [dealId, setDealId] = useState<string | null>(null);
+  const [merchantOrderId, setMerchantOrderId] = useState<string | null>(null);
 
   // Check payment status using merchant order ID (primary method)
   const checkPaymentStatus = async (orderId: string) => {
@@ -203,6 +225,19 @@ export default function PaymentCallbackPage() {
 
   return (
     <div className="container mx-auto px-4 py-16 flex items-center justify-center min-h-[calc(100vh-4rem)]">
+      {/* Wrap the PaymentParamsHandler in a Suspense boundary */}
+      <Suspense fallback={null}>
+        <PaymentParamsHandler
+          setStatus={setStatus}
+          setMessage={setMessage}
+          setDealId={setDealId}
+          setMerchantOrderId={setMerchantOrderId}
+          checkPaymentStatus={checkPaymentStatus}
+          verifyPaymentByTransactionId={verifyPaymentByTransactionId}
+          verifyPaymentByDealId={verifyPaymentByDealId}
+        />
+      </Suspense>
+
       <Card className="w-full max-w-md shadow-lg overflow-hidden">
         {/* Card header with background color based on status */}
         <CardHeader

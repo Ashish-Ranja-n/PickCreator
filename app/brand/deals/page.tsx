@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import axios from 'axios';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { format } from 'date-fns';
@@ -96,9 +96,27 @@ interface DealProgress {
   paymentReleased: boolean;
 }
 
+// Client component that handles the tab functionality with useSearchParams
+
+const TabHandler = ({
+  // activeTab is not used but included in the type definition for clarity
+  setActiveTab
+}: {
+  activeTab: string,
+  setActiveTab: (tab: string) => void
+}) => {
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const tab = searchParams?.get('tab') || 'requested';
+    setActiveTab(tab);
+  }, [searchParams, setActiveTab]);
+
+  return null; // This component doesn't render anything
+};
+
 const BrandDealsPage = () => {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const user = useCurrentUser();
   const [deals, setDeals] = useState<Deal[]>([]);
   const [loading, setLoading] = useState(true);
@@ -110,11 +128,6 @@ const BrandDealsPage = () => {
   const [approvalDialogOpen, setApprovalDialogOpen] = useState<boolean>(false);
   const [paymentDialogOpen, setPaymentDialogOpen] = useState<boolean>(false);
   const [selectedDealForPayment, setSelectedDealForPayment] = useState<Deal | null>(null);
-
-  useEffect(() => {
-    const tab = searchParams?.get('tab') || 'requested';
-    setActiveTab(tab);
-  }, [searchParams]);
 
   useEffect(() => {
     fetchDeals();
@@ -302,6 +315,11 @@ const BrandDealsPage = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 min-h-screen overflow-y-auto">
+      {/* Wrap the TabHandler in a Suspense boundary */}
+      <Suspense fallback={null}>
+        <TabHandler activeTab={activeTab} setActiveTab={setActiveTab} />
+      </Suspense>
+
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Deals</h1>
         <Button

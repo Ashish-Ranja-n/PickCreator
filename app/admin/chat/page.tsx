@@ -79,12 +79,6 @@ export default function AdminChatPage() {
   return (
     <div className="flex flex-col min-h-screen overflow-hidden">
       <div className="container mx-auto px-4 py-4 flex-none">
-        <div className="flex items-center justify-between mb-4">
-          <h1 className="text-2xl font-bold">Admin Communication Center</h1>
-          <Badge variant="outline" className="bg-purple-100 text-purple-800 px-3 py-1">
-            Admin Mode
-          </Badge>
-        </div>
         
         <Tabs defaultValue="chats" className="w-full">
           <TabsList className="grid grid-cols-4 mb-4">
