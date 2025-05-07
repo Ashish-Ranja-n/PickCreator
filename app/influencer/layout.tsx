@@ -8,19 +8,18 @@ import React, { useMemo } from "react";
 import Navbar1 from "@/components/navbar(inside)/navbar1";
 import Navbar from "@/components/navbar(inside)/navbar";
 import { AuthGuard } from "@/components/AuthGuard";
-import { useTheme } from "next-themes";
+import { ThemeContextProvider, useThemeContext } from "@/context/ThemeContext";
 
 interface InfluencerLayoutProps {
   children: React.ReactNode;
 }
 
-// Use React.memo to prevent unnecessary re-renders of the layout component
-const InfluencerLayout: React.FC<InfluencerLayoutProps> = React.memo((props) => {
+// Inner component that uses the theme context
+const InfluencerLayoutInner: React.FC<InfluencerLayoutProps> = React.memo((props) => {
   const pathname = usePathname();
   const hideNavbar = useMemo(() => pathname?.startsWith("/influencer/chat/") || pathname?.startsWith("/influencer/onboarding/") || false, [pathname]);
   const isMobile = UseIsMobile();
-  const { theme } = useTheme();
-  const isDarkMode = theme === 'dark';
+  const { isDarkMode } = useThemeContext();
 
   // Memoize the layout based on hideNavbar, isMobile, and theme
   const layoutContent = useMemo(() => (
@@ -38,6 +37,17 @@ const InfluencerLayout: React.FC<InfluencerLayoutProps> = React.memo((props) => 
 
   return layoutContent;
 });
+
+InfluencerLayoutInner.displayName = 'InfluencerLayoutInner';
+
+// Wrapper component that provides the theme context
+const InfluencerLayout: React.FC<InfluencerLayoutProps> = (props) => {
+  return (
+    <ThemeContextProvider>
+      <InfluencerLayoutInner {...props} />
+    </ThemeContextProvider>
+  );
+};
 
 InfluencerLayout.displayName = 'InfluencerLayout';
 

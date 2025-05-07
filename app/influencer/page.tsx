@@ -1,8 +1,7 @@
-import InfluencerFeedClient from "@/components/influencer/feed/InfluencerFeedClient";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import QnAClient from '@/components/influencer/qna/QnAClient';
-import { BarChart, Users, HelpCircle, Trophy } from 'lucide-react';
+import { BarChart, HelpCircle, Trophy } from 'lucide-react';
 import AnalyticsTab from "@/components/influencer/analytics/AnalyticsTab";
 
 // Page is a server component
@@ -12,7 +11,7 @@ export default function InfluencerPage() {
       <Tabs defaultValue="analytics" className="w-full flex flex-col h-full">
         {/* Fixed tab bar at the top */}
         <div className="sticky top-[50px] left-0 right-0 z-10 bg-white/95 dark:bg-black/95 backdrop-blur-sm pt-2 pb-1 border-b border-gray-200/50 dark:border-zinc-800/50">
-          <TabsList className="grid grid-cols-4 bg-transparent bg-gray-100 dark:bg-zinc-900 p-1 rounded-lg shadow-inner mx-auto">
+          <TabsList className="grid grid-cols-3 bg-transparent bg-gray-100 dark:bg-zinc-900 p-1 rounded-lg shadow-inner mx-auto">
             <TabsTrigger
               value="analytics"
               className="font-medium text-gray-700 dark:text-white transition-all duration-200
@@ -22,16 +21,6 @@ export default function InfluencerPage() {
             >
               <BarChart className="h-4 w-4 mr-2" />
               <span className="hidden sm:inline">Analytics & News</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="feed"
-              className="font-medium text-gray-700 dark:text-white transition-all duration-200
-                data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-500 data-[state=active]:to-fuchsia-500 dark:data-[state=active]:from-violet-600 dark:data-[state=active]:to-fuchsia-600
-                data-[state=active]:text-white data-[state=active]:shadow-md data-[state=active]:shadow-fuchsia-500/20
-                hover:bg-gray-200 dark:hover:bg-zinc-800 hover:text-gray-900 dark:hover:text-white"
-            >
-              <Users className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">Influencer Feed</span>
             </TabsTrigger>
             <TabsTrigger
               value="qna"
@@ -64,10 +53,6 @@ export default function InfluencerPage() {
                 <AnalyticsTab />
               </CardContent>
             </Card>
-          </TabsContent>
-
-          <TabsContent value="feed" className="h-full pt-4">
-            <InfluencerFeedClient />
           </TabsContent>
 
           <TabsContent value="qna" className="h-full pt-8">

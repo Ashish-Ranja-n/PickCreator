@@ -1,23 +1,23 @@
 'use client';
 import { cn } from "@/lib/utils";
-import { Home, ShoppingBag, MessageSquare, User } from "lucide-react";
+import { Home, ShoppingBag, MessageCircle, User, Users2Icon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useMemo } from "react";
 import { motion } from "framer-motion";
-import { useTheme } from "next-themes";
+import { useThemeContext } from "@/context/ThemeContext";
 
 // Use React.memo to prevent unnecessary re-renders
 const MobileNav = React.memo(() => {
   const pathname = usePathname();
-  const { theme } = useTheme();
-  const isDarkMode = theme === 'dark';
+  const { isDarkMode } = useThemeContext();
 
   // Memoize the tabs array to prevent it from being recreated on each render
   const tabs = useMemo(() => [
     { icon: Home, label: "Home", path: "/influencer" },
     { icon: ShoppingBag, label: "Deals", path: "/influencer/deals" },
-    { icon: MessageSquare, label: "Chat", path: "/influencer/chat" },
+    { icon: Users2Icon, label: "Community", path: "/influencer/community" },
+    { icon: MessageCircle, label: "Chat", path: "/influencer/chat" },
     { icon: User, label: "Profile", path: "/influencer/profile" },
   ], []);
 
@@ -29,7 +29,7 @@ const MobileNav = React.memo(() => {
         ? "bg-black/95 border-t border-zinc-800/50"
         : "bg-white/95 border-t border-gray-200/50"
     )}>
-      <div className="grid grid-cols-4 h-full max-w-md mx-auto px-2">
+      <div className="grid grid-cols-5 h-full max-w-md mx-auto px-1">
         {tabs.map(({ icon: Icon, label, path }) => {
           const isActive = pathname === path;
           return (
@@ -57,7 +57,7 @@ const MobileNav = React.memo(() => {
                   : "bg-transparent"
               )}>
                 <Icon
-                  size={20}
+                  size={24}
                   className={cn(
                     "transition-all duration-300",
                     isActive

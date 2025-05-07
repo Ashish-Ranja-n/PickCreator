@@ -303,7 +303,7 @@ export default function InfluencerFeedClient() {
   return (
     <div className="relative w-full mx-auto min-h-screen bg-white dark:bg-zinc-950">
       {/* Fixed header with buttons - using fixed positioning */}
-      <div className="fixed top-[100px] md:top-[122px] left-0 right-0 z-30 py-3 px-4 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md border-b border-gray-200/50 dark:border-zinc-800/50 flex justify-between items-center shadow-md">
+      <div className="fixed top-[50px] md:top-[68px] left-0 right-0 z-30 py-3 px-4 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md border-b border-gray-200/50 dark:border-zinc-800/50 flex justify-between items-center shadow-md">
         <div className="w-full mx-auto flex justify-between items-center px-2">
           <div className="flex items-center gap-2">
             <TooltipProvider>
