@@ -686,10 +686,10 @@ const Brand: NextPage = () => {
       {/* Filters Section - Visible in both modes */}
         {!isCampaignMode && <div>
         <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-2 text-gray-900 kanit">
-          Find Influencers Near You.
+          Search Influencers
         </h1>
         <p className="text-lg text-muted-foreground">
-          Search influencers based on your location.
+          Find influencers and make a deal.
         </p>
         </div> }
       <div className="flex flex-wrap gap-4 mb-8 items-center p-4 bg-white/70 rounded-lg shadow-sm">
