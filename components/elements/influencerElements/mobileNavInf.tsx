@@ -24,10 +24,10 @@ const MobileNav = React.memo(() => {
   // Memoize the nav content based on pathname
   const navContent = useMemo(() => (
     <nav className={cn(
-      "lg:hidden fixed bottom-0 left-0 right-0 h-16 backdrop-blur-md z-50 shadow-lg",
+      "lg:hidden fixed bottom-0 left-0 right-0 h-16 backdrop-blur-lg z-50 shadow-lg",
       isDarkMode
-        ? "bg-black/95 border-t border-zinc-800/50"
-        : "bg-white/95 border-t border-gray-200/50"
+        ? "bg-zinc-900/90 border-t border-zinc-800/50"
+        : "bg-slate-100/90 border-t border-gray-200/50"
     )}>
       <div className="grid grid-cols-5 h-full max-w-md mx-auto px-1">
         {tabs.map(({ icon: Icon, label, path }) => {

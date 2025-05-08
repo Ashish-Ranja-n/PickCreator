@@ -303,7 +303,7 @@ export default function InfluencerFeedClient() {
   return (
     <div className="relative w-full mx-auto min-h-screen bg-white dark:bg-zinc-950">
       {/* Fixed header with buttons - using fixed positioning */}
-      <div className="fixed top-[50px] md:top-[68px] left-0 right-0 z-30 py-3 px-4 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md border-b border-gray-200/50 dark:border-zinc-800/50 flex justify-between items-center shadow-md">
+      <div className="fixed top-[46px] dark:top-[50px] md:top-[68px] left-0 right-0 z-30 py-3 px-4 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md border-b border-gray-200/50 dark:border-zinc-800/50 flex justify-between items-center shadow-md">
         <div className="w-full mx-auto flex justify-between items-center px-2">
           <div className="flex items-center gap-2">
             <TooltipProvider>
@@ -364,26 +364,26 @@ export default function InfluencerFeedClient() {
       {/* Content container */}
       <div
         ref={scrollContainerRef}
-        className="px-3 py-4 space-y-5"
+        className="max-w-xl mx-auto divide-y divide-gray-100 dark:divide-zinc-800/50"
       >
         {/* Loading indicator */}
         {loading && (
-          <div className="flex justify-center py-12">
+          <div className="flex justify-center py-8">
             <div className="flex flex-col items-center">
-              <Loader2 className="h-10 w-10 animate-spin text-fuchsia-500 mb-4 drop-shadow-[0_0_8px_rgba(192,38,211,0.5)]" />
-              <p className="text-gray-500 dark:text-zinc-400">Loading posts...</p>
+              <Loader2 className="h-8 w-8 animate-spin text-fuchsia-500" />
+              <p className="text-sm text-gray-500 dark:text-zinc-400 mt-2">Loading posts...</p>
             </div>
           </div>
         )}
 
         {/* Error message */}
         {error && !loading && (
-          <div className="bg-red-100/50 dark:bg-red-900/20 border border-red-200/50 dark:border-red-800/30 rounded-xl p-4 text-center shadow-md">
-            <p className="text-red-500 dark:text-red-400">{error}</p>
+          <div className="py-6 px-4 text-center border-b border-gray-100 dark:border-zinc-800/50">
+            <p className="text-red-500 dark:text-red-400 mb-3">{error}</p>
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
-              className="mt-2 text-xs bg-white dark:bg-slate-800 border-red-300/50 dark:border-red-700/50 text-red-500 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-slate-700 hover:text-red-600 dark:hover:text-red-300"
+              className="text-sm text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20"
               onClick={() => fetchPosts()}
             >
               Try Again
@@ -399,179 +399,184 @@ export default function InfluencerFeedClient() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3, delay: index * 0.05 }}
-              className="bg-white dark:bg-zinc-900 backdrop-blur-sm rounded-xl border border-fuchsia-200/50 dark:border-fuchsia-500/30 overflow-hidden transition-all duration-300 shadow-md dark:shadow-[0_0_15px_rgba(192,38,211,0.3)]"
+              className="bg-white dark:bg-zinc-950 border-b border-gray-100 dark:border-zinc-800/50 pb-3 mb-1"
             >
-              {/* Post header */}
-              <div className="p-4 flex justify-between items-center border-b border-gray-200/50 dark:border-zinc-800/30">
-                <div className="flex items-center space-x-3">
-                  {/* Avatar with Instagram link */}
-                  <div className="relative group">
-                    <Avatar className="h-10 w-10 ring-2 ring-fuchsia-300/50 dark:ring-fuchsia-500/30 ring-offset-2 ring-offset-white dark:ring-offset-zinc-900 transition-all duration-300 group-hover:ring-fuchsia-400/70 dark:group-hover:ring-fuchsia-500/70 shadow-sm dark:shadow-[0_0_10px_rgba(192,38,211,0.2)]">
-                      <AvatarImage src={getProfilePicture(post.author)} alt={post.author?.name || "User"} />
-                      <AvatarFallback className="bg-gradient-to-br from-violet-500 to-fuchsia-500 dark:from-violet-600 dark:to-fuchsia-600 text-white">
-                        {post.author?.name ? post.author.name.charAt(0) : "U"}
-                      </AvatarFallback>
-                    </Avatar>
-                    {post.author?.instagramUsername && (
-                      <>
-                        <div className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
-                            <rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect>
-                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                            <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line>
-                          </svg>
-                        </div>
-                        <Link
-                          href={getInstagramProfileUrl(post.author.instagramUsername) || '#'}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="absolute inset-0 z-10"
-                          aria-label={`Visit ${post.author?.name || 'User'}'s Instagram profile`}
-                        />
-                      </>
-                    )}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-medium text-gray-900 dark:text-white">{post.author?.name || "User"}</h3>
-                      {/* Instagram username with link */}
-                      {post.author?.instagramUsername ? (
-                        <Link
-                          href={getInstagramProfileUrl(post.author.instagramUsername) || '#'}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs text-gray-500 dark:text-zinc-400 hover:text-fuchsia-500 dark:hover:text-fuchsia-400 transition-colors flex items-center group"
-                        >
-                          @{post.author.instagramUsername}
-                          <ExternalLink size={10} className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
-                        </Link>
-                      ) : (
-                        <span className="text-xs text-gray-500 dark:text-zinc-400">@{post.author?.username || "user"}</span>
+              <div className="pt-4 px-3">
+                <div className="flex">
+                  {/* Avatar column */}
+                  <div className="mr-3 flex-shrink-0">
+                    <div className="relative group">
+                      <Avatar className="h-10 w-10 ring-1 ring-gray-200 dark:ring-zinc-700">
+                        <AvatarImage src={getProfilePicture(post.author)} alt={post.author?.name || "User"} />
+                        <AvatarFallback className="bg-gradient-to-br from-violet-500 to-fuchsia-500 dark:from-violet-600 dark:to-fuchsia-600 text-white">
+                          {post.author?.name ? post.author.name.charAt(0) : "U"}
+                        </AvatarFallback>
+                      </Avatar>
+                      {post.author?.instagramUsername && (
+                        <>
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
+                              <rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect>
+                              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                              <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line>
+                            </svg>
+                          </div>
+                          <Link
+                            href={getInstagramProfileUrl(post.author.instagramUsername) || '#'}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="absolute inset-0 z-10"
+                            aria-label={`Visit ${post.author?.name || 'User'}'s Instagram profile`}
+                          />
+                        </>
                       )}
                     </div>
-                    <p className="text-xs text-gray-400 dark:text-zinc-500">{formatTimeAgo(post.createdAt)}</p>
                   </div>
-                </div>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="rounded-full text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-800 hover:text-fuchsia-500 dark:hover:text-fuchsia-400 transition-colors">
-                      <MoreHorizontal size={18} />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-800 text-gray-900 dark:text-white">
-                    {currentUser && post.author && post.author._id === currentUser._id && (
-                      <DropdownMenuItem
-                        onClick={() => openDeleteDialog(post._id)}
-                        className="text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 hover:bg-gray-100 dark:hover:bg-zinc-800 focus:bg-gray-100 dark:focus:bg-zinc-800 cursor-pointer"
-                      >
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        Delete Post
-                      </DropdownMenuItem>
-                    )}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
 
-              {/* Post content */}
-              <div className="px-4 py-3">
-                <p className="text-gray-900 dark:text-white whitespace-pre-wrap leading-relaxed">{post.content}</p>
-
-                {/* Hashtags */}
-                {post.hashtags && post.hashtags.length > 0 && (
-                  <div className="mt-3 flex flex-wrap gap-1.5">
-                    {post.hashtags.map((tag: string) => (
-                      <Badge
-                        key={tag}
-                        variant="secondary"
-                        className="bg-fuchsia-100/70 dark:bg-fuchsia-900/30 text-fuchsia-600 dark:text-fuchsia-300 hover:bg-fuchsia-200/70 dark:hover:bg-fuchsia-800/40 border border-fuchsia-300/50 dark:border-fuchsia-700/50 transition-all duration-300 hover:shadow-sm dark:hover:shadow-[0_0_8px_rgba(192,38,211,0.3)] hover:border-fuchsia-400/50 dark:hover:border-fuchsia-500/50 hover:scale-105"
-                      >
-                        #{tag}
-                      </Badge>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Post media if available */}
-              {post.media && post.media.length > 0 && (
-                <div className="px-4 mt-3 mb-4">
-                  <div className={`${post.media.length > 1 ? 'flex gap-1' : 'flex justify-center'}`}>
-                    {post.media.map((mediaUrl, idx) => {
-                      const isSingleImage = post.media && post.media.length === 1;
-                      return (
-                        <div
-                          key={idx}
-                          className={`relative overflow-hidden rounded-lg
-                            ${isSingleImage ? 'w-full max-w-[70%] mx-auto' : 'w-[49.5%]'}`}
-                        >
-                          <div
-                            className="cursor-pointer"
-                            onClick={() => {
-                              setCurrentImage(mediaUrl);
-                              setImageViewerOpen(true);
-                            }}
-                          >
-                            <Image
-                              src={mediaUrl}
-                              alt={`Post media ${idx + 1}`}
-                              width={600}
-                              height={600}
-                              sizes={isSingleImage ? "(max-width: 768px) 70vw, 400px" : "(max-width: 768px) 49vw, 350px"}
-                              className="w-full h-auto"
-                              loading="lazy"
-                            />
-                          </div>
+                  {/* Content column */}
+                  <div className="flex-1 min-w-0">
+                    {/* Header with name, username and options */}
+                    <div className="flex items-start justify-between mb-0.5">
+                      <div>
+                        <div className="flex items-center gap-1 flex-wrap">
+                          <span className="font-medium text-gray-900 dark:text-white">{post.author?.name || "User"}</span>
+                          {post.author?.instagramUsername ? (
+                            <Link
+                              href={getInstagramProfileUrl(post.author.instagramUsername) || '#'}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-sm text-gray-500 dark:text-zinc-400 hover:text-fuchsia-500 dark:hover:text-fuchsia-400 transition-colors flex items-center group"
+                            >
+                              @{post.author.instagramUsername}
+                              <ExternalLink size={10} className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
+                            </Link>
+                          ) : (
+                            <span className="text-sm text-gray-500 dark:text-zinc-400">@{post.author?.username || "user"}</span>
+                          )}
+                          <span className="text-gray-400 dark:text-zinc-500 text-sm">·</span>
+                          <span className="text-sm text-gray-400 dark:text-zinc-500">{formatTimeAgo(post.createdAt)}</span>
                         </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
+                      </div>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-gray-500 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800 hover:text-gray-700 dark:hover:text-white transition-colors">
+                            <MoreHorizontal size={16} />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-800 text-gray-900 dark:text-white">
+                          {currentUser && post.author && post.author._id === currentUser._id && (
+                            <DropdownMenuItem
+                              onClick={() => openDeleteDialog(post._id)}
+                              className="text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 hover:bg-gray-100 dark:hover:bg-zinc-800 focus:bg-gray-100 dark:focus:bg-zinc-800 cursor-pointer"
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Delete Post
+                            </DropdownMenuItem>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
 
-              {/* Post actions */}
-              <div className="px-4 py-3 border-t border-gray-200/50 dark:border-zinc-800/30 flex justify-between items-center bg-gray-50/70 dark:bg-zinc-900/70">
-                <div className="flex space-x-6">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className={`text-gray-700 dark:text-white hover:text-pink-500 dark:hover:text-pink-400 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-full px-2.5 py-1 h-auto transition-all duration-300 hover:shadow-sm dark:hover:shadow-[0_0_8px_rgba(236,72,153,0.3)] ${likedPosts[post._id] ? 'text-pink-500 dark:text-pink-400' : ''}`}
-                    onClick={() => handleLike(post._id)}
-                  >
-                    <Heart size={18} className={`mr-1.5 transition-transform hover:scale-110 ${likedPosts[post._id] ? 'fill-current animate-heartBeat' : ''}`} />
-                    <span className="text-xs font-medium">{post.likes.length}</span>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className={`text-gray-700 dark:text-white hover:text-fuchsia-500 dark:hover:text-fuchsia-400 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-full px-2.5 py-1 h-auto transition-all duration-300 hover:shadow-sm dark:hover:shadow-[0_0_8px_rgba(192,38,211,0.3)] ${activeCommentPostId === post._id && commentSheetOpen ? 'text-fuchsia-500 dark:text-fuchsia-400 bg-gray-100/70 dark:bg-zinc-800/70' : ''}`}
-                    onClick={() => toggleComments(post._id)}
-                  >
-                    <MessageCircle size={18} className="mr-1.5 transition-transform hover:scale-110" />
-                    <span className="text-xs font-medium">{post.commentCount}</span>
-                  </Button>
-                  <div className="flex items-center text-gray-700 dark:text-white text-xs">
-                    <Eye size={16} className="mr-1.5" />
-                    <span>{post.views || 0}</span>
+                    {/* Post content */}
+                    <div className="mt-1">
+                      <p className="text-gray-900 dark:text-white whitespace-pre-wrap leading-relaxed">{post.content}</p>
+                    </div>
+
+                    {/* Hashtags */}
+                    {post.hashtags && post.hashtags.length > 0 && (
+                      <div className="mt-2 flex flex-wrap gap-1.5">
+                        {post.hashtags.map((tag: string) => (
+                          <Badge
+                            key={tag}
+                            variant="secondary"
+                            className="bg-fuchsia-50 dark:bg-fuchsia-900/20 text-fuchsia-600 dark:text-fuchsia-300 hover:bg-fuchsia-100 dark:hover:bg-fuchsia-800/30 border-none text-xs"
+                          >
+                            #{tag}
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Post media if available */}
+                    {post.media && post.media.length > 0 && (
+                      <div className="mt-3">
+                        <div className={`${post.media.length > 1 ? 'grid grid-cols-2 gap-1' : ''}`}>
+                          {post.media.map((mediaUrl, idx) => {
+                            const isSingleImage = post.media && post.media.length === 1;
+                            return (
+                              <div
+                                key={idx}
+                                className={`relative overflow-hidden rounded-md ${isSingleImage ? 'w-full' : ''}`}
+                              >
+                                <div
+                                  className="cursor-pointer"
+                                  onClick={() => {
+                                    setCurrentImage(mediaUrl);
+                                    setImageViewerOpen(true);
+                                  }}
+                                >
+                                  <Image
+                                    src={mediaUrl}
+                                    alt={`Post media ${idx + 1}`}
+                                    width={600}
+                                    height={600}
+                                    sizes={isSingleImage ? "(max-width: 768px) 100%, 600px" : "(max-width: 768px) 49vw, 300px"}
+                                    className="w-full h-auto"
+                                    loading="lazy"
+                                  />
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Post actions */}
+                    <div className="mt-3 flex justify-between items-center">
+                      <div className="flex space-x-6">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className={`text-gray-500 dark:text-zinc-400 hover:text-pink-500 dark:hover:text-pink-400 p-0 h-auto bg-transparent ${likedPosts[post._id] ? 'text-pink-500 dark:text-pink-400' : ''}`}
+                          onClick={() => handleLike(post._id)}
+                        >
+                          <Heart size={18} className={`mr-1.5 transition-transform hover:scale-110 ${likedPosts[post._id] ? 'fill-current animate-heartBeat' : ''}`} />
+                          <span className="text-xs">{post.likes.length > 0 ? post.likes.length : ''}</span>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className={`text-gray-500 dark:text-zinc-400 hover:text-fuchsia-500 dark:hover:text-fuchsia-400 p-0 h-auto bg-transparent ${activeCommentPostId === post._id && commentSheetOpen ? 'text-fuchsia-500 dark:text-fuchsia-400' : ''}`}
+                          onClick={() => toggleComments(post._id)}
+                        >
+                          <MessageCircle size={18} className="mr-1.5 transition-transform hover:scale-110" />
+                          <span className="text-xs">{post.commentCount > 0 ? post.commentCount : ''}</span>
+                        </Button>
+                        <div className="flex items-center text-gray-500 dark:text-zinc-400 text-xs">
+                          <Eye size={16} className="mr-1.5" />
+                          <span>{post.views > 0 ? post.views : ''}</span>
+                        </div>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-gray-500 dark:text-zinc-400 hover:text-blue-500 dark:hover:text-blue-400 p-0 h-auto bg-transparent"
+                      >
+                        <Bookmark size={16} className="transition-transform hover:scale-110" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-gray-700 dark:text-white hover:text-blue-500 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-full p-1.5 h-8 w-8 transition-all duration-300 hover:shadow-sm dark:hover:shadow-[0_0_8px_rgba(59,130,246,0.3)]"
-                >
-                  <Bookmark size={16} className="transition-transform hover:scale-110" />
-                </Button>
               </div>
-
-
             </motion.div>
           ))}
         </AnimatePresence>
 
         {!loading && posts.length === 0 && !error && (
-          <div className="flex flex-col items-center justify-center py-12 text-center bg-white dark:bg-zinc-900 backdrop-blur-sm rounded-2xl shadow-md border border-gray-200/50 dark:border-zinc-800/50 p-8 mt-8">
-            <div className="w-16 h-16 bg-gradient-to-br from-violet-500 to-fuchsia-500 dark:from-violet-600 dark:to-fuchsia-600 rounded-full flex items-center justify-center mb-4 shadow-lg shadow-fuchsia-300/20 dark:shadow-fuchsia-500/20">
-              <PlusCircle size={24} className="text-white animate-pulse" />
+          <div className="flex flex-col items-center justify-center py-12 text-center bg-white dark:bg-zinc-950 p-8 mt-4 border-t border-b border-gray-100 dark:border-zinc-800/50">
+            <div className="w-14 h-14 bg-gradient-to-br from-violet-500 to-fuchsia-500 dark:from-violet-600 dark:to-fuchsia-600 rounded-full flex items-center justify-center mb-4">
+              <PlusCircle size={22} className="text-white animate-pulse" />
             </div>
             <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
               {showMyPosts ? "You haven't created any posts yet" : "No posts found"}
@@ -586,14 +591,14 @@ export default function InfluencerFeedClient() {
 
         {/* Load more button */}
         {!loading && hasMore && posts.length > 0 && (
-          <div className="flex justify-center pt-2">
+          <div className="flex justify-center py-4 border-b border-gray-100 dark:border-zinc-800/50">
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={() => fetchPosts(page + 1, true)}
-              className="text-xs bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-800 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-800 hover:text-gray-900 dark:hover:text-white hover:border-fuchsia-300/50 dark:hover:border-fuchsia-500/50 hover:shadow-sm dark:hover:shadow-[0_0_10px_rgba(192,38,211,0.2)] transition-all duration-300"
+              className="text-sm text-fuchsia-500 dark:text-fuchsia-400 hover:text-fuchsia-600 dark:hover:text-fuchsia-300 hover:bg-fuchsia-50 dark:hover:bg-fuchsia-900/20"
             >
-              Load more posts
+              Show more posts
             </Button>
           </div>
         )}

@@ -1,6 +1,7 @@
 import React from 'react';
 import "@/app/globals.css";
 import styles from '@/styles/myComponent.module.css';
+import { motion } from 'framer-motion';
 
 const Navbar: React.FC = () => {
   return (
@@ -24,7 +25,19 @@ const Navbar: React.FC = () => {
         </div>
         
         {/* Bright gradient accent */}
-        <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500"></div>
+        <motion.div
+          className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-violet-600 via-fuchsia-500 to-blue-500"
+          initial={{ opacity: 0.7, backgroundPosition: "0% 50%" }}
+          animate={{
+            opacity: [0.7, 0.9, 0.7],
+            backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"]
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+        />
         
         <div className={styles.deconstructed}>
           PICKCREATOR

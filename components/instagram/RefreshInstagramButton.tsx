@@ -46,9 +46,9 @@ export default function RefreshInstagramButton({ onSuccess, onError }: RefreshIn
       size="sm"
       onClick={handleRefresh}
       disabled={isRefreshing}
-      className="flex items-center gap-1 bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700 hover:border-zinc-600"
+      className="flex items-center gap-1 bg-gray-100 dark:bg-zinc-800 border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-white hover:bg-gray-200 dark:hover:bg-zinc-700 hover:border-gray-300 dark:hover:border-zinc-600"
     >
-      <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
+      <RefreshCw className={`h-3.5 w-3.5 text-blue-500 dark:text-blue-400 ${isRefreshing ? 'animate-spin' : ''}`} />
       <span className="text-xs">{isRefreshing ? 'Refreshing...' : 'Refresh Data'}</span>
     </Button>
   );
