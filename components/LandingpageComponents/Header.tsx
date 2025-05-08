@@ -2,10 +2,43 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from "@/lib/utils";
 import Link from 'next/link';
+import { Menu, Instagram, Facebook, Twitter, ChevronDown } from 'lucide-react';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+  SheetClose
+} from "@/components/ui/sheet";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [viewportWidth, setViewportWidth] = useState(0);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  // Footer links for mobile menu
+  const footerLinks = [
+    { title: "About", href: "/about" },
+    { title: "Contact", href: "/contact" },
+    { title: "FAQs", href: "/faqs" },
+    { title: "Refund Policy", href: "/legal/pricing-policy" },
+    { title: "Privacy Policy", href: "/legal/privacy-policy" },
+    { title: "Terms of Service", href: "/legal/terms-of-service" }
+  ];
+
+  // Social links for mobile menu
+  const socialLinks = [
+    { icon: <Instagram size={20} />, href: "https://instagram.com/pickcreator", label: "Instagram" },
+    { icon: <Facebook size={20} />, href: "#facebook", label: "Facebook" },
+    { icon: <Twitter size={20} />, href: "#twitter", label: "Twitter" }
+  ];
 
   // Track both scroll position and viewport size
   useEffect(() => {
@@ -174,14 +207,14 @@ const Header: React.FC = () => {
     }
   };
 
-  // Get logo size based on viewport width - increased sizes
+  // Get logo size based on viewport width - original sizes for mobile, smaller for desktop
   const getLogoSize = () => {
     if (viewportWidth <= 360) {
       return 'text-2xl lg:text-3xl';
     } else if (viewportWidth <= 480) {
-      return 'text-3xl lg:text-4xl';
+      return 'text-3xl lg:text-3xl';
     } else {
-      return 'text-4xl lg:text-5xl';
+      return 'text-4xl lg:text-4xl';
     }
   };
 
@@ -207,7 +240,7 @@ const Header: React.FC = () => {
       )}
     >
       <div className="container-custom flex items-center justify-between">
-        {/* Logo with neon style - adjusted size for mobile */}
+        {/* Logo with neon style - smaller size */}
         <a href="#" className="inline-flex items-center">
           <span className={`${getLogoSize()} font-black tracking-tight neon-container`}>
             <span className="neon-text">
@@ -221,7 +254,41 @@ const Header: React.FC = () => {
           </span>
         </a>
 
-        <div className="flex items-center gap-3 md:gap-4">
+        <div className="flex items-center gap-3 md:gap-6">
+          {/* Desktop Navigation Links */}
+          <div className="hidden md:flex items-center space-x-6">
+            {/* Main Links */}
+            {footerLinks.slice(0, 3).map((link, index) => (
+              <Link
+                key={index}
+                href={link.href}
+                className="text-gray-700 hover:text-pick-blue transition-colors text-sm font-medium"
+              >
+                {link.title}
+              </Link>
+            ))}
+
+            {/* Legal Links Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex items-center text-gray-700 hover:text-pick-blue transition-colors text-sm font-medium">
+                Legal
+                <ChevronDown className="ml-1 h-4 w-4" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                {footerLinks.slice(3).map((link, index) => (
+                  <DropdownMenuItem key={index} asChild>
+                    <Link
+                      href={link.href}
+                      className="w-full cursor-pointer"
+                    >
+                      {link.title}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
           {/* Search Bar - Hidden on mobile */}
           <div className="hidden md:flex items-center bg-gray-100 rounded-full px-4 py-2">
             <input
@@ -234,11 +301,93 @@ const Header: React.FC = () => {
             </svg>
           </div>
 
-          {/* Button with subtler gradient border - responsive size */}
+          {/* Mobile Menu Button - Only visible on mobile */}
+          <div className="md:hidden">
+            <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+              <SheetTrigger asChild>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="p-2 rounded-full bg-white/90 shadow-sm text-gray-700 hover:bg-white hover:text-gray-900 transition-all"
+                  aria-label="Menu"
+                >
+                  <Menu size={20} />
+                </motion.button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[85vw] sm:w-[350px] p-0">
+                <div className="h-full flex flex-col">
+                  <SheetHeader className="p-6 border-b">
+                    <SheetTitle className="text-2xl font-bold bg-gradient-to-r from-pick-blue to-pick-purple bg-clip-text text-transparent">
+                      PickCreator
+                    </SheetTitle>
+                  </SheetHeader>
+
+                  <div className="flex-1 overflow-auto py-6 px-6">
+                    {/* Navigation Links */}
+                    <div className="mb-8">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-4">Menu</h3>
+                      <ul className="space-y-4">
+                        {footerLinks.map((link, index) => (
+                          <li key={index}>
+                            <Link
+                              href={link.href}
+                              className="text-gray-700 hover:text-pick-blue transition-colors text-base flex items-center"
+                              onClick={() => setIsMenuOpen(false)}
+                            >
+                              {link.title}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {/* Sign Up Button */}
+                    <div className="mb-8">
+                      <Link
+                        href="/sign-up"
+                        className="w-full flex items-center justify-center text-white font-medium rounded-full bg-gradient-to-r from-pick-blue to-pick-purple py-3 px-6 shadow-md hover:shadow-lg transition-all duration-300"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        Sign-up
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                        </svg>
+                      </Link>
+                    </div>
+
+                    {/* Social Links */}
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-4">Connect With Us</h3>
+                      <div className="flex space-x-4">
+                        {socialLinks.map((social, index) => (
+                          <a
+                            key={index}
+                            href={social.href}
+                            className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-pick-blue hover:text-white transition-colors"
+                            aria-label={social.label}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {social.icon}
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-6 border-t text-center text-sm text-gray-500">
+                    &copy; {new Date().getFullYear()} PickCreator. All rights reserved.
+                  </div>
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
+
+          {/* Button with subtler gradient border - responsive size - hidden on mobile when menu is shown */}
           <motion.div
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="relative group"
+            className="relative group hidden md:block"
           >
             {/* Subtler animated gradient border */}
             <div className="absolute -inset-px rounded-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 opacity-50 blur-[1.5px] group-hover:opacity-70 transition duration-1000 group-hover:duration-200 animate-gradient-xy"></div>

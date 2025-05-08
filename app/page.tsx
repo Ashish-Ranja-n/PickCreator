@@ -214,7 +214,6 @@ export default function Home() {
           </main>
 
           <Footer />
-          <SupportButton />
         </motion.div>
       </AnimatePresence>
     </>
