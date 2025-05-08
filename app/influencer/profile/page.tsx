@@ -266,86 +266,71 @@ const ProfilePage = () => {
   return (
     <div className="container py-16 bg-white dark:bg-black min-h-screen overflow-x-hidden">
       <div className="space-y-8">
-        {/* Professional Header with Profile Information */}
-        <div className="relative overflow-hidden rounded-2xl shadow-lg">
-          {/* Modern gradient background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-zinc-900"></div>
-
-          {/* Subtle pattern overlay */}
-          <div className="absolute inset-0 opacity-5 mix-blend-overlay">
-            <svg viewBox="0 0 1024 1024" className="absolute inset-0 h-full w-full" xmlns="http://www.w3.org/2000/svg">
-              <filter id="noise">
-                <feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="4" stitchTiles="stitch" />
-              </filter>
-              <rect width="100%" height="100%" filter="url(#noise)" />
-            </svg>
-          </div>
-
-          {/* Accent elements */}
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-violet-500 to-fuchsia-500"></div>
-          <div className="absolute -left-20 -bottom-20 w-64 h-64 rounded-full bg-blue-400/5 dark:bg-blue-500/10 blur-3xl"></div>
-          <div className="absolute right-20 top-10 w-40 h-40 rounded-full bg-violet-400/5 dark:bg-violet-500/10 blur-3xl"></div>
-
-          {/* Content with profile information */}
-          <div className="relative p-6 md:p-8 z-10">
-            <div className="flex flex-col md:flex-row items-center gap-6">
-              {/* Profile image */}
-              <div className="relative shrink-0">
-                <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-blue-500 via-violet-500 to-fuchsia-500 opacity-70 blur-sm"></div>
-                {instagramData?.isConnected && instagramData.profile?.profile_picture_url ? (
+        {/* Fresh Mobile-Optimized Profile Header */}
+        <div className="mb-8 px-1">
+          <div className="flex items-center">
+            {/* Profile image on the left */}
+            <div className="relative mr-4 flex-shrink-0">
+              {instagramData?.isConnected && instagramData.profile?.profile_picture_url ? (
+                <div className="relative">
+                  <div className="absolute -inset-0.5 rounded-full bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 opacity-75 blur-sm"></div>
                   <Image
                     src={instagramData.profile.profile_picture_url}
                     alt={profileData?.name || 'Profile'}
-                    width={100}
-                    height={100}
-                    className="relative rounded-full object-cover border-2 border-white dark:border-zinc-800 shadow-md z-10"
+                    width={72}
+                    height={72}
+                    className="relative rounded-full object-cover border-2 border-white dark:border-black z-10"
                   />
-                ) : (
-                  <div className="relative w-[100px] h-[100px] bg-white dark:bg-zinc-800 rounded-full flex items-center justify-center border-2 border-slate-200 dark:border-zinc-700 shadow-md z-10">
-                    <User className="h-12 w-12 text-slate-400 dark:text-zinc-500" />
+                </div>
+              ) : (
+                <div className="relative">
+                  <div className="absolute -inset-0.5 rounded-full bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 opacity-75 blur-sm"></div>
+                  <div className="relative w-[72px] h-[72px] bg-white dark:bg-zinc-800 rounded-full flex items-center justify-center border-2 border-white dark:border-black z-10">
+                    <User className="h-8 w-8 text-slate-400 dark:text-zinc-500" />
                   </div>
-                )}
-              </div>
+                </div>
+              )}
+            </div>
 
-              {/* Profile information */}
-              <div className="flex-1 text-center md:text-left">
-                <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-1">
-                  {profileData?.name || 'Your Name'}
-                </h1>
-                <p className="text-slate-500 dark:text-slate-400 text-sm md:text-base mb-3">
-                  {profileData?.email}
-                </p>
+            {/* Profile details in the middle */}
+            <div className="flex-1 min-w-0">
+              <h1 className="text-xl font-bold text-gray-900 dark:text-white truncate">
+                {profileData?.name || 'Your Name'}
+              </h1>
+              <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                {profileData?.email}
+              </p>
 
-                {/* Instagram connection badge */}
-                {instagramData?.isConnected && instagramData.profile && (
-                  <div className="inline-flex items-center px-3 py-1.5 bg-white/80 dark:bg-zinc-800/80 backdrop-blur-sm border border-slate-200 dark:border-zinc-700 rounded-full">
-                    <Instagram className="h-3.5 w-3.5 text-fuchsia-500 dark:text-fuchsia-400 mr-2" />
-                    <span className="text-xs font-medium text-slate-700 dark:text-slate-300">@{instagramData.profile.username}</span>
-                  </div>
-                )}
-              </div>
+              {/* Instagram connection badge */}
+              {instagramData?.isConnected && instagramData.profile && (
+                <div className="mt-1 inline-flex items-center">
+                  <Instagram className="h-3.5 w-3.5 text-pink-500 mr-1" />
+                  <span className="text-xs font-medium text-gray-600 dark:text-gray-300">@{instagramData.profile.username}</span>
+                </div>
+              )}
+            </div>
 
-              {/* Right side with actions */}
-              <div className="flex items-center gap-3">
-                <Button
-                  variant="outline"
-                  onClick={() => setIsEditing(true)}
-                  className="bg-white dark:bg-zinc-800 border-slate-200 dark:border-zinc-700 text-slate-700 dark:text-white hover:bg-slate-100 dark:hover:bg-zinc-700 py-2 px-4 rounded-lg"
-                >
-                  <Edit className="h-4 w-4 mr-2 text-blue-500 dark:text-blue-400" />
-                  <span>Edit</span>
-                </Button>
+            {/* Action buttons on the right */}
+            <div className="flex-shrink-0 ml-2 flex space-x-2">
+              {/* Edit button */}
+              <Button
+                size="icon"
+                onClick={() => setIsEditing(true)}
+                className="h-10 w-10 rounded-full bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 shadow-sm hover:bg-gray-50 dark:hover:bg-zinc-700 transition-all"
+              >
+                <Edit className="h-4 w-4 text-indigo-500 dark:text-indigo-400" />
+              </Button>
 
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="bg-white dark:bg-zinc-800 border-slate-200 dark:border-zinc-700 text-slate-700 dark:text-white hover:bg-slate-100 dark:hover:bg-zinc-700 py-2 px-4 rounded-lg"
-                    >
-                      <Settings className="h-4 w-4 mr-2 text-slate-500 dark:text-slate-400" />
-                      <span>Settings</span>
-                    </Button>
-                  </DialogTrigger>
+              {/* Settings button */}
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button
+                    size="icon"
+                    className="h-10 w-10 rounded-full bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 shadow-sm hover:bg-gray-50 dark:hover:bg-zinc-700 transition-all"
+                  >
+                    <Settings className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+                  </Button>
+                </DialogTrigger>
                   <DialogContent className="bg-white dark:bg-black border-gray-200 dark:border-zinc-800 text-gray-900 dark:text-white max-w-md">
                     <DialogHeader>
                       <DialogTitle className="text-xl font-bold bg-gradient-to-r from-violet-400 to-fuchsia-500 bg-clip-text text-transparent">
@@ -506,7 +491,7 @@ const ProfilePage = () => {
               </div>
             </div>
           </div>
-        </div>
+
 
         <Tabs defaultValue="profile">
           <TabsList className="grid w-full md:w-auto grid-cols-3 bg-gray-100 dark:bg-zinc-900 p-1 rounded-lg border border-gray-200 dark:border-zinc-800">
