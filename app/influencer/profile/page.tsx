@@ -266,10 +266,10 @@ const ProfilePage = () => {
   return (
     <div className="container py-16 bg-white dark:bg-black min-h-screen overflow-x-hidden">
       <div className="space-y-8">
-        {/* Modern Header with Gradient Background */}
-        <div className="relative overflow-hidden rounded-xl">
-          {/* Background with animated gradient */}
-          <div className="absolute inset-0 bg-gradient-to-r from-violet-100/50 via-white to-fuchsia-100/50 dark:from-violet-900/30 dark:via-black dark:to-fuchsia-900/30 animate-gradient-slow"></div>
+        {/* Professional Header with Profile Information */}
+        <div className="relative overflow-hidden rounded-2xl shadow-lg">
+          {/* Modern gradient background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-zinc-900"></div>
 
           {/* Subtle pattern overlay */}
           <div className="absolute inset-0 opacity-5 mix-blend-overlay">
@@ -281,35 +281,68 @@ const ProfilePage = () => {
             </svg>
           </div>
 
-          {/* Floating orbs for visual interest */}
-          <div className="absolute -left-10 -top-10 w-40 h-40 rounded-full bg-violet-400/10 dark:bg-violet-600/10 blur-3xl"></div>
-          <div className="absolute right-10 top-5 w-20 h-20 rounded-full bg-fuchsia-400/10 dark:bg-fuchsia-600/10 blur-2xl"></div>
+          {/* Accent elements */}
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-violet-500 to-fuchsia-500"></div>
+          <div className="absolute -left-20 -bottom-20 w-64 h-64 rounded-full bg-blue-400/5 dark:bg-blue-500/10 blur-3xl"></div>
+          <div className="absolute right-20 top-10 w-40 h-40 rounded-full bg-violet-400/5 dark:bg-violet-500/10 blur-3xl"></div>
 
-          {/* Content with glass effect */}
-          <div className="relative backdrop-blur-sm p-6 md:p-8 z-10">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-              {/* Left side with title and description */}
-              <div className="flex-1">
-                <div className="flex items-center space-x-3 mb-2">
-                  <div className="h-8 w-1 bg-gradient-to-b from-violet-400 to-fuchsia-400 dark:from-violet-500 dark:to-fuchsia-500 rounded-full"></div>
-                  <h1 className="text-3xl md:text-4xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-gray-900 via-fuchsia-500 to-gray-900 dark:from-white dark:via-fuchsia-100 dark:to-white">
-                    My Profile
-                  </h1>
-                </div>
-                <p className="text-gray-600 dark:text-zinc-300 ml-4 pl-3 border-l border-gray-300/50 dark:border-zinc-700/50">
-                  Manage your profile information and Instagram connection
-                </p>
+          {/* Content with profile information */}
+          <div className="relative p-6 md:p-8 z-10">
+            <div className="flex flex-col md:flex-row items-center gap-6">
+              {/* Profile image */}
+              <div className="relative shrink-0">
+                <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-blue-500 via-violet-500 to-fuchsia-500 opacity-70 blur-sm"></div>
+                {instagramData?.isConnected && instagramData.profile?.profile_picture_url ? (
+                  <Image
+                    src={instagramData.profile.profile_picture_url}
+                    alt={profileData?.name || 'Profile'}
+                    width={100}
+                    height={100}
+                    className="relative rounded-full object-cover border-2 border-white dark:border-zinc-800 shadow-md z-10"
+                  />
+                ) : (
+                  <div className="relative w-[100px] h-[100px] bg-white dark:bg-zinc-800 rounded-full flex items-center justify-center border-2 border-slate-200 dark:border-zinc-700 shadow-md z-10">
+                    <User className="h-12 w-12 text-slate-400 dark:text-zinc-500" />
+                  </div>
+                )}
               </div>
 
-              {/* Right side with settings button */}
-              <div className="flex items-center">
+              {/* Profile information */}
+              <div className="flex-1 text-center md:text-left">
+                <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-1">
+                  {profileData?.name || 'Your Name'}
+                </h1>
+                <p className="text-slate-500 dark:text-slate-400 text-sm md:text-base mb-3">
+                  {profileData?.email}
+                </p>
+
+                {/* Instagram connection badge */}
+                {instagramData?.isConnected && instagramData.profile && (
+                  <div className="inline-flex items-center px-3 py-1.5 bg-white/80 dark:bg-zinc-800/80 backdrop-blur-sm border border-slate-200 dark:border-zinc-700 rounded-full">
+                    <Instagram className="h-3.5 w-3.5 text-fuchsia-500 dark:text-fuchsia-400 mr-2" />
+                    <span className="text-xs font-medium text-slate-700 dark:text-slate-300">@{instagramData.profile.username}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Right side with actions */}
+              <div className="flex items-center gap-3">
+                <Button
+                  variant="outline"
+                  onClick={() => setIsEditing(true)}
+                  className="bg-white dark:bg-zinc-800 border-slate-200 dark:border-zinc-700 text-slate-700 dark:text-white hover:bg-slate-100 dark:hover:bg-zinc-700 py-2 px-4 rounded-lg"
+                >
+                  <Edit className="h-4 w-4 mr-2 text-blue-500 dark:text-blue-400" />
+                  <span>Edit</span>
+                </Button>
+
                 <Dialog>
                   <DialogTrigger asChild>
                     <Button
                       variant="outline"
-                      className="bg-gray-100/70 dark:bg-zinc-900/70 border-gray-300/50 dark:border-zinc-700/50 text-gray-700 dark:text-white hover:bg-gray-200 dark:hover:bg-zinc-800 hover:border-violet-400/50 dark:hover:border-violet-500/50 py-4 px-5 text-base rounded-xl transition-all duration-300 backdrop-blur-sm"
+                      className="bg-white dark:bg-zinc-800 border-slate-200 dark:border-zinc-700 text-slate-700 dark:text-white hover:bg-slate-100 dark:hover:bg-zinc-700 py-2 px-4 rounded-lg"
                     >
-                      <Settings className="h-5 w-5 mr-2 text-violet-500 dark:text-violet-400" />
+                      <Settings className="h-4 w-4 mr-2 text-slate-500 dark:text-slate-400" />
                       <span>Settings</span>
                     </Button>
                   </DialogTrigger>
@@ -485,248 +518,133 @@ const ProfilePage = () => {
           <TabsContent value="profile" className="space-y-0 pt-8 pb-16">
             {/* Modern Profile Container */}
             <div className="relative" id="profile-container">
-              {/* Profile Header - Modern Design */}
-              <div className="relative mb-12">
-                <div className="flex flex-col items-center">
-                  {/* Profile Image with Subtle Glow */}
-                  <div className="relative mb-6 group">
-                    <div className="absolute inset-0 bg-gradient-to-r from-violet-500 to-fuchsia-500 dark:from-violet-600 dark:to-fuchsia-600 rounded-full opacity-70 blur-md group-hover:opacity-90 transition-opacity duration-300"></div>
-                    {instagramData?.isConnected && instagramData.profile?.profile_picture_url ? (
-                      <Image
-                        src={instagramData.profile.profile_picture_url}
-                        alt={profileData?.name || 'Profile'}
-                        width={150}
-                        height={150}
-                        className="relative rounded-full object-cover border-2 border-white/50 dark:border-black/50 shadow-lg z-10 group-hover:scale-[1.02] transition-transform duration-300"
-                      />
-                    ) : (
-                      <div className="relative w-[150px] h-[150px] bg-gray-100 dark:bg-zinc-900 rounded-full flex items-center justify-center border-2 border-gray-200 dark:border-zinc-800 shadow-lg z-10 group-hover:scale-[1.02] transition-transform duration-300">
-                        <User className="h-16 w-16 text-gray-400 dark:text-zinc-600" />
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Name and Info with Modern Typography */}
-                  <div className="text-center relative">
-                    <h1 className="text-3xl md:text-4xl font-bold mb-2 tracking-tight">
-                      <span className="bg-clip-text text-transparent bg-gradient-to-r from-fuchsia-400 via-violet-400 to-fuchsia-400">
-                        {profileData?.name || 'Your Name'}
-                      </span>
-                    </h1>
-                    <p className="text-gray-500 dark:text-zinc-400 max-w-md mx-auto text-sm md:text-base">
-                      {profileData?.email}
-                    </p>
-
-                    {/* Instagram Connection Badge - Subtle Modern Design */}
-                    {instagramData?.isConnected && instagramData.profile && (
-                      <div className="mt-4 inline-flex items-center px-3 py-1.5 bg-gray-100/80 dark:bg-zinc-900/80 backdrop-blur-sm border border-violet-300/20 dark:border-violet-500/20 rounded-full hover:border-violet-300/40 dark:hover:border-violet-500/40 transition-colors duration-300">
-                        <Instagram className="h-3.5 w-3.5 text-fuchsia-500 dark:text-fuchsia-400 mr-2" />
-                        <span className="text-xs font-medium text-gray-700 dark:text-zinc-300">@{instagramData.profile.username}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
+              {/* Welcome message */}
+              <div className="relative mb-8 text-center md:text-left">
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
+                  Welcome to your profile dashboard
+                </h2>
+                <p className="text-slate-500 dark:text-slate-400 max-w-2xl">
+                  Track your performance, manage your Instagram connection, and view your collaboration statistics all in one place.
+                </p>
               </div>
 
               {/* Main Content with Modern Card Layout */}
               <div className="space-y-16 max-w-6xl mx-auto">
-                {/* Performance Stats - Modern Card Layout */}
+                {/* Performance Stats - Professional Design */}
                 <section className="relative" id="performance-stats">
-                  <div className="mb-8">
-                    <h2 className="text-xl font-bold text-gray-900 dark:text-white inline-flex items-center">
-                      <BarChart3 className="h-5 w-5 mr-2 text-violet-500 dark:text-violet-400" />
-                      Performance Stats
-                    </h2>
-                    <div className="h-px w-full bg-gradient-to-r from-violet-400/50 to-fuchsia-400/50 dark:from-violet-500/50 dark:to-fuchsia-500/50 mt-2"></div>
+                  <div className="mb-6">
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center">
+                        <BarChart3 className="h-5 w-5 mr-2 text-blue-500 dark:text-blue-400" />
+                        Performance Metrics
+                      </h2>
+                      <div className="text-xs text-slate-500 dark:text-slate-400 bg-white dark:bg-zinc-800 px-3 py-1 rounded-full border border-slate-200 dark:border-zinc-700">
+                        Last 30 days
+                      </div>
+                    </div>
+                    <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
+                      Track your key performance indicators and growth metrics
+                    </p>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
                     {/* Rating Card */}
-                    <div className="bg-white/70 dark:bg-zinc-900/70 backdrop-blur-sm rounded-xl overflow-hidden group hover:bg-white/90 dark:hover:bg-zinc-900/90 transition-colors duration-300 border border-gray-200/50 dark:border-zinc-800/50 shadow-sm">
-                      <div className="h-1 bg-gradient-to-r from-violet-400 to-fuchsia-400 dark:from-violet-500 dark:to-fuchsia-500"></div>
-                      <div className="p-6">
+                    <div className="bg-white dark:bg-zinc-800 rounded-xl overflow-hidden group hover:shadow-md transition-shadow duration-300 border border-slate-200 dark:border-zinc-700">
+                      <div className="p-5">
                         <div className="flex items-center justify-between mb-3">
-                          <h3 className="text-sm font-medium text-gray-500 dark:text-zinc-400 uppercase tracking-wider">Rating</h3>
-                          <Star className="h-4 w-4 text-amber-500 dark:text-amber-400" />
+                          <div className="flex items-center">
+                            <div className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center mr-3">
+                              <Star className="h-4 w-4 text-amber-500 dark:text-amber-400" />
+                            </div>
+                            <h3 className="text-sm font-medium text-slate-900 dark:text-white">Rating</h3>
+                          </div>
                         </div>
-                        <div className="text-3xl font-bold text-gray-900 dark:text-white group-hover:scale-105 transition-transform duration-300">
-                          {profileData?.rating || 0}
+                        <div className="flex items-end justify-between">
+                          <div className="text-3xl font-bold text-slate-900 dark:text-white">
+                            {profileData?.rating || 0}
+                          </div>
+                          <div className="text-xs text-green-500 dark:text-green-400 flex items-center">
+                            <span className="font-medium">+0%</span>
+                          </div>
                         </div>
-                        <div className="mt-2 text-xs text-gray-500 dark:text-zinc-500">Based on client reviews</div>
+                        <div className="mt-2 text-xs text-slate-500 dark:text-slate-400">Based on client reviews</div>
                       </div>
                     </div>
 
                     {/* Completed Deals Card */}
-                    <div className="bg-white/70 dark:bg-zinc-900/70 backdrop-blur-sm rounded-xl overflow-hidden group hover:bg-white/90 dark:hover:bg-zinc-900/90 transition-colors duration-300 border border-gray-200/50 dark:border-zinc-800/50 shadow-sm">
-                      <div className="h-1 bg-gradient-to-r from-fuchsia-400 to-violet-400 dark:from-fuchsia-500 dark:to-violet-500"></div>
-                      <div className="p-6">
+                    <div className="bg-white dark:bg-zinc-800 rounded-xl overflow-hidden group hover:shadow-md transition-shadow duration-300 border border-slate-200 dark:border-zinc-700">
+                      <div className="p-5">
                         <div className="flex items-center justify-between mb-3">
-                          <h3 className="text-sm font-medium text-gray-500 dark:text-zinc-400 uppercase tracking-wider">Completed Deals</h3>
-                          <Briefcase className="h-4 w-4 text-violet-500 dark:text-violet-400" />
+                          <div className="flex items-center">
+                            <div className="w-8 h-8 rounded-lg bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center mr-3">
+                              <Briefcase className="h-4 w-4 text-violet-500 dark:text-violet-400" />
+                            </div>
+                            <h3 className="text-sm font-medium text-slate-900 dark:text-white">Completed Deals</h3>
+                          </div>
                         </div>
-                        <div className="text-3xl font-bold text-gray-900 dark:text-white group-hover:scale-105 transition-transform duration-300">
-                          {profileData?.completedDeals || 0}
+                        <div className="flex items-end justify-between">
+                          <div className="text-3xl font-bold text-slate-900 dark:text-white">
+                            {profileData?.completedDeals || 0}
+                          </div>
+                          <div className="text-xs text-green-500 dark:text-green-400 flex items-center">
+                            <span className="font-medium">+0%</span>
+                          </div>
                         </div>
-                        <div className="mt-2 text-xs text-gray-500 dark:text-zinc-500">Total successful collaborations</div>
+                        <div className="mt-2 text-xs text-slate-500 dark:text-slate-400">Total successful collaborations</div>
                       </div>
                     </div>
 
-                    {/* Earnings Card (Placeholder) */}
-                    <div className="bg-white/70 dark:bg-zinc-900/70 backdrop-blur-sm rounded-xl overflow-hidden group hover:bg-white/90 dark:hover:bg-zinc-900/90 transition-colors duration-300 border border-gray-200/50 dark:border-zinc-800/50 shadow-sm">
-                      <div className="h-1 bg-gradient-to-r from-violet-400 to-fuchsia-400 dark:from-violet-500 dark:to-fuchsia-500"></div>
-                      <div className="p-6">
+                    {/* Earnings Card */}
+                    <div className="bg-white dark:bg-zinc-800 rounded-xl overflow-hidden group hover:shadow-md transition-shadow duration-300 border border-slate-200 dark:border-zinc-700">
+                      <div className="p-5">
                         <div className="flex items-center justify-between mb-3">
-                          <h3 className="text-sm font-medium text-gray-500 dark:text-zinc-400 uppercase tracking-wider">Earnings</h3>
-                          <BadgeIndianRupee className="h-4 w-4 text-green-500 dark:text-green-400" />
+                          <div className="flex items-center">
+                            <div className="w-8 h-8 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center mr-3">
+                              <BadgeIndianRupee className="h-4 w-4 text-green-500 dark:text-green-400" />
+                            </div>
+                            <h3 className="text-sm font-medium text-slate-900 dark:text-white">Earnings</h3>
+                          </div>
                         </div>
-                        <div className="text-3xl font-bold text-gray-900 dark:text-white group-hover:scale-105 transition-transform duration-300">
-                          ₹0
+                        <div className="flex items-end justify-between">
+                          <div className="text-3xl font-bold text-slate-900 dark:text-white">
+                            ₹0
+                          </div>
+                          <div className="text-xs text-green-500 dark:text-green-400 flex items-center">
+                            <span className="font-medium">+0%</span>
+                          </div>
                         </div>
-                        <div className="mt-2 text-xs text-gray-500 dark:text-zinc-500">Total earnings to date</div>
+                        <div className="mt-2 text-xs text-slate-500 dark:text-slate-400">Total earnings to date</div>
                       </div>
                     </div>
 
                     {/* Account Age Card */}
-                    <div className="bg-white/70 dark:bg-zinc-900/70 backdrop-blur-sm rounded-xl overflow-hidden group hover:bg-white/90 dark:hover:bg-zinc-900/90 transition-colors duration-300 border border-gray-200/50 dark:border-zinc-800/50 shadow-sm">
-                      <div className="h-1 bg-gradient-to-r from-fuchsia-400 to-violet-400 dark:from-fuchsia-500 dark:to-violet-500"></div>
-                      <div className="p-6">
+                    <div className="bg-white dark:bg-zinc-800 rounded-xl overflow-hidden group hover:shadow-md transition-shadow duration-300 border border-slate-200 dark:border-zinc-700">
+                      <div className="p-5">
                         <div className="flex items-center justify-between mb-3">
-                          <h3 className="text-sm font-medium text-gray-500 dark:text-zinc-400 uppercase tracking-wider">Account Age</h3>
-                          <Calendar className="h-4 w-4 text-blue-500 dark:text-blue-400" />
+                          <div className="flex items-center">
+                            <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mr-3">
+                              <Calendar className="h-4 w-4 text-blue-500 dark:text-blue-400" />
+                            </div>
+                            <h3 className="text-sm font-medium text-slate-900 dark:text-white">Account Age</h3>
+                          </div>
                         </div>
-                        <div className="text-3xl font-bold text-gray-900 dark:text-white group-hover:scale-105 transition-transform duration-300">
-                          0 days
+                        <div className="flex items-end justify-between">
+                          <div className="text-3xl font-bold text-slate-900 dark:text-white">
+                            0
+                          </div>
+                          <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center">
+                            <span className="font-medium">days</span>
+                          </div>
                         </div>
-                        <div className="mt-2 text-xs text-gray-500 dark:text-zinc-500">Member since N/A</div>
+                        <div className="mt-2 text-xs text-slate-500 dark:text-slate-400">Member since N/A</div>
                       </div>
                     </div>
                   </div>
                 </section>
 
-                {/* Support Hub - Modern Card Design */}
-                <section className="relative" id="support-hub">
-                  <div className="mb-8">
-                    <h2 className="text-xl font-bold text-white inline-flex items-center">
-                      <MessageSquare className="h-5 w-5 mr-2 text-violet-400" />
-                      Support Hub
-                    </h2>
-                    <div className="h-px w-full bg-gradient-to-r from-violet-500/50 to-fuchsia-500/50 mt-2"></div>
-                  </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <button
-                      onClick={handleFaqsClick}
-                      className="group bg-zinc-900/70 backdrop-blur-sm rounded-xl overflow-hidden hover:bg-zinc-900/90 transition-colors duration-300 p-6 text-left"
-                    >
-                      <div className="flex items-center mb-4">
-                        <div className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center group-hover:bg-violet-900/30 transition-colors duration-300">
-                          <MessageSquare className="h-5 w-5 text-violet-400" />
-                        </div>
-                        <h3 className="text-lg font-semibold ml-4 text-white">Frequently Asked Questions</h3>
-                      </div>
-                      <p className="text-sm text-zinc-400 ml-14">Find answers to common questions about the platform, deals, and payments</p>
-                    </button>
 
-                    <button
-                      onClick={handleContactClick}
-                      className="group bg-zinc-900/70 backdrop-blur-sm rounded-xl overflow-hidden hover:bg-zinc-900/90 transition-colors duration-300 p-6 text-left"
-                    >
-                      <div className="flex items-center mb-4">
-                        <div className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center group-hover:bg-fuchsia-900/30 transition-colors duration-300">
-                          <Mail className="h-5 w-5 text-fuchsia-400" />
-                        </div>
-                        <h3 className="text-lg font-semibold ml-4 text-white">Contact Support</h3>
-                      </div>
-                      <p className="text-sm text-zinc-400 ml-14">Get in touch with our support team for personalized assistance</p>
-                    </button>
-                  </div>
-                </section>
 
-                {/* Notifications Hub - Modern Design */}
-                <section className="relative" id="notifications-hub">
-                  <div className="mb-8">
-                    <h2 className="text-xl font-bold text-white inline-flex items-center">
-                      <BellIcon className="h-5 w-5 mr-2 text-violet-400" />
-                      Notifications
-                    </h2>
-                    <div className="h-px w-full bg-gradient-to-r from-violet-500/50 to-fuchsia-500/50 mt-2"></div>
-                  </div>
-
-                  <div className="bg-zinc-900/70 backdrop-blur-sm rounded-xl overflow-hidden p-6">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-                      <div>
-                        <h3 className="font-semibold text-white text-lg">Push Notifications</h3>
-                        <p className="text-sm text-zinc-400 mt-1">Get real-time updates on deals, messages, and platform activity</p>
-                      </div>
-
-                      {isSupported ? (
-                        isSubscribed ? (
-                          <div className="flex items-center gap-2 bg-zinc-800 border border-green-500/30 text-white px-4 py-2 rounded-lg">
-                            <Check className="h-5 w-5 text-green-400" />
-                            <span className="font-medium">Notifications Enabled</span>
-                          </div>
-                        ) : (
-                          <button
-                            onClick={handleEnableNotifications}
-                            className="inline-flex items-center px-5 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg border border-violet-500/30 hover:border-violet-500/50 transition-all duration-300"
-                          >
-                            <BellIcon className="h-4 w-4 mr-2 text-violet-400" />
-                            <span>Enable Notifications</span>
-                          </button>
-                        )
-                      ) : (
-                        <div className="bg-zinc-800 text-zinc-400 px-4 py-2 rounded-lg text-sm border border-zinc-700">
-                          Not supported in your browser
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="relative">
-                      <h3 className="font-medium text-white mb-4">Notification Categories:</h3>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div className="flex items-center p-4 bg-zinc-800/50 rounded-lg border border-zinc-700/30 hover:border-violet-500/30 transition-colors duration-300">
-                          <div className="w-8 h-8 rounded-full bg-violet-900/30 flex items-center justify-center mr-3">
-                            <Briefcase className="h-4 w-4 text-violet-400" />
-                          </div>
-                          <div>
-                            <span className="text-sm font-medium text-white">Deal Offers</span>
-                            <p className="text-xs text-zinc-500 mt-1">New collaboration opportunities</p>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center p-4 bg-zinc-800/50 rounded-lg border border-zinc-700/30 hover:border-violet-500/30 transition-colors duration-300">
-                          <div className="w-8 h-8 rounded-full bg-fuchsia-900/30 flex items-center justify-center mr-3">
-                            <RefreshCw className="h-4 w-4 text-fuchsia-400" />
-                          </div>
-                          <div>
-                            <span className="text-sm font-medium text-white">Status Updates</span>
-                            <p className="text-xs text-zinc-500 mt-1">Changes to your active deals</p>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center p-4 bg-zinc-800/50 rounded-lg border border-zinc-700/30 hover:border-violet-500/30 transition-colors duration-300">
-                          <div className="w-8 h-8 rounded-full bg-violet-900/30 flex items-center justify-center mr-3">
-                            <MessageSquare className="h-4 w-4 text-violet-400" />
-                          </div>
-                          <div>
-                            <span className="text-sm font-medium text-white">Messages</span>
-                            <p className="text-xs text-zinc-500 mt-1">New messages from brands</p>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center p-4 bg-zinc-800/50 rounded-lg border border-zinc-700/30 hover:border-violet-500/30 transition-colors duration-300">
-                          <div className="w-8 h-8 rounded-full bg-fuchsia-900/30 flex items-center justify-center mr-3">
-                            <BadgeIndianRupee className="h-4 w-4 text-fuchsia-400" />
-                          </div>
-                          <div>
-                            <span className="text-sm font-medium text-white">Payments</span>
-                            <p className="text-xs text-zinc-500 mt-1">Payment confirmations and updates</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </section>
               </div>
             </div>
           </TabsContent>

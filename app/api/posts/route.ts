@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { connect } from "@/lib/mongoose";
 import Post from "@/models/post";
+// Import User model to ensure it's registered with Mongoose before population
+// This import is needed even though it's not directly referenced in the code
+import User from "@/models/user";
 import { getDataFromToken } from "@/helpers/getDataFromToken";
 
 // Create a new post
