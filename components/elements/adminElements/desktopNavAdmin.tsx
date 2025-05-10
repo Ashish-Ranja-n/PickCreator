@@ -13,6 +13,7 @@ const AdminDesktopNav = React.memo(() => {
   // Memoize the links array to prevent it from being recreated on each render
   const links = useMemo(() => [
     { name: "Home", path: "/admin" },
+    { name: "Community", path: "/admin/community" },
     { name: "Deals", path: "/admin/deals" },
     { name: "Chat", path: "/admin/chat" },
     { name: "Profile", path: "/admin/profile" },
@@ -64,4 +65,4 @@ const AdminDesktopNav = React.memo(() => {
 
 AdminDesktopNav.displayName = 'AdminDesktopNav';
 
-export default AdminDesktopNav; 
+export default AdminDesktopNav;

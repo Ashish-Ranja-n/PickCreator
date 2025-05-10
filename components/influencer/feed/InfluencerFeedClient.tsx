@@ -326,9 +326,11 @@ export default function InfluencerFeedClient() {
               </Tooltip>
             </TooltipProvider>
 
-            <h2 className="text-base font-medium text-gray-900 dark:text-white block">
-              {showMyPosts ? 'My Posts' : 'Influencer Community'}
-            </h2>
+            <div className="flex items-center gap-2">
+              <h2 className="text-base font-medium text-gray-900 dark:text-white block">
+                {showMyPosts ? 'My Posts' : 'Influencer Community'}
+              </h2>
+            </div>
           </div>
 
           <div className="flex items-center space-x-1 bg-gray-100 dark:bg-zinc-900 p-0.5 rounded-full shadow-md border border-gray-200/50 dark:border-zinc-800/50">
@@ -464,14 +466,21 @@ export default function InfluencerFeedClient() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-800 text-gray-900 dark:text-white">
-                          {currentUser && post.author && post.author._id === currentUser._id && (
-                            <DropdownMenuItem
-                              onClick={() => openDeleteDialog(post._id)}
-                              className="text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 hover:bg-gray-100 dark:hover:bg-zinc-800 focus:bg-gray-100 dark:focus:bg-zinc-800 cursor-pointer"
-                            >
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              Delete Post
-                            </DropdownMenuItem>
+                          {currentUser && post.author && (
+                            // Show delete option if user is the post author OR if user is an admin
+                            (post.author._id === currentUser._id || currentUser.role === 'Admin') && (
+                              <DropdownMenuItem
+                                onClick={() => openDeleteDialog(post._id)}
+                                className="text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 hover:bg-gray-100 dark:hover:bg-zinc-800 focus:bg-gray-100 dark:focus:bg-zinc-800 cursor-pointer"
+                              >
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                {currentUser.role === 'Admin' && post.author._id !== currentUser._id ? (
+                                  <>Admin: Delete Post</>
+                                ) : (
+                                  <>Delete Post</>
+                                )}
+                              </DropdownMenuItem>
+                            )
                           )}
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -665,9 +674,17 @@ export default function InfluencerFeedClient() {
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent className="bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-800 text-gray-900 dark:text-white">
           <DialogHeader>
-            <DialogTitle className="text-gray-900 dark:text-white">Delete Post</DialogTitle>
+            <DialogTitle className="text-gray-900 dark:text-white">
+              {currentUser?.role === 'Admin' && postToDelete && posts.find(p => p._id === postToDelete)?.author._id !== currentUser._id
+                ? "Admin: Delete Post"
+                : "Delete Post"
+              }
+            </DialogTitle>
             <DialogDescription className="text-gray-500 dark:text-zinc-400">
-              Are you sure you want to delete this post? This action cannot be undone.
+              {currentUser?.role === 'Admin' && postToDelete && posts.find(p => p._id === postToDelete)?.author._id !== currentUser._id
+                ? "As an admin, you are about to delete another user's post. This action cannot be undone."
+                : "Are you sure you want to delete this post? This action cannot be undone."
+              }
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-end space-x-2 pt-4">
@@ -683,7 +700,10 @@ export default function InfluencerFeedClient() {
               onClick={handleDeletePost}
               className="bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-700"
             >
-              Delete
+              {currentUser?.role === 'Admin' && postToDelete && posts.find(p => p._id === postToDelete)?.author._id !== currentUser._id
+                ? "Delete as Admin"
+                : "Delete"
+              }
             </Button>
           </div>
         </DialogContent>

@@ -1,6 +1,6 @@
 'use client';
 import { cn } from "@/lib/utils";
-import { Home, ShoppingBag, MessageSquare, User } from "lucide-react";
+import { Home, ShoppingBag, MessageSquare, User, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useMemo } from "react";
@@ -13,14 +13,15 @@ const AdminMobileNav = React.memo(() => {
   const tabs = useMemo(() => [
     { icon: Home, label: "Home", path: "/admin" },
     { icon: ShoppingBag, label: "Deals", path: "/admin/deals" },
+    { icon: Users, label: "Community", path: "/admin/community" },
     { icon: MessageSquare, label: "Chat", path: "/admin/chat" },
     { icon: User, label: "Profile", path: "/admin/profile" },
   ], []);
 
   // Memoize the nav content based on pathname
   const navContent = useMemo(() => (
-    <nav className="lg:hidden sticky bottom-0 h-16 bg-white z-50 border-t border-gray-200 shadow-md">
-      <div className="grid grid-cols-4 h-full">
+    <nav className="lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-white z-50 border-t border-gray-200 shadow-md">
+      <div className="grid grid-cols-5 h-full">
         {tabs.map(({ icon: Icon, label, path }) => (
           <Link
             key={path}
@@ -52,4 +53,4 @@ const AdminMobileNav = React.memo(() => {
 
 AdminMobileNav.displayName = 'AdminMobileNav';
 
-export default AdminMobileNav; 
+export default AdminMobileNav;
