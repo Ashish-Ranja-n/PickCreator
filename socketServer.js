@@ -24,55 +24,143 @@ if (USE_REDIS) {
 
     // Redis client configuration
     const redisOptions = {
-      maxRetriesPerRequest: 3,  // Reduced from default 20
+      // Connection settings
+      maxRetriesPerRequest: 3,      // Reduced from default 20
+      connectTimeout: 10000,        // 10 seconds
+      disconnectTimeout: 2000,      // 2 seconds
+      commandTimeout: 5000,         // 5 seconds
+      keepAlive: 10000,             // Send keep-alive every 10 seconds
+      noDelay: true,                // Disable Nagle's algorithm
+      enableAutoPipelining: false,  // Disable auto pipelining
+      enableOfflineQueue: false,    // Don't queue commands when disconnected
+
+      // Retry strategy with exponential backoff
       retryStrategy: (times) => {
-        const delay = Math.min(times * 50, 2000); // Increasing delay with max 2 seconds
+        // If we've tried too many times, stop retrying
+        if (times > 10) {
+          console.log('Redis connection failed too many times. Stopping retries.');
+          return null; // Stop retrying
+        }
+
+        // Exponential backoff with jitter
+        const delay = Math.min(Math.floor(Math.random() * 100) + Math.pow(2, times) * 50, 5000);
+        console.log(`Redis retry in ${delay}ms (attempt ${times})`);
         return delay;
       },
-      connectTimeout: 10000,    // 10 seconds
-      disconnectTimeout: 2000,  // 2 seconds
-      commandTimeout: 5000,     // 5 seconds
+
+      // Reconnect on specific errors only
       reconnectOnError: (err) => {
-        const targetError = 'READONLY';
-        if (err.message.includes(targetError)) {
-          // Only reconnect when the error contains "READONLY"
-          return true;
+        const targetErrors = ['READONLY', 'ETIMEDOUT', 'ECONNRESET', 'ECONNREFUSED'];
+        for (const errType of targetErrors) {
+          if (err.message.includes(errType)) {
+            console.log(`Reconnecting due to error: ${errType}`);
+            return true; // Reconnect for these specific errors
+          }
         }
-        return false;
-      },
-      enableOfflineQueue: false // Don't queue commands when disconnected
+        return false; // Don't reconnect for other errors
+      }
     };
 
     // Setup Redis clients with error handlers
     const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
     pubClient = new Redis(redisUrl, redisOptions);
     pubClient.on('error', (err) => {
-      console.error('Redis pub client error:', err.message);
+      console.error('Redis pub client error:', err.message, err.stack);
+      // Log additional connection details
+      console.error(`Redis pub client connection details: ${redisUrl.replace(/\/\/.*@/, '//***@')}`);
+      console.error(`Redis pub client status: ${pubClient.status}`);
     });
     pubClient.on('connect', () => {
       console.log('Redis pub client connected');
     });
-    pubClient.on('reconnecting', () => {
-      console.log('Redis pub client reconnecting...');
+    pubClient.on('reconnecting', (attempt) => {
+      console.log(`Redis pub client reconnecting... (attempt ${attempt})`);
+    });
+    pubClient.on('end', () => {
+      console.log('Redis pub client connection closed');
+    });
+    pubClient.on('ready', () => {
+      console.log('Redis pub client ready');
     });
 
     subClient = pubClient.duplicate();
     subClient.on('error', (err) => {
-      console.error('Redis sub client error:', err.message);
+      console.error('Redis sub client error:', err.message, err.stack);
+      console.error(`Redis sub client status: ${subClient.status}`);
     });
     subClient.on('connect', () => {
       console.log('Redis sub client connected');
     });
+    subClient.on('reconnecting', (attempt) => {
+      console.log(`Redis sub client reconnecting... (attempt ${attempt})`);
+    });
+    subClient.on('end', () => {
+      console.log('Redis sub client connection closed');
+    });
+    subClient.on('ready', () => {
+      console.log('Redis sub client ready');
+    });
 
     redisRateLimiter = new Redis(redisUrl, redisOptions);
     redisRateLimiter.on('error', (err) => {
-      console.error('Redis rate limiter error:', err.message);
+      console.error('Redis rate limiter error:', err.message, err.stack);
+      console.error(`Redis rate limiter status: ${redisRateLimiter.status}`);
     });
     redisRateLimiter.on('connect', () => {
       console.log('Redis rate limiter connected');
     });
+    redisRateLimiter.on('reconnecting', (attempt) => {
+      console.log(`Redis rate limiter reconnecting... (attempt ${attempt})`);
+    });
+    redisRateLimiter.on('end', () => {
+      console.log('Redis rate limiter connection closed');
+    });
+    redisRateLimiter.on('ready', () => {
+      console.log('Redis rate limiter ready');
+    });
 
     console.log('Redis mode enabled');
+
+    // Set up periodic health check for Redis connections
+    const redisHealthCheck = setInterval(async () => {
+      try {
+        // Check if Redis clients are connected
+        const pubStatus = pubClient.status;
+        const subStatus = subClient.status;
+        const limiterStatus = redisRateLimiter.status;
+
+        console.log(`Redis health check - Pub: ${pubStatus}, Sub: ${subStatus}, Limiter: ${limiterStatus}`);
+
+        // If any client is not ready, try a ping to verify connectivity
+        if (pubStatus !== 'ready' || subStatus !== 'ready' || limiterStatus !== 'ready') {
+          console.log('Some Redis clients not ready, checking connectivity...');
+
+          // Try pinging Redis to check connectivity
+          if (pubStatus === 'ready') {
+            try {
+              const pingResult = await pubClient.ping();
+              console.log(`Redis pub client ping result: ${pingResult}`);
+            } catch (pingErr) {
+              console.error('Redis pub client ping failed:', pingErr.message);
+            }
+          }
+
+          // Check for reconnection issues
+          if (pubClient.retryAttempts > 5) {
+            console.warn(`Redis pub client has high retry count: ${pubClient.retryAttempts}`);
+          }
+        }
+      } catch (error) {
+        console.error('Redis health check error:', error.message);
+      }
+    }, 30000); // Run every 30 seconds
+
+    // Clean up health check on process exit
+    process.on('exit', () => {
+      if (redisHealthCheck) {
+        clearInterval(redisHealthCheck);
+      }
+    });
   } catch (error) {
     console.error('Failed to initialize Redis:', error.message);
     console.log('Falling back to in-memory storage');
@@ -597,6 +685,17 @@ process.on('SIGINT', shutdown);
 async function shutdown() {
   console.log('Shutting down server...');
 
+  // Clear any active intervals
+  try {
+    // Find and clear the Redis health check interval if it exists
+    if (typeof redisHealthCheck !== 'undefined') {
+      clearInterval(redisHealthCheck);
+      console.log('Redis health check interval cleared');
+    }
+  } catch (error) {
+    console.error('Error clearing intervals:', error.message);
+  }
+
   // Close all connections
   io.close();
 
@@ -643,7 +742,55 @@ async function shutdown() {
   process.exit(0);
 }
 
+// Function to check Redis server configuration
+async function checkRedisConfig() {
+  if (!USE_REDIS || !pubClient || pubClient.status !== 'ready') {
+    console.log('Redis not enabled or not ready, skipping config check');
+    return;
+  }
+
+  try {
+    console.log('Checking Redis server configuration...');
+
+    // Get Redis server info
+    const info = await pubClient.info();
+    const configLines = info.split('\n');
+
+    // Extract important configuration values
+    const redisVersion = configLines.find(line => line.startsWith('redis_version'))?.split(':')[1]?.trim();
+    const connectedClients = configLines.find(line => line.startsWith('connected_clients'))?.split(':')[1]?.trim();
+    const maxClients = configLines.find(line => line.startsWith('maxclients'))?.split(':')[1]?.trim();
+    const usedMemory = configLines.find(line => line.startsWith('used_memory_human'))?.split(':')[1]?.trim();
+    const maxMemory = configLines.find(line => line.startsWith('maxmemory'))?.split(':')[1]?.trim();
+
+    console.log(`Redis version: ${redisVersion || 'unknown'}`);
+    console.log(`Connected clients: ${connectedClients || 'unknown'} / ${maxClients || 'unlimited'}`);
+    console.log(`Memory usage: ${usedMemory || 'unknown'} / ${maxMemory || 'unlimited'}`);
+
+    // Check for potential issues
+    if (maxClients && connectedClients && parseInt(connectedClients) > parseInt(maxClients) * 0.8) {
+      console.warn('WARNING: Redis server is approaching client connection limit');
+    }
+
+    // Get client list to check for connection issues
+    const clientList = await pubClient.client('LIST');
+    const clientCount = clientList.split('\n').length - 1;
+    console.log(`Total Redis client connections: ${clientCount}`);
+
+  } catch (error) {
+    console.error('Error checking Redis configuration:', error.message);
+  }
+}
+
 server.listen(SOCKET_PORT, "0.0.0.0", () => {
   console.log(`Socket.IO server running on port ${SOCKET_PORT}`);
   console.log(`Redis mode: ${USE_REDIS ? 'enabled' : 'disabled'}`);
+
+  // Check Redis configuration after server starts
+  if (USE_REDIS) {
+    // Wait a bit for connections to stabilize
+    setTimeout(() => {
+      checkRedisConfig().catch(err => console.error('Redis config check failed:', err.message));
+    }, 5000);
+  }
 });
