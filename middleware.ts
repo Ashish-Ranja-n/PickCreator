@@ -89,6 +89,7 @@ export async function middleware(request: NextRequest) {
         try {
             const payload = await getDataFromToken(request, token);
             const role = payload?.role;
+            const instagramConnected = payload?.instagramConnected === true;
 
             // Only influencers can access this page
             if(role !== 'Influencer') {
@@ -99,6 +100,9 @@ export async function middleware(request: NextRequest) {
                     return NextResponse.redirect(`${baseUrl}/admin`);
                 }
                 return NextResponse.redirect(`${baseUrl}/log-in`);
+            }
+            if(role === 'Influencer' && instagramConnected) {
+                return NextResponse.redirect(`${baseUrl}/influencer`);
             }
 
             return NextResponse.next();

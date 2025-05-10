@@ -248,7 +248,7 @@ export async function GET(request: NextRequest) {
             // Sign token using jose
             const token = await new SignJWT(tokenData)
               .setProtectedHeader({ alg: 'HS256' })
-              .setExpirationTime('1d')
+              .setExpirationTime('7d')
               .sign(new TextEncoder().encode(process.env.JWT_SECRET!));
 
             // Create response with redirect
@@ -258,7 +258,7 @@ export async function GET(request: NextRequest) {
             response.cookies.set("token", token, {
               httpOnly: true,
               secure: true,
-              maxAge: 24 * 60 * 60, // 1 day in seconds
+              maxAge: 7 * 24 * 60 * 60, // 1 day in seconds
             });
 
             console.log("Instagram callback: New token issued with updated Instagram status");
