@@ -21,23 +21,57 @@ if (USE_REDIS) {
   try {
     Redis = require('ioredis');
     createAdapter = require('@socket.io/redis-adapter').createAdapter;
-    
+
+    // Redis client configuration
+    const redisOptions = {
+      maxRetriesPerRequest: 3,  // Reduced from default 20
+      retryStrategy: (times) => {
+        const delay = Math.min(times * 50, 2000); // Increasing delay with max 2 seconds
+        return delay;
+      },
+      connectTimeout: 10000,    // 10 seconds
+      disconnectTimeout: 2000,  // 2 seconds
+      commandTimeout: 5000,     // 5 seconds
+      reconnectOnError: (err) => {
+        const targetError = 'READONLY';
+        if (err.message.includes(targetError)) {
+          // Only reconnect when the error contains "READONLY"
+          return true;
+        }
+        return false;
+      },
+      enableOfflineQueue: false // Don't queue commands when disconnected
+    };
+
     // Setup Redis clients with error handlers
-    pubClient = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
+    const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+    pubClient = new Redis(redisUrl, redisOptions);
     pubClient.on('error', (err) => {
       console.error('Redis pub client error:', err.message);
     });
-    
+    pubClient.on('connect', () => {
+      console.log('Redis pub client connected');
+    });
+    pubClient.on('reconnecting', () => {
+      console.log('Redis pub client reconnecting...');
+    });
+
     subClient = pubClient.duplicate();
     subClient.on('error', (err) => {
       console.error('Redis sub client error:', err.message);
     });
-    
-    redisRateLimiter = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
+    subClient.on('connect', () => {
+      console.log('Redis sub client connected');
+    });
+
+    redisRateLimiter = new Redis(redisUrl, redisOptions);
     redisRateLimiter.on('error', (err) => {
       console.error('Redis rate limiter error:', err.message);
     });
-    
+    redisRateLimiter.on('connect', () => {
+      console.log('Redis rate limiter connected');
+    });
+
     console.log('Redis mode enabled');
   } catch (error) {
     console.error('Failed to initialize Redis:', error.message);
@@ -49,39 +83,60 @@ if (USE_REDIS) {
 async function isRateLimited(clientId) {
   // Use in-memory rate limiting if Redis is not available
   if (!USE_REDIS || !redisRateLimiter) {
-    const now = Date.now();
-    const clientRequests = rateLimiter.get(clientId) || { count: 0, timestamp: now };
-    
-    // Reset count if window has passed
-    if (now - clientRequests.timestamp > RATE_LIMIT_WINDOW) {
-      clientRequests.count = 0;
-      clientRequests.timestamp = now;
-    }
-    
-    // Increment count
-    clientRequests.count++;
-    rateLimiter.set(clientId, clientRequests);
-    
-    return clientRequests.count > MAX_REQUESTS_PER_WINDOW;
+    return useInMemoryRateLimiting(clientId);
   }
-  
+
   // Use Redis-based rate limiting
   try {
-    const now = Date.now();
+    // Check if Redis client is ready
+    if (!redisRateLimiter.status || redisRateLimiter.status !== 'ready') {
+      console.warn('Redis rate limiter not ready, falling back to in-memory rate limiting');
+      return useInMemoryRateLimiting(clientId);
+    }
+
     const key = `ratelimit:${clientId}`;
-    
-    // Use Redis pipeline for atomicity
-    const results = await redisRateLimiter.pipeline()
-      .incr(key)
-      .pexpire(key, RATE_LIMIT_WINDOW)
-      .exec();
-    
+
+    // Use Redis pipeline for atomicity with a timeout
+    const pipeline = redisRateLimiter.pipeline();
+    pipeline.incr(key);
+    pipeline.pexpire(key, RATE_LIMIT_WINDOW);
+
+    const results = await Promise.race([
+      pipeline.exec(),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Redis pipeline timeout')), 2000)
+      )
+    ]);
+
+    if (!results || !Array.isArray(results) || results.length < 1) {
+      throw new Error('Invalid Redis pipeline results');
+    }
+
     const count = results[0][1];
     return count > MAX_REQUESTS_PER_WINDOW;
   } catch (error) {
-    console.error('Rate limiting error:', error);
-    return false; // Fail open if Redis has an error
+    console.error('Redis rate limiting error:', error.message);
+    console.log('Falling back to in-memory rate limiting');
+    return useInMemoryRateLimiting(clientId);
   }
+}
+
+// Helper function for in-memory rate limiting
+function useInMemoryRateLimiting(clientId) {
+  const now = Date.now();
+  const clientRequests = rateLimiter.get(clientId) || { count: 0, timestamp: now };
+
+  // Reset count if window has passed
+  if (now - clientRequests.timestamp > RATE_LIMIT_WINDOW) {
+    clientRequests.count = 0;
+    clientRequests.timestamp = now;
+  }
+
+  // Increment count
+  clientRequests.count++;
+  rateLimiter.set(clientId, clientRequests);
+
+  return clientRequests.count > MAX_REQUESTS_PER_WINDOW;
 }
 
 // Create HTTP server with basic request filtering
@@ -99,7 +154,7 @@ const server = http.createServer((req, res) => {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   res.setHeader('Access-Control-Allow-Credentials', 'true');
-  
+
   if (req.method === 'OPTIONS') {
     res.writeHead(200);
     res.end();
@@ -112,11 +167,11 @@ const server = http.createServer((req, res) => {
     req.on('data', chunk => {
       body += chunk.toString();
     });
-    
+
     req.on('end', () => {
       try {
         const eventData = JSON.parse(body);
-        
+
         if (eventData.event && eventData.data) {
           // Emit the event to the specified room or to all clients
           if (eventData.data.roomId) {
@@ -124,30 +179,30 @@ const server = http.createServer((req, res) => {
           } else {
             io.emit(eventData.event, eventData.data);
           }
-          
+
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ success: true }));
         } else {
           res.writeHead(400, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ 
-            success: false, 
-            message: 'Invalid event data. Both event and data are required.' 
+          res.end(JSON.stringify({
+            success: false,
+            message: 'Invalid event data. Both event and data are required.'
           }));
         }
       } catch (error) {
         console.error('Error processing event emission request:', error);
         res.writeHead(500, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ 
-          success: false, 
-          message: 'Error processing request', 
-          error: error.message 
+        res.end(JSON.stringify({
+          success: false,
+          message: 'Error processing request',
+          error: error.message
         }));
       }
     });
-    
+
     return;
   }
-  
+
   // Handle other routes with a 404
   res.writeHead(404, { 'Content-Type': 'application/json' });
   res.end(JSON.stringify({ message: 'Not Found' }));
@@ -176,7 +231,17 @@ const ioOptions = {
 
 // Add Redis adapter if available
 if (USE_REDIS && pubClient && subClient) {
-  ioOptions.adapter = createAdapter(pubClient, subClient);
+  try {
+    // Check if Redis clients are ready
+    if (pubClient.status === 'ready' && subClient.status === 'ready') {
+      ioOptions.adapter = createAdapter(pubClient, subClient);
+      console.log('Redis adapter configured for Socket.IO');
+    } else {
+      console.warn('Redis clients not ready, skipping Redis adapter setup');
+    }
+  } catch (error) {
+    console.error('Error setting up Redis adapter:', error.message);
+  }
 }
 
 const io = new Server(server, ioOptions);
@@ -185,13 +250,13 @@ const io = new Server(server, ioOptions);
 io.use((socket, next) => {
   try {
     const token = socket.handshake.auth.token || socket.handshake.headers.authorization;
-    
+
     if (token) {
       const decoded = jwt.verify(token, JWT_SECRET);
       socket.user = decoded;
     } else {
       // Still allow connection but with limited user info
-      socket.user = { 
+      socket.user = {
         id: socket.id,
         anonymous: true
       };
@@ -200,7 +265,7 @@ io.use((socket, next) => {
   } catch (error) {
     console.error('Authentication error:', error.message);
     // Still allow connection but with limited user info
-    socket.user = { 
+    socket.user = {
       id: socket.id,
       anonymous: true
     };
@@ -213,7 +278,7 @@ io.use(async (socket, next) => {
   try {
     const clientId = socket.user?.id || socket.handshake.address;
     const limited = await isRateLimited(clientId);
-    
+
     if (limited) {
       const err = new Error('Rate limit exceeded');
       err.data = { details: 'Too many requests' };
@@ -231,18 +296,18 @@ io.on('connection', (socket) => {
   // Get user data
   const userId = socket.user.id;
   const socketId = socket.id;
-  
+
   console.log(`User connected: ${userId} (socket: ${socketId})`);
-  
+
   // Handle errors at socket level
   socket.conn.on('error', (error) => {
     console.error(`Socket connection error for ${userId}:`, error);
   });
-  
+
   socket.on('error', (error) => {
     console.error(`Socket error for ${userId}:`, error);
   });
-  
+
   // Handle user coming online
   socket.on('userOnline', async (userId) => {
     if (userId) {
@@ -270,7 +335,7 @@ io.on('connection', (socket) => {
       }
     }
   });
-  
+
   // Handle request for online users
   socket.on('getOnlineUsers', async () => {
     try {
@@ -288,14 +353,14 @@ io.on('connection', (socket) => {
       socket.emit('onlineUsers', onlineUserIds);
     }
   });
-  
+
   // Handle joining a room (conversation)
   socket.on('joinRoom', (conversationId) => {
     try {
       socket.join(conversationId);
-      
+
       // Notify others in the room
-      socket.to(conversationId).emit('userJoined', { 
+      socket.to(conversationId).emit('userJoined', {
         userId: socket.user.id,
         message: 'A new user has joined the conversation'
       });
@@ -304,12 +369,12 @@ io.on('connection', (socket) => {
       socket.emit('error', { message: 'Failed to join conversation' });
     }
   });
-  
+
   // Handle leaving a room
   socket.on('leaveRoom', (conversationId) => {
     try {
       socket.leave(conversationId);
-      
+
       // Notify others in the room
       socket.to(conversationId).emit('userLeft', {
         userId: socket.user.id,
@@ -319,17 +384,17 @@ io.on('connection', (socket) => {
       console.error(`Error leaving room ${conversationId}:`, error);
     }
   });
-  
+
   // Handle user typing status with Redis or in-memory fallback
   socket.on('typing', async (data) => {
     const { userId, conversationId, isTyping } = data;
-    
+
     if (userId && conversationId) {
       try {
         if (USE_REDIS && pubClient) {
           // Use Redis
           const typingKey = `typing:${conversationId}`;
-          
+
           if (isTyping) {
             await pubClient.hset(typingKey, userId, '1');
             await pubClient.expire(typingKey, 60); // 60 seconds
@@ -341,16 +406,16 @@ io.on('connection', (socket) => {
           if (!userTypingStatus.has(conversationId)) {
             userTypingStatus.set(conversationId, new Map());
           }
-          
+
           const conversationTyping = userTypingStatus.get(conversationId);
-          
+
           if (isTyping) {
             conversationTyping.set(userId, true);
           } else {
             conversationTyping.delete(userId);
           }
         }
-        
+
         // Broadcast typing status to the conversation
         socket.to(conversationId).emit('userTyping', {
           userId,
@@ -359,20 +424,20 @@ io.on('connection', (socket) => {
         });
       } catch (error) {
         console.error('Error handling typing status:', error);
-        
+
         // Fallback to in-memory
         if (!userTypingStatus.has(conversationId)) {
           userTypingStatus.set(conversationId, new Map());
         }
-        
+
         const conversationTyping = userTypingStatus.get(conversationId);
-        
+
         if (isTyping) {
           conversationTyping.set(userId, true);
         } else {
           conversationTyping.delete(userId);
         }
-        
+
         socket.to(conversationId).emit('userTyping', {
           userId,
           conversationId,
@@ -416,28 +481,28 @@ io.on('connection', (socket) => {
     console.log(`Participant left room ${roomId}: ${participantName} (${participantId})`);
     io.to(roomId).emit('roomParticipantLeft', { roomId, participantId, participantName });
   });
-  
+
   // Handle sending messages to a room
   socket.on('sendMessage', (data) => {
     try {
       const { conversationId, text, sender, timestamp, media } = data;
-      
+
       // Create message object
       const messageData = {
         sender,
         timestamp
       };
-      
+
       // Add text if it exists
       if (text) {
         messageData.text = text;
       }
-      
+
       // Add media if it exists
       if (media && media.length > 0) {
         messageData.media = media;
       }
-      
+
       // Clear typing status
       try {
         if (USE_REDIS && pubClient) {
@@ -451,7 +516,7 @@ io.on('connection', (socket) => {
       } catch (error) {
         console.error('Error clearing typing status:', error);
       }
-      
+
       // Broadcast message to all clients in the room
       io.to(conversationId).emit('newMessage', messageData);
     } catch (error) {
@@ -459,11 +524,11 @@ io.on('connection', (socket) => {
       socket.emit('error', { message: 'Failed to send message' });
     }
   });
-  
+
   // Handle disconnection
   socket.on('disconnect', async () => {
     console.log(`User disconnected: ${userId} (socket: ${socketId})`);
-    
+
     try {
       if (USE_REDIS && pubClient) {
         // Redis cleanup
@@ -477,7 +542,7 @@ io.on('connection', (socket) => {
               break;
             }
           }
-          
+
           // Clean up typing statuses
           const typingPatterns = await pubClient.keys('typing:*');
           for (const key of typingPatterns) {
@@ -497,7 +562,7 @@ io.on('connection', (socket) => {
       // Last resort attempt at cleanup
       memoryCleanup();
     }
-    
+
     // Helper function for in-memory cleanup
     function memoryCleanup() {
       // Find and remove user from online users
@@ -509,13 +574,13 @@ io.on('connection', (socket) => {
           break;
         }
       }
-      
+
       if (disconnectedUserId) {
         io.emit('userStatusChange', { userId: disconnectedUserId, status: 'offline' });
       }
-      
+
       // Clear typing status
-      for (const [conversationId, typingUsers] of userTypingStatus.entries()) {
+      for (const [, typingUsers] of userTypingStatus.entries()) {
         typingUsers.delete(userId);
         if (disconnectedUserId) {
           typingUsers.delete(disconnectedUserId);
@@ -531,24 +596,49 @@ process.on('SIGINT', shutdown);
 
 async function shutdown() {
   console.log('Shutting down server...');
-  
+
   // Close all connections
   io.close();
-  
+
   // Close Redis connections if they exist
   if (USE_REDIS) {
     try {
       const promises = [];
-      if (pubClient) promises.push(pubClient.quit().catch(err => console.error('Error closing pubClient:', err)));
-      if (subClient) promises.push(subClient.quit().catch(err => console.error('Error closing subClient:', err)));
-      if (redisRateLimiter) promises.push(redisRateLimiter.quit().catch(err => console.error('Error closing redisRateLimiter:', err)));
-      
+
+      // Helper function to safely close Redis connections with timeout
+      const safeQuit = async (client, name, timeout = 2000) => {
+        try {
+          // Create a promise that resolves when client quits or rejects after timeout
+          return await Promise.race([
+            client.quit(),
+            new Promise((_, reject) =>
+              setTimeout(() => reject(new Error(`${name} quit timeout`)), timeout)
+            )
+          ]);
+        } catch (err) {
+          console.error(`Error closing ${name}:`, err.message);
+          // Force disconnect if quit times out
+          try {
+            client.disconnect();
+          } catch (disconnectErr) {
+            console.error(`Error disconnecting ${name}:`, disconnectErr.message);
+          }
+        }
+      };
+
+      // Add each client to the promises array if it exists
+      if (pubClient) promises.push(safeQuit(pubClient, 'pubClient'));
+      if (subClient) promises.push(safeQuit(subClient, 'subClient'));
+      if (redisRateLimiter) promises.push(safeQuit(redisRateLimiter, 'redisRateLimiter'));
+
+      // Wait for all clients to close with a timeout
       await Promise.all(promises);
+      console.log('All Redis connections closed successfully');
     } catch (error) {
-      console.error('Error closing Redis connections:', error);
+      console.error('Error closing Redis connections:', error.message);
     }
   }
-  
+
   console.log('Server shutdown complete');
   process.exit(0);
 }
