@@ -44,16 +44,16 @@ interface OnboardingState {
   // Basic info
   bio: string;
   city: string;
-  
+
   // Pricing models
   fixedPricing: FixedPricing;
   negotiablePricing: boolean;
   packageDeals: PackageDeals;
   barterDeals: BarterDeals;
-  
+
   // Brand preferences
   brandPreferences: BrandPreferences;
-  
+
   // Onboarding status
   onboardingCompleted: boolean;
   currentStep: number;
@@ -76,7 +76,7 @@ const OnboardingContext = createContext<OnboardingContextType | undefined>(undef
 const defaultOnboardingState: OnboardingState = {
   bio: '',
   city: '',
-  
+
   fixedPricing: {
     enabled: true,
     storyPrice: null,
@@ -94,13 +94,13 @@ const defaultOnboardingState: OnboardingState = {
     acceptedCategories: [],
     restrictions: ''
   },
-  
+
   brandPreferences: {
     preferredBrandTypes: [],
     exclusions: [],
     collabStyles: []
   },
-  
+
   onboardingCompleted: false,
   currentStep: 0
 };
@@ -112,25 +112,25 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const [isInitialLoadComplete, setIsInitialLoadComplete] = useState(false);
   const currentUser = useCurrentUser();
-  
+
   // Fetch existing onboarding data when component mounts
   useEffect(() => {
     if (!currentUser) return;
-    
+
     const fetchOnboardingData = async () => {
       try {
         setIsLoading(true);
-        
+
         const response = await axios.get('/api/influencer/onboarding');
-        
+
         if (response.data && response.data.influencer) {
           const influencer = response.data.influencer;
-          
+
           // Transform the data to match our state structure
           const transformedData: OnboardingState = {
             bio: influencer.bio || '',
             city: influencer.city || '',
-            
+
             fixedPricing: {
               // Always ensure fixed pricing is enabled
               enabled: true,
@@ -139,33 +139,33 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
               postPrice: influencer.pricingModels?.fixedPricing?.postPrice || null,
               livePrice: influencer.pricingModels?.fixedPricing?.livePrice || null
             },
-            
+
             negotiablePricing: influencer.pricingModels?.negotiablePricing || false,
-            
+
             packageDeals: {
               enabled: influencer.pricingModels?.packageDeals?.enabled || false,
               packages: influencer.pricingModels?.packageDeals?.packages || []
             },
-            
+
             barterDeals: {
               enabled: influencer.pricingModels?.barterDeals?.enabled || false,
               acceptedCategories: influencer.pricingModels?.barterDeals?.acceptedCategories || [],
               restrictions: influencer.pricingModels?.barterDeals?.restrictions || ''
             },
-            
+
             brandPreferences: {
               preferredBrandTypes: influencer.brandPreferences?.preferredBrandTypes || [],
               exclusions: influencer.brandPreferences?.exclusions || [],
               collabStyles: influencer.brandPreferences?.collabStyles || []
             },
-            
+
             onboardingCompleted: influencer.onboardingCompleted || false,
             currentStep: influencer.onboardingStep || 0
           };
-          
+
           setOnboardingData(transformedData);
         }
-        
+
         setIsInitialLoadComplete(true);
         setIsLoading(false);
       } catch (error) {
@@ -175,10 +175,10 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
         setIsLoading(false);
       }
     };
-    
+
     fetchOnboardingData();
   }, [currentUser]);
-  
+
   // Initial loading screen
   if (!isInitialLoadComplete && isLoading) {
     return (
@@ -190,7 +190,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
       </div>
     );
   }
-  
+
   // Update onboarding data
   const updateOnboardingData = (newData: Partial<OnboardingState>) => {
     setOnboardingData(prevData => ({
@@ -198,13 +198,13 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
       ...newData
     }));
   };
-  
+
   // Save current step - COMPLETELY REDESIGNED
   const saveCurrentStep = async (step: number, formData?: Partial<OnboardingState>) => {
     try {
       setIsLoading(true);
       setError(null);
-      
+
       // Create a complete data object, merging:
       // 1. Current state data
       // 2. Any form data passed directly (has priority)
@@ -219,25 +219,25 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
         brandPreferences: formData?.brandPreferences || onboardingData.brandPreferences,
         onboardingStep: step
       };
-      
+
       // Also update the state for immediate UI feedback
-      updateOnboardingData({ 
+      updateOnboardingData({
         ...formData,
-        currentStep: step 
+        currentStep: step
       });
-      
+
       // Log what we're about to send to the API
       console.log(`SAVING STEP ${step} DATA:`, JSON.stringify(dataToSave));
-      
+
       // API call
       const response = await axios.put('/api/influencer/onboarding', dataToSave);
       console.log(`Successfully saved onboarding step ${step}:`, response.data);
-      
+
       setIsLoading(false);
       return;
     } catch (error: any) {
       console.error('Error saving onboarding step:', error);
-      
+
       // Enhanced error logging
       if (error.response) {
         console.error('Error response data:', error.response.data);
@@ -247,18 +247,18 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
       } else {
         console.error('Error setting up request:', error.message);
       }
-      
+
       setError('Failed to save your progress. Please try again.');
       setIsLoading(false);
       throw error;
     }
   };
-  
+
   // Save and complete onboarding - COMPLETELY REDESIGNED
   const saveAndCompleteOnboarding = async (formData?: Partial<OnboardingState>) => {
     try {
       setIsLoading(true);
-      
+
       // Create a complete data object, merging:
       // 1. Current state data
       // 2. Any form data passed directly (has priority)
@@ -274,23 +274,34 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
         onboardingStep: formData?.currentStep !== undefined ? formData.currentStep : onboardingData.currentStep,
         onboardingCompleted: true
       };
-      
+
       // Also update the state for immediate UI feedback
       updateOnboardingData({
         ...formData,
         onboardingCompleted: true
       });
-      
+
       // Log what we're about to send to the API
       console.log('COMPLETING ONBOARDING WITH DATA:', JSON.stringify(dataToSave));
-      
+
       const response = await axios.put('/api/influencer/onboarding', dataToSave);
       console.log('Successfully completed onboarding:', response.data);
-      
+
+      // IMPORTANT: Refresh the JWT token to include the updated onboardingCompleted status
+      try {
+        console.log('Refreshing token to update onboardingCompleted status');
+        await axios.get('/api/auth/refresh-token');
+        console.log('Token refreshed successfully');
+      } catch (tokenError) {
+        // Log but don't fail the whole operation if token refresh fails
+        console.error('Error refreshing token:', tokenError);
+        console.log('Continuing despite token refresh error');
+      }
+
       setIsLoading(false);
     } catch (error: any) {
       console.error('Error completing onboarding:', error);
-      
+
       // Enhanced error logging
       if (error.response) {
         console.error('Error response data:', error.response.data);
@@ -300,22 +311,22 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
       } else {
         console.error('Error setting up request:', error.message);
       }
-      
+
       setError('Failed to complete your profile setup. Please try again.');
       setIsLoading(false);
       throw error;
     }
   };
-  
+
   return (
-    <OnboardingContext.Provider 
-      value={{ 
-        onboardingData, 
-        updateOnboardingData, 
-        saveCurrentStep, 
+    <OnboardingContext.Provider
+      value={{
+        onboardingData,
+        updateOnboardingData,
+        saveCurrentStep,
         saveAndCompleteOnboarding,
         isLoading,
-        error 
+        error
       }}
     >
       {children}
@@ -326,10 +337,10 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
 // Hook to use the onboarding context
 export function useOnboarding() {
   const context = useContext(OnboardingContext);
-  
+
   if (context === undefined) {
     throw new Error('useOnboarding must be used within an OnboardingProvider');
   }
-  
+
   return context;
-} 
+}
