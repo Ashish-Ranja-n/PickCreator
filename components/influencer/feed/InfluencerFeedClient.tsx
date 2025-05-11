@@ -341,7 +341,7 @@ export default function InfluencerFeedClient() {
             </TooltipProvider>
 
             <div className="flex items-center gap-2">
-              <h2 className="text-base text-gray-900 dark:text-white block">
+              <h2 className="text-sm font-medium text-gray-900 dark:text-white block">
                 {showMyPosts ? 'My Posts' : 'Influencer Community'}
               </h2>
             </div>
