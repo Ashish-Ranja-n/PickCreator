@@ -53,12 +53,18 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const author = searchParams.get("author");
     const userId = searchParams.get("userId");
+    const hashtag = searchParams.get("hashtag");
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "20");
     const sort = searchParams.get("sort") || "latest";
 
     // Build query
     const query: any = {};
+
+    // Filter by hashtag if specified
+    if (hashtag) {
+      query.hashtags = hashtag;
+    }
 
     // Filter by author if specified
     if (author) {

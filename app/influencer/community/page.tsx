@@ -3,7 +3,7 @@ import InfluencerFeedClient from "@/components/influencer/feed/InfluencerFeedCli
 export default function CommunityPage() {
   return (
     <div className="container mx-auto px-1 min-h-screen bg-white dark:bg-black">
-      <div className="pt-16 md:pt-8">
+      <div className="pt-[108px] md:pt-8">
         <InfluencerFeedClient />
       </div>
     </div>

@@ -54,7 +54,16 @@ export default function InfluencerFeedClient() {
   const [hasMore, setHasMore] = useState(true);
   const [likedPosts, setLikedPosts] = useState<Record<string, boolean>>({});
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const hashtagScrollRef = useRef<HTMLDivElement>(null);
+  const [selectedHashtag, setSelectedHashtag] = useState<string | null>(null);
   const { toast } = useToast();
+
+  // Available hashtags (same as in CreatePostDialog)
+  const availableHashtags = [
+    "influencer", "marketing", "content", "collaboration",
+    "branding", "socialmedia", "creator", "partnership",
+    "sponsored", "campaign"
+  ];
 
   // Image viewer state
   const [imageViewerOpen, setImageViewerOpen] = useState(false);
@@ -86,6 +95,11 @@ export default function InfluencerFeedClient() {
       // Add author filter if showing only user's posts
       if (showMyPosts && currentUser?._id) {
         queryParams.append("author", currentUser._id);
+      }
+
+      // Add hashtag filter if selected
+      if (selectedHashtag) {
+        queryParams.append("hashtag", selectedHashtag);
       }
 
       const response = await fetch(`/api/posts?${queryParams.toString()}`);
@@ -130,7 +144,7 @@ export default function InfluencerFeedClient() {
   // Load initial posts
   useEffect(() => {
     fetchPosts();
-  }, [feedType, showMyPosts, currentUser]);
+  }, [feedType, showMyPosts, currentUser, selectedHashtag]);
 
   // Handle post creation
   const handlePostCreated = (newPost: Post) => {
@@ -303,7 +317,7 @@ export default function InfluencerFeedClient() {
   return (
     <div className="relative w-full mx-auto min-h-screen bg-white dark:bg-zinc-950">
       {/* Fixed header with buttons - using fixed positioning */}
-      <div className="fixed top-[46px] dark:top-[50px] md:top-[68px] left-0 right-0 z-30 py-3 px-4 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md border-b border-gray-200/50 dark:border-zinc-800/50 flex justify-between items-center shadow-md">
+      <div className="fixed top-[46px] dark:top-[50px] md:top-[68px] left-0 right-0 z-30 py-3 px-4 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md border-b border-gray-200/50 dark:border-zinc-800/50 flex justify-between items-center">
         <div className="w-full mx-auto flex justify-between items-center px-2">
           <div className="flex items-center gap-2">
             <TooltipProvider>
@@ -327,7 +341,7 @@ export default function InfluencerFeedClient() {
             </TooltipProvider>
 
             <div className="flex items-center gap-2">
-              <h2 className="text-base font-medium text-gray-900 dark:text-white block">
+              <h2 className="text-base text-gray-900 dark:text-white block">
                 {showMyPosts ? 'My Posts' : 'Influencer Community'}
               </h2>
             </div>
@@ -360,8 +374,41 @@ export default function InfluencerFeedClient() {
         </div>
       </div>
 
-      {/* Add padding to account for the fixed header */}
-      <div className="pt-[75px]"></div>
+
+      {/* Horizontally scrollable hashtag selection bar */}
+      <div className="sticky top-[105px] dark:top-[110px] md:top-[132px] z-20 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md border-b border-gray-200/50 dark:border-zinc-800/50 shadow-sm">
+        <div
+          ref={hashtagScrollRef}
+          className="flex items-center gap-2 py-2 px-4 overflow-x-auto scrollbar-hide"
+        >
+          <Badge
+            variant={selectedHashtag === null ? "default" : "outline"}
+            className={`cursor-pointer transition-all duration-200 py-1.5 px-3 text-sm whitespace-nowrap ${
+              selectedHashtag === null
+                ? 'bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white shadow-sm'
+                : 'bg-gray-100 dark:bg-zinc-900 text-gray-700 dark:text-white border-gray-200 dark:border-zinc-800'
+            }`}
+            onClick={() => setSelectedHashtag(null)}
+          >
+            All
+          </Badge>
+
+          {availableHashtags.map(hashtag => (
+            <Badge
+              key={hashtag}
+              variant={selectedHashtag === hashtag ? "default" : "outline"}
+              className={`cursor-pointer transition-all duration-200 py-1.5 px-3 text-sm whitespace-nowrap ${
+                selectedHashtag === hashtag
+                  ? 'bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white shadow-sm'
+                  : 'bg-gray-100 dark:bg-zinc-900 text-gray-700 dark:text-white border-gray-200 dark:border-zinc-800'
+              }`}
+              onClick={() => setSelectedHashtag(hashtag)}
+            >
+              #{hashtag}
+            </Badge>
+          ))}
+        </div>
+      </div>
 
       {/* Content container */}
       <div
