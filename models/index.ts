@@ -12,6 +12,7 @@ import ChatRoom from './chatRoom';
 import Question from './question';
 import Answer from './answer';
 import Vote from './vote';
+import Notice from './notice';
 
 export {
   User,
@@ -27,5 +28,6 @@ export {
   ChatRoom,
   Question,
   Answer,
-  Vote
+  Vote,
+  Notice
 };
