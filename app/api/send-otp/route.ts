@@ -33,7 +33,9 @@ export async function POST(req: Request) {
 
     // Nodemailer transporter setup
     const transporter = nodemailer.createTransport({
-      service: "gmail", // You can use other providers or SMTP settings
+      host: "smtpout.secureserver.net", // You can use other providers or SMTP settings
+      port: 465,
+      secure: true,
       auth: {
         user: process.env.EMAIL_USER, // Your email
         pass: process.env.EMAIL_PASS, // App password (not your Gmail password)
