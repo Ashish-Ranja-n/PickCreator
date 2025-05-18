@@ -408,13 +408,10 @@ export default function Home() {
                     <h3 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 bg-clip-text text-transparent">
                       Our Creator Showcase
                     </h3>
-                    <p className="text-gray-600 mt-2 max-w-2xl mx-auto">
-                      See how influencers are transforming their content into successful brand partnerships
-                    </p>
                   </div>
 
                   {/* Image Slider Container */}
-                  <div className="relative w-full h-[350px] md:h-[450px] overflow-hidden rounded-2xl bg-gradient-to-b from-gray-50/80 to-white/90 dark:from-gray-900/80 dark:to-black/90 shadow-xl border border-gray-100/50 dark:border-gray-800/50">
+                  <div className="relative w-full h-[450px] md:h-[450px] overflow-hidden rounded-2xl bg-gradient-to-b from-gray-50/80 to-white/90 dark:from-gray-900/80 dark:to-black/90 border-gray-100/50 dark:border-gray-800/50">
                     {/* Subtle overlay for depth */}
                     <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 via-transparent to-purple-500/5"></div>
 
