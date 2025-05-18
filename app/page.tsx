@@ -7,7 +7,6 @@ import BrandsSection from '@/components/LandingpageComponents/BrandsSection';
 import InfluencersSection from '@/components/LandingpageComponents/InfluencersSection';
 import PricingSection from '@/components/LandingpageComponents/PricingSection';
 import Footer from '@/components/LandingpageComponents/Footer';
-import SupportButton from '@/app/components/SupportButton';
 
 
 export default function Home() {
@@ -64,7 +63,7 @@ export default function Home() {
     }
   };
 
-  // Add stylesheet for gradient animations if it doesn't exist
+  // Add stylesheet for gradient and floating animations if it doesn't exist
   useEffect(() => {
     const styleId = 'gradient-animations';
     if (!document.getElementById(styleId) && typeof document !== 'undefined') {
@@ -83,7 +82,26 @@ export default function Home() {
           transition: background-position 0.1s;
         }
 
+        @keyframes float {
+          0% { transform: translateY(0px) translateX(0px); }
+          25% { transform: translateY(-10px) translateX(5px); }
+          50% { transform: translateY(0px) translateX(10px); }
+          75% { transform: translateY(10px) translateX(5px); }
+          100% { transform: translateY(0px) translateX(0px); }
+        }
 
+        .animate-float {
+          animation: float 15s ease-in-out infinite;
+        }
+
+        @keyframes pulse-glow {
+          0%, 100% { opacity: 0.1; }
+          50% { opacity: 0.2; }
+        }
+
+        .animate-pulse-glow {
+          animation: pulse-glow 8s ease-in-out infinite;
+        }
       `;
       document.head.appendChild(styleTag);
     }
@@ -104,18 +122,17 @@ export default function Home() {
 
           <main>
             {/* Hero Section */}
-            <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-b from-slate-50 via-white to-blue-50">
+            <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-b from-indigo-50 via-white to-purple-50">
               <div className="container-custom relative z-10">
-                <div className="text-center max-w-5xl mx-auto pt-16 sm:pt-20 md:pt-20">
+                <div className="text-center max-w-5xl mx-auto pt-16 sm:pt-20 md:pt-24">
                   <motion.span
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.2 }}
                     className="inline-block bg-gradient-to-r from-indigo-500/10 to-purple-500/10 text-indigo-600 px-5 py-2 rounded-full text-sm mb-6 sm:mb-8 font-bold tracking-wide"
                   >
-                  The Ultimate Platform for Local Businesses & Influencers
+                    Elevate Your Influence, Amplify Your Reach
                   </motion.span>
-
 
                   <motion.h1
                     initial={{ opacity: 0, y: 20 }}
@@ -123,22 +140,27 @@ export default function Home() {
                     transition={{ duration: 0.6, delay: 0.3 }}
                     className="text-5xl md:text-7xl font-extrabold mb-8 flex flex-wrap justify-center items-baseline"
                   >
-                    {/* First part in deep purple */}
-                    <span className="text-indigo-900">
-                      Connect&nbsp;
+                    {/* "where" in small text */}
+                    <span className="text-indigo-700 text-2xl md:text-3xl mr-2 font-medium">
+                      where
                     </span>
 
-                    {/* Animated "With" with liquid-like flowing gradient */}
+                    {/* "influencer" with gradient */}
                     <span className="relative">
-                      <span className="bg-[linear-gradient(to_right,#7c3aed,#ec4899,#3b82f6,#8b5cf6,#d946ef,#3b82f6,#7c3aed)] bg-clip-text text-transparent animate-liquid-gradient absolute font-extrabold">
-                        With
+                      <span className="bg-[linear-gradient(to_right,#7c3aed,#ec4899,#8b5cf6,#d946ef)] bg-clip-text text-transparent animate-liquid-gradient absolute font-extrabold">
+                        influencer
                       </span>
-                      <span className="opacity-0">With&nbsp;</span>
+                      <span className="opacity-0">influencer&nbsp;</span>
                     </span>
 
-                    {/* "Creators" in black */}
-                    <span className="text-purple-900">
-                      Creators
+                    {/* "meets" in purple */}
+                    <span className="text-indigo-900 mx-2">
+                      meets
+                    </span>
+
+                    {/* "brand" in bold purple */}
+                    <span className="text-purple-700">
+                      brand
                     </span>
                   </motion.h1>
 
@@ -146,25 +168,39 @@ export default function Home() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.4 }}
-                    className="text-xl text-gray-600 font-semibold mb-10 max-w-2xl mx-auto"
+                    className="text-xl text-gray-600 font-medium mb-10 max-w-2xl mx-auto px-4"
                   >
-                   Find the right local creators to promote your brand — simple, fast, and effective.
+                    Transform your social media presence into a thriving business. Connect with local brands seeking authentic voices like yours.
                   </motion.p>
 
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.45 }}
-                    className="mb-8 w-full max-w-2xl mx-auto"
+                    className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12 w-full max-w-2xl mx-auto px-4"
                   >
-                    <a href="/sign-up" className="inline-block">
+                    <a href="/sign-up?type=influencer" className="w-full sm:w-auto">
                       <motion.button
-                        className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-4 px-10 rounded-full shadow-md transition-all duration-200"
+                        className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium py-4 px-8 rounded-full shadow-lg transition-all duration-200"
+                        whileHover={{ y: -2, boxShadow: "0 10px 25px -5px rgba(124, 58, 237, 0.5)" }}
+                        whileTap={{ y: 1 }}
+                      >
+                        <span className="flex items-center justify-center">
+                          <span className="mr-2 text-lg">Join as Influencer</span>
+                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                          </svg>
+                        </span>
+                      </motion.button>
+                    </a>
+                    <a href="/sign-up?type=brand" className="w-full sm:w-auto">
+                      <motion.button
+                        className="w-full bg-white border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-50 font-medium py-4 px-8 rounded-full shadow-md transition-all duration-200"
                         whileHover={{ y: -2 }}
                         whileTap={{ y: 1 }}
                       >
                         <span className="flex items-center justify-center">
-                          <span className="mr-2 text-lg">Get Started Now</span>
+                          <span className="mr-2 text-lg">I'm a Brand</span>
                           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                           </svg>
@@ -174,30 +210,192 @@ export default function Home() {
                   </motion.div>
                 </div>
 
-                {/* Stats Section */}
+                {/* Platform Stats Section */}
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.7 }}
-                  className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 max-w-4xl mx-auto mt-8"
+                  className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 max-w-5xl mx-auto mt-4 px-4"
                 >
-                  <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-gray-100">
+                  <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-5 shadow-xl border border-indigo-100">
                     <div className="text-3xl font-bold text-indigo-600 mb-1">{analytics.verifiedBrands}+</div>
-                    <div className="text-sm text-gray-600">Verified Brands</div>
+                    <div className="text-sm text-gray-600 font-medium">Active Brands</div>
                   </div>
-                  <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-gray-100">
+                  <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-5 shadow-xl border border-purple-100">
                     <div className="text-3xl font-bold text-purple-600 mb-1">{analytics.verifiedInfluencers}+</div>
-                    <div className="text-sm text-gray-600">Connected Influencers</div>
+                    <div className="text-sm text-gray-600 font-medium">Creators Earning</div>
+                  </div>
+                  <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-5 shadow-xl border border-pink-100">
+                    <div className="text-3xl font-bold text-pink-600 mb-1">₹10K+</div>
+                    <div className="text-sm text-gray-600 font-medium">Avg. Monthly Income</div>
+                  </div>
+                  <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-5 shadow-xl border border-indigo-100">
+                    <div className="text-3xl font-bold text-indigo-600 mb-1">100%</div>
+                    <div className="text-sm text-gray-600 font-medium">Payment Success</div>
+                  </div>
+                </motion.div>
+
+                {/* Featured Creators */}
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.9 }}
+                  className="mt-16 text-center"
+                >
+                  <p className="text-sm font-medium text-indigo-600 mb-2">CREATORS THRIVING ON OUR PLATFORM</p>
+                  <div className="flex justify-center items-center space-x-2 md:space-x-4 mt-4">
+                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-r from-purple-500 to-indigo-500 shadow-lg"></div>
+                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 shadow-lg"></div>
+                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-r from-indigo-500 to-blue-500 shadow-lg"></div>
+                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-r from-blue-500 to-teal-500 shadow-lg"></div>
+                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-r from-teal-500 to-green-500 shadow-lg"></div>
                   </div>
                 </motion.div>
               </div>
 
-              {/* Background elements */}
+              {/* Enhanced Background elements */}
               <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
-                <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] rounded-full bg-indigo-200 opacity-20 blur-3xl animate-float"></div>
-                <div className="absolute bottom-1/4 right-1/4 w-[700px] h-[700px] rounded-full bg-purple-200 opacity-20 blur-3xl animate-float" style={{ animationDelay: '1s' }}></div>
-                <div className="absolute top-3/4 right-1/3 w-[400px] h-[400px] rounded-full bg-pink-200 opacity-15 blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
+                <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] rounded-full bg-gradient-to-r from-indigo-300 to-indigo-200 opacity-15 blur-3xl animate-float animate-pulse-glow"></div>
+                <div className="absolute bottom-1/4 right-1/4 w-[700px] h-[700px] rounded-full bg-gradient-to-r from-purple-300 to-purple-200 opacity-15 blur-3xl animate-float animate-pulse-glow" style={{ animationDelay: '1s' }}></div>
+                <div className="absolute top-3/4 right-1/3 w-[400px] h-[400px] rounded-full bg-gradient-to-r from-pink-300 to-pink-200 opacity-10 blur-3xl animate-float animate-pulse-glow" style={{ animationDelay: '2s' }}></div>
+                <div className="absolute bottom-1/3 left-1/3 w-[300px] h-[300px] rounded-full bg-gradient-to-r from-blue-300 to-blue-200 opacity-10 blur-3xl animate-float animate-pulse-glow" style={{ animationDelay: '3s' }}></div>
+                <div className="absolute top-1/2 right-1/2 w-[250px] h-[250px] rounded-full bg-gradient-to-r from-teal-300 to-teal-200 opacity-10 blur-3xl animate-float animate-pulse-glow" style={{ animationDelay: '4s' }}></div>
               </div>
+            </section>
+
+            {/* Why Choose Us Section */}
+            <section className="py-20 bg-gradient-to-b from-white to-indigo-50 relative overflow-hidden">
+              <div className="container-custom relative z-10">
+                <div className="text-center mb-16">
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    transition={{ duration: 0.5 }}
+                    viewport={{ once: true }}
+                    className="inline-block bg-gradient-to-r from-indigo-500/10 to-purple-500/10 text-indigo-600 font-medium px-5 py-2 rounded-full text-sm mb-6 tracking-wide"
+                  >
+                    DESIGNED FOR CREATOR SUCCESS
+                  </motion.div>
+
+                  <motion.h2
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.1 }}
+                    viewport={{ once: true }}
+                    className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-indigo-700 via-purple-700 to-indigo-700 bg-clip-text text-transparent"
+                  >
+                    Why Influencers Choose PickCreator
+                  </motion.h2>
+
+                  <motion.p
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.2 }}
+                    viewport={{ once: true }}
+                    className="text-lg text-gray-600 max-w-3xl mx-auto px-4"
+                  >
+                    Our platform is designed to help you monetize your influence and build lasting relationships with brands that value your unique voice.
+                  </motion.p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4">
+                  <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.3 }}
+                    viewport={{ once: true }}
+                    className="bg-white p-8 rounded-2xl shadow-xl border border-indigo-50 hover:shadow-2xl hover:border-indigo-100 transition-all duration-300"
+                  >
+                    <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <h3 className="text-2xl font-bold mb-3 text-gray-900">Direct Payments</h3>
+                    <p className="text-gray-600 leading-relaxed">Get paid directly for your content without middlemen taking large cuts. Keep more of what you earn with our transparent payment system.</p>
+                    <div className="mt-6 text-indigo-600 font-medium flex items-center">
+                      <span>Learn more</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.4 }}
+                    viewport={{ once: true }}
+                    className="bg-white p-8 rounded-2xl shadow-xl border border-purple-50 hover:shadow-2xl hover:border-purple-100 transition-all duration-300"
+                  >
+                    <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                      </svg>
+                    </div>
+                    <h3 className="text-2xl font-bold mb-3 text-gray-900">Local Connections</h3>
+                    <p className="text-gray-600 leading-relaxed">Connect with brands in your city for authentic partnerships that resonate with your local audience and create meaningful impact.</p>
+                    <div className="mt-6 text-purple-600 font-medium flex items-center">
+                      <span>Learn more</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.5 }}
+                    viewport={{ once: true }}
+                    className="bg-white p-8 rounded-2xl shadow-xl border border-pink-50 hover:shadow-2xl hover:border-pink-100 transition-all duration-300"
+                  >
+                    <div className="w-16 h-16 bg-gradient-to-br from-pink-500 to-pink-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                      </svg>
+                    </div>
+                    <h3 className="text-2xl font-bold mb-3 text-gray-900">Growth Analytics</h3>
+                    <p className="text-gray-600 leading-relaxed">Track your performance and growth with our advanced analytics tools designed specifically for creators to optimize your content strategy.</p>
+                    <div className="mt-6 text-pink-600 font-medium flex items-center">
+                      <span>Learn more</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                  </motion.div>
+                </div>
+
+                {/* Success Story */}
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.6 }}
+                  viewport={{ once: true }}
+                  className="mt-16 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-8 md:p-10 shadow-xl text-white max-w-5xl mx-auto"
+                >
+                  <div className="flex flex-col md:flex-row items-center gap-8">
+                    <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-white/20 flex-shrink-0 backdrop-blur-sm flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 md:h-16 md:w-16 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h3 className="text-2xl md:text-3xl font-bold mb-4">"I've doubled my income since joining PickCreator"</h3>
+                      <p className="text-white/80 text-lg mb-4">As a lifestyle creator with 15K followers, I was struggling to find consistent brand deals. PickCreator connected me with local businesses that value my audience, and now I'm earning more than ever before.</p>
+                      <div className="flex items-center">
+                        <div className="font-bold">Priya S.</div>
+                        <div className="mx-2">•</div>
+                        <div className="text-white/80">Fashion & Lifestyle Creator</div>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              </div>
+
+              {/* Background decorative elements */}
+              <div className="absolute top-20 right-0 w-64 h-64 rounded-full bg-indigo-300 opacity-5 blur-3xl"></div>
+              <div className="absolute bottom-20 left-0 w-80 h-80 rounded-full bg-purple-300 opacity-5 blur-3xl"></div>
             </section>
 
             <BrandsSection />

@@ -232,25 +232,18 @@ const Header: React.FC = () => {
   return (
     <header
       className={cn(
-        "fixed top-0 left-0 right-0 z-40 transition-all duration-300",
+        "fixed top-0 left-0 right-0 z-40 transition-all duration-200",
         isScrolled
-          ? "bg-white/80 backdrop-blur-lg shadow-sm"
+          ? "bg-white shadow-sm"
           : "bg-transparent",
         getHeaderSize()
       )}
     >
       <div className="container-custom flex items-center justify-between">
-        {/* Logo with neon style - smaller size */}
+        {/* Simplified logo for better performance */}
         <a href="#" className="inline-flex items-center">
-          <span className={`${getLogoSize()} font-black tracking-tight neon-container`}>
-            <span className="neon-text">
-              {'PICKCREATOR'.split('').map((letter, index) => (
-                <span key={index} className="letter-container" style={{"--letter-index": index} as React.CSSProperties}>
-                  <span className="letter-string"></span>
-                  <span className="neon-letter">{letter}</span>
-                </span>
-              ))}
-            </span>
+          <span className={`${getLogoSize()} font-black tracking-tight text-indigo-600`}>
+            PICKCREATOR
           </span>
         </a>
 
@@ -305,19 +298,17 @@ const Header: React.FC = () => {
           <div className="md:hidden">
             <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
               <SheetTrigger asChild>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="p-2 rounded-full bg-white/90 shadow-sm text-gray-700 hover:bg-white hover:text-gray-900 transition-all"
+                <button
+                  className="p-2shadow-sm text-gray-700 hover:text-gray-900 active:scale-95 transition-transform"
                   aria-label="Menu"
                 >
-                  <Menu size={20} />
-                </motion.button>
+                  <Menu size={24} />
+                </button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[85vw] sm:w-[350px] p-0">
+              <SheetContent side="right" className="w-[80vw] sm:w-[300px] p-0 will-change-transform">
                 <div className="h-full flex flex-col">
-                  <SheetHeader className="p-6 border-b">
-                    <SheetTitle className="text-2xl font-bold bg-gradient-to-r from-pick-blue to-pick-purple bg-clip-text text-transparent">
+                  <SheetHeader className="p-4 border-b">
+                    <SheetTitle className="text-2xl font-bold text-indigo-600">
                       PickCreator
                     </SheetTitle>
                   </SheetHeader>
@@ -345,7 +336,7 @@ const Header: React.FC = () => {
                     <div className="mb-8">
                       <Link
                         href="/sign-up"
-                        className="w-full flex items-center justify-center text-white font-medium rounded-full bg-gradient-to-r from-pick-blue to-pick-purple py-3 px-6 shadow-md hover:shadow-lg transition-all duration-300"
+                        className="w-full flex items-center justify-center text-white font-medium rounded-full bg-indigo-600 py-3 px-6 shadow-md hover:bg-indigo-700 transition-colors"
                         onClick={() => setIsMenuOpen(false)}
                       >
                         Sign-up
