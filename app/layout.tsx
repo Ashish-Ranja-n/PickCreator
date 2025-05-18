@@ -6,6 +6,7 @@ import { Providers } from './providers';
 import { ServiceWorkerRegistration } from './ServiceWorkerRegistration';
 import { SessionRefresher } from './SessionRefresher';
 import { ThemeProvider } from "@/components/theme/theme-provider";
+import { Analytics } from '@vercel/analytics/next';
 
 const kanit = Kanit({
   weight: ["400"],
@@ -94,6 +95,7 @@ export default function RootLayout({
             <ServiceWorkerRegistration />
             <SessionRefresher />
             {children}
+            <Analytics />
             <Toaster />
           </ThemeProvider>
         </Providers>

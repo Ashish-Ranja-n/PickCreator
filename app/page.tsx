@@ -189,14 +189,6 @@ export default function Home() {
                     <div className="text-3xl font-bold text-purple-600 mb-1">{analytics.verifiedInfluencers}+</div>
                     <div className="text-sm text-gray-600">Connected Influencers</div>
                   </div>
-                  <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-gray-100">
-                    <div className="text-3xl font-bold text-pink-600 mb-1">0+</div>
-                    <div className="text-sm text-gray-600">Collaborations</div>
-                  </div>
-                  <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-gray-100">
-                    <div className="text-3xl font-bold text-indigo-600 mb-1">1+</div>
-                    <div className="text-sm text-gray-600">Cities Covered</div>
-                  </div>
                 </motion.div>
               </div>
 
