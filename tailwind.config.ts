@@ -141,6 +141,14 @@ export default {
                   '28%': { transform: 'scale(1)' },
                   '42%': { transform: 'scale(1.3)' },
                   '70%': { transform: 'scale(1)' }
+              },
+              'slider-rtl': {
+                  '0%': { transform: 'translateX(0)' },
+                  '100%': { transform: 'translateX(calc(-280px * 5 - 1rem * 4))' }
+              },
+              'slider-rtl-md': {
+                  '0%': { transform: 'translateX(0)' },
+                  '100%': { transform: 'translateX(calc(-350px * 5 - 1rem * 4))' }
               }
 		  },
 		  animation: {
@@ -158,7 +166,9 @@ export default {
 			  'spin-slow': 'spin-slow 8s linear infinite',
 			  'icons-meet': 'icons-meet 1.5s ease-in-out forwards',
 			  'glow-pulse': 'glow-pulse 2s ease-in-out infinite',
-			  'heartBeat': 'heartbeat 1.5s ease-in-out'
+			  'heartBeat': 'heartbeat 1.5s ease-in-out',
+			  'slider-rtl': 'slider-rtl 40s linear infinite',
+			  'slider-rtl-md': 'slider-rtl-md 40s linear infinite'
 		  },
 		  fontFamily: {
 			  'sans': ['SF Pro Display', 'Inter', 'sans-serif'],

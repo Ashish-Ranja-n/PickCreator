@@ -18,7 +18,9 @@ const nextConfig: NextConfig = {
       'graph.facebook.com',
       // Avatar and media domains
       'api.dicebear.com',
-      'res.cloudinary.com'
+      'res.cloudinary.com',
+      'images.unsplash.com',
+      'unsplash.com',
     ],
     remotePatterns: [
       {
@@ -32,7 +34,17 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: '**.fbcdn.net',
         pathname: '**',
-      }
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        pathname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'unsplash.com',
+        pathname: '**',
+      },
     ],
   },
   // Add any environment variables you want to expose to the client

@@ -240,15 +240,38 @@ export default function Home() {
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.9 }}
-                  className="mt-16 text-center"
+                  className="mt-16 mb-10 text-center"
                 >
                   <p className="text-sm font-medium text-indigo-600 mb-2">CREATORS THRIVING ON OUR PLATFORM</p>
-                  <div className="flex justify-center items-center space-x-2 md:space-x-4 mt-4">
-                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-r from-purple-500 to-indigo-500 shadow-lg"></div>
-                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 shadow-lg"></div>
-                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-r from-indigo-500 to-blue-500 shadow-lg"></div>
-                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-r from-blue-500 to-teal-500 shadow-lg"></div>
-                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-r from-teal-500 to-green-500 shadow-lg"></div>
+                  <div className="flex justify-center items-center space-x-3 md:space-x-5 mt-4">
+                    <a href="/influencer/profile/1" className="block">
+                      <img
+                        src="https://images.unsplash.com/photo-1747264466429-c868c612bfea?q=80&w=772&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                        alt="Creator 1"
+                        className="w-12 h-12 md:w-14 md:h-14 rounded-full object-cover border-2 border-white shadow-md hover:scale-110 transition-transform duration-200"
+                      />
+                    </a>
+                    <a href="/influencer/profile/2" className="block">
+                      <img
+                        src="https://images.unsplash.com/photo-1738079264549-50006a1826ca?q=80&w=735&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                        alt="Creator 2"
+                        className="w-12 h-12 md:w-14 md:h-14 rounded-full object-cover border-2 border-white shadow-md hover:scale-110 transition-transform duration-200"
+                      />
+                    </a>
+                    <a href="/influencer/profile/3" className="block">
+                      <img
+                        src="https://images.unsplash.com/photo-1664636404761-d3aa86169911?q=80&w=387&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                        alt="Creator 3"
+                        className="w-12 h-12 md:w-14 md:h-14 rounded-full object-cover border-2 border-white shadow-md hover:scale-110 transition-transform duration-200"
+                      />
+                    </a>
+                    <a href="/influencer/profile/4" className="block">
+                      <img
+                        src="https://images.unsplash.com/photo-1624610806209-82a4cbb4339a?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                        alt="Creator 4"
+                        className="w-12 h-12 md:w-14 md:h-14 rounded-full object-cover border-2 border-white shadow-md hover:scale-110 transition-transform duration-200"
+                      />
+                    </a>
                   </div>
                 </motion.div>
               </div>
@@ -306,10 +329,12 @@ export default function Home() {
                     viewport={{ once: true }}
                     className="bg-white p-8 rounded-2xl shadow-xl border border-indigo-50 hover:shadow-2xl hover:border-indigo-100 transition-all duration-300"
                   >
-                    <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
+                    <div className="w-16 h-16 rounded-2xl overflow-hidden mb-6 shadow-lg">
+                      <img
+                        src="https://images.unsplash.com/photo-1580048915913-4f8f5cb481c4?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&q=80"
+                        alt="Direct Payments"
+                        className="w-full h-full object-cover"
+                      />
                     </div>
                     <h3 className="text-2xl font-bold mb-3 text-gray-900">Direct Payments</h3>
                     <p className="text-gray-600 leading-relaxed">Get paid directly for your content without middlemen taking large cuts. Keep more of what you earn with our transparent payment system.</p>
@@ -328,10 +353,12 @@ export default function Home() {
                     viewport={{ once: true }}
                     className="bg-white p-8 rounded-2xl shadow-xl border border-purple-50 hover:shadow-2xl hover:border-purple-100 transition-all duration-300"
                   >
-                    <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                      </svg>
+                    <div className="w-16 h-16 rounded-2xl overflow-hidden mb-6 shadow-lg">
+                      <img
+                        src="https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&q=80"
+                        alt="Local Connections"
+                        className="w-full h-full object-cover"
+                      />
                     </div>
                     <h3 className="text-2xl font-bold mb-3 text-gray-900">Local Connections</h3>
                     <p className="text-gray-600 leading-relaxed">Connect with brands in your city for authentic partnerships that resonate with your local audience and create meaningful impact.</p>
@@ -350,10 +377,12 @@ export default function Home() {
                     viewport={{ once: true }}
                     className="bg-white p-8 rounded-2xl shadow-xl border border-pink-50 hover:shadow-2xl hover:border-pink-100 transition-all duration-300"
                   >
-                    <div className="w-16 h-16 bg-gradient-to-br from-pink-500 to-pink-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                      </svg>
+                    <div className="w-16 h-16 rounded-2xl overflow-hidden mb-6 shadow-lg">
+                      <img
+                        src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&q=80"
+                        alt="Growth Analytics"
+                        className="w-full h-full object-cover"
+                      />
                     </div>
                     <h3 className="text-2xl font-bold mb-3 text-gray-900">Growth Analytics</h3>
                     <p className="text-gray-600 leading-relaxed">Track your performance and growth with our advanced analytics tools designed specifically for creators to optimize your content strategy.</p>
@@ -372,21 +401,103 @@ export default function Home() {
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.6 }}
                   viewport={{ once: true }}
-                  className="mt-16 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-8 md:p-10 shadow-xl text-white max-w-5xl mx-auto"
+                  className="mt-16 max-w-6xl mx-auto overflow-hidden"
                 >
-                  <div className="flex flex-col md:flex-row items-center gap-8">
-                    <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-white/20 flex-shrink-0 backdrop-blur-sm flex items-center justify-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 md:h-16 md:w-16 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                      </svg>
-                    </div>
-                    <div>
-                      <h3 className="text-2xl md:text-3xl font-bold mb-4">"I've doubled my income since joining PickCreator"</h3>
-                      <p className="text-white/80 text-lg mb-4">As a lifestyle creator with 15K followers, I was struggling to find consistent brand deals. PickCreator connected me with local businesses that value my audience, and now I'm earning more than ever before.</p>
-                      <div className="flex items-center">
-                        <div className="font-bold">Priya S.</div>
-                        <div className="mx-2">•</div>
-                        <div className="text-white/80">Fashion & Lifestyle Creator</div>
+                  {/* Modern Image Slider Title */}
+                  <div className="text-center mb-8">
+                    <h3 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 bg-clip-text text-transparent">
+                      Our Creator Showcase
+                    </h3>
+                    <p className="text-gray-600 mt-2 max-w-2xl mx-auto">
+                      See how influencers are transforming their content into successful brand partnerships
+                    </p>
+                  </div>
+
+                  {/* Image Slider Container */}
+                  <div className="relative w-full h-[350px] md:h-[450px] overflow-hidden rounded-2xl bg-gradient-to-b from-gray-50/80 to-white/90 dark:from-gray-900/80 dark:to-black/90 shadow-xl border border-gray-100/50 dark:border-gray-800/50">
+                    {/* Subtle overlay for depth */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 via-transparent to-purple-500/5"></div>
+
+                    {/* This div will contain the sliding images */}
+                    <div
+                      className="absolute flex items-center gap-6 animate-slider-rtl md:animate-slider-rtl-md py-12"
+                      style={{
+                        width: "max-content", // Allow container to grow with images
+                      }}
+                    >
+                      {/* Placeholder for images - these will be replaced with actual images */}
+                      {/* First set of images */}
+                      <div className="h-[220px] md:h-[280px] w-[280px] md:w-[350px] rounded-xl overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group">
+                        <img
+                          src="https://images.unsplash.com/photo-1742038107108-3bdda21485d2?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                          alt="Description"
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        />
+                      </div>
+                      <div className="h-[220px] md:h-[280px] w-[280px] md:w-[350px] rounded-xl overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group">
+                        <img
+                          src="https://images.unsplash.com/photo-1691654640333-22335256a8e6?q=80&w=930&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                          alt="Description"
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        />
+                      </div>
+                     <div className="h-[220px] md:h-[280px] w-[280px] md:w-[350px] rounded-xl overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group">
+                        <img
+                          src="https://images.unsplash.com/photo-1634818117911-9ea12e10f61c?q=80&w=4740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                          alt="Description"
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        />
+                      </div>
+                      <div className="h-[220px] md:h-[280px] w-[280px] md:w-[350px] rounded-xl overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group">
+                        <img
+                          src="https://plus.unsplash.com/premium_photo-1734603747416-37a691f28482?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                          alt="Description"
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        />
+                      </div>
+                      <div className="h-[220px] md:h-[280px] w-[280px] md:w-[350px] rounded-xl overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group">
+                        <img
+                          src="https://images.unsplash.com/photo-1664636404761-d3aa86169911?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                          alt="Description"
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        />
+                      </div>
+
+                      {/* Duplicate images to create seamless loop */}
+                      <div className="h-[220px] md:h-[280px] w-[280px] md:w-[350px] rounded-xl overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group">
+                        <img
+                          src="https://images.unsplash.com/photo-1742038107108-3bdda21485d2?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                          alt="Description"
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        />
+                      </div>
+                      <div className="h-[220px] md:h-[280px] w-[280px] md:w-[350px] rounded-xl overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group">
+                        <img
+                          src="https://images.unsplash.com/photo-1691654640333-22335256a8e6?q=80&w=930&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                          alt="Description"
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        />
+                      </div>
+                     <div className="h-[220px] md:h-[280px] w-[280px] md:w-[350px] rounded-xl overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group">
+                        <img
+                          src="https://images.unsplash.com/photo-1634818117911-9ea12e10f61c?q=80&w=4740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                          alt="Description"
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        />
+                      </div>
+                      <div className="h-[220px] md:h-[280px] w-[280px] md:w-[350px] rounded-xl overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group">
+                        <img
+                          src="https://plus.unsplash.com/premium_photo-1734603747416-37a691f28482?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                          alt="Description"
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        />
+                      </div>
+                      <div className="h-[220px] md:h-[280px] w-[280px] md:w-[350px] rounded-xl overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group">
+                        <img
+                          src="https://images.unsplash.com/photo-1664636404761-d3aa86169911?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                          alt="Description"
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        />
                       </div>
                     </div>
                   </div>
