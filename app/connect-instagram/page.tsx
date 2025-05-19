@@ -24,7 +24,7 @@ const errorMessages = {
   redirect_loop: "We detected a redirection issue. Try using the Safe Mode option below.",
   invalid_request: "Instagram rejected the connection request. Please try again.",
   insufficient_followers: (count?: string) => 
-    `Your account needs at least ${count || '5,000'} followers to be eligible. This helps ensure our platform maintains high-quality content creators.`,
+    `Your account needs at least ${count || '1,000'} followers to be eligible. This helps ensure our platform maintains high-quality content creators.`,
   already_connected: "This Instagram account is already connected to another user.",
   unkownerror: "An unexpected error occurred. Please try again or contact support.",
   business_account_required: "Instagram requires a Business or Creator account to connect. Please convert your account and try again."
@@ -405,7 +405,7 @@ function InstagramConnectContent() {
         
         <h1 className="text-3xl font-bold text-center tracking-tight">Connect Your Instagram Account</h1>
         <p className="text-center text-muted-foreground max-w-2xl">
-          <span className="font-semibold text-red-500">Required Step:</span> To continue as an influencer on PickCreator, you need to connect your Instagram Business account with at least 5000 followers.
+          <span className="font-semibold text-red-500">Required Step:</span> To continue as an influencer on PickCreator, you need to connect your Instagram Business account with at least 1000 followers.
         </p>
         
         <div className="flex items-center justify-center w-full max-w-md">
@@ -435,7 +435,7 @@ function InstagramConnectContent() {
                       <div className="mt-3 text-sm">
                         <p className="font-medium text-destructive/90">Why do we have this requirement?</p>
                         <ul className="list-disc list-inside mt-1 text-destructive/80 space-y-1">
-                          <li>Ensures high-quality content for brands</li>
+                          <li>Ensures you have a significant following</li>
                           <li>Validates your influence in your niche</li>
                           <li>Helps maintain platform standards</li>
                         </ul>
@@ -461,7 +461,7 @@ function InstagramConnectContent() {
           <CardHeader>
             <CardTitle>Why Connect Your Instagram?</CardTitle>
             <CardDescription>
-              Connecting your Instagram account allows brands to discover you and your content.
+              Instagram connection is to verify that the account belongs to you.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -472,7 +472,7 @@ function InstagramConnectContent() {
                 </div>
                 <div>
                   <h3 className="font-medium">Verify Your Influence</h3>
-                  <p className="text-sm text-muted-foreground">Your follower count and engagement metrics are used to match you with appropriate brands.</p>
+                  <p className="text-sm text-muted-foreground">Your follower count and engagement metrics are also verified.</p>
                 </div>
               </div>
               
@@ -483,16 +483,6 @@ function InstagramConnectContent() {
                 <div>
                   <h3 className="font-medium">Display Your Content</h3>
                   <p className="text-sm text-muted-foreground">Your posts will be displayed on your profile, showcasing your style and creativity to potential brand partners.</p>
-                </div>
-              </div>
-              
-              <div className="flex items-start space-x-3">
-                <div className="mt-0.5 bg-primary/10 p-1.5 rounded-full">
-                  <Check className="h-4 w-4 text-primary" />
-                </div>
-                <div>
-                  <h3 className="font-medium">Unlock Platform Features</h3>
-                  <p className="text-sm text-muted-foreground">Access to all platform features requires a connected Instagram account.</p>
                 </div>
               </div>
             </div>
@@ -543,7 +533,7 @@ function InstagramConnectContent() {
           </p>
           <ul className="list-disc pl-5 mt-2 space-y-1 text-sm text-muted-foreground">
             <li>Making sure your Instagram account is a Business or Creator account</li>
-            <li>Ensuring your Instagram account has at least 5000 followers</li>
+            <li>Ensuring your Instagram account has at least 1000 followers</li>
             <li>Checking your Instagram permissions</li>
           </ul>
           <DialogFooter className="flex flex-col sm:flex-row gap-2">
