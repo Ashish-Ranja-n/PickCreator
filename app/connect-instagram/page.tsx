@@ -410,7 +410,7 @@ function InstagramConnectContent() {
         
         <div className="flex items-center justify-center w-full max-w-md">
           <div className="h-px flex-1 bg-muted"></div>
-          <span className="px-4 text-sm text-muted-foreground">You cannot proceed without connecting</span>
+          <span className="px-4 text-sm text-muted-foreground">This is to verify your account and ensure you meet our minimum follower requirement.</span>
           <div className="h-px flex-1 bg-muted"></div>
         </div>
         
