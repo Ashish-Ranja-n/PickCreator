@@ -31,8 +31,8 @@ import {
   CheckIcon,
   Plus,
   Send,
+  ExternalLink,
   Instagram,
-  MessageSquare,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { INDIAN_CITIES } from '../influencer/onboarding/data/indianCities';
@@ -168,10 +168,7 @@ const Brand: NextPage = () => {
   const [connectErrors, setConnectErrors] = useState<{[key: string]: string}>({});
   const [totalAmount, setTotalAmount] = useState<number>(0);
 
-  // Chat confirmation popup states
-  const [showChatConfirmation, setShowChatConfirmation] = useState(false);
-  const [chatInfluencer, setChatInfluencer] = useState<Influencer | null>(null);
-  const [chatLoading, setChatLoading] = useState(false);
+  // Chat-related states removed as we're using connect functionality instead
 
 
   // Update useEffect to recalculate the amount when content requirements or selected influencers change
@@ -1561,26 +1558,27 @@ const Brand: NextPage = () => {
                           </a>
                         </Button>
 
-                        {/* Chat button */}
+                        {/* Connect button */}
                         <Button
                           className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg flex items-center justify-center gap-2 transition-all"
                           onClick={() => {
                             if (!user?._id) {
                               toast({
                                 title: "Error",
-                                description: "You need to be logged in to start a conversation",
+                                description: "You need to be logged in to create a deal",
                                 variant: "destructive"
                               });
                               return;
                             }
 
-                            // Set the influencer for chat and show confirmation popup
-                            setChatInfluencer(selectedInfluencer);
-                            setShowChatConfirmation(true);
+                            // Set the influencer for connect popup and show it
+                            setConnectInfluencer(selectedInfluencer);
+                            setShowConnectPopup(true);
+                            setSelectedInfluencer(null); // Close the profile view
                           }}
                         >
-                          <MessageSquare className="h-4 w-4" />
-                          <span>Chat</span>
+                          <Send className="h-4 w-4" />
+                          <span>Connect</span>
                         </Button>
                       </div>
                     )}
@@ -1825,153 +1823,7 @@ const Brand: NextPage = () => {
         )}
       </AnimatePresence>
 
-      {/* Chat Confirmation Popup */}
-      <AnimatePresence mode="wait">
-        {showChatConfirmation && chatInfluencer && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-          >
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              transition={{
-                type: "spring",
-                stiffness: 300,
-                damping: 30,
-                mass: 0.8
-              }}
-              className="bg-white rounded-3xl shadow-lg max-w-md w-full overflow-hidden"
-            >
-              {/* Header */}
-              <div className="px-6 py-4 border-b flex justify-between items-center">
-                <h2 className="text-xl font-semibold text-gray-800">Start Conversation</h2>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setShowChatConfirmation(false)}
-                  className="h-8 w-8 rounded-full hover:bg-gray-100"
-                >
-                  <XIcon className="h-5 w-5" />
-                </Button>
-              </div>
-
-              {/* Main content */}
-              <div className="p-6 space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
-                    {chatInfluencer.profilePictureUrl ? (
-                      <Image
-                        src={chatInfluencer.profilePictureUrl}
-                        alt={chatInfluencer.name}
-                        className="w-full h-full object-cover"
-                        width={48}
-                        height={48}
-                        unoptimized={isInstagramUrl(chatInfluencer.profilePictureUrl)}
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-gray-200">
-                        {chatInfluencer.name.charAt(0)}
-                      </div>
-                    )}
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-gray-900">{chatInfluencer.name}</h3>
-                    <p className="text-sm text-gray-500">@{chatInfluencer.instagramUsername}</p>
-                  </div>
-                </div>
-
-                <p className="text-gray-700">
-                  Would you like to start a conversation with {chatInfluencer.name}? An initial message will be sent to express your interest in collaboration.
-                </p>
-
-                <div className="bg-blue-50 border border-blue-100 rounded-lg p-4">
-                  <p className="text-sm text-blue-700 italic">
-                    "Hi {chatInfluencer.name}, I'm interested in collaborating with you. Let's discuss the details."
-                  </p>
-                </div>
-              </div>
-
-              {/* Footer */}
-              <div className="px-6 py-4 border-t flex justify-end gap-3">
-                <Button
-                  variant="outline"
-                  onClick={() => setShowChatConfirmation(false)}
-                  className="px-4"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4"
-                  disabled={chatLoading}
-                  onClick={async () => {
-                    if (!user?._id) {
-                      toast({
-                        title: "Error",
-                        description: "You need to be logged in to start a conversation",
-                        variant: "destructive"
-                      });
-                      return;
-                    }
-
-                    try {
-                      setChatLoading(true);
-                      // Create a conversation and send initial message
-                      const response = await axios.post('/api/conversation/initiate', {
-                        currentUserId: user._id,
-                        otherUserId: chatInfluencer.id,
-                        initialMessage: `Hi ${chatInfluencer.name}, I'm interested in collaborating with you. Let's discuss the details.`
-                      });
-
-                      if (response.data.success) {
-                        // Close the confirmation popup
-                        setShowChatConfirmation(false);
-                        // Close the profile popup if open
-                        setSelectedInfluencer(null);
-                        // Show success message
-                        toast({
-                          title: "Success",
-                          description: "Conversation started successfully!",
-                          variant: "default"
-                        });
-                        // Redirect to the chat page
-                        router.push(`/brand/chat/${response.data.conversationId}`);
-                      } else {
-                        throw new Error(response.data.message || "Failed to start conversation");
-                      }
-                    } catch (error: any) {
-                      console.error("Error starting conversation:", error);
-                      toast({
-                        title: "Error",
-                        description: error.message || "Failed to start conversation. Please try again.",
-                        variant: "destructive"
-                      });
-                    } finally {
-                      setChatLoading(false);
-                    }
-                  }}
-                >
-                  {chatLoading ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                      <span>Starting Chat...</span>
-                    </>
-                  ) : (
-                    <>
-                      <MessageSquare className="h-4 w-4 mr-2" />
-                      <span>Start Chat</span>
-                    </>
-                  )}
-                </Button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Chat Confirmation Popup removed - using Connect functionality instead */}
     </div>
   );
 };
