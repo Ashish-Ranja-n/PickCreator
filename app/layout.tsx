@@ -7,6 +7,7 @@ import { ServiceWorkerRegistration } from './ServiceWorkerRegistration';
 import { SessionRefresher } from './SessionRefresher';
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const kanit = Kanit({
   weight: ["400"],
@@ -96,6 +97,7 @@ export default function RootLayout({
             <SessionRefresher />
             {children}
             <Analytics />
+            <SpeedInsights />
             <Toaster />
           </ThemeProvider>
         </Providers>
