@@ -82,6 +82,47 @@ const ProfilePage = () => {
   // Rename the variable to make it clear it's the Instagram data
   const instagramData = data;
 
+  // Calculate account age in days
+  const calculateAccountAge = () => {
+    // Log the currentUser object to see its structure
+    console.log('Current user object:', currentUser);
+
+    // Check if createdAt exists directly or in a nested property
+    if (!currentUser) return 0;
+
+    // Try to get createdAt from different possible locations
+    let createdAtValue;
+
+    if (typeof currentUser.createdAt === 'string' || currentUser.createdAt instanceof Date) {
+      createdAtValue = currentUser.createdAt;
+    } else if (typeof (currentUser as any).createdAt === 'string' || (currentUser as any).createdAt instanceof Date) {
+      createdAtValue = (currentUser as any).createdAt;
+    } else if ((currentUser as any).user && ((currentUser as any).user.createdAt instanceof Date || typeof (currentUser as any).user.createdAt === 'string')) {
+      createdAtValue = (currentUser as any).user.createdAt;
+    }
+
+    if (!createdAtValue) {
+      // Try to find a timestamp field
+      if (typeof currentUser.updatedAt === 'string' || currentUser.updatedAt instanceof Date) {
+        createdAtValue = currentUser.updatedAt;
+      }
+    }
+
+    if (!createdAtValue) return 0;
+
+    try {
+      const createdDate = new Date(createdAtValue);
+      const today = new Date();
+      const diffTime = Math.abs(today.getTime() - createdDate.getTime());
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+      return diffDays;
+    } catch (error) {
+      console.error('Error calculating account age:', error);
+      return 0;
+    }
+  };
+
   // State for editing profile
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({
@@ -503,7 +544,7 @@ const ProfilePage = () => {
           <TabsContent value="profile" className="space-y-0 pt-8 pb-16">
             {/* Modern Profile Container */}
             <div className="relative" id="profile-container">
-              
+
               {/* Main Content with Modern Card Layout */}
               <div className="space-y-16 max-w-6xl mx-auto">
                 {/* Performance Stats - Professional Design */}
@@ -606,13 +647,35 @@ const ProfilePage = () => {
                         </div>
                         <div className="flex items-end justify-between">
                           <div className="text-3xl font-bold text-slate-900 dark:text-white">
-                            0
+                            {calculateAccountAge()}
                           </div>
                           <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center">
                             <span className="font-medium">days</span>
                           </div>
                         </div>
-                        <div className="mt-2 text-xs text-slate-500 dark:text-slate-400">Member since N/A</div>
+                        <div className="mt-2 text-xs text-slate-500 dark:text-slate-400">
+                          Member since {(() => {
+                            try {
+                              // Try to get createdAt from different possible locations
+                              let createdAtValue;
+
+                              if (typeof currentUser?.createdAt === 'string' || currentUser?.createdAt instanceof Date) {
+                                createdAtValue = currentUser.createdAt;
+                              } else if (currentUser && typeof (currentUser as any).createdAt === 'string' || (currentUser as any).createdAt instanceof Date) {
+                                createdAtValue = (currentUser as any).createdAt;
+                              } else if (currentUser && (currentUser as any).user && ((currentUser as any).user.createdAt instanceof Date || typeof (currentUser as any).user.createdAt === 'string')) {
+                                createdAtValue = (currentUser as any).user.createdAt;
+                              }
+
+                              if (!createdAtValue) return 'N/A';
+
+                              return new Date(createdAtValue).toLocaleDateString();
+                            } catch (error) {
+                              console.error('Error formatting date:', error);
+                              return 'N/A';
+                            }
+                          })()}
+                        </div>
                       </div>
                     </div>
                   </div>
