@@ -27,6 +27,7 @@ export async function middleware(request: NextRequest) {
             '/api/auth/reset-password',
             '/api/verify-otp',
             '/api/send-otp',
+            '/api/payments/callback'
         ];
 
         // Check if the current path is a public API route
