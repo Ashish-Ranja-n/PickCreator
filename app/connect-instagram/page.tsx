@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Instagram, Check, AlertCircle, Loader, LogOut, RefreshCw } from 'lucide-react';
+import { Instagram, Check, AlertCircle, Loader, LogOut, RefreshCw, Youtube } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -486,13 +486,23 @@ function InstagramConnectContent() {
                 </div>
               </div>
             </div>
+
             
             <Button 
-              className="w-full" 
+              className="w-full bg-red-600 hover:bg-red-700 text-white" 
+              size="lg" 
+              onClick={() => window.open('https://www.youtube.com/watch?v=example', '_blank')}
+            >
+              <Youtube className="mr-2" size={20} />
+              How to Connect?
+            </Button>
+
+            <Button 
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white" 
               size="lg" 
               onClick={handleConnectInstagram}
             >
-              <Instagram className="mr-2 h-5 w-5" />
+              <Instagram className="mr-2" size={20} />
               Connect Instagram
             </Button>
             
