@@ -491,7 +491,7 @@ function InstagramConnectContent() {
             <Button 
               className="w-full bg-red-600 hover:bg-red-700 text-white" 
               size="lg" 
-              onClick={() => window.open('https://www.youtube.com/watch?v=example', '_blank')}
+              onClick={() => window.open('https://youtu.be/YVohudbHDyg', '_blank')}
             >
               <Youtube className="mr-2" size={20} />
               How to Connect?
