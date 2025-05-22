@@ -34,6 +34,7 @@ export default function QueryDetailPage() {
   const [makePublicFaq, setMakePublicFaq] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [responseSuccess, setResponseSuccess] = useState(false);
+  const [sendEmail, setSendEmail] = useState(true);
   
   useEffect(() => {
     if (id) {
@@ -86,6 +87,7 @@ export default function QueryDetailPage() {
           isPublicFaq: makePublicFaq,
           // In a real app, you'd include the current admin's ID
           respondedBy: 'Admin User',
+          sendEmail,
         }),
       });
       
@@ -237,7 +239,7 @@ export default function QueryDetailPage() {
                     ></textarea>
                   </div>
                   
-                  <div className="mb-6">
+                  <div className="mb-4">
                     <label className="flex items-center">
                       <input
                         type="checkbox"
@@ -246,6 +248,17 @@ export default function QueryDetailPage() {
                         className="h-4 w-4 text-pick-blue focus:ring-pick-blue border-gray-300 rounded"
                       />
                       <span className="ml-2 text-sm text-gray-700">Add this query and response to public FAQs</span>
+                    </label>
+                  </div>
+                  <div className="mb-6">
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={sendEmail}
+                        onChange={() => setSendEmail(!sendEmail)}
+                        className="h-4 w-4 text-pick-blue focus:ring-pick-blue border-gray-300 rounded"
+                      />
+                      <span className="ml-2 text-sm text-gray-700">Send response to user via email</span>
                     </label>
                   </div>
                   
