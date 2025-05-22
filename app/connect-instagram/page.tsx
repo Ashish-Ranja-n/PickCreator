@@ -405,7 +405,7 @@ function InstagramConnectContent() {
         
         <h1 className="text-3xl font-bold text-center tracking-tight">Connect Your Instagram Account</h1>
         <p className="text-center text-muted-foreground max-w-2xl">
-          <span className="font-semibold text-red-500">Required Step:</span> To continue as an influencer on PickCreator, you need to connect your Instagram Business account with at least 1000 followers.
+          <span className="font-semibold text-red-500">Required Step:</span> To continue as an influencer on PickCreator, you need to connect your Instagram Business account with at least 5000 followers.
         </p>
         
         <div className="flex items-center justify-center w-full max-w-md">

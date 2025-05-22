@@ -34,6 +34,7 @@ import {
   Send,
   ExternalLink,
   Instagram,
+  ChevronsUpDown,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { INDIAN_CITIES } from '../influencer/onboarding/data/indianCities';
@@ -129,7 +130,8 @@ const Brand: NextPage = () => {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [selectedInfluencer, setSelectedInfluencer] = useState<Influencer | null>(null);
   const [pagination, setPagination] = useState<Pagination>(initialPagination);
-  const [searchQuery, setSearchQuery] = useState('');
+  // State for city search input (like onboarding page)
+  const [citySearchInput, setCitySearchInput] = useState('');
   const [availableCities, setAvailableCities] = useState<string[]>([]);
 
   // Campaign creation states
@@ -192,30 +194,11 @@ const Brand: NextPage = () => {
 
   // Load available cities on first render
   useEffect(() => {
-    // Set available cities from the imported INDIAN_CITIES array
-    setAvailableCities(INDIAN_CITIES || []);
+    // Set available cities from the imported INDIAN_CITIES array (always new reference)
+    setAvailableCities([...(INDIAN_CITIES || [])]);
   }, []);
 
-  // Enhanced city search: exact, prefix, then fuzzy matches (no duplicates)
-  const filteredCities = useMemo(() => {
-    if (!searchQuery.trim() || availableCities.length === 0) return availableCities;
-    const query = searchQuery.trim().toLowerCase();
-    
-    // First: exact matches (case-insensitive)
-    const exactMatches = availableCities.filter(
-      (city) => city.toLowerCase() === query
-    );
-    
-    // Second: substring matches (case-insensitive)
-    const substringMatches = availableCities.filter(
-      (city) => 
-        city.toLowerCase().includes(query) && 
-        city.toLowerCase() !== query // exclude exact matches to avoid duplicates
-    );
-
-    // Combine exact matches first, then substring matches
-    return [...exactMatches, ...substringMatches];
-  }, [searchQuery, availableCities]);
+  // No useMemo, filter inline in render (like onboarding page)
 
   // Fetch influencers from API
   const fetchInfluencers = async (page = 1) => {
@@ -714,50 +697,53 @@ const Brand: NextPage = () => {
               <Button
                 variant="outline"
                 role="combobox"
+                type="button"
                 aria-expanded={openCityPopover}
                 className="w-full justify-between h-10"
               >
                 {selectedCity || "Select a city"}
-                <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-full max-w-[300px] sm:w-[300px] p-0" align="start" sideOffset={4}>
-              <div className="sticky top-0 bg-background p-2 border-b">
-                {/* City search input */}
-                <input
-                  type="text"
-                  placeholder="Search cities..."
-                  className="flex h-8 w-full rounded-md border border-input bg-white px-3 py-1 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                  value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                  }}
-                />
+            <PopoverContent className="w-full p-0 shadow-lg" align="start">
+              <div className="sticky top-0 bg-white p-2 rounded-t-md">
+                <div className="relative">
+                  <input
+                    className="flex h-10 w-full rounded-xl border-2 border-input bg-background pl-4 pr-10 text-base focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                    placeholder="Type to search cities..."
+                    onChange={(e) => {
+                      const list = document.querySelector('.cities-list');
+                      const items = list?.querySelectorAll('.city-item');
+                      const search = e.target.value.toLowerCase();
+                      items?.forEach((item) => {
+                        const text = item.textContent?.toLowerCase() || '';
+                        item.classList.toggle('hidden', !text.includes(search));
+                      });
+                    }}
+                  />
+                </div>
               </div>
-              <div className="cities-list max-h-[250px] sm:max-h-[350px] overflow-auto">
-                {filteredCities.length === 0 ? (
-                  <div className="text-sm text-center py-4 text-muted-foreground">
+              <div className="cities-list max-h-[400px] overflow-auto">
+                {availableCities.length === 0 ? (
+                  <div className="text-base text-center py-8 text-muted-foreground">
                     No cities found
                   </div>
                 ) : (
                   <>
-                    {searchQuery.trim() === '' && (
-                      <div
-                        className="city-item relative flex cursor-pointer select-none items-center px-3 py-2 text-sm hover:bg-accent/5 border-b border-input/10"
-                        onClick={() => {
-                          setSelectedCity(null);
-                          setOpenCityPopover(false);
-                          setSearchQuery('');
-                        }}
-                      >
-                        All Cities
-                      </div>
-                    )}
-                    {filteredCities.map((city) => (
+                    <div
+                      className="city-item relative flex cursor-pointer select-none items-center px-4 py-3 text-base hover:bg-accent/5 border-b border-input/10"
+                      onClick={() => {
+                        setSelectedCity(null);
+                        setOpenCityPopover(false);
+                      }}
+                    >
+                      All Cities
+                    </div>
+                    {availableCities.map(city => (
                       <div
                         key={city}
                         className={cn(
-                          "city-item relative flex cursor-pointer select-none items-center px-3 py-1.5 text-sm",
+                          "city-item relative flex cursor-pointer select-none items-center px-4 py-3 text-base",
                           "hover:bg-accent/5",
                           "border-b border-input/10",
                           selectedCity === city && "bg-accent/5 font-medium"
@@ -765,13 +751,11 @@ const Brand: NextPage = () => {
                         onClick={() => {
                           setSelectedCity(city);
                           setOpenCityPopover(false);
-                          setSearchQuery('');
                         }}
                       >
-                        <MapPin className="mr-2 h-3 w-3" />
                         {city}
                         {selectedCity === city && (
-                          <CheckIcon className="ml-auto h-4 w-4 text-primary" />
+                          <CheckIcon className="ml-auto h-5 w-5 text-primary" />
                         )}
                       </div>
                     ))}
