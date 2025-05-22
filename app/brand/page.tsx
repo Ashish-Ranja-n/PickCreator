@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import Fuse from 'fuse.js';
 import { NextPage } from 'next';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
@@ -195,10 +196,26 @@ const Brand: NextPage = () => {
     setAvailableCities(INDIAN_CITIES || []);
   }, []);
 
-  // Filter cities by search query
-  const filteredCities = searchQuery && availableCities.length > 0
-    ? availableCities.filter(city => city.toLowerCase().includes(searchQuery.toLowerCase()))
-    : availableCities;
+  // Enhanced city search: exact, prefix, then fuzzy matches (no duplicates)
+  const filteredCities = useMemo(() => {
+    if (!searchQuery.trim() || availableCities.length === 0) return availableCities;
+    const query = searchQuery.trim().toLowerCase();
+    
+    // First: exact matches (case-insensitive)
+    const exactMatches = availableCities.filter(
+      (city) => city.toLowerCase() === query
+    );
+    
+    // Second: substring matches (case-insensitive)
+    const substringMatches = availableCities.filter(
+      (city) => 
+        city.toLowerCase().includes(query) && 
+        city.toLowerCase() !== query // exclude exact matches to avoid duplicates
+    );
+
+    // Combine exact matches first, then substring matches
+    return [...exactMatches, ...substringMatches];
+  }, [searchQuery, availableCities]);
 
   // Fetch influencers from API
   const fetchInfluencers = async (page = 1) => {
@@ -713,51 +730,53 @@ const Brand: NextPage = () => {
                   className="flex h-8 w-full rounded-md border border-input bg-white px-3 py-1 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                   value={searchQuery}
                   onChange={(e) => {
-                    const search = e.target.value.toLowerCase();
-                    setSearchQuery(search);
+                    setSearchQuery(e.target.value);
                   }}
                 />
               </div>
               <div className="cities-list max-h-[250px] sm:max-h-[350px] overflow-auto">
-                {filteredCities.length === 0 && (
+                {filteredCities.length === 0 ? (
                   <div className="text-sm text-center py-4 text-muted-foreground">
                     No cities found
                   </div>
+                ) : (
+                  <>
+                    {searchQuery.trim() === '' && (
+                      <div
+                        className="city-item relative flex cursor-pointer select-none items-center px-3 py-2 text-sm hover:bg-accent/5 border-b border-input/10"
+                        onClick={() => {
+                          setSelectedCity(null);
+                          setOpenCityPopover(false);
+                          setSearchQuery('');
+                        }}
+                      >
+                        All Cities
+                      </div>
+                    )}
+                    {filteredCities.map((city) => (
+                      <div
+                        key={city}
+                        className={cn(
+                          "city-item relative flex cursor-pointer select-none items-center px-3 py-1.5 text-sm",
+                          "hover:bg-accent/5",
+                          "border-b border-input/10",
+                          selectedCity === city && "bg-accent/5 font-medium"
+                        )}
+                        onClick={() => {
+                          setSelectedCity(city);
+                          setOpenCityPopover(false);
+                          setSearchQuery('');
+                        }}
+                      >
+                        <MapPin className="mr-2 h-3 w-3" />
+                        {city}
+                        {selectedCity === city && (
+                          <CheckIcon className="ml-auto h-4 w-4 text-primary" />
+                        )}
+                      </div>
+                    ))}
+                  </>
                 )}
-
-                <div
-                  className="city-item relative flex cursor-pointer select-none items-center px-3 py-2 text-sm hover:bg-accent/5 border-b border-input/10"
-                  onClick={() => {
-                    setSelectedCity(null);
-                    setOpenCityPopover(false);
-                    setSearchQuery('');
-                  }}
-                >
-                  All Cities
-                </div>
-
-                {filteredCities.map((city) => (
-                  <div
-                    key={city}
-                    className={cn(
-                      "city-item relative flex cursor-pointer select-none items-center px-3 py-1.5 text-sm",
-                      "hover:bg-accent/5",
-                      "border-b border-input/10",
-                      selectedCity === city && "bg-accent/5 font-medium"
-                    )}
-                    onClick={() => {
-                      setSelectedCity(city);
-                      setOpenCityPopover(false);
-                      setSearchQuery('');
-                    }}
-                  >
-                    <MapPin className="mr-2 h-3 w-3" />
-                    {city}
-                    {selectedCity === city && (
-                      <CheckIcon className="ml-auto h-4 w-4 text-primary" />
-                    )}
-                  </div>
-                ))}
               </div>
             </PopoverContent>
           </Popover>
