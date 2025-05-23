@@ -298,14 +298,41 @@ const Header: React.FC = () => {
           <div className="md:hidden">
             <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
               <SheetTrigger asChild>
-                <button
-                  className="p-2shadow-sm text-gray-700 hover:text-gray-900 active:scale-95 transition-transform"
+                <motion.button
+                  className="p-2 shadow-sm text-gray-700 hover:text-indigo-600"
                   aria-label="Menu"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 17 }}
                 >
-                  <Menu size={24} />
-                </button>
+                  <motion.div
+                    animate={isMenuOpen ? "open" : "closed"}
+                    variants={{
+                      open: { rotate: 90 },
+                      closed: { rotate: 0 }
+                    }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <Menu size={24} />
+                  </motion.div>
+                </motion.button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[80vw] sm:w-[300px] p-0 will-change-transform">
+              <SheetContent 
+                side="right" 
+                className="w-[80vw] sm:w-[300px] p-0 will-change-transform"
+                onOpenAutoFocus={(e) => e.preventDefault()}
+              >
+                <motion.div 
+                  initial={{ x: 300, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  exit={{ x: 300, opacity: 0 }}
+                  transition={{ 
+                    type: "spring",
+                    stiffness: 100,
+                    damping: 20,
+                    duration: 0.5
+                  }}
+                >
                 <div className="h-full flex flex-col">
                   <SheetHeader className="p-4 border-b">
                     <SheetTitle className="text-2xl font-bold text-indigo-600">
@@ -345,6 +372,18 @@ const Header: React.FC = () => {
                         </svg>
                       </Link>
                     </div>
+                    <div className="mb-8">
+                      <Link
+                        href="/log-in"
+                        className="w-full flex items-center justify-center text-white font-medium rounded-full bg-teal-600 py-3 px-6 shadow-md hover:bg-teal-700 transition-colors"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        Log-in
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                        </svg>
+                      </Link>
+                    </div>
 
                     {/* Social Links */}
                     <div>
@@ -370,6 +409,7 @@ const Header: React.FC = () => {
                     &copy; {new Date().getFullYear()} PickCreator. All rights reserved.
                   </div>
                 </div>
+                </motion.div>
               </SheetContent>
             </Sheet>
           </div>
