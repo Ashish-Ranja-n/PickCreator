@@ -7,6 +7,7 @@ import BrandsSection from '@/components/LandingpageComponents/BrandsSection';
 import InfluencersSection from '@/components/LandingpageComponents/InfluencersSection';
 import PricingSection from '@/components/LandingpageComponents/PricingSection';
 import Footer from '@/components/LandingpageComponents/Footer';
+import HeroScrollTagline from '@/components/HeroScrollTagline';
 
 
 export default function Home() {
@@ -124,158 +125,9 @@ export default function Home() {
             {/* Hero Section */}
             <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-b from-indigo-50 via-white to-purple-50">
               <div className="container-custom relative z-10">
-                <div className="text-center max-w-5xl mx-auto pt-16 sm:pt-20 md:pt-24">
-                  <motion.span
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.2 }}
-                    className="inline-block bg-gradient-to-r from-indigo-500/10 to-purple-500/10 text-indigo-600 px-5 py-2 rounded-full text-sm mb-6 sm:mb-8 font-bold tracking-wide"
-                  >
-                    Elevate Your Influence, Amplify Your Income.
-                  </motion.span>
-
-                  <motion.h1
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.3 }}
-                    className="text-5xl md:text-7xl font-extrabold mb-8 flex flex-wrap justify-center items-baseline"
-                  >
-                    {/* "where" in small text */}
-                    <span className="text-indigo-700 text-2xl md:text-3xl mr-2 font-medium">
-                      where
-                    </span>
-
-                    {/* "influencer" with gradient */}
-                    <span className="relative">
-                      <span className="bg-[linear-gradient(to_right,#7c3aed,#ec4899,#8b5cf6,#d946ef)] bg-clip-text text-transparent animate-liquid-gradient absolute font-extrabold">
-                        influencer
-                      </span>
-                      <span className="opacity-0">influencer&nbsp;</span>
-                    </span>
-
-                    {/* "meets" in purple */}
-                    <span className="text-indigo-900 mx-2">
-                      meets
-                    </span>
-
-                    {/* "brand" in bold purple */}
-                    <span className="text-purple-700">
-                      brand
-                    </span>
-                  </motion.h1>
-
-                  <motion.p
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.4 }}
-                    className="text-xl text-gray-600 font-medium mb-10 max-w-2xl mx-auto px-4"
-                  >
-                    Join our community of verified influencers and brands and collaborate with nearby  shops, businesses and global brands. Be seen🛸 and get paid💵.
-                  </motion.p>
-
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.45 }}
-                    className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12 w-full max-w-2xl mx-auto px-4"
-                  >
-                    <a href="/sign-up?type=influencer" className="w-full sm:w-auto">
-                      <motion.button
-                        className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium py-4 px-8 rounded-full shadow-lg transition-all duration-200"
-                        whileHover={{ y: -2, boxShadow: "0 10px 25px -5px rgba(124, 58, 237, 0.5)" }}
-                        whileTap={{ y: 1 }}
-                      >
-                        <span className="flex items-center justify-center">
-                          <span className="mr-2 text-lg">Join as Influencer</span>
-                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                          </svg>
-                        </span>
-                      </motion.button>
-                    </a>
-                    <a href="/sign-up?type=brand" className="w-full sm:w-auto">
-                      <motion.button
-                        className="w-full bg-white border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-50 font-medium py-4 px-8 rounded-full shadow-md transition-all duration-200"
-                        whileHover={{ y: -2 }}
-                        whileTap={{ y: 1 }}
-                      >
-                        <span className="flex items-center justify-center">
-                          <span className="mr-2 text-lg">I'm a Brand</span>
-                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                          </svg>
-                        </span>
-                      </motion.button>
-                    </a>
-                  </motion.div>
-                </div>
-
-                {/* Platform Stats Section */}
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: 0.7 }}
-                  className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 max-w-5xl mx-auto mt-4 px-4"
-                >
-                  <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-5 shadow-xl border border-indigo-100">
-                    <div className="text-3xl font-bold text-indigo-600 mb-1">{analytics.verifiedBrands}+</div>
-                    <div className="text-sm text-gray-600 font-medium">Active Brands</div>
-                  </div>
-                  <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-5 shadow-xl border border-purple-100">
-                    <div className="text-3xl font-bold text-purple-600 mb-1">{analytics.verifiedInfluencers}+</div>
-                    <div className="text-sm text-gray-600 font-medium">Creators Earning</div>
-                  </div>
-                  <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-5 shadow-xl border border-pink-100">
-                    <div className="text-3xl font-bold text-pink-600 mb-1">₹10K+</div>
-                    <div className="text-sm text-gray-600 font-medium">Avg. Monthly Income</div>
-                  </div>
-                  <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-5 shadow-xl border border-indigo-100">
-                    <div className="text-3xl font-bold text-indigo-600 mb-1">100%</div>
-                    <div className="text-sm text-gray-600 font-medium">Payment Success</div>
-                  </div>
-                </motion.div>
-
-                {/* Featured Creators */}
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: 0.9 }}
-                  className="mt-16 mb-10 text-center"
-                >
-                  <p className="text-sm font-medium text-indigo-600 mb-2">CREATORS THRIVING ON OUR PLATFORM</p>
-                  <div className="flex justify-center items-center space-x-3 md:space-x-5 mt-4">
-                    <a href="/influencer/profile/1" className="block">
-                      <img
-                        src="https://images.unsplash.com/photo-1747264466429-c868c612bfea?q=80&w=772&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                        alt="Creator 1"
-                        className="w-12 h-12 md:w-14 md:h-14 rounded-full object-cover border-2 border-white shadow-md hover:scale-110 transition-transform duration-200"
-                      />
-                    </a>
-                    <a href="/influencer/profile/2" className="block">
-                      <img
-                        src="https://images.unsplash.com/photo-1738079264549-50006a1826ca?q=80&w=735&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                        alt="Creator 2"
-                        className="w-12 h-12 md:w-14 md:h-14 rounded-full object-cover border-2 border-white shadow-md hover:scale-110 transition-transform duration-200"
-                      />
-                    </a>
-                    <a href="/influencer/profile/3" className="block">
-                      <img
-                        src="https://images.unsplash.com/photo-1664636404761-d3aa86169911?q=80&w=387&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                        alt="Creator 3"
-                        className="w-12 h-12 md:w-14 md:h-14 rounded-full object-cover border-2 border-white shadow-md hover:scale-110 transition-transform duration-200"
-                      />
-                    </a>
-                    <a href="/influencer/profile/4" className="block">
-                      <img
-                        src="https://images.unsplash.com/photo-1624610806209-82a4cbb4339a?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                        alt="Creator 4"
-                        className="w-12 h-12 md:w-14 md:h-14 rounded-full object-cover border-2 border-white shadow-md hover:scale-110 transition-transform duration-200"
-                      />
-                    </a>
-                  </div>
-                </motion.div>
+                {/* --- Scroll-animated Tagline Hero --- */}
+                <HeroScrollTagline />
               </div>
-
               {/* Enhanced Background elements */}
               <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
                 <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] rounded-full bg-gradient-to-r from-indigo-300 to-indigo-200 opacity-15 blur-3xl animate-float animate-pulse-glow"></div>
