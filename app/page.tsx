@@ -13,13 +13,6 @@ export default function Home() {
 
 
     const [loading, setLoading] = useState(true);
-    const [analytics, setAnalytics] = useState({
-      totalBrands: 0,
-      verifiedBrands: 0,
-      totalInfluencers: 0,
-      verifiedInfluencers: 0
-    });
-
   useEffect(() => {
     console.log('Page mounted, loading state:', loading);
     // Add preloader class to body
@@ -35,24 +28,7 @@ export default function Home() {
     };
   }, [loading]);
 
-  // Fetch analytics data only after preloader is complete
-  useEffect(() => {
-    if (!loading) {
-      async function fetchAnalytics() {
-        try {
-          const response = await fetch('/api/analytics');
-          if (response.ok) {
-            const data = await response.json();
-            setAnalytics(data);
-          }
-        } catch (error) {
-          console.error('Error fetching analytics:', error);
-        }
-      }
-
-      fetchAnalytics();
-    }
-  }, [loading]);
+  
 
   const handlePreloaderComplete = () => {
     console.log('Preloader complete callback received');
@@ -210,30 +186,7 @@ export default function Home() {
                   </motion.div>
                 </div>
 
-                {/* Platform Stats Section */}
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: 0.7 }}
-                  className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 max-w-5xl mx-auto mt-4 px-4"
-                >
-                  <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-5 shadow-xl border border-indigo-100">
-                    <div className="text-3xl font-bold text-indigo-600 mb-1">{analytics.verifiedBrands}+</div>
-                    <div className="text-sm text-gray-600 font-medium">Active Brands</div>
-                  </div>
-                  <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-5 shadow-xl border border-purple-100">
-                    <div className="text-3xl font-bold text-purple-600 mb-1">{analytics.verifiedInfluencers}+</div>
-                    <div className="text-sm text-gray-600 font-medium">Creators Earning</div>
-                  </div>
-                  <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-5 shadow-xl border border-pink-100">
-                    <div className="text-3xl font-bold text-pink-600 mb-1">₹10K+</div>
-                    <div className="text-sm text-gray-600 font-medium">Avg. Monthly Income</div>
-                  </div>
-                  <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-5 shadow-xl border border-indigo-100">
-                    <div className="text-3xl font-bold text-indigo-600 mb-1">100%</div>
-                    <div className="text-sm text-gray-600 font-medium">Payment Success</div>
-                  </div>
-                </motion.div>
+                
 
                 {/* Featured Creators */}
                 <motion.div
