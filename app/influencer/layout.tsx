@@ -24,9 +24,7 @@ const InfluencerLayoutInner: React.FC<InfluencerLayoutProps> = React.memo((props
   // Memoize the layout based on hideNavbar, isMobile, and theme
   const layoutContent = useMemo(() => (
     <AuthGuard requiredRole="Influencer">
-        {isMobile && !hideNavbar && (
-          isDarkMode ? <Navbar1 /> : <Navbar />
-        )}
+        {isMobile && !hideNavbar && <Navbar />}
       <div className="bg-background">
         {!hideNavbar && <DesktopNav />}
         <div className="h-full">{props.children}</div>

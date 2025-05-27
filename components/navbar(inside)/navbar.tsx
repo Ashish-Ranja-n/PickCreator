@@ -1,32 +1,19 @@
 import React from 'react';
 import "@/app/globals.css";
-import styles from '@/styles/myComponent.module.css';
 import { motion } from 'framer-motion';
+import { BellIcon, UsersIcon } from '@heroicons/react/24/outline';
 
 const Navbar: React.FC = () => {
   return (
-   <>
-    <div className='fixed top-0 left-0 right-0 z-50'>
-      <div className='z-50 backdrop-blur-md bg-white/50 border-b border-slate-200 py-2 flex items-center justify-between overflow-hidden px-6 relative'>
-        {/* Bubble background */}
-        <div className="bubble-container absolute inset-0 overflow-hidden">
-          <div className="bubble b1"></div>
-          <div className="bubble b2"></div>
-          <div className="bubble b3"></div>
-          <div className="bubble b4"></div>
-          <div className="bubble b5"></div>
-          <div className="bubble b6"></div>
-          <div className="bubble b7"></div>
-          <div className="bubble b8"></div>
-          <div className="bubble b9"></div>
-          <div className="bubble b10"></div>
-          <div className="bubble b11"></div>
-          <div className="bubble b12"></div>
-        </div>
+    <div className="fixed top-0 left-0 right-0 z-50">
+      <div className="backdrop-blur-md bg-white/30 dark:bg-gray-900/50 border-b border-slate-200/20 dark:border-slate-700/30 h-[50px] flex items-center justify-between px-6 relative overflow-hidden">
+        {/* Background Elements */}
+        <div className="absolute inset-0 dark:bg-gradient-to-r dark:from-blue-900/20 dark:to-purple-900/20"></div>
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,transparent_0%,rgba(255,255,255,0.1)_20%,transparent_40%)] dark:bg-[linear-gradient(to_right,transparent_0%,rgba(255,255,255,0.03)_20%,transparent_40%)] animate-[shimmer_2s_infinite]"></div>
         
-        {/* Bright gradient accent */}
+        {/* Gradient line at bottom */}
         <motion.div
-          className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-violet-600 via-fuchsia-500 to-blue-500"
+          className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-violet-600 via-fuchsia-500 to-blue-500 dark:from-violet-500 dark:via-fuchsia-400 dark:to-blue-400"
           initial={{ opacity: 0.7, backgroundPosition: "0% 50%" }}
           animate={{
             opacity: [0.7, 0.9, 0.7],
@@ -38,163 +25,42 @@ const Navbar: React.FC = () => {
             ease: "linear"
           }}
         />
-        
-        <div className={styles.deconstructed}>
-          PICKCREATOR
-          <div>PICKCREATOR</div>
-          <div>PICKCREATOR</div>
-          <div>PICKCREATOR</div>
-          <div>PICKCREATOR</div>
+
+        {/* Logo section (70% width) */}
+        <div className="flex-grow relative" style={{ maxWidth: '70%' }}>
+          <motion.h1 
+            className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-violet-600 via-fuchsia-500 to-blue-500 dark:from-violet-400 dark:via-fuchsia-300 dark:to-blue-300"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            PICKCREATOR
+          </motion.h1>
+        </div>
+
+        {/* Right section with online users and notifications */}
+        <div className="flex items-center space-x-6 relative">
+          {/* Online users */}
+          <div className="flex items-center space-x-2">
+            <div className="relative">
+              <UsersIcon className="h-6 w-6 text-gray-600 dark:text-gray-300" />
+              <div className="absolute -top-1 -right-1 h-3 w-3 bg-green-500 dark:bg-green-400 rounded-full border-2 border-white dark:border-gray-900"></div>
+            </div>
+            <span className="text-sm font-medium text-gray-600 dark:text-gray-300">1,234</span>
+          </div>
+
+          {/* Notification bell */}
+          <motion.button
+            className="relative"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <BellIcon className="h-6 w-6 text-gray-600 dark:text-gray-300" />
+            <div className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 dark:bg-red-400 rounded-full border-2 border-white dark:border-gray-900"></div>
+          </motion.button>
         </div>
       </div>
     </div>
-
-    <style jsx>{`
-      .bubble-container {
-        pointer-events: none;
-        z-index: -1;
-      }
-      
-      .bubble {
-        position: absolute;
-        border-radius: 50%;
-        background: radial-gradient(
-          circle at center,
-          rgba(255, 255, 255, 0.6),
-          rgba(255, 255, 255, 0.1)
-        );
-        box-shadow: 0 0 5px rgba(0, 238, 255, 0.5),
-                    inset 0 0 10px rgba(255, 0, 128, 0.3);
-        backdrop-filter: blur(1px);
-        animation: float 8s infinite ease-in-out;
-      }
-      
-      .b1 {
-        width: 15px;
-        height: 15px;
-        left: 10%;
-        top: 100%;
-        animation-duration: 6s;
-        animation-delay: 0.2s;
-      }
-      
-      .b2 {
-        width: 10px;
-        height: 10px;
-        left: 20%;
-        top: 100%;
-        animation-duration: 9s;
-        animation-delay: 0.8s;
-      }
-      
-      .b3 {
-        width: 8px;
-        height: 8px;
-        left: 30%;
-        top: 100%;
-        animation-duration: 7s;
-        animation-delay: 1.5s;
-      }
-      
-      .b4 {
-        width: 12px;
-        height: 12px;
-        left: 40%;
-        top: 100%;
-        animation-duration: 10s;
-        animation-delay: 0.5s;
-      }
-      
-      .b5 {
-        width: 7px;
-        height: 7px;
-        left: 50%;
-        top: 100%;
-        animation-duration: 8s;
-        animation-delay: 2s;
-      }
-      
-      .b6 {
-        width: 13px;
-        height: 13px;
-        left: 60%;
-        top: 100%;
-        animation-duration: 6.5s;
-        animation-delay: 0.7s;
-      }
-      
-      .b7 {
-        width: 9px;
-        height: 9px;
-        left: 70%;
-        top: 100%;
-        animation-duration: 8.5s;
-        animation-delay: 1.3s;
-      }
-      
-      .b8 {
-        width: 11px;
-        height: 11px;
-        left: 80%;
-        top: 100%;
-        animation-duration: 7.5s;
-        animation-delay: 2.1s;
-      }
-      
-      .b9 {
-        width: 8px;
-        height: 8px;
-        left: 90%;
-        top: 100%;
-        animation-duration: 9s;
-        animation-delay: 0.3s;
-      }
-      
-      .b10 {
-        width: 14px;
-        height: 14px;
-        left: 15%;
-        top: 100%;
-        animation-duration: 7s;
-        animation-delay: 1.7s;
-      }
-      
-      .b11 {
-        width: 9px;
-        height: 9px;
-        left: 55%;
-        top: 100%;
-        animation-duration: 8s;
-        animation-delay: 2.5s;
-      }
-      
-      .b12 {
-        width: 12px;
-        height: 12px;
-        left: 75%;
-        top: 100%;
-        animation-duration: 6.8s;
-        animation-delay: 1s;
-      }
-      
-      @keyframes float {
-        0% {
-          transform: translateY(0);
-          opacity: 0;
-        }
-        5% {
-          opacity: 0.6;
-        }
-        70% {
-          opacity: 0.3;
-        }
-        100% {
-          transform: translateY(-80px) rotate(360deg);
-          opacity: 0;
-        }
-      }
-    `}</style>
-   </>
   );
 };
 
