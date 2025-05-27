@@ -58,6 +58,49 @@ export default function InfluencerFeedClient() {
   const [selectedHashtag, setSelectedHashtag] = useState<string | null>(null);
   const { toast } = useToast();
 
+  // Hashtag bar visibility state
+  const [showHashtagBar, setShowHashtagBar] = useState(false);
+  const lastScrollY = useRef(0);
+  const lastDirection = useRef<'up' | 'down' | null>(null);
+  const hideBarTimeout = useRef<NodeJS.Timeout | null>(null);
+  // Hashtag bar show/hide logic (YouTube style)
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    let lastScrollTop = 0;
+    let pulling = false;
+
+    const onScroll = (e: Event) => {
+      const target = e.target as HTMLElement;
+      const scrollTop = target.scrollTop;
+      const deltaY = scrollTop - lastScrollTop;
+
+      // If at the very top and user scrolls up (pulls down)
+      if (scrollTop === 0 && deltaY < 0) {
+        if (!showHashtagBar) {
+          setShowHashtagBar(true);
+        }
+        pulling = true;
+        // Optionally, auto-hide after 3s
+        if (hideBarTimeout.current) clearTimeout(hideBarTimeout.current);
+        hideBarTimeout.current = setTimeout(() => setShowHashtagBar(false), 3000);
+      } else if (deltaY > 0) {
+        // User scrolls down, hide bar
+        if (showHashtagBar) setShowHashtagBar(false);
+        pulling = false;
+        if (hideBarTimeout.current) clearTimeout(hideBarTimeout.current);
+      }
+      lastScrollTop = scrollTop;
+    };
+
+    container.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      container.removeEventListener('scroll', onScroll);
+      if (hideBarTimeout.current) clearTimeout(hideBarTimeout.current);
+    };
+  }, [showHashtagBar]);
+
   // Available hashtags (same as in CreatePostDialog)
   const availableHashtags = [
     "influencer", "marketing", "content", "collaboration",
@@ -375,40 +418,42 @@ export default function InfluencerFeedClient() {
       </div>
 
 
-      {/* Horizontally scrollable hashtag selection bar */}
-      <div className="sticky top-[105px] dark:top-[110px] md:top-[132px] z-20 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md border-b border-gray-200/50 dark:border-zinc-800/50 shadow-sm">
-        <div
-          ref={hashtagScrollRef}
-          className="flex items-center gap-2 py-2 px-4 overflow-x-auto scrollbar-hide"
-        >
-          <Badge
-            variant={selectedHashtag === null ? "default" : "outline"}
-            className={`cursor-pointer transition-all duration-200 py-1.5 px-3 text-sm whitespace-nowrap ${
-              selectedHashtag === null
-                ? 'bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white shadow-sm'
-                : 'bg-gray-100 dark:bg-zinc-900 text-gray-700 dark:text-white border-gray-200 dark:border-zinc-800'
-            }`}
-            onClick={() => setSelectedHashtag(null)}
+      {/* Horizontally scrollable hashtag selection bar (YouTube style, only shows when pulled) */}
+      {showHashtagBar && (
+        <div className="sticky top-[105px] dark:top-[110px] md:top-[132px] z-20 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md border-b border-gray-200/50 dark:border-zinc-800/50 shadow-sm transition-all duration-300 animate-fadeIn">
+          <div
+            ref={hashtagScrollRef}
+            className="flex items-center gap-2 py-2 px-4 overflow-x-auto scrollbar-hide"
           >
-            All
-          </Badge>
-
-          {availableHashtags.map(hashtag => (
             <Badge
-              key={hashtag}
-              variant={selectedHashtag === hashtag ? "default" : "outline"}
+              variant={selectedHashtag === null ? "default" : "outline"}
               className={`cursor-pointer transition-all duration-200 py-1.5 px-3 text-sm whitespace-nowrap ${
-                selectedHashtag === hashtag
+                selectedHashtag === null
                   ? 'bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white shadow-sm'
                   : 'bg-gray-100 dark:bg-zinc-900 text-gray-700 dark:text-white border-gray-200 dark:border-zinc-800'
               }`}
-              onClick={() => setSelectedHashtag(hashtag)}
+              onClick={() => setSelectedHashtag(null)}
             >
-              #{hashtag}
+              All
             </Badge>
-          ))}
+
+            {availableHashtags.map(hashtag => (
+              <Badge
+                key={hashtag}
+                variant={selectedHashtag === hashtag ? "default" : "outline"}
+                className={`cursor-pointer transition-all duration-200 py-1.5 px-3 text-sm whitespace-nowrap ${
+                  selectedHashtag === hashtag
+                    ? 'bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white shadow-sm'
+                    : 'bg-gray-100 dark:bg-zinc-900 text-gray-700 dark:text-white border-gray-200 dark:border-zinc-800'
+                }`}
+                onClick={() => setSelectedHashtag(hashtag)}
+              >
+                #{hashtag}
+              </Badge>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Content container */}
       <div
