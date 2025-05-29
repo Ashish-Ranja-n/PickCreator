@@ -9,7 +9,39 @@ import PricingSection from '@/components/LandingpageComponents/PricingSection';
 import Footer from '@/components/LandingpageComponents/Footer';
 
 
+
+// Type for beforeinstallprompt event (for PWA install prompt)
+type BeforeInstallPromptEvent = Event & {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed'; }>;
+};
+
 export default function Home() {
+
+  // PWA install prompt state
+  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [showInstall, setShowInstall] = useState(false);
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const promptEvent = e as BeforeInstallPromptEvent;
+      promptEvent.preventDefault();
+      setDeferredPrompt(promptEvent);
+      setShowInstall(true);
+    };
+    window.addEventListener('beforeinstallprompt', handler);
+    return () => window.removeEventListener('beforeinstallprompt', handler);
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (deferredPrompt) {
+      await deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        setShowInstall(false);
+        setDeferredPrompt(null);
+      }
+    }
+  };
 
 
     const [loading, setLoading] = useState(true);
@@ -83,8 +115,50 @@ export default function Home() {
     }
   }, []);
 
+
   return (
     <>
+      {/* Install as PWA button at the very top */}
+      {showInstall && (
+        <div
+          className="fixed bottom-6 right-6 z-50 flex items-center"
+          style={{ minWidth: 0, minHeight: 0 }}
+        >
+          <div className="relative flex items-center rounded-xl shadow-lg bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 overflow-hidden" style={{ minWidth: 0, minHeight: 0 }}>
+            {/* Shine effect */}
+            <div className="absolute inset-0 pointer-events-none">
+              <div className="shine-effect w-full h-full" />
+            </div>
+            <span className="pl-5 pr-2 py-2 text-white font-semibold text-base whitespace-nowrap z-10 drop-shadow">Install as App</span>
+            <button
+              onClick={handleInstallClick}
+              className="flex items-center justify-center bg-white/20 hover:bg-white/30 text-white font-bold px-3 py-2 rounded-r-xl transition-all duration-200 z-10"
+              style={{ minWidth: '40px', minHeight: '40px' }}
+              aria-label="Install App"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v12m0 0l-4-4m4 4l4-4m-7 8h10" />
+              </svg>
+            </button>
+            <style>{`
+              .shine-effect {
+                position: absolute;
+                top: 0; left: 0; right: 0; bottom: 0;
+                background: linear-gradient(120deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.15) 35%, rgba(255,255,255,0.7) 50%, rgba(255,255,255,0.15) 65%, rgba(255,255,255,0.05) 100%);
+                background-size: 300% 100%;
+                animation: shine-move 2.8s cubic-bezier(0.4,0.0,0.2,1) infinite;
+                border-radius: 0.75rem;
+                pointer-events: none;
+                z-index: 1;
+              }
+              @keyframes shine-move {
+                0% { background-position: -150% 0; }
+                100% { background-position: 150% 0; }
+              }
+            `}</style>
+          </div>
+        </div>
+      )}
       <Preloader onComplete={handlePreloaderComplete} />
 
       <AnimatePresence mode="wait">
@@ -94,7 +168,7 @@ export default function Home() {
           transition={{ duration: 0.3 }}
           className={loading ? 'invisible' : 'visible'}
         >
-          <Header />
+            <Header />
 
           <main>
             {/* Hero Section */}
