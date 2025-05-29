@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.pickcreator.app",
+      "sha256_cert_fingerprints": [
+        "3A:78:D8:28:66:F5:05:46:12:10:02:61:A9:AC:48:2B:4A:C0:77:6D:E9:D9:99:AC:7B:4E:E7:03:D0:15:6D:79"
+      ]
+    }
+  }
+]
