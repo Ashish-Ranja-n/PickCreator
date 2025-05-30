@@ -96,7 +96,11 @@ export async function GET(request: NextRequest) {
       bio: (influencer as any).bio || '',
       socialMediaLinks: (influencer as any).socialMediaLinks || [],
       rating: (influencer as any).rating || 0,
-      completedDeals: (influencer as any).completedDeals || 0
+      completedDeals: (influencer as any).completedDeals || 0,
+      mobile: (influencer as any).mobile || '',
+      city: (influencer as any).city || '',
+      gender: (influencer as any).gender || '',
+      age: (influencer as any).age || ''
     };
     
     console.log("Influencer profile route: Successfully retrieved profile data");

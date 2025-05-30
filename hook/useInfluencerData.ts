@@ -10,6 +10,10 @@ interface ProfileData {
   socialMediaLinks: Array<{ platform: string; url: string }>;
   rating: number;
   completedDeals: number;
+  mobile?: string;
+  city?: string;
+  gender?: string;
+  age?: number;
 }
 
 interface OnboardingData {

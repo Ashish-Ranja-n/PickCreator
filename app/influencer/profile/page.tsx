@@ -341,7 +341,6 @@ const ProfilePage = () => {
               <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
                 {profileData?.email}
               </p>
-
               {/* Instagram connection badge */}
               {instagramData?.isConnected && instagramData.profile && (
                 <div className="mt-1 inline-flex items-center">
@@ -353,14 +352,6 @@ const ProfilePage = () => {
 
             {/* Action buttons on the right */}
             <div className="flex-shrink-0 ml-2 flex space-x-2">
-              {/* Edit button */}
-              <Button
-                size="icon"
-                onClick={() => setIsEditing(true)}
-                className="h-10 w-10 rounded-full bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 shadow-sm hover:bg-gray-50 dark:hover:bg-zinc-700 transition-all"
-              >
-                <Edit className="h-4 w-4 text-indigo-500 dark:text-indigo-400" />
-              </Button>
 
               {/* Settings button */}
               <Dialog>
@@ -961,6 +952,44 @@ const ProfilePage = () => {
 
           <TabsContent value="onboarding" className="space-y-6 pt-4">
             <div className="space-y-6">
+              {/* Personal Info Card */}
+              <Card className="shadow-md border border-gray-200 dark:border-zinc-800 bg-white dark:bg-black">
+                <CardHeader className="bg-gray-50 dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-800">
+                  <div className="flex items-center space-x-3">
+                    <Clipboard className="h-6 w-6 text-fuchsia-500 dark:text-fuchsia-400" />
+                    <CardTitle className="text-xl font-semibold text-gray-900 dark:text-white">Personal Info</CardTitle>
+                  </div>
+                  <CardDescription className="text-gray-500 dark:text-zinc-400">
+                    Your personal information provided during onboarding
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {/* Gender */}
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-gray-500 dark:text-zinc-400 block">Gender</label>
+                      <div className="flex items-center space-x-2 p-3 bg-gray-50 dark:bg-zinc-900 rounded-md border border-gray-200 dark:border-zinc-800">
+                        <span className="text-sm text-gray-900 dark:text-white">{profileData?.gender || <span className="italic text-gray-400 dark:text-zinc-500">Not specified</span>}</span>
+                      </div>
+                    </div>
+                    {/* Age */}
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-gray-500 dark:text-zinc-400 block">Age</label>
+                      <div className="flex items-center space-x-2 p-3 bg-gray-50 dark:bg-zinc-900 rounded-md border border-gray-200 dark:border-zinc-800">
+                        <span className="text-sm text-gray-900 dark:text-white">{profileData?.age || <span className="italic text-gray-400 dark:text-zinc-500">Not specified</span>}</span>
+                      </div>
+                    </div>
+                    {/* Phone */}
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-gray-500 dark:text-zinc-400 block">Phone</label>
+                      <div className="flex items-center space-x-2 p-3 bg-gray-50 dark:bg-zinc-900 rounded-md border border-gray-200 dark:border-zinc-800">
+                        <span className="text-sm text-gray-900 dark:text-white">{profileData?.mobile || <span className="italic text-gray-400 dark:text-zinc-500">Not specified</span>}</span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
               {/* Onboarding Status Card */}
               <Card className="shadow-md border border-gray-200 dark:border-zinc-800 bg-white dark:bg-black">
                 <CardHeader className="bg-gray-50 dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-800">
