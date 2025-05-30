@@ -14,7 +14,7 @@ interface BrandLayoutProps {
 const BrandLayout: React.FC<BrandLayoutProps> = (props) => {
   const isMobile = UseIsMobile();
   const pathname = usePathname();
-  const hideNavbar = pathname?.startsWith("/brand/chat/") || pathname?.startsWith("/brand/edit-profile") || false;
+  const hideNavbar = pathname?.startsWith("/brand/chat/") || pathname?.startsWith("/brand/edit-profile") || pathname?.startsWith("/brand/onboarding") || false;
 
   return (
     <AuthGuard requiredRole="Brand">

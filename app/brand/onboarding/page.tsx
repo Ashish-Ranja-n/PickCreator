@@ -1,12 +1,18 @@
 'use client';
 import React, { useState } from "react";
 import { INDIAN_CITIES } from "../../influencer/onboarding/data/indianCities";
+import { Button } from "@/components/ui/button";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const BUSINESS_TYPES = [
   { value: "shop", label: "Shop" },
+  { value: "website/app", label: "Website/app" },
+  { value: "Mall / Store", label: "Mall / Store" },
+  { value: "Ecommerce", label: "Ecommerce" },
   { value: "company", label: "Company" },
-  { value: "website", label: "Website" },
-  { value: "app", label: "App" },
   { value: "other", label: "Other" },
 ];
 
@@ -20,8 +26,10 @@ export default function BrandOnboarding() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [openCity, setOpenCity] = useState(false);
+  const [openBusinessType, setOpenBusinessType] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
@@ -53,73 +61,177 @@ export default function BrandOnboarding() {
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white rounded shadow">
-      <h2 className="text-xl font-bold mb-4">Brand Onboarding</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block mb-1 font-medium">Type of Business</label>
-          <select
-            name="businessType"
-            value={form.businessType}
-            onChange={handleChange}
-            required
-            className="w-full border rounded px-3 py-2"
+    <div className="max-w-md mx-auto p-6">
+      <div className="bg-white rounded-lg shadow-lg p-6 space-y-6">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-2">Brand Onboarding</h2>
+          <p className="text-gray-600">Tell us about your business</p>
+        </div>
+        
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label className="block mb-2 font-medium text-gray-700">Type of Business</label>
+            <Popover open={openBusinessType} onOpenChange={setOpenBusinessType}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  type="button"
+                  className={cn(
+                    "w-full justify-between h-12 px-4",
+                    "bg-background border-2",
+                    !form.businessType && "text-muted-foreground"
+                  )}
+                >
+                  {form.businessType ? BUSINESS_TYPES.find(type => type.value === form.businessType)?.label : "Select business type"}
+                  <ChevronsUpDown className="ml-2 h-5 w-5 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-full p-0">
+                <div className="max-h-[300px] overflow-auto">
+                  {BUSINESS_TYPES.map((type) => (
+                    <div
+                      key={type.value}
+                      className={cn(
+                        "relative flex cursor-pointer select-none items-center px-4 py-3 text-base",
+                        "hover:bg-accent/5",
+                        "border-b border-input/10",
+                        form.businessType === type.value && "bg-accent/5 font-medium"
+                      )}
+                      onClick={() => {
+                        setForm({ ...form, businessType: type.value });
+                        setOpenBusinessType(false);
+                      }}
+                    >
+                      {type.label}
+                      {form.businessType === type.value && (
+                        <Check className="ml-auto h-5 w-5 text-primary" />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          <div>
+            <label className="block mb-2 font-medium text-gray-700">Name of the Business</label>
+            <input
+              type="text"
+              name="businessName"
+              value={form.businessName}
+              onChange={handleChange}
+              required
+              className="w-full h-12 px-4 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              placeholder="Enter business name"
+            />
+          </div>
+
+          <div>
+            <label className="block mb-2 font-medium text-gray-700">Location (City)</label>
+            <Popover open={openCity} onOpenChange={setOpenCity}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  type="button"
+                  className={cn(
+                    "w-full justify-between h-12 px-4",
+                    "bg-background border-2",
+                    !form.location && "text-muted-foreground"
+                  )}
+                >
+                  {form.location || "Select your city"}
+                  <ChevronsUpDown className="ml-2 h-5 w-5 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-full p-0" align="start">
+                <div className="sticky top-0 bg-white p-2 rounded-t-md">
+                  <div className="relative">
+                    <input
+                      className="flex h-12 w-full rounded-lg border-2 border-input bg-background px-4 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                      placeholder="Type to search cities..."
+                      onChange={(e) => {
+                        const list = document.querySelector('.cities-list');
+                        const items = list?.querySelectorAll('.city-item');
+                        const search = e.target.value.toLowerCase();
+                        
+                        items?.forEach((item) => {
+                          const text = item.textContent?.toLowerCase() || '';
+                          item.classList.toggle('hidden', !text.includes(search));
+                        });
+                      }}
+                    />
+                  </div>
+                </div>
+                <div className="cities-list max-h-[300px] overflow-auto">
+                  {INDIAN_CITIES.map((city) => (
+                    <div
+                      key={city}
+                      className={cn(
+                        "city-item relative flex cursor-pointer select-none items-center px-4 py-3 text-base",
+                        "hover:bg-accent/5",
+                        "border-b border-input/10",
+                        form.location === city && "bg-accent/5 font-medium"
+                      )}
+                      onClick={() => {
+                        setForm({ ...form, location: city });
+                        setOpenCity(false);
+                      }}
+                    >
+                      {city}
+                      {form.location === city && (
+                        <Check className="ml-auto h-5 w-5 text-primary" />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </PopoverContent>
+            </Popover>
+            <p className="mt-1 text-sm text-gray-500">Your location helps connect with local influencers</p>
+          </div>
+
+          <div>
+            <label className="block mb-2 font-medium text-gray-700">Mobile Number</label>
+            <input
+              type="tel"
+              name="mobile"
+              value={form.mobile}
+              onChange={handleChange}
+              required
+              pattern="[0-9]{10}"
+              className="w-full h-12 px-4 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              placeholder="Enter 10-digit mobile number"
+            />
+            <p className="mt-1 text-sm text-gray-500">This number is used to verify the business</p>
+          </div>
+
+          {error && (
+            <Alert variant="destructive">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+          
+          {success && (
+            <Alert>
+              <AlertDescription className="text-green-600">{success}</AlertDescription>
+            </Alert>
+          )}
+
+          <button
+            type="submit"
+            className={cn(
+              "w-full bg-blue-600 text-white py-3 rounded-lg font-medium",
+              "hover:bg-blue-700 transition-colors",
+              "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
+              loading && "opacity-50 cursor-not-allowed"
+            )}
+            disabled={loading}
           >
-            <option value="">Select type</option>
-            {BUSINESS_TYPES.map((type) => (
-              <option key={type.value} value={type.value}>{type.label}</option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className="block mb-1 font-medium">Name of the Business</label>
-          <input
-            type="text"
-            name="businessName"
-            value={form.businessName}
-            onChange={handleChange}
-            required
-            className="w-full border rounded px-3 py-2"
-          />
-        </div>
-        <div>
-          <label className="block mb-1 font-medium">Location (City)</label>
-          <select
-            name="location"
-            value={form.location}
-            onChange={handleChange}
-            required
-            className="w-full border rounded px-3 py-2"
-          >
-            <option value="">Select city</option>
-            {INDIAN_CITIES.map((city: string) => (
-              <option key={city} value={city}>{city}</option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className="block mb-1 font-medium">Mobile Number</label>
-          <input
-            type="tel"
-            name="mobile"
-            value={form.mobile}
-            onChange={handleChange}
-            required
-            pattern="[0-9]{10}"
-            className="w-full border rounded px-3 py-2"
-          />
-          <span className="text-xs text-gray-500">This number is used to verify the business</span>
-        </div>
-        {error && <div className="text-red-600">{error}</div>}
-        {success && <div className="text-green-600">{success}</div>}
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded disabled:opacity-50"
-          disabled={loading}
-        >
-          {loading ? "Saving..." : "Save"}
-        </button>
-      </form>
+            {loading ? "Saving..." : "Save"}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
