@@ -82,12 +82,6 @@ export default function PersonalInfoPage() {
   return (
     <div className="max-w-xl mx-auto">
       <h2 className="text-2xl font-bold mb-4">Personal Information</h2>
-      <p className="mb-6 text-muted-foreground">
-        Please provide your age, gender, and mobile number. <br />
-        <span className="text-xs text-gray-500">
-          The money will be transferred to this number and we will contact you before sending the money once the deal is completed. Your number will remain private and will not be visible to anyone else.
-        </span>
-      </p>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <FormField
@@ -103,7 +97,7 @@ export default function PersonalInfoPage() {
                       min={13}
                       max={100}
                       className="w-full rounded-lg border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/30 px-4 py-3 text-base transition placeholder:text-gray-400 bg-white dark:bg-zinc-900"
-                      placeholder="Enter your age (13-100)"
+                      placeholder="Enter your age"
                       {...field}
                       onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))}
                     />
