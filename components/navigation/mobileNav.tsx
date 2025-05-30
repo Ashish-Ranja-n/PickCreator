@@ -28,7 +28,7 @@ const MobileNav = () => {
             )}
           >
             <Icon
-              size={20}
+              size={24}
               className={cn(
                 "transition-colors duration-200",
                 pathname === path && "text-blue-500",
