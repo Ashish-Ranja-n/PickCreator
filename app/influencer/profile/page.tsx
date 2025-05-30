@@ -953,7 +953,7 @@ const ProfilePage = () => {
           <TabsContent value="onboarding" className="space-y-6 pt-4">
             <div className="space-y-6">
             {/* Edit Onboarding Button */}
-              <div className="flex justify-center mt-8 pt-6 border-b border-gray-200 dark:border-zinc-800">
+              <div className="flex justify-center border-gray-200 dark:border-zinc-800">
                 <Button asChild size="lg" className="bg-gradient-to-r from-violet-500 to-fuchsia-500 dark:from-violet-600 dark:to-fuchsia-600 hover:from-violet-600 hover:to-fuchsia-600 dark:hover:from-violet-700 dark:hover:to-fuchsia-700 text-white">
                   <Link href="/influencer/onboarding/basic-info">
                     <Edit className="h-5 w-5 mr-2" />
@@ -1026,7 +1026,7 @@ const ProfilePage = () => {
                   </div>
                 </CardContent>
               </Card>
-              
+
               {/* Personal Info Card */}
               <Card className="shadow-md border border-gray-200 dark:border-zinc-800 bg-white dark:bg-black">
                 <CardHeader className="bg-gray-50 dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-800">
