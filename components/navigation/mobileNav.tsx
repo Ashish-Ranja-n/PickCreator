@@ -1,6 +1,6 @@
 'use client';
 import { cn } from "@/lib/utils";
-import { Home, ShoppingBag, MessageSquare, User } from "lucide-react";
+import { Home, ShoppingBag, MessageCircleMore, User2 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 const MobileNav = () => {
@@ -9,12 +9,12 @@ const MobileNav = () => {
   const tabs = [
     { icon: Home, label: "Home", path: "/brand" },
     { icon: ShoppingBag, label: "Deals", path: "/brand/deals" },
-    { icon: MessageSquare, label: "Chat", path: "/brand/chat" },
-    { icon: User, label: "Profile", path: "/brand/profile" },
+    { icon: MessageCircleMore, label: "Chat", path: "/brand/chat" },
+    { icon: User2, label: "Profile", path: "/brand/profile" },
   ];
 
   return (
-    <nav className="lg:hidden sticky bottom-0 h-16 bg-white z-30 border-t border-gray-200">
+    <nav className="lg:hidden fixed left-0 right-0 bottom-0 h-16 bg-white z-30 border-t border-gray-200">
       <div className="grid grid-cols-4 h-full">
         {tabs.map(({ icon: Icon, label, path }) => (
           <Link
