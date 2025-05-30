@@ -21,7 +21,7 @@ const BrandLayout: React.FC<BrandLayoutProps> = (props) => {
         {isMobile && !hideNavbar && <Navbar />}
       <div className="bg-background">
         {!hideNavbar && <DesktopNav />}
-        <div className={`${isMobile && !hideNavbar ? 'pt-16' : ''} h-screen}`}>{props.children}</div>
+        <div className={`${isMobile && !hideNavbar ? 'pt-[50px]' : ''} h-screen}`}>{props.children}</div>
       </div>
         {!hideNavbar && <MobileNav />}
     </AuthGuard>
