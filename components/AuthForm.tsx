@@ -300,7 +300,7 @@ const AuthForm = ({type}: {type: string}) => {
 
       // For Brand role
       if (userRole === 'Brand') {
-        navigateWithHardRedirect('/brand');
+        navigateWithHardRedirect('/brand/onboarding');
       } else {
         navigateWithHardRedirect('/');
       }

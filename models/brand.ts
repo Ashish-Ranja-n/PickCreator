@@ -3,23 +3,29 @@ import User from "./user";
 
 interface IBrand extends Document {
   // No need for _id field in discriminator
-  companyName?: string;
+  companyName?: string; // Alias: businessName
+  businessType?: string;
   website?: string;
   logo?: string; // Cloudinary URL
   avatar?: string;
   bio?: string;
   phoneNumber?: string;
   location?: string;
+  onboardingCompleted?: boolean;
+  verifiedBrand?: boolean;
 }
 
 const BrandSchema = new Schema<IBrand>({
-  companyName: { type: String },
+  companyName: { type: String }, // Alias: businessName
+  businessType: { type: String},
   website: { type: String },
   logo: { type: String },
   avatar: { type: String },
   bio: { type: String },
   phoneNumber: { type: String },
   location: { type: String },
+  onboardingCompleted: { type: Boolean, default: false },
+  verifiedBrand: { type: Boolean, default: false },
 }, { timestamps: true });
 
 // Create indexes for faster queries
