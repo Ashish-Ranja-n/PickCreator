@@ -952,43 +952,16 @@ const ProfilePage = () => {
 
           <TabsContent value="onboarding" className="space-y-6 pt-4">
             <div className="space-y-6">
-              {/* Personal Info Card */}
-              <Card className="shadow-md border border-gray-200 dark:border-zinc-800 bg-white dark:bg-black">
-                <CardHeader className="bg-gray-50 dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-800">
-                  <div className="flex items-center space-x-3">
-                    <Clipboard className="h-6 w-6 text-fuchsia-500 dark:text-fuchsia-400" />
-                    <CardTitle className="text-xl font-semibold text-gray-900 dark:text-white">Personal Info</CardTitle>
-                  </div>
-                  <CardDescription className="text-gray-500 dark:text-zinc-400">
-                    Your personal information provided during onboarding
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="p-6">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {/* Gender */}
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-500 dark:text-zinc-400 block">Gender</label>
-                      <div className="flex items-center space-x-2 p-3 bg-gray-50 dark:bg-zinc-900 rounded-md border border-gray-200 dark:border-zinc-800">
-                        <span className="text-sm text-gray-900 dark:text-white">{profileData?.gender || <span className="italic text-gray-400 dark:text-zinc-500">Not specified</span>}</span>
-                      </div>
-                    </div>
-                    {/* Age */}
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-500 dark:text-zinc-400 block">Age</label>
-                      <div className="flex items-center space-x-2 p-3 bg-gray-50 dark:bg-zinc-900 rounded-md border border-gray-200 dark:border-zinc-800">
-                        <span className="text-sm text-gray-900 dark:text-white">{profileData?.age || <span className="italic text-gray-400 dark:text-zinc-500">Not specified</span>}</span>
-                      </div>
-                    </div>
-                    {/* Phone */}
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-500 dark:text-zinc-400 block">Phone</label>
-                      <div className="flex items-center space-x-2 p-3 bg-gray-50 dark:bg-zinc-900 rounded-md border border-gray-200 dark:border-zinc-800">
-                        <span className="text-sm text-gray-900 dark:text-white">{profileData?.mobile || <span className="italic text-gray-400 dark:text-zinc-500">Not specified</span>}</span>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+            {/* Edit Onboarding Button */}
+              <div className="flex justify-center mt-8 pt-6 border-b border-gray-200 dark:border-zinc-800">
+                <Button asChild size="lg" className="bg-gradient-to-r from-violet-500 to-fuchsia-500 dark:from-violet-600 dark:to-fuchsia-600 hover:from-violet-600 hover:to-fuchsia-600 dark:hover:from-violet-700 dark:hover:to-fuchsia-700 text-white">
+                  <Link href="/influencer/onboarding/basic-info">
+                    <Edit className="h-5 w-5 mr-2" />
+                    Edit Onboarding Information
+                  </Link>
+                </Button>
+              </div>
+              
 
               {/* Onboarding Status Card */}
               <Card className="shadow-md border border-gray-200 dark:border-zinc-800 bg-white dark:bg-black">
@@ -1048,6 +1021,44 @@ const ProfilePage = () => {
                           <MapPin className="h-4 w-4 text-gray-400 dark:text-zinc-500 shrink-0" />
                           <span className="text-sm text-gray-900 dark:text-white">{onboardingData?.influencer?.city || <span className="italic text-gray-400 dark:text-zinc-500">No city provided</span>}</span>
                         </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              {/* Personal Info Card */}
+              <Card className="shadow-md border border-gray-200 dark:border-zinc-800 bg-white dark:bg-black">
+                <CardHeader className="bg-gray-50 dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-800">
+                  <div className="flex items-center space-x-3">
+                    <Clipboard className="h-6 w-6 text-fuchsia-500 dark:text-fuchsia-400" />
+                    <CardTitle className="text-xl font-semibold text-gray-900 dark:text-white">Personal Info</CardTitle>
+                  </div>
+                  <CardDescription className="text-gray-500 dark:text-zinc-400">
+                    Your personal information provided during onboarding
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {/* Gender */}
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-gray-500 dark:text-zinc-400 block">Gender</label>
+                      <div className="flex items-center space-x-2 p-3 bg-gray-50 dark:bg-zinc-900 rounded-md border border-gray-200 dark:border-zinc-800">
+                        <span className="text-sm text-gray-900 dark:text-white">{profileData?.gender || <span className="italic text-gray-400 dark:text-zinc-500">Not specified</span>}</span>
+                      </div>
+                    </div>
+                    {/* Age */}
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-gray-500 dark:text-zinc-400 block">Age</label>
+                      <div className="flex items-center space-x-2 p-3 bg-gray-50 dark:bg-zinc-900 rounded-md border border-gray-200 dark:border-zinc-800">
+                        <span className="text-sm text-gray-900 dark:text-white">{profileData?.age || <span className="italic text-gray-400 dark:text-zinc-500">Not specified</span>}</span>
+                      </div>
+                    </div>
+                    {/* Phone */}
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-gray-500 dark:text-zinc-400 block">Phone</label>
+                      <div className="flex items-center space-x-2 p-3 bg-gray-50 dark:bg-zinc-900 rounded-md border border-gray-200 dark:border-zinc-800">
+                        <span className="text-sm text-gray-900 dark:text-white">{profileData?.mobile || <span className="italic text-gray-400 dark:text-zinc-500">Not specified</span>}</span>
                       </div>
                     </div>
                   </div>
@@ -1261,15 +1272,7 @@ const ProfilePage = () => {
                  </CardContent>
               </Card>
 
-              {/* Edit Onboarding Button */}
-              <div className="flex justify-center mt-8 pt-6 border-t border-gray-200 dark:border-zinc-800">
-                <Button asChild size="lg" className="bg-gradient-to-r from-violet-500 to-fuchsia-500 dark:from-violet-600 dark:to-fuchsia-600 hover:from-violet-600 hover:to-fuchsia-600 dark:hover:from-violet-700 dark:hover:to-fuchsia-700 text-white">
-                  <Link href="/influencer/onboarding/basic-info">
-                    <Edit className="h-5 w-5 mr-2" />
-                    Edit Onboarding Information
-                  </Link>
-                </Button>
-              </div>
+              
             </div>
           </TabsContent>
         </Tabs>
