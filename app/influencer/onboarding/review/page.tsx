@@ -154,6 +154,42 @@ export default function ReviewPage() {
         </Alert>
       )}
       
+      {/* Personal Info */}
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle>Personal Information</CardTitle>
+            <CardDescription>Your age, gender, and mobile number</CardDescription>
+          </div>
+          <Button variant="ghost" size="sm" asChild>
+            <Link href="/influencer/onboarding/personal-info">
+              <Edit className="h-4 w-4 mr-2" />
+              Edit
+            </Link>
+          </Button>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <h4 className="font-medium text-sm">Age</h4>
+            <p className="text-sm text-muted-foreground mt-1">
+              {onboardingData.age || 'Not provided'}
+            </p>
+          </div>
+          <div>
+            <h4 className="font-medium text-sm">Gender</h4>
+            <p className="text-sm text-muted-foreground mt-1">
+              {onboardingData.gender ? onboardingData.gender.charAt(0).toUpperCase() + onboardingData.gender.slice(1) : 'Not provided'}
+            </p>
+          </div>
+          <div>
+            <h4 className="font-medium text-sm">Mobile Number</h4>
+            <p className="text-sm text-muted-foreground mt-1">
+              {onboardingData.mobile || 'Not provided'}
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Basic Info */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">

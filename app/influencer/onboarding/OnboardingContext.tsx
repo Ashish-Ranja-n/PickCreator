@@ -40,7 +40,13 @@ interface BrandPreferences {
 }
 
 // Define the shape of our onboarding state
+
 interface OnboardingState {
+  // Personal info
+  age: number | null;
+  gender: 'male' | 'female' | 'other' | '';
+  mobile: string;
+
   // Basic info
   bio: string;
   city: string;
@@ -73,7 +79,11 @@ interface OnboardingContextType {
 const OnboardingContext = createContext<OnboardingContextType | undefined>(undefined);
 
 // Default onboarding state
+
 const defaultOnboardingState: OnboardingState = {
+  age: null,
+  gender: '',
+  mobile: '',
   bio: '',
   city: '',
 
@@ -128,6 +138,9 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
 
           // Transform the data to match our state structure
           const transformedData: OnboardingState = {
+            age: influencer.age || null,
+            gender: influencer.gender || '',
+            mobile: influencer.mobile || '',
             bio: influencer.bio || '',
             city: influencer.city || '',
 
@@ -210,6 +223,9 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
       // 2. Any form data passed directly (has priority)
       // 3. The new step
       const dataToSave = {
+        age: formData?.age !== undefined ? formData.age : onboardingData.age,
+        gender: formData?.gender !== undefined ? formData.gender : onboardingData.gender,
+        mobile: formData?.mobile !== undefined ? formData.mobile : onboardingData.mobile,
         bio: formData?.bio !== undefined ? formData.bio : onboardingData.bio,
         city: formData?.city !== undefined ? formData.city : onboardingData.city,
         fixedPricing: formData?.fixedPricing || onboardingData.fixedPricing,
@@ -264,6 +280,9 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
       // 2. Any form data passed directly (has priority)
       // 3. Setting onboardingCompleted to true
       const dataToSave = {
+        age: formData?.age !== undefined ? formData.age : onboardingData.age,
+        gender: formData?.gender !== undefined ? formData.gender : onboardingData.gender,
+        mobile: formData?.mobile !== undefined ? formData.mobile : onboardingData.mobile,
         bio: formData?.bio !== undefined ? formData.bio : onboardingData.bio,
         city: formData?.city !== undefined ? formData.city : onboardingData.city,
         fixedPricing: formData?.fixedPricing || onboardingData.fixedPricing,

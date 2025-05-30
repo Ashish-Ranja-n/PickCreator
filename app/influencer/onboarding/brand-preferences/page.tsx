@@ -140,7 +140,7 @@ export default function BrandPreferencesPage() {
       await saveCurrentStep(3, formData);
       
       // Navigate immediately to next step
-      router.push('/influencer/onboarding/review');
+      router.push('/influencer/onboarding/personal-info');
       
       // Show a minimal toast after navigation starts
       toast({

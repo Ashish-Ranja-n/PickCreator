@@ -11,6 +11,7 @@ const ONBOARDING_STEPS = [
   { path: "/influencer/onboarding/basic-info", label: "Basic Info" },
   { path: "/influencer/onboarding/pricing-model", label: "Pricing Models" },
   { path: "/influencer/onboarding/brand-preferences", label: "Brand Preferences" },
+  { path: "/influencer/onboarding/personal-info", label: "Personal Info" },
   { path: "/influencer/onboarding/review", label: "Review" }
 ];
 
@@ -30,10 +31,8 @@ function OnboardingLayoutContent({ children }: { children: React.ReactNode }) {
     switch(stepIndex) {
       case 0: // Basic Info
         return !!onboardingData.bio && !!onboardingData.city;
-      
       case 1: // Pricing Models
         return (
-          // Consider at least one pricing model is enabled
           (onboardingData.fixedPricing?.enabled && 
             (!!onboardingData.fixedPricing?.storyPrice || 
              !!onboardingData.fixedPricing?.reelPrice || 
@@ -43,13 +42,17 @@ function OnboardingLayoutContent({ children }: { children: React.ReactNode }) {
           (onboardingData.packageDeals?.enabled && onboardingData.packageDeals?.packages?.length > 0) ||
           (onboardingData.barterDeals?.enabled && onboardingData.barterDeals?.acceptedCategories?.length > 0)
         );
-      
       case 2: // Brand Preferences
         return (
           (onboardingData.brandPreferences?.preferredBrandTypes?.length > 0) &&
           (onboardingData.brandPreferences?.collabStyles?.length > 0)
         );
-        
+      case 3: // Personal Info
+        return (
+          typeof onboardingData.age === 'number' && onboardingData.age >= 13 && onboardingData.age <= 100 &&
+          !!onboardingData.gender &&
+          typeof onboardingData.mobile === 'string' && onboardingData.mobile.length >= 10
+        );
       default:
         return false;
     }
