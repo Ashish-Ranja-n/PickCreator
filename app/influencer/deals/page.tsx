@@ -345,24 +345,44 @@ const InfluencerDealsPage = () => {
             className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-500 data-[state=active]:to-fuchsia-500 dark:data-[state=active]:from-violet-600 dark:data-[state=active]:to-fuchsia-600 data-[state=active]:text-white data-[state=active]:border-0"
           >
             Requested
+            {deals.filter(deal => deal.status === 'requested' || deal.status === 'counter-offered').length > 0 && (
+              <span className="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-semibold rounded-full bg-blue-500 text-white min-w-[20px]">
+                {deals.filter(deal => deal.status === 'requested' || deal.status === 'counter-offered').length}
+              </span>
+            )}
           </TabsTrigger>
           <TabsTrigger
             value="pending"
             className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-500 data-[state=active]:to-fuchsia-500 dark:data-[state=active]:from-violet-600 dark:data-[state=active]:to-fuchsia-600 data-[state=active]:text-white data-[state=active]:border-0"
           >
             Pending
+            {deals.filter(deal => deal.status === 'accepted').length > 0 && (
+              <span className="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-semibold rounded-full bg-yellow-500 text-white min-w-[20px]">
+                {deals.filter(deal => deal.status === 'accepted').length}
+              </span>
+            )}
           </TabsTrigger>
           <TabsTrigger
             value="ongoing"
             className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-500 data-[state=active]:to-fuchsia-500 dark:data-[state=active]:from-violet-600 dark:data-[state=active]:to-fuchsia-600 data-[state=active]:text-white data-[state=active]:border-0"
           >
             Ongoing
+            {deals.filter(deal => deal.status === 'ongoing' || deal.status === 'content_approved').length > 0 && (
+              <span className="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-semibold rounded-full bg-green-500 text-white min-w-[20px]">
+                {deals.filter(deal => deal.status === 'ongoing' || deal.status === 'content_approved').length}
+              </span>
+            )}
           </TabsTrigger>
           <TabsTrigger
             value="history"
             className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-500 data-[state=active]:to-fuchsia-500 dark:data-[state=active]:from-violet-600 dark:data-[state=active]:to-fuchsia-600 data-[state=active]:text-white data-[state=active]:border-0"
           >
             History
+            {deals.filter(deal => ['completed', 'cancelled'].includes(deal.status)).length > 0 && (
+              <span className="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-semibold rounded-full bg-gray-500 text-white min-w-[20px]">
+                {deals.filter(deal => ['completed', 'cancelled'].includes(deal.status)).length}
+              </span>
+            )}
           </TabsTrigger>
         </TabsList>
 

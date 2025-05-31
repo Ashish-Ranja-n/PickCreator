@@ -335,10 +335,38 @@ const BrandDealsPage = () => {
         router.push(`/brand/deals?tab=${value}`);
       }}>
         <TabsList className="grid w-full grid-cols-4 mb-8">
-          <TabsTrigger value="requested">Requested</TabsTrigger>
-          <TabsTrigger value="pending">Pending</TabsTrigger>
-          <TabsTrigger value="ongoing">Ongoing</TabsTrigger>
-          <TabsTrigger value="history">History</TabsTrigger>
+          <TabsTrigger value="requested">
+            Requested
+            {deals.filter(deal => deal.status === 'requested' || deal.status === 'counter-offered').length > 0 && (
+              <span className="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-semibold rounded-full bg-blue-500 text-white min-w-[20px]">
+                {deals.filter(deal => deal.status === 'requested' || deal.status === 'counter-offered').length}
+              </span>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="pending">
+            Pending
+            {deals.filter(deal => deal.status === 'accepted').length > 0 && (
+              <span className="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-semibold rounded-full bg-yellow-500 text-white min-w-[20px]">
+                {deals.filter(deal => deal.status === 'accepted').length}
+              </span>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="ongoing">
+            Ongoing
+            {deals.filter(deal => deal.status === 'ongoing' || deal.status === 'content_approved').length > 0 && (
+              <span className="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-semibold rounded-full bg-green-500 text-white min-w-[20px]">
+                {deals.filter(deal => deal.status === 'ongoing' || deal.status === 'content_approved').length}
+              </span>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="history">
+            History
+            {deals.filter(deal => ['completed', 'cancelled'].includes(deal.status)).length > 0 && (
+              <span className="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-semibold rounded-full bg-gray-500 text-white min-w-[20px]">
+                {deals.filter(deal => ['completed', 'cancelled'].includes(deal.status)).length}
+              </span>
+            )}
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="requested">
