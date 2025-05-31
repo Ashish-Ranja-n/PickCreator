@@ -71,58 +71,55 @@ export default function NotificationPermissionPrompt({ userType }: NotificationP
   };
   
   if (!showPrompt || hookLoading) return null;
-  
+
   return (
-    <div className="fixed bottom-4 right-4 max-w-sm bg-white rounded-lg shadow-lg border border-gray-200 p-4 z-50 animate-slide-up">
-      <button 
-        onClick={() => setShowPrompt(false)}
-        className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
-        aria-label="Close notification prompt"
-      >
-        <X size={16} />
-      </button>
-      
-      <div className="flex items-start">
-        <div className="flex-shrink-0 mr-4 rounded-full overflow-hidden h-12 w-12 bg-[#00BCD4] flex items-center justify-center">
-          <Bell className="h-6 w-6 text-white" />
-        </div>
-        
-        <div>
-          <h3 className="font-medium text-gray-900">Enable notifications?</h3>
-          <p className="text-sm text-gray-600 mt-1 mb-4">
-            Stay updated on new opportunities, messages, and activity on your account.
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 animate-fade-in">
+      <div className="relative w-full max-w-md mx-auto bg-white rounded-2xl shadow-2xl border border-gray-200 p-8 flex flex-col items-center">
+        <button
+          onClick={() => setShowPrompt(false)}
+          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+          aria-label="Close notification prompt"
+        >
+          <X size={20} />
+        </button>
+        <div className="flex flex-col items-center w-full">
+          <div className="flex items-center justify-center h-16 w-16 rounded-full bg-gradient-to-br from-cyan-500 to-blue-500 shadow-lg mb-4">
+            <Bell className="h-8 w-8 text-white" />
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2 tracking-tight">Enable Notifications</h2>
+          <p className="text-base text-gray-600 mb-6 text-center max-w-xs">
+            Stay instantly updated on new opportunities, messages, and important activity for your account. You can always manage your preferences later.
           </p>
-          
-          <div className="flex flex-col space-y-2">
-            <Button 
-              onClick={handleAllow} 
-              size="sm" 
-              className="w-full" 
+          <div className="flex flex-col gap-2 w-full">
+            <Button
+              onClick={handleAllow}
+              size="lg"
+              className="w-full font-semibold bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-md hover:from-cyan-600 hover:to-blue-600 transition-colors"
               disabled={isLoading}
             >
               {isLoading ? (
                 <>
-                  <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></span>
+                  <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
                   Enabling...
                 </>
               ) : (
-                'Allow notifications'
+                'Allow Notifications'
               )}
             </Button>
-            <Button 
-              onClick={handleCancel} 
-              variant="outline" 
-              size="sm" 
-              className="w-full"
+            <Button
+              onClick={handleCancel}
+              variant="outline"
+              size="lg"
+              className="w-full font-medium border-gray-300 text-gray-700 hover:bg-gray-50"
               disabled={isLoading}
             >
               Not now
             </Button>
-            <Button 
-              onClick={handleDontShowAgain} 
-              variant="ghost" 
-              size="sm" 
-              className="w-full text-xs text-gray-500"
+            <Button
+              onClick={handleDontShowAgain}
+              variant="ghost"
+              size="sm"
+              className="w-full text-xs text-gray-400 hover:text-gray-600"
               disabled={isLoading}
             >
               Don&apos;t show again
