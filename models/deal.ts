@@ -41,6 +41,8 @@ interface IDeal {
   brandId: Types.ObjectId;
   brandName: string;
   brandProfilePic: string;
+  companyName?: string;
+  location?: string;
   dealType: 'single' | 'multiple';
   dealName: string;
   description: string;
@@ -68,6 +70,8 @@ const DealSchema = new Schema<IDeal>({
   brandId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   brandName: { type: String, required: true },
   brandProfilePic: { type: String },
+  companyName: { type: String },
+  location: { type: String },
   dealType: { type: String, enum: ['single', 'multiple'], required: true },
   dealName: { type: String, required: true },
   description: { type: String, required: true },

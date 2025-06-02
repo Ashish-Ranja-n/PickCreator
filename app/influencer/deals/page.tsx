@@ -32,7 +32,16 @@ import {
   ArrowRightLeft,
   RefreshCw,
   Loader2Icon,
-  MessageCircle
+  MessageCircle,
+  Check,
+  CircleDashed,
+  Film,
+  Image as ImageIcon,
+  MapPin,
+  MapPinned,
+  Send,
+  Video,
+  XIcon
 } from 'lucide-react';
 import { useCurrentUser } from '@/hook/useCurrentUser';
 import { Collapsible } from "@/components/ui/collapsible";
@@ -61,6 +70,9 @@ interface Deal {
   brandName: string;
   brandProfilePic: string;
   brandId: string;
+  companyName?: string;
+  location?: string;
+  visitRequired?: boolean;
   contentRequirements: {
     reels: number;
     posts: number;
@@ -390,122 +402,126 @@ const InfluencerDealsPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredDeals.length > 0 ? (
               filteredDeals.map((deal) => (
-                <Card key={deal._id} className="hover:shadow-lg transition-shadow bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-800">
-                  <CardHeader className="border-b border-gray-200 dark:border-zinc-800">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        {/* Brand Profile Picture */}
-                        <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-100 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700">
+                <Card key={deal._id} className="overflow-hidden hover:shadow-lg transition-all duration-200 bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-800">
+                  <CardHeader className="border-b border-gray-200 dark:border-zinc-800 pb-4">
+                    <div className="flex items-start justify-between w-full gap-4">
+                      <div className="flex gap-4">
+                        <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 flex-shrink-0">
                           {deal.brandProfilePic ? (
                             <Image
                               src={deal.brandProfilePic}
                               alt={deal.brandName}
                               className="w-full h-full object-cover"
-                              width={40}
-                              height={40}
+                              width={48}
+                              height={48}
                             />
                           ) : (
-                            <Building2 className="w-full h-full p-2 text-gray-400 dark:text-zinc-500" />
+                            <Building2 className="w-full h-full p-2.5 text-gray-400 dark:text-zinc-500" />
                           )}
                         </div>
-                        {/* Brand Name and Deal Title */}
-                        <div>
-                          <CardTitle className="text-lg text-gray-900 dark:text-white">{deal.brandName}</CardTitle>
+                        <div className="flex flex-col min-w-0">
+                          {deal.companyName && (
+                            <h4 className="font-semibold text-lg text-gray-900 dark:text-white truncate">
+                              {deal.companyName}
+                            </h4>
+                          )}
+                          <p className="text-sm text-gray-600 dark:text-zinc-300 truncate">{deal.brandName}</p>
+                          <div className="flex flex-wrap items-center gap-2 mt-2">
+                            {deal.location && (
+                              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-zinc-300 text-xs">
+                                <MapPin className="h-3 w-3" />
+                                {deal.location}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
-                      <Badge className={getStatusColor(deal.status)}>
+                      <Badge className={`${getStatusColor(deal.status)} shrink-0`}>
                         {getStatusIcon(deal.status)}
                         {deal.status.charAt(0).toUpperCase() + deal.status.slice(1)}
                       </Badge>
                     </div>
                   </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {deal.status === 'counter-offered' ? (
-                        <>
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm text-gray-500 dark:text-zinc-400">Original Amount</span>
-                            <span className="font-semibold flex items-center text-gray-900 dark:text-white">
-                              <IndianRupee className="h-4 w-4 mr-1" />
-                              {formatAmount(deal.totalAmount)}
-                            </span>
+                  <CardContent className="p-6">
+                    <div className="space-y-6">
+                      <div className="grid grid-cols-2 gap-4">
+                        {deal.visitRequired && (
+                          <div className="col-span-2 mb-4">
+                            <div className="flex items-center gap-2 p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/30">
+                              <MapPinned className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                              <div>
+                                <h4 className="font-medium text-amber-800 dark:text-amber-300">Visit Required</h4>
+                                <p className="text-sm text-amber-600 dark:text-amber-400">In-person presence needed for this deal</p>
+                              </div>
+                            </div>
                           </div>
+                        )}
+                        <div className="space-y-1">
+                          <p className="text-sm text-gray-500 dark:text-zinc-400">Total Amount</p>
+                          <p className="font-semibold flex items-center text-gray-900 dark:text-white text-lg">
+                            <IndianRupee className="h-4 w-4 mr-1" />
+                            {formatAmount(deal.totalAmount)}
+                          </p>
+                        </div>
+                        <div className="space-y-1">
+                          <p className="text-sm text-gray-500 dark:text-zinc-400">Created</p>
+                          <p className="text-gray-900 dark:text-white">
+                            {formatDate(deal.createdAt)}
+                          </p>
+                        </div>
+                        <div className="col-span-2 space-y-1">
+                          <p className="text-sm text-gray-500 dark:text-zinc-400">Payment Status</p>
+                          <Badge className={getPaymentStatusColor(deal.paymentStatus)}>
+                            {deal.paymentStatus?.charAt(0).toUpperCase() + deal.paymentStatus?.slice(1) || 'Unknown'}
+                          </Badge>
+                        </div>
+                      </div>
+
+                      {/* Content Requirements */}
+                      {(deal.contentRequirements.reels > 0 || deal.contentRequirements.posts > 0 || 
+                        deal.contentRequirements.stories > 0 || deal.contentRequirements.lives > 0) && (
+                        <div className="space-y-2">
+                          <p className="text-sm text-gray-500 dark:text-zinc-400">Content Requirements</p>
+                          <div className="flex flex-wrap gap-2">
+                            {deal.contentRequirements.reels > 0 && (
+                              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-fuchsia-50 dark:bg-fuchsia-900/20 text-fuchsia-700 dark:text-fuchsia-300 text-xs font-medium">
+                                <Film className="h-3.5 w-3.5 text-fuchsia-500 dark:text-fuchsia-400" />
+                                {deal.contentRequirements.reels} Reel{deal.contentRequirements.reels > 1 ? 's' : ''}
+                              </div>
+                            )}
+                            {deal.contentRequirements.posts > 0 && (
+                              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-violet-50 dark:bg-violet-900/20 text-violet-700 dark:text-violet-300 text-xs font-medium">
+                                <ImageIcon className="h-3.5 w-3.5 text-violet-500 dark:text-violet-400" />
+                                {deal.contentRequirements.posts} Post{deal.contentRequirements.posts > 1 ? 's' : ''}
+                              </div>
+                            )}
+                            {deal.contentRequirements.stories > 0 && (
+                              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 text-xs font-medium">
+                                <CircleDashed className="h-3.5 w-3.5 text-blue-500 dark:text-blue-400" />
+                                {deal.contentRequirements.stories} Stor{deal.contentRequirements.stories > 1 ? 'ies' : 'y'}
+                              </div>
+                            )}
+                            {deal.contentRequirements.lives > 0 && (
+                              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 text-xs font-medium">
+                                <Video className="h-3.5 w-3.5 text-red-500 dark:text-red-400" />
+                                {deal.contentRequirements.lives} Live{deal.contentRequirements.lives > 1 ? 's' : ''}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      {deal.status === 'counter-offered' && (
+                        <div className="p-4 rounded-lg bg-gradient-to-r from-violet-50 to-fuchsia-50 dark:from-violet-900/20 dark:to-fuchsia-900/20 border border-violet-100 dark:border-violet-800/30">
                           <div className="flex items-center justify-between">
-                            <span className="text-sm text-gray-500 dark:text-zinc-400">Your Counter Offer</span>
-                            <span className="font-semibold flex items-center text-fuchsia-500 dark:text-fuchsia-400">
+                            <span className="text-sm font-medium bg-gradient-to-r from-violet-600 to-fuchsia-600 dark:from-violet-400 dark:to-fuchsia-400 bg-clip-text text-transparent">Your Counter Offer</span>
+                            <span className="font-semibold flex items-center text-gray-900 dark:text-white">
                               <IndianRupee className="h-4 w-4 mr-1" />
                               {formatAmount(deal.influencers[0].counterOffer)}
                             </span>
                           </div>
-                        </>
-                      ) : (
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-500 dark:text-zinc-400">Total Amount</span>
-                          <span className="font-semibold flex items-center text-gray-900 dark:text-white">
-                            <IndianRupee className="h-4 w-4 mr-1" />
-                            {formatAmount(deal.totalAmount)}
-                          </span>
                         </div>
                       )}
-
-                      {/* Content Requirements - Block Style */}
-                      <div className="flex flex-wrap gap-3 mt-2">
-                        {deal.contentRequirements.reels > 0 && (
-                          <div className="w-24 h-24 flex flex-col items-center justify-center bg-gray-100 dark:bg-zinc-800 rounded-md p-2 border border-gray-200 dark:border-zinc-700">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-fuchsia-500 dark:text-fuchsia-400 mb-1">
-                              <path d="M19 2H5a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2Z"></path>
-                              <path d="m15 11-5-3v6l5-3Z"></path>
-                            </svg>
-                            <span className="text-xl font-medium text-gray-900 dark:text-white">{deal.contentRequirements.reels}</span>
-                            <span className="text-sm text-gray-500 dark:text-zinc-400">Reels</span>
-                          </div>
-                        )}
-                        {deal.contentRequirements.posts > 0 && (
-                          <div className="w-24 h-24 flex flex-col items-center justify-center bg-gray-100 dark:bg-zinc-800 rounded-md p-2 border border-gray-200 dark:border-zinc-700">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-violet-500 dark:text-violet-400 mb-1">
-                              <rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect>
-                              <circle cx="9" cy="9" r="2"></circle>
-                              <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path>
-                            </svg>
-                            <span className="text-xl font-medium text-gray-900 dark:text-white">{deal.contentRequirements.posts}</span>
-                            <span className="text-sm text-gray-500 dark:text-zinc-400">Posts</span>
-                          </div>
-                        )}
-                        {deal.contentRequirements.stories > 0 && (
-                          <div className="w-24 h-24 flex flex-col items-center justify-center bg-gray-100 dark:bg-zinc-800 rounded-md p-2 border border-gray-200 dark:border-zinc-700">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-500 dark:text-blue-400 mb-1">
-                              <circle cx="12" cy="12" r="10"></circle>
-                              <path d="M12 8v8"></path>
-                              <path d="M8 12h8"></path>
-                            </svg>
-                            <span className="text-xl font-medium text-gray-900 dark:text-white">{deal.contentRequirements.stories}</span>
-                            <span className="text-sm text-gray-500 dark:text-zinc-400">Stories</span>
-                          </div>
-                        )}
-                        {deal.contentRequirements.lives > 0 && (
-                          <div className="w-24 h-24 flex flex-col items-center justify-center bg-gray-100 dark:bg-zinc-800 rounded-md p-2 border border-gray-200 dark:border-zinc-700">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-red-500 dark:text-red-400 mb-1">
-                              <path d="m22 8-6 4 6 4V8Z"></path>
-                              <rect width="14" height="12" x="2" y="6" rx="2" ry="2"></rect>
-                            </svg>
-                            <span className="text-xl font-medium text-gray-900 dark:text-white">{deal.contentRequirements.lives}</span>
-                            <span className="text-sm text-gray-500 dark:text-zinc-400">Lives</span>
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-500 dark:text-zinc-400">Created</span>
-                        <span className="text-sm text-gray-900 dark:text-white">
-                          {formatDate(deal.createdAt)}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-500 dark:text-zinc-400">Payment Status</span>
-                        <Badge className={getPaymentStatusColor(deal.paymentStatus)}>
-                          {deal.paymentStatus?.charAt(0).toUpperCase() + deal.paymentStatus?.slice(1) || 'Unknown'}
-                        </Badge>
-                      </div>
                     </div>
                   </CardContent>
                   <CardFooter className="flex justify-between border-t border-gray-200 dark:border-zinc-800 pt-4">
@@ -518,7 +534,7 @@ const InfluencerDealsPage = () => {
                                 <input
                                   type="number"
                                   placeholder="Enter counter offer amount"
-                                  className="w-full px-3 py-2 bg-white dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 rounded-md text-gray-900 dark:text-white"
+                                  className="w-full px-3 py-2 bg-white dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 rounded-lg text-gray-900 dark:text-white"
                                   onChange={(e) => {
                                     const currentDeal = deals.find((d: Deal) => d._id === deal._id);
                                     if (currentDeal) {
@@ -536,6 +552,7 @@ const InfluencerDealsPage = () => {
                                 }}
                                 className="bg-gradient-to-r from-violet-500 to-fuchsia-500 dark:from-violet-600 dark:to-fuchsia-600 hover:from-violet-600 hover:to-fuchsia-600 dark:hover:from-violet-700 dark:hover:to-fuchsia-700 text-white"
                               >
+                                <Send className="w-4 h-4 mr-2" />
                                 Send Counter Offer
                               </Button>
                             </div>
@@ -545,12 +562,14 @@ const InfluencerDealsPage = () => {
                                 className="flex-1 border-red-500 dark:border-red-600 text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
                                 onClick={() => handleDealAction(deal._id, 'reject')}
                               >
+                                <XIcon className="w-4 h-4 mr-2" />
                                 Reject
                               </Button>
                               <Button
                                 className="flex-1 bg-green-500 dark:bg-green-600 hover:bg-green-600 dark:hover:bg-green-700 text-white"
                                 onClick={() => handleDealAction(deal._id, 'accept')}
                               >
+                                <Check className="w-4 h-4 mr-2" />
                                 Accept Original Offer
                               </Button>
                             </div>
@@ -562,12 +581,14 @@ const InfluencerDealsPage = () => {
                               className="flex-1 border-red-500 dark:border-red-600 text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
                               onClick={() => handleDealAction(deal._id, 'reject')}
                             >
+                              <XIcon className="w-4 h-4 mr-2" />
                               Reject
                             </Button>
                             <Button
                               className="flex-1 bg-green-500 dark:bg-green-600 hover:bg-green-600 dark:hover:bg-green-700 text-white"
                               onClick={() => handleDealAction(deal._id, 'accept')}
                             >
+                              <Check className="w-4 h-4 mr-2" />
                               Accept
                             </Button>
                           </div>
@@ -575,12 +596,14 @@ const InfluencerDealsPage = () => {
                       </>
                     )}
                     {deal.status === 'counter-offered' && (
-                      <div className="w-full p-4 bg-gray-50 dark:bg-zinc-800 rounded-md text-center text-gray-600 dark:text-zinc-300 border border-gray-200 dark:border-zinc-700">
+                      <div className="w-full p-4 rounded-lg bg-gray-50 dark:bg-zinc-800/50 text-center text-gray-600 dark:text-zinc-300 border border-gray-200 dark:border-zinc-700">
+                        <Clock className="w-4 h-4 mx-auto mb-2 animate-pulse text-gray-400 dark:text-zinc-500" />
                         Waiting for brand's response to your counter offer
                       </div>
                     )}
                     {deal.status === 'accepted' && (
-                      <div className="w-full p-4 bg-gray-50 dark:bg-zinc-800 rounded-md text-center text-gray-600 dark:text-zinc-300 border border-gray-200 dark:border-zinc-700">
+                      <div className="w-full p-4 rounded-lg bg-gray-50 dark:bg-zinc-800/50 text-center text-gray-600 dark:text-zinc-300 border border-gray-200 dark:border-zinc-700">
+                        <Clock className="w-4 h-4 mx-auto mb-2 animate-pulse text-gray-400 dark:text-zinc-500" />
                         Waiting for brand payment
                       </div>
                     )}
@@ -607,61 +630,120 @@ const InfluencerDealsPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredDeals.length > 0 ? (
               filteredDeals.map((deal) => (
-                <Card key={deal._id} className="hover:shadow-lg transition-shadow bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-800">
-                  <CardHeader className="border-b border-gray-200 dark:border-zinc-800">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        {/* Brand Profile Picture */}
-                        <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-100 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700">
+                <Card key={deal._id} className="overflow-hidden hover:shadow-lg transition-all duration-200 bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-800">
+                  <CardHeader className="border-b border-gray-200 dark:border-zinc-800 pb-4">
+                    <div className="flex items-start justify-between w-full gap-4">
+                      <div className="flex gap-4">
+                        <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 flex-shrink-0">
                           {deal.brandProfilePic ? (
                             <Image
                               src={deal.brandProfilePic}
                               alt={deal.brandName}
                               className="w-full h-full object-cover"
-                              width={40}
-                              height={40}
+                              width={48}
+                              height={48}
                             />
                           ) : (
-                            <Building2 className="w-full h-full p-2 text-gray-400 dark:text-zinc-500" />
+                            <Building2 className="w-full h-full p-2.5 text-gray-400 dark:text-zinc-500" />
                           )}
                         </div>
-                        {/* Brand Name and Deal Title */}
-                        <div>
-                          <CardTitle className="text-lg text-gray-900 dark:text-white">{deal.brandName}</CardTitle>
+                        <div className="flex flex-col min-w-0">
+                          {deal.companyName && (
+                            <h4 className="font-semibold text-lg text-gray-900 dark:text-white truncate">
+                              {deal.companyName}
+                            </h4>
+                          )}
+                          <p className="text-sm text-gray-600 dark:text-zinc-300 truncate">{deal.brandName}</p>
+                          <div className="flex flex-wrap items-center gap-2 mt-2">
+                            {deal.location && (
+                              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-zinc-300 text-xs">
+                                <MapPin className="h-3 w-3" />
+                                {deal.location}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
-                      <Badge className={getStatusColor(deal.status)}>
+                      <Badge className={`${getStatusColor(deal.status)} shrink-0`}>
                         {getStatusIcon(deal.status)}
                         {deal.status.charAt(0).toUpperCase() + deal.status.slice(1)}
                       </Badge>
                     </div>
                   </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-500 dark:text-zinc-400">Total Amount</span>
-                        <span className="font-semibold flex items-center text-gray-900 dark:text-white">
-                          <IndianRupee className="h-4 w-4 mr-1" />
-                          {formatAmount(deal.totalAmount)}
-                        </span>
+                  <CardContent className="p-6">
+                    <div className="space-y-6">
+                      <div className="grid grid-cols-2 gap-4">
+                        {deal.visitRequired && (
+                          <div className="col-span-2 mb-4">
+                            <div className="flex items-center gap-2 p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/30">
+                              <MapPinned className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                              <div>
+                                <h4 className="font-medium text-amber-800 dark:text-amber-300">Visit Required</h4>
+                                <p className="text-sm text-amber-600 dark:text-amber-400">In-person presence needed for this deal</p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                        <div className="space-y-1">
+                          <p className="text-sm text-gray-500 dark:text-zinc-400">Total Amount</p>
+                          <p className="font-semibold flex items-center text-gray-900 dark:text-white text-lg">
+                            <IndianRupee className="h-4 w-4 mr-1" />
+                            {formatAmount(deal.totalAmount)}
+                          </p>
+                        </div>
+                        <div className="space-y-1">
+                          <p className="text-sm text-gray-500 dark:text-zinc-400">Created</p>
+                          <p className="text-gray-900 dark:text-white">
+                            {formatDate(deal.createdAt)}
+                          </p>
+                        </div>
+                        <div className="col-span-2 space-y-1">
+                          <p className="text-sm text-gray-500 dark:text-zinc-400">Payment Status</p>
+                          <Badge className={getPaymentStatusColor(deal.paymentStatus)}>
+                            {deal.paymentStatus?.charAt(0).toUpperCase() + deal.paymentStatus?.slice(1) || 'Unknown'}
+                          </Badge>
+                        </div>
                       </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-500 dark:text-zinc-400">Created</span>
-                        <span className="text-sm text-gray-900 dark:text-white">
-                          {formatDate(deal.createdAt)}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-500 dark:text-zinc-400">Payment Status</span>
-                        <Badge className={getPaymentStatusColor(deal.paymentStatus)}>
-                          {deal.paymentStatus?.charAt(0).toUpperCase() + deal.paymentStatus?.slice(1) || 'Unknown'}
-                        </Badge>
-                      </div>
+
+                      {/* Content Requirements */}
+                      {(deal.contentRequirements.reels > 0 || deal.contentRequirements.posts > 0 || 
+                        deal.contentRequirements.stories > 0 || deal.contentRequirements.lives > 0) && (
+                        <div className="space-y-2">
+                          <p className="text-sm text-gray-500 dark:text-zinc-400">Content Requirements</p>
+                          <div className="flex flex-wrap gap-2">
+                            {deal.contentRequirements.reels > 0 && (
+                              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-fuchsia-50 dark:bg-fuchsia-900/20 text-fuchsia-700 dark:text-fuchsia-300 text-xs font-medium">
+                                <Film className="h-3.5 w-3.5 text-fuchsia-500 dark:text-fuchsia-400" />
+                                {deal.contentRequirements.reels} Reel{deal.contentRequirements.reels > 1 ? 's' : ''}
+                              </div>
+                            )}
+                            {deal.contentRequirements.posts > 0 && (
+                              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-violet-50 dark:bg-violet-900/20 text-violet-700 dark:text-violet-300 text-xs font-medium">
+                                <ImageIcon className="h-3.5 w-3.5 text-violet-500 dark:text-violet-400" />
+                                {deal.contentRequirements.posts} Post{deal.contentRequirements.posts > 1 ? 's' : ''}
+                              </div>
+                            )}
+                            {deal.contentRequirements.stories > 0 && (
+                              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 text-xs font-medium">
+                                <CircleDashed className="h-3.5 w-3.5 text-blue-500 dark:text-blue-400" />
+                                {deal.contentRequirements.stories} Stor{deal.contentRequirements.stories > 1 ? 'ies' : 'y'}
+                              </div>
+                            )}
+                            {deal.contentRequirements.lives > 0 && (
+                              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 text-xs font-medium">
+                                <Video className="h-3.5 w-3.5 text-red-500 dark:text-red-400" />
+                                {deal.contentRequirements.lives} Live{deal.contentRequirements.lives > 1 ? 's' : ''}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </CardContent>
                   <CardFooter className="flex justify-between border-t border-gray-200 dark:border-zinc-800 pt-4">
                     {deal.status === 'accepted' && (
-                      <div className="w-full p-4 bg-gray-50 dark:bg-zinc-800 rounded-md text-center text-gray-600 dark:text-zinc-300 border border-gray-200 dark:border-zinc-700">
+                      <div className="w-full p-4 bg-gray-50 dark:bg-zinc-800/50 rounded-md text-center text-gray-600 dark:text-zinc-300 border border-gray-200 dark:border-zinc-700">
+                        <Clock className="w-4 h-4 mx-auto mb-2 animate-pulse text-gray-400 dark:text-zinc-500" />
                         Waiting for brand payment
                       </div>
                     )}
@@ -709,10 +791,22 @@ const InfluencerDealsPage = () => {
                                 <Building2 className="w-full h-full p-2 text-gray-400" />
                               )}
                             </div>
-                            {/* Brand Name and Deal Title */}
-                            <div>
-                              <CardTitle className="text-lg">{deal.brandName}</CardTitle>
+                        {/* Company Name, Brand Name, Location */}
+                        <div>
+                          {deal.companyName && (
+                            <div className="font-bold text-base mb-0.5">{deal.companyName}</div>
+                          )}
+                          <CardTitle className="text-sm text-gray-700 font-normal">{deal.brandName}</CardTitle>
+                          {deal.location && (
+                            <div className="text-xs text-gray-500 flex items-center gap-1">
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 inline-block mr-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 11c1.104 0 2-.896 2-2s-.896-2-2-2-2 .896-2 2 .896 2 2 2zm0 10c-4.418 0-8-3.582-8-8 0-4.418 3.582-8 8-8s8 3.582 8 8c0 4.418-3.582 8-8 8z" /></svg>
+                              {deal.location}
                             </div>
+                          )}
+                          {deal.visitRequired && (
+                            <div className="text-xs text-amber-600 mt-0.5 font-medium">Visit Required</div>
+                          )}
+                        </div>
                           </div>
                           <Badge className={getStatusColor(deal.status)}>
                             {getStatusIcon(deal.status)}
@@ -736,21 +830,55 @@ const InfluencerDealsPage = () => {
                             </span>
                           </div>
 
+                          {/* Content Requirements */}
+                          {(deal.contentRequirements.reels > 0 || deal.contentRequirements.posts > 0 || 
+                            deal.contentRequirements.stories > 0 || deal.contentRequirements.lives > 0) && (
+                            <div className="space-y-2 mb-4">
+                              <p className="text-sm text-gray-500 dark:text-zinc-400">Content Requirements</p>
+                              <div className="flex flex-wrap gap-2">
+                                {deal.contentRequirements.reels > 0 && (
+                                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-fuchsia-50 dark:bg-fuchsia-900/20 text-fuchsia-700 dark:text-fuchsia-300 text-xs font-medium">
+                                    <Film className="h-3.5 w-3.5 text-fuchsia-500 dark:text-fuchsia-400" />
+                                    {deal.contentRequirements.reels} Reel{deal.contentRequirements.reels > 1 ? 's' : ''}
+                                  </div>
+                                )}
+                                {deal.contentRequirements.posts > 0 && (
+                                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-violet-50 dark:bg-violet-900/20 text-violet-700 dark:text-violet-300 text-xs font-medium">
+                                    <ImageIcon className="h-3.5 w-3.5 text-violet-500 dark:text-violet-400" />
+                                    {deal.contentRequirements.posts} Post{deal.contentRequirements.posts > 1 ? 's' : ''}
+                                  </div>
+                                )}
+                                {deal.contentRequirements.stories > 0 && (
+                                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 text-xs font-medium">
+                                    <CircleDashed className="h-3.5 w-3.5 text-blue-500 dark:text-blue-400" />
+                                    {deal.contentRequirements.stories} Stor{deal.contentRequirements.stories > 1 ? 'ies' : 'y'}
+                                  </div>
+                                )}
+                                {deal.contentRequirements.lives > 0 && (
+                                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 text-xs font-medium">
+                                    <Video className="h-3.5 w-3.5 text-red-500 dark:text-red-400" />
+                                    {deal.contentRequirements.lives} Live{deal.contentRequirements.lives > 1 ? 's' : ''}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          )}
+
                           {/* Deal Status */}
-                          <div className="mt-4">
+                          <div className="space-y-2">
                             <div className="flex items-center justify-between">
                               <span className="text-sm text-gray-500">Payment Status</span>
                               <Badge className={progress.paid ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}>
                                 {progress.paid ? 'Paid' : 'Unpaid'}
                               </Badge>
                             </div>
-                            <div className="flex items-center justify-between mt-2">
+                            <div className="flex items-center justify-between">
                               <span className="text-sm text-gray-500">Content Status</span>
                               <Badge className={progress.contentPublished ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}>
                                 {progress.contentPublished ? 'Published' : 'Pending'}
                               </Badge>
                             </div>
-                            <div className="flex items-center justify-between mt-2">
+                            <div className="flex items-center justify-between">
                               <span className="text-sm text-gray-500">Payment Release</span>
                               <Badge className={progress.paymentReleased ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}>
                                 {progress.paymentReleased ? 'Released' : 'Pending'}
@@ -938,9 +1066,21 @@ const InfluencerDealsPage = () => {
                             <Building2 className="w-full h-full p-2 text-gray-400 dark:text-zinc-500" />
                           )}
                         </div>
-                        {/* Brand Name and Deal Title */}
+                        {/* Company Name, Brand Name, Location */}
                         <div>
-                          <CardTitle className="text-lg text-gray-900 dark:text-white">{deal.brandName}</CardTitle>
+                          {deal.companyName && (
+                            <div className="font-bold text-base text-gray-900 dark:text-white mb-0.5">{deal.companyName}</div>
+                          )}
+                          <CardTitle className="text-sm text-gray-700 dark:text-zinc-300 font-normal">{deal.brandName}</CardTitle>
+                          {deal.location && (
+                            <div className="text-xs text-gray-500 dark:text-zinc-400 flex items-center gap-1">
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 inline-block mr-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 11c1.104 0 2-.896 2-2s-.896-2-2-2-2 .896-2 2 .896 2 2 2zm0 10c-4.418 0-8-3.582-8-8 0-4.418 3.582-8 8-8s8 3.582 8 8c0 4.418-3.582 8-8 8z" /></svg>
+                              {deal.location}
+                            </div>
+                          )}
+                          {deal.visitRequired && (
+                            <div className="text-xs text-amber-600 dark:text-amber-400 mt-0.5 font-medium">Visit Required</div>
+                          )}
                         </div>
                       </div>
                       <Badge className={getStatusColor(deal.status)}>

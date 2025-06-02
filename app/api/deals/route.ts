@@ -36,6 +36,10 @@ export async function POST(request: NextRequest) {
         error: 'Brand not found' 
       }, { status: 404 });
     }
+
+    // Get companyName and location if present (for Brand discriminator)
+    const companyName = (brand as any).companyName || '';
+    const location = (brand as any).location || '';
     
     // Parse request body
     const dealData = await request.json();
@@ -75,6 +79,8 @@ export async function POST(request: NextRequest) {
       brandId: userId,
       brandName: (brand as any).name || 'Unknown Brand',
       brandProfilePic: (brand as any).profilePictureUrl || (brand as any).avatar || '',
+      companyName,
+      location,
       dealType: dealData.dealType,
       dealName: dealData.dealName,
       description: dealData.description || '',
