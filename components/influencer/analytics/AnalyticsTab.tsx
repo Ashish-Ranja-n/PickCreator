@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
-import { Loader2, Plus, Pin, Trash2, AlertCircle } from 'lucide-react';
+import { Loader2, Plus, Pin, Trash2, AlertCircle, ChevronLeft, ChevronRight, Pause, Play } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns/formatDistanceToNow';
 import { useCurrentUser } from '@/hook/useCurrentUser';
 import {
@@ -39,6 +39,13 @@ export default function AnalyticsTab() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [open, setOpen] = useState(false);
   const [isPinned, setIsPinned] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const slideInterval = useRef<ReturnType<typeof setInterval> | null>(null);
+  const slideContainer = useRef<HTMLDivElement>(null);
+  const touchStart = useRef<number>(0);
+  const touchEnd = useRef<number>(0);
   const { toast } = useToast();
   const currentUser = useCurrentUser();
   const isAdmin = currentUser?.role === 'Admin';
@@ -159,6 +166,99 @@ export default function AnalyticsTab() {
     }
   };
 
+  const handleSlideTransition = useCallback(() => {
+    setIsTransitioning(true);
+    setTimeout(() => setIsTransitioning(false), 500);
+  }, []);
+
+  const handlePrevSlide = useCallback(() => {
+    if (!isTransitioning) {
+      setCurrentSlide((prev) => (prev - 1 + notices.length) % notices.length);
+      handleSlideTransition();
+    }
+  }, [notices.length, isTransitioning, handleSlideTransition]);
+
+  const handleNextSlide = useCallback(() => {
+    if (!isTransitioning) {
+      setCurrentSlide((prev) => (prev + 1) % notices.length);
+      handleSlideTransition();
+    }
+  }, [notices.length, isTransitioning, handleSlideTransition]);
+
+  // Touch event handlers
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStart.current = e.touches[0].clientX;
+  }, []);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    touchEnd.current = e.touches[0].clientX;
+  }, []);
+
+  const handleTouchEnd = useCallback(() => {
+    const swipeDistance = touchStart.current - touchEnd.current;
+    if (Math.abs(swipeDistance) > 100) { // Minimum swipe distance
+      if (swipeDistance > 0) {
+        handleNextSlide();
+      } else {
+        handlePrevSlide();
+      }
+    }
+    // Reset touch values
+    touchStart.current = 0;
+    touchEnd.current = 0;
+  }, [handleNextSlide, handlePrevSlide]);
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') {
+        handlePrevSlide();
+      } else if (e.key === 'ArrowRight') {
+        handleNextSlide();
+      } else if (e.key === 'Space') {
+        e.preventDefault(); // Prevent page scroll
+        setIsPaused(prev => !prev);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handlePrevSlide, handleNextSlide]);
+
+  // Auto-slide setup with pause functionality
+  useEffect(() => {
+    if (notices.length > 1 && !isPaused) {
+      if (slideInterval.current) {
+        clearInterval(slideInterval.current);
+      }
+      
+      slideInterval.current = setInterval(() => {
+        handleNextSlide();
+      }, 5000);
+    }
+
+    return () => {
+      if (slideInterval.current) {
+        clearInterval(slideInterval.current);
+        slideInterval.current = null;
+      }
+    };
+  }, [notices.length, isPaused, handleNextSlide]);
+
+  // Reset interval on manual navigation
+  const resetInterval = () => {
+    if (slideInterval.current) {
+      clearInterval(slideInterval.current);
+      slideInterval.current = null;
+    }
+
+    if (notices.length > 1) {
+      slideInterval.current = setInterval(() => {
+        setCurrentSlide((prev) => (prev + 1) % notices.length);
+      }, 5000);
+    }
+  };
+
   // Initial fetch
   useEffect(() => {
     fetchNotices();
@@ -166,149 +266,218 @@ export default function AnalyticsTab() {
 
   return (
     <div className="py-4">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex items-center gap-2 mb-6">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-          Announcements & Updates
+          Notice Board
         </h2>
-
+        {notices.length > 0 && (
+          <span className="px-2 py-0.5 text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-full">
+            {notices.length}
+          </span>
+        )}
         {isAdmin && (
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-              <Button size="sm" className="bg-gradient-to-r from-violet-500 to-fuchsia-500 hover:from-violet-600 hover:to-fuchsia-600">
-                <Plus className="h-4 w-4 mr-2" />
-                Create Notice
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Create New Notice</DialogTitle>
-              </DialogHeader>
-              <form onSubmit={createNotice} className="space-y-4 mt-4">
-                <div className="space-y-2">
-                  <label htmlFor="title" className="text-sm font-medium">
-                    Title
-                  </label>
-                  <Input
-                    id="title"
-                    ref={titleRef}
-                    placeholder="Enter notice title"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label htmlFor="content" className="text-sm font-medium">
-                    Content
-                  </label>
-                  <Textarea
-                    id="content"
-                    ref={contentRef}
-                    placeholder="Enter notice content"
-                    rows={5}
-                    required
-                  />
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="isPinned"
-                    checked={isPinned}
-                    onCheckedChange={(checked) => setIsPinned(checked as boolean)}
-                  />
-                  <label
-                    htmlFor="isPinned"
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    Pin this notice
-                  </label>
-                </div>
-                <DialogFooter>
-                  <Button type="submit" disabled={isSubmitting}>
-                    {isSubmitting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                    {isSubmitting ? 'Creating...' : 'Create Notice'}
-                  </Button>
-                </DialogFooter>
-              </form>
-            </DialogContent>
-          </Dialog>
+          <Button
+            size="sm"
+            variant="ghost"
+            className="ml-auto"
+            onClick={() => setOpen(true)}
+          >
+            <Plus className="h-4 w-4" />
+          </Button>
         )}
       </div>
 
       {loading ? (
-        <div className="flex justify-center items-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin text-fuchsia-500" />
+        <div className="flex justify-center items-center h-[360px] bg-white dark:bg-gray-900 rounded-xl">
+          <svg className="animate-spin h-5 w-5 text-gray-400" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" fill="none" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+          </svg>
         </div>
       ) : notices.length === 0 ? (
-        <Alert className="bg-gray-50 dark:bg-zinc-800/50 border border-gray-200/50 dark:border-zinc-700/50">
-          <AlertCircle className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-          <AlertDescription className="text-gray-600 dark:text-gray-300">
-            No announcements available at the moment.
-          </AlertDescription>
-        </Alert>
+        <div className="flex flex-col items-center justify-center h-[360px] bg-white dark:bg-gray-900 rounded-xl">
+          <AlertCircle className="h-8 w-8 text-gray-400 mb-3" />
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            No updates yet
+          </p>
+        </div>
       ) : (
-        <div className="space-y-4">
-          {notices.map((notice) => (
+        <div className="relative">
+          <div 
+            ref={slideContainer}
+            className="overflow-hidden bg-white dark:bg-gray-900 rounded-xl"
+          >
             <div
-              key={notice._id}
-              className={`
-                relative border border-gray-200/70 dark:border-zinc-700/70
-                rounded-lg p-4 transition-all duration-200
-                ${notice.isPinned
-                  ? 'bg-gradient-to-r from-violet-50/80 to-fuchsia-50/80 dark:from-violet-950/30 dark:to-fuchsia-950/30'
-                  : 'bg-white/80 dark:bg-zinc-800/50 hover:bg-gray-50 dark:hover:bg-zinc-800/80'
-                }
-              `}
+              className="flex transition-transform duration-300 ease-out"
+              style={{ transform: `translateX(-${currentSlide * 100}%)` }}
             >
-              {notice.isPinned && (
-                <div className="absolute top-4 right-4">
-                  <Pin className="h-4 w-4 text-fuchsia-500" />
-                </div>
-              )}
+              {notices.map((notice, index) => (
+                <div
+                  key={notice._id}
+                  className="w-full flex-shrink-0"
+                  style={{ width: '100%' }}
+                >
+                  <div className="p-5 h-[360px] flex flex-col">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className={`
+                          relative h-9 w-9 rounded-full flex items-center justify-center text-sm font-medium overflow-hidden
+                          ${notice.isPinned 
+                            ? 'bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 ring-1 ring-violet-200 dark:ring-violet-800' 
+                            : 'bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400'
+                          }
+                        `}>
+                          {notice.createdBy.avatar ? (
+                            <img
+                              src={notice.createdBy.avatar}
+                              alt={notice.createdBy.name}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            notice.createdBy.name.charAt(0).toUpperCase()
+                          )}
+                        </div>
+                        <div>
+                          <h3 className={`
+                            font-medium text-sm
+                            ${notice.isPinned 
+                              ? 'text-violet-600 dark:text-violet-400' 
+                              : 'text-gray-900 dark:text-gray-100'
+                            }
+                          `}>
+                            {notice.title}
+                          </h3>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            <span className="text-xs text-gray-500 dark:text-gray-400">
+                              {notice.createdBy.name}
+                            </span>
+                            <span className="text-xs text-gray-400 dark:text-gray-500 tabular-nums">
+                              {formatDistanceToNow(new Date(notice.createdAt), { addSuffix: true })}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      {isAdmin && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-gray-400 hover:text-red-500"
+                          onClick={() => deleteNotice(notice._id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                    
+                    <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-700 scrollbar-track-transparent">
+                      <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
+                        {notice.content}
+                      </p>
+                    </div>
 
-              <div className="flex items-start space-x-3">
-                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-white font-medium">
-                  {notice.createdBy.avatar ? (
-                    <img
-                      src={notice.createdBy.avatar}
-                      alt={notice.createdBy.name}
-                      className="w-full h-full rounded-full object-cover"
-                    />
-                  ) : (
-                    notice.createdBy.name.charAt(0)
-                  )}
-                </div>
-
-                <div className="flex-1 min-w-0">
-                  <div className="flex justify-between items-start">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                      {notice.title}
-                    </h3>
-
-                    {isAdmin && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-gray-500 hover:text-red-500 -mt-1 -mr-1"
-                        onClick={() => deleteNotice(notice._id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                    {notice.isPinned && (
+                      <div className="mt-4 flex items-center gap-1.5 text-violet-600 dark:text-violet-400">
+                        <Pin className="h-3.5 w-3.5" />
+                        <span className="text-xs font-medium">Pinned</span>
+                      </div>
                     )}
                   </div>
-
-                  <p className="mt-1 text-gray-700 dark:text-gray-300 whitespace-pre-line">
-                    {notice.content}
-                  </p>
-
-                  <div className="mt-2 flex items-center text-xs text-gray-500 dark:text-gray-400">
-                    <span>Posted by {notice.createdBy.name}</span>
-                    <span className="mx-1">•</span>
-                    <span>{formatDistanceToNow(new Date(notice.createdAt), { addSuffix: true })}</span>
-                  </div>
                 </div>
-              </div>
+              ))}
             </div>
-          ))}
+          </div>
+
+          {notices.length > 1 && (
+            <>
+              <div className="absolute inset-y-0 left-0 flex items-center">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 bg-white/90 dark:bg-gray-900/90 shadow-sm border border-gray-200/50 dark:border-gray-800/50 rounded-full -ml-4"
+                  onClick={handlePrevSlide}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+              </div>
+              
+              <div className="absolute inset-y-0 right-0 flex items-center">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 bg-white/90 dark:bg-gray-900/90 shadow-sm border border-gray-200/50 dark:border-gray-800/50 rounded-full -mr-4"
+                  onClick={handleNextSlide}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+
+              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+                {notices.map((_, index) => (
+                  <button
+                    key={index}
+                    className={`
+                      h-1.5 rounded-full transition-all
+                      ${currentSlide === index 
+                        ? 'w-4 bg-violet-600 dark:bg-violet-400' 
+                        : 'w-1.5 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600'
+                      }
+                    `}
+                    onClick={() => setCurrentSlide(index)}
+                  />
+                ))}
+              </div>
+            </>
+          )}
         </div>
       )}
+
+      {/* Dialog for creating new notice */}
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Create Notice</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={createNotice} className="space-y-4">
+            <div className="space-y-2">
+              <Input
+                ref={titleRef}
+                placeholder="Title"
+                required
+                className="h-9"
+              />
+              <Textarea
+                ref={contentRef}
+                placeholder="Write your announcement..."
+                rows={6}
+                required
+                className="resize-none"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="isPinned"
+                checked={isPinned}
+                onCheckedChange={(checked) => setIsPinned(checked as boolean)}
+              />
+              <label htmlFor="isPinned" className="text-sm">
+                Pin this notice
+              </label>
+            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Posting...
+                  </>
+                ) : (
+                  'Post'
+                )}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
