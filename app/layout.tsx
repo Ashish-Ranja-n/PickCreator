@@ -6,6 +6,7 @@ import { Providers } from './providers';
 import { ServiceWorkerRegistration } from './ServiceWorkerRegistration';
 import { SessionRefresher } from './SessionRefresher';
 import { ThemeProvider } from "@/components/theme/theme-provider";
+import { ThemeEffect } from "@/components/theme/theme-effect";
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 
@@ -83,10 +84,8 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="PickCreator" />
         <meta name="format-detection" content="telephone=no" />
-        <meta name="msapplication-TileColor" media="(prefers-color-scheme: light)" content="#ffffff" />
-        <meta name="msapplication-TileColor" media="(prefers-color-scheme: dark)" content="#18181b" />
-        <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
-        <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#18181b" />
+        <meta name="msapplication-TileColor" content="#ffffff" />
+        <meta name="theme-color" content="#ffffff" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
 
@@ -95,6 +94,7 @@ export default function RootLayout({
       >
         <Providers>
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+            <ThemeEffect />
             <ServiceWorkerRegistration />
             <SessionRefresher />
             {children}
