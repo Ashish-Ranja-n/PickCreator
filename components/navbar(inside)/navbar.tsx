@@ -28,9 +28,9 @@ const Navbar: React.FC = () => {
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50">
-      <div className="backdrop-blur-md bg-white/30 dark:bg-gray-900/50 border-b border-slate-200/20 dark:border-slate-800/80 h-[50px] flex items-center justify-between px-6 relative overflow-hidden">
+      <div className="backdrop-blur-md bg-white/30 dark:bg-gray-900/50 border-b border-slate-200/20 dark:border-slate-900 h-[50px] flex items-center justify-between px-6 relative overflow-hidden">
         {/* Background Elements with enhanced gradient */}
-        <div className="absolute inset-0 dark:bg-gradient-to-r dark:from-black/80 dark:to-black/80"></div>
+        <div className="absolute inset-0 dark:bg-black"></div>
         <div className="absolute inset-0 bg-[linear-gradient(to_right,transparent_0%,rgba(255,255,255,0.1)_20%,transparent_40%)] dark:bg-[linear-gradient(to_right,transparent_0%,rgba(255,255,255,0.05)_20%,transparent_40%)] animate-[shimmer_3s_infinite]"></div>
         
         {/* Mobile menu button */}
