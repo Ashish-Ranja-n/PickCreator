@@ -727,7 +727,7 @@ export const validateFollowerCount = (followersCount?: number, userRole?: string
   }
 
   // In production, require at least 2000 followers for non-admin users
-  return followersCount !== undefined && followersCount >= 1;
+  return followersCount !== undefined && followersCount >= 50;
 };
 
 // Fetch Instagram messages

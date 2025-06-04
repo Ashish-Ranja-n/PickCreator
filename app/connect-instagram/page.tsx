@@ -24,7 +24,7 @@ const errorMessages = {
   redirect_loop: "We detected a redirection issue. Try using the Safe Mode option below.",
   invalid_request: "Instagram rejected the connection request. Please try again.",
   insufficient_followers: (count?: string) => 
-    `Your account needs at least ${count || '1,000'} followers to be eligible. This helps ensure our platform maintains high-quality content creators.`,
+    `Your account needs at least '50' followers to be eligible. This helps ensure our platform maintains high-quality content creators.`,
   already_connected: "This Instagram account is already connected to another user.",
   unkownerror: "An unexpected error occurred. Please try again or contact support.",
   business_account_required: "Instagram requires a Business or Creator account to connect. Please convert your account and try again."
@@ -405,7 +405,7 @@ function InstagramConnectContent() {
         
         <h1 className="text-3xl font-bold text-center tracking-tight">Connect Your Instagram Account</h1>
         <p className="text-center text-muted-foreground max-w-2xl">
-          <span className="font-semibold text-red-500">Required Step:</span> To continue as an influencer on PickCreator, you need to connect your Instagram Business account with at least 5000 followers.
+          <span className="font-semibold text-red-500">Required Step:</span> To continue as an influencer on PickCreator, you need to connect your Instagram Business account with at least 50 followers.
         </p>
         
         <div className="flex items-center justify-center w-full max-w-md">
