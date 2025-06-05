@@ -27,7 +27,11 @@ export async function middleware(request: NextRequest) {
             '/api/auth/reset-password',
             '/api/verify-otp',
             '/api/send-otp',
-            '/api/payments/callback'
+            '/api/payments/callback',
+            '/api/notifications/send',
+            '/api/notifications/subscribe',
+            '/api/notifications/unsubscribe',
+            '/api/notifications/vapid-public-key'
         ];
 
         // Check if the current path is a public API route

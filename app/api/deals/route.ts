@@ -123,8 +123,8 @@ export async function POST(request: NextRequest) {
       // Send notification to influencer in the background
       sendBackgroundNotification(
         influencerId,
-        'New Connect Request',
-        `${brandName} has sent you a collaboration request`,
+        'New Deal Request',
+        `You have got a deal from ${companyName}`,
         {
           url: `/influencer/deals?tab=requested&id=${newDeal._id.toString()}`,
           type: 'connect_request',
