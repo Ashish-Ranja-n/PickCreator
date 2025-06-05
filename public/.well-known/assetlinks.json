@@ -3,9 +3,9 @@
     "relation": ["delegate_permission/common.handle_all_urls"],
     "target": {
       "namespace": "android_app",
-      "package_name": "com.pickcreator.app",
+      "package_name": "com.pickcreator.twa",
       "sha256_cert_fingerprints": [
-        "3A:78:D8:28:66:F5:05:46:12:10:02:61:A9:AC:48:2B:4A:C0:77:6D:E9:D9:99:AC:7B:4E:E7:03:D0:15:6D:79"
+        "7F:B5:D8:38:13:FE:CF:E1:2C:B0:7C:CC:A3:E1:00:32:5B:67:B9:4C:F1:5B:06:07:1D:4F:71:31:6C:78:17:DB"
       ]
     }
   }
