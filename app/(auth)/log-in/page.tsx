@@ -1,68 +1,69 @@
 import AuthForm from '@/components/AuthForm'
-import { KeyRoundIcon } from 'lucide-react'
 import React from 'react'
 import Link from 'next/link'
 
 const SignIn = () => {
   return (
     <div className='min-h-screen relative overflow-hidden bg-[#f8f9ff]'>
-      {/* Modern geometric background elements */}
-      <div className='absolute inset-0 bg-[url(/grid.svg)] bg-center opacity-5 pointer-events-none' />
+      {/* Modern animated background */}
+      <div className='absolute inset-0'>
+        <div className='absolute inset-0 bg-gradient-to-br from-[#f1f5ff] via-[#ffffff] to-[#f0f7ff] opacity-70' />
+        <div className='absolute inset-0 bg-[url(/grid.svg)] bg-center opacity-5' />
+      </div>
 
-      {/* Abstract shapes */}
-      <div className='absolute top-0 left-0 w-1/3 h-screen bg-gradient-to-b from-[#f1f5ff] to-[#ffffff] transform -skew-x-12 z-0' />
-      <div className='absolute bottom-0 right-0 w-1/2 h-1/3 bg-gradient-to-t from-[#f0f7ff] to-transparent transform skew-x-12 z-0' />
+      {/* Animated geometric elements */}
+      <div className='absolute w-full h-full overflow-hidden'>
+        {/* Floating elements */}
+        <div className='absolute top-1/4 right-1/4 w-72 h-72 bg-gradient-to-r from-[#4f46e5]/10 to-[#8b5cf6]/10 rounded-full blur-3xl animate-float' style={{animationDuration: '20s'}} />
+        <div className='absolute bottom-1/4 left-1/3 w-96 h-96 bg-gradient-to-r from-[#8b5cf6]/10 to-[#ec4899]/10 rounded-full blur-3xl animate-float' style={{animationDuration: '25s'}} />
+        <div className='absolute top-1/2 left-1/4 w-64 h-64 bg-gradient-to-r from-[#ec4899]/10 to-[#4f46e5]/10 rounded-full blur-3xl animate-float' style={{animationDuration: '15s'}} />
+      </div>
 
-      {/* Animated accent elements */}
-      <div className='absolute top-20 left-[20%] w-64 h-64 rounded-full border border-[#e1e8ff] opacity-20 animate-spin-slow' />
-      <div className='absolute bottom-40 right-[15%] w-40 h-40 rounded-full border border-[#d8e3ff] opacity-30 animate-spin-slow' style={{animationDuration: '15s'}} />
-      <div className='absolute top-[40%] right-[10%] w-20 h-20 rounded-full bg-gradient-to-r from-[#4f46e5]/5 to-[#8b5cf6]/5 animate-float' style={{animationDuration: '7s'}} />
-
-      {/* Accent lines */}
-      <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#4f46e5] via-[#8b5cf6] to-[#ec4899] opacity-80' />
-      <div className='absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-[#ec4899] via-[#8b5cf6] to-[#4f46e5] opacity-80' />
-
-      {/* Main content */}
-      <div className='relative flex flex-col items-center justify-center min-h-screen px-4 pb-20 pt-10 z-10'>
-        {/* Logo section with subtle animation */}
-        <div className='mb-8 relative'>
-          <div className='absolute -inset-4 bg-white/50 rounded-full blur-xl opacity-70 animate-pulse-soft' />
-          <Link href="/" className="inline-flex items-center relative">
-            <span className="text-3xl font-black tracking-tight">
-              <span className="bg-gradient-to-r from-[#4f46e5] via-[#8b5cf6] to-[#ec4899] bg-clip-text text-transparent">
-                PICKCREATOR
+      {/* Header with Logo */}
+      <div className='absolute top-0 left-0 p-6 z-10'>
+        <div className='relative group'>
+          <div className='absolute -inset-6 bg-gradient-to-r from-[#4f46e5]/20 via-[#8b5cf6]/20 to-[#ec4899]/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-all duration-700' />
+          <Link href="/" className="relative flex items-center">
+            <div className="flex items-center">
+              <span className="text-4xl font-black tracking-tighter">
+                <span className="bg-black bg-clip-text text-transparent">
+                  pick
+                </span>
+                <span className="bg-gradient-to-r from-[#4f46e5] to-[#8b5cf6] bg-clip-text text-transparent">
+                  creator
+                </span>
               </span>
-            </span>
+              <span className="ml-2 text-xl font-semibold text-gray-600">
+                STUDIO
+              </span>
+            </div>
           </Link>
         </div>
+      </div>
 
-        {/* Title and tagline section */}
-        <div className='text-center space-y-4 mb-6'>
-          
-          {/* Tagline with enhanced styling */}
-          <div className='relative'>
-            <p className='text-gray-600 font-medium leading-relaxed'>
-              "Unlock the power of connection.
-              <br />
-              <span className='text-[#4f46e5]'>Your creative network awaits you.</span>"
-            </p>
-            <div className='mt-4 flex justify-center'>
-              <div className='p-3 bg-gradient-to-r from-[#4f46e5]/10 to-[#8b5cf6]/10 rounded-full relative group'>
-                <div className='absolute inset-0 bg-gradient-to-r from-[#4f46e5]/20 to-[#8b5cf6]/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500' />
-                <KeyRoundIcon
-                  size={36}
-                  className='text-[#4f46e5] relative z-10 group-hover:text-[#8b5cf6] transition-colors duration-300'
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Auth form with modern styling */}
+      {/* Main content */}
+      <div className='relative flex flex-col items-center justify-center min-h-screen px-4'>
+        {/* Auth form with enhanced styling */}
         <div className='w-full max-w-md relative'>
-          <div className='absolute -inset-1.5 bg-gradient-to-r from-[#4f46e5]/10 via-[#8b5cf6]/10 to-[#ec4899]/10 rounded-2xl blur-lg opacity-70' />
+          <div className='absolute -inset-2 bg-gradient-to-r from-[#4f46e5]/10 via-[#8b5cf6]/10 to-[#ec4899]/10 rounded-2xl blur-lg opacity-70 animate-pulse' style={{animationDuration: '3s'}} />
           <AuthForm type="Log In" />
         </div>
+      </div>
+
+      {/* Footer Links */}
+      <div className='absolute bottom-0 left-0 w-full p-6 flex justify-center items-center gap-8 text-sm text-gray-500 z-10'>
+        <Link 
+          href="/legal/privacy-policy" 
+          className="hover:text-[#4f46e5] transition-colors duration-200"
+        >
+          Privacy Policy
+        </Link>
+        <Link 
+          href="/legal/terms-conditions" 
+          className="hover:text-[#4f46e5] transition-colors duration-200"
+        >
+          Terms & Conditions
+        </Link>
       </div>
     </div>
   )

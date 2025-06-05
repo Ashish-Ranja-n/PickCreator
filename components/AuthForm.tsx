@@ -18,7 +18,7 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp"
 import { Input } from "@/components/ui/input"
-import {  LucideLoaderCircle, Eye, EyeOff, CheckCircle, AlertCircle } from 'lucide-react'
+import {  LucideLoaderCircle, Eye, EyeOff, CheckCircle, AlertCircle, KeyRoundIcon } from 'lucide-react'
 import Link from 'next/link'
 import axios from 'axios'
 import { useRouter, usePathname } from 'next/navigation'
@@ -347,25 +347,25 @@ const AuthForm = ({type}: {type: string}) => {
 
   return (
     <div className='w-full max-w-md mx-auto'>
-      <div className='space-y-6 bg-white/90 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-[#e1e8ff]'>
+      <div className='space-y-6 bg-white/95 backdrop-blur-md rounded-3xl p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.07)] border border-white/20'>
         {currentStep === "credentials" ? (
           <>
-            <div className='text-center'>
-              <h1 className='text-2xl font-bold bg-gradient-to-r from-[#4f46e5] via-[#8b5cf6] to-[#ec4899] bg-clip-text text-transparent mb-2'>
-                {type === 'Log In' ? 'Welcome Back' : 'Create Account'}
+            <div className='text-center space-y-2'>
+              <h1 className='text-2xl sm:text-3xl font-bold bg-gradient-to-r from-[#4f46e5] via-[#8b5cf6] to-[#ec4899] bg-clip-text text-transparent'>
+                {type === 'Log In' ? 'Welcome Back!' : 'Join PickCreator'}
               </h1>
-              <p className='text-gray-600 text-sm'>
+              <p className='text-gray-500 text-sm'>
                 {type === 'Log In'
-                  ? 'Sign in to your account to continue'
-                  : 'Fill in your details to get started'}
+                  ? 'Great to see you again'
+                  : 'Start your creative journey'}
               </p>
             </div>
 
             {generalError && (
-              <Alert variant="destructive" className="py-2 bg-red-50 border border-red-200">
-                <div className="flex items-center">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertDescription className="text-xs ml-2 text-red-600">
+              <Alert variant="destructive" className="py-3 px-4 bg-red-50/80 backdrop-blur-sm border border-red-100 rounded-2xl">
+                <div className="flex items-center gap-2">
+                  <AlertCircle className="h-4 w-4 text-red-500" />
+                  <AlertDescription className="text-sm text-red-600 font-medium">
                     {generalError}
                   </AlertDescription>
                 </div>
@@ -373,18 +373,18 @@ const AuthForm = ({type}: {type: string}) => {
             )}
 
             <Form {...credentialsForm}>
-              <form onSubmit={credentialsForm.handleSubmit(onSubmitCredentials)} className="space-y-4">
+              <form onSubmit={credentialsForm.handleSubmit(onSubmitCredentials)} className="space-y-5">
                 {type === 'Sign Up' && (
                   <FormField
                     control={credentialsForm.control}
                     name="name"
                     render={({ field }) => (
                       <FormItem className="relative">
-                        <div className="relative">
-                          <FormLabel className={`absolute left-3 transition-all duration-200 pointer-events-none z-10
+                        <div className="relative group">
+                          <FormLabel className={`absolute left-4 transition-all duration-200 pointer-events-none z-10
                             ${field.value || focusedField === 'name'
-                              ? '-translate-y-[calc(100%+4px)] text-xs text-[#8b5cf6]'
-                              : 'translate-y-3 text-gray-500'}`}>
+                              ? '-translate-y-7 text-xs font-medium text-[#8b5cf6]'
+                              : 'translate-y-3.5 text-gray-400'}`}>
                             Name
                           </FormLabel>
                           <FormControl>
@@ -394,11 +394,11 @@ const AuthForm = ({type}: {type: string}) => {
                               id="name"
                               onFocus={() => handleFocus('name')}
                               onBlur={() => setFocusedField(null)}
-                              className='h-12 px-4 rounded-xl border border-[#e1e8ff] bg-white/80 focus:bg-white transition-all duration-200 shadow-sm focus:border-[#8b5cf6] focus:ring-1 focus:ring-[#8b5cf6] text-gray-800 placeholder:text-gray-400'
+                              className='h-14 px-4 rounded-2xl border-2 border-gray-100 bg-gray-50/30 focus:bg-white transition-all duration-200 shadow-sm focus:border-[#8b5cf6] focus:ring-4 focus:ring-[#8b5cf6]/10 text-gray-800 placeholder:text-transparent'
                             />
                           </FormControl>
                         </div>
-                        <FormMessage className="text-xs font-medium mt-1 text-red-400" />
+                        <FormMessage className="text-xs font-medium mt-2 text-red-400" />
                       </FormItem>
                     )}
                   />
@@ -409,11 +409,11 @@ const AuthForm = ({type}: {type: string}) => {
                   name="email"
                   render={({ field }) => (
                     <FormItem className="relative">
-                      <div className="relative">
-                        <FormLabel className={`absolute left-3 transition-all duration-200 pointer-events-none z-10
+                      <div className="relative group">
+                        <FormLabel className={`absolute left-4 transition-all duration-200 pointer-events-none z-10
                           ${field.value || focusedField === 'email'
-                            ? '-translate-y-[calc(100%+4px)] text-xs text-[#8b5cf6]'
-                            : 'translate-y-3 text-gray-500'}`}>
+                            ? '-translate-y-7 text-xs font-medium text-[#8b5cf6]'
+                            : 'translate-y-3.5 text-gray-400'}`}>
                           Email
                         </FormLabel>
                         <FormControl>
@@ -423,11 +423,11 @@ const AuthForm = ({type}: {type: string}) => {
                             id="email"
                             onFocus={() => handleFocus('email')}
                             onBlur={() => setFocusedField(null)}
-                            className='h-12 px-4 rounded-xl border border-[#e1e8ff] bg-white/80 focus:bg-white transition-all duration-200 shadow-sm focus:border-[#8b5cf6] focus:ring-1 focus:ring-[#8b5cf6] text-gray-800 placeholder:text-gray-400'
+                            className='h-14 px-4 rounded-2xl border-2 border-gray-100 bg-gray-50/30 focus:bg-white transition-all duration-200 shadow-sm focus:border-[#8b5cf6] focus:ring-4 focus:ring-[#8b5cf6]/10 text-gray-800 placeholder:text-transparent'
                           />
                         </FormControl>
                       </div>
-                      <FormMessage className="text-xs font-medium mt-1 text-red-400" />
+                      <FormMessage className="text-xs font-medium mt-2 text-red-400" />
                     </FormItem>
                   )}
                 />
@@ -437,11 +437,11 @@ const AuthForm = ({type}: {type: string}) => {
                   name="password"
                   render={({ field }) => (
                     <FormItem className="relative">
-                      <div className="relative">
-                        <FormLabel className={`absolute left-3 transition-all duration-200 pointer-events-none z-10
+                      <div className="relative group">
+                        <FormLabel className={`absolute left-4 transition-all duration-200 pointer-events-none z-10
                           ${field.value || focusedField === 'password'
-                            ? '-translate-y-[calc(100%+4px)] text-xs text-[#8b5cf6]'
-                            : 'translate-y-3 text-gray-500'}`}>
+                            ? '-translate-y-7 text-xs font-medium text-[#8b5cf6]'
+                            : 'translate-y-3.5 text-gray-400'}`}>
                           Password
                         </FormLabel>
                         <FormControl>
@@ -452,24 +452,24 @@ const AuthForm = ({type}: {type: string}) => {
                               id="password"
                               onFocus={() => handleFocus('password')}
                               onBlur={() => setFocusedField(null)}
-                              className='h-12 px-4 pr-12 rounded-xl border border-[#e1e8ff] bg-white/80 focus:bg-white transition-all duration-200 shadow-sm focus:border-[#8b5cf6] focus:ring-1 focus:ring-[#8b5cf6] text-gray-800 placeholder:text-gray-400'
+                              className='h-14 px-4 pr-12 rounded-2xl border-2 border-gray-100 bg-gray-50/30 focus:bg-white transition-all duration-200 shadow-sm focus:border-[#8b5cf6] focus:ring-4 focus:ring-[#8b5cf6]/10 text-gray-800 placeholder:text-transparent'
                             />
                             <button
                               type="button"
                               onClick={() => setShowPassword(!showPassword)}
-                              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#8b5cf6] transition-colors"
+                              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#8b5cf6] transition-colors"
                               aria-label={showPassword ? "Hide password" : "Show password"}
                             >
                               {showPassword ? (
-                                <EyeOff size={18} className="opacity-75" />
+                                <EyeOff size={20} className="opacity-75" />
                               ) : (
-                                <Eye size={18} className="opacity-75" />
+                                <Eye size={20} className="opacity-75" />
                               )}
                             </button>
                           </div>
                         </FormControl>
                       </div>
-                      <FormMessage className="text-xs font-medium mt-1 text-red-400" />
+                      <FormMessage className="text-xs font-medium mt-2 text-red-400" />
                     </FormItem>
                   )}
                 />
@@ -479,8 +479,8 @@ const AuthForm = ({type}: {type: string}) => {
                     control={credentialsForm.control}
                     name="role"
                     render={({ field }) => (
-                      <FormItem className="space-y-2 pt-2">
-                        <FormLabel className="text-xs font-medium text-[#8b5cf6]">Account Type</FormLabel>
+                      <FormItem className="space-y-3 pt-2">
+                        <FormLabel className="text-xs font-medium text-[#8b5cf6]">Choose Account Type</FormLabel>
                         <AccountTypeToggle selectedType={field.value as AccountType} onChange={field.onChange} />
                         <FormMessage className="text-xs font-medium text-red-400" />
                       </FormItem>
@@ -489,10 +489,10 @@ const AuthForm = ({type}: {type: string}) => {
                 )}
 
                 {type === 'Log In' && (
-                  <div className="flex justify-end">
+                  <div className="flex justify-end -mt-2">
                     <Link
                       href="/password-reset"
-                      className="text-xs text-[#4f46e5] hover:text-[#8b5cf6] transition-colors"
+                      className="text-sm text-[#4f46e5] hover:text-[#8b5cf6] transition-colors font-medium"
                     >
                       Forgot password?
                     </Link>
@@ -502,61 +502,67 @@ const AuthForm = ({type}: {type: string}) => {
                 <Button
                   type="submit"
                   disabled={isLoading}
-                  className={`w-full h-12 mt-4 rounded-xl font-semibold transition-all duration-300
+                  className={`w-full h-14 mt-4 rounded-2xl font-semibold text-base transition-all duration-300
                     ${isLoading
-                      ? 'bg-gradient-to-r from-[#524be2] to-[#8d63ee] cursor-wait'
-                      : 'bg-gradient-to-r from-[#4f46e5] to-[#8b5cf6] hover:from-[#4f46e5] hover:to-[#ec4899] hover:shadow-lg'
+                      ? 'bg-gradient-to-r from-[#524be2]/80 to-[#8d63ee]/80 cursor-wait'
+                      : 'bg-gradient-to-r from-[#4f46e5] to-[#8b5cf6] hover:from-[#4f46e5] hover:to-[#ec4899] hover:shadow-lg hover:scale-[1.02]'
                     }`}
                 >
                   {isLoading ? (
                     <div className="flex items-center justify-center gap-2">
-                      <LucideLoaderCircle className="h-4 w-4 animate-spin" />
-                      <span>{type === 'Log In' ? 'Logging in...' : 'Continuing...'}</span>
+                      <LucideLoaderCircle className="h-5 w-5 animate-spin" />
+                      <span>{type === 'Log In' ? 'Logging in...' : 'Creating account...'}</span>
                     </div>
                   ) : (
-                    type === 'Log In' ? 'Log In' : 'Continue'
+                    type === 'Log In' ? 'Log In' : 'Create Account'
                   )}
                 </Button>
               </form>
             </Form>
 
-            <div className='text-center space-y-4'>
+            <div className='text-center space-y-6 mt-8'>
               <div className='relative'>
                 <div className='absolute inset-0 flex items-center'>
-                  <div className='w-full border-t border-[#e1e8ff]'></div>
+                  <div className='w-full border-t border-gray-100'></div>
                 </div>
                 <div className='relative flex justify-center text-xs uppercase'>
-                  <span className='bg-white/90 backdrop-blur-sm px-2 text-gray-500'>Or</span>
+                  <span className='bg-white px-4 text-gray-400 font-medium'>Or continue with</span>
                 </div>
               </div>
 
               <div>
                 <p className='text-sm text-gray-600'>
                   {type === 'Log In'
-                    ? 'Don\'t have an account yet? '
+                    ? 'New to PickCreator? '
                     : 'Already have an account? '}
                   <Link
                     href={type === 'Log In' ? '/sign-up' : '/log-in'}
                     className='text-[#4f46e5] font-semibold hover:text-[#8b5cf6] transition-colors'
                   >
-                    {type === 'Log In' ? 'Sign Up' : 'Log In'}
+                    {type === 'Log In' ? 'Create an account' : 'Sign in'}
                   </Link>
                 </p>
               </div>
             </div>
           </>
         ) : (
+          // OTP Verification UI
           <>
-            <div className='text-center'>
-              <h1 className='text-2xl font-bold bg-gradient-to-r from-[#4f46e5] via-[#8b5cf6] to-[#ec4899] bg-clip-text text-transparent mb-2'>
+            <div className='text-center space-y-4'>
+              <div className='inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#8b5cf6]/10 mb-2'>
+                <KeyRoundIcon className="h-8 w-8 text-[#8b5cf6]" />
+              </div>
+              <h1 className='text-2xl sm:text-3xl font-bold bg-gradient-to-r from-[#4f46e5] via-[#8b5cf6] to-[#ec4899] bg-clip-text text-transparent'>
                 Verify Your Email
               </h1>
-              <p className='text-gray-600 text-sm mb-1'>
-                We've sent a 6-digit code to
-              </p>
-              <p className='font-medium text-gray-800'>
-                {maskEmail(user.email)}
-              </p>
+              <div className='space-y-1'>
+                <p className='text-gray-500 text-sm'>
+                  We've sent a 6-digit code to
+                </p>
+                <p className='font-medium text-gray-800'>
+                  {maskEmail(user.email)}
+                </p>
+              </div>
             </div>
 
             <Form {...otpForm}>
@@ -565,27 +571,27 @@ const AuthForm = ({type}: {type: string}) => {
                   control={otpForm.control}
                   name="pin"
                   render={({ field }) => (
-                    <FormItem className="space-y-3">
+                    <FormItem className="space-y-4">
                       <FormControl>
                         <div className="flex justify-center">
                           <InputOTP maxLength={6} {...field}>
                             <InputOTPGroup>
-                              <InputOTPSlot index={0} className="w-11 h-12 border border-[#e1e8ff] rounded-lg shadow-sm bg-white/80 text-gray-800" />
-                              <InputOTPSlot index={1} className="w-11 h-12 border border-[#e1e8ff] rounded-lg shadow-sm bg-white/80 text-gray-800" />
-                              <InputOTPSlot index={2} className="w-11 h-12 border border-[#e1e8ff] rounded-lg shadow-sm bg-white/80 text-gray-800" />
-                              <InputOTPSlot index={3} className="w-11 h-12 border border-[#e1e8ff] rounded-lg shadow-sm bg-white/80 text-gray-800" />
-                              <InputOTPSlot index={4} className="w-11 h-12 border border-[#e1e8ff] rounded-lg shadow-sm bg-white/80 text-gray-800" />
-                              <InputOTPSlot index={5} className="w-11 h-12 border border-[#e1e8ff] rounded-lg shadow-sm bg-white/80 text-gray-800" />
+                              <InputOTPSlot index={0} className="w-12 h-14 sm:w-14 sm:h-16 border-2 border-gray-100 rounded-xl shadow-sm bg-gray-50/30 text-gray-800 text-lg font-medium focus:border-[#8b5cf6] focus:ring-4 focus:ring-[#8b5cf6]/10" />
+                              <InputOTPSlot index={1} className="w-12 h-14 sm:w-14 sm:h-16 border-2 border-gray-100 rounded-xl shadow-sm bg-gray-50/30 text-gray-800 text-lg font-medium focus:border-[#8b5cf6] focus:ring-4 focus:ring-[#8b5cf6]/10" />
+                              <InputOTPSlot index={2} className="w-12 h-14 sm:w-14 sm:h-16 border-2 border-gray-100 rounded-xl shadow-sm bg-gray-50/30 text-gray-800 text-lg font-medium focus:border-[#8b5cf6] focus:ring-4 focus:ring-[#8b5cf6]/10" />
+                              <InputOTPSlot index={3} className="w-12 h-14 sm:w-14 sm:h-16 border-2 border-gray-100 rounded-xl shadow-sm bg-gray-50/30 text-gray-800 text-lg font-medium focus:border-[#8b5cf6] focus:ring-4 focus:ring-[#8b5cf6]/10" />
+                              <InputOTPSlot index={4} className="w-12 h-14 sm:w-14 sm:h-16 border-2 border-gray-100 rounded-xl shadow-sm bg-gray-50/30 text-gray-800 text-lg font-medium focus:border-[#8b5cf6] focus:ring-4 focus:ring-[#8b5cf6]/10" />
+                              <InputOTPSlot index={5} className="w-12 h-14 sm:w-14 sm:h-16 border-2 border-gray-100 rounded-xl shadow-sm bg-gray-50/30 text-gray-800 text-lg font-medium focus:border-[#8b5cf6] focus:ring-4 focus:ring-[#8b5cf6]/10" />
                             </InputOTPGroup>
                           </InputOTP>
                         </div>
                       </FormControl>
 
                       {otpError && (
-                        <Alert variant="destructive" className="py-2 bg-red-50 border border-red-200">
-                          <div className="flex items-center">
-                            <AlertCircle className="h-4 w-4" />
-                            <AlertDescription className="text-xs ml-2 text-red-600">
+                        <Alert variant="destructive" className="py-3 px-4 bg-red-50/80 backdrop-blur-sm border border-red-100 rounded-2xl">
+                          <div className="flex items-center gap-2">
+                            <AlertCircle className="h-4 w-4 text-red-500" />
+                            <AlertDescription className="text-sm text-red-600 font-medium">
                               {otpError}
                             </AlertDescription>
                           </div>
@@ -593,11 +599,13 @@ const AuthForm = ({type}: {type: string}) => {
                       )}
 
                       {resendSuccess && (
-                        <Alert className="py-2 border-green-200 bg-green-50">
-                          <CheckCircle className="h-4 w-4 text-green-600" />
-                          <AlertDescription className="text-xs ml-2 text-green-600">
-                            Verification code sent successfully!
-                          </AlertDescription>
+                        <Alert className="py-3 px-4 bg-green-50/80 backdrop-blur-sm border border-green-100 rounded-2xl">
+                          <div className="flex items-center gap-2">
+                            <CheckCircle className="h-4 w-4 text-green-500" />
+                            <AlertDescription className="text-sm text-green-600 font-medium">
+                              New code sent successfully!
+                            </AlertDescription>
+                          </div>
                         </Alert>
                       )}
 
@@ -606,19 +614,19 @@ const AuthForm = ({type}: {type: string}) => {
                   )}
                 />
 
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <Button
                     type="submit"
                     disabled={isOtpVerifying}
-                    className={`w-full h-11 rounded-xl font-semibold transition-all duration-300
+                    className={`w-full h-14 rounded-2xl font-semibold text-base transition-all duration-300
                       ${isOtpVerifying
-                        ? 'bg-gradient-to-r from-gray-300 to-gray-200 cursor-wait'
-                        : 'bg-gradient-to-r from-[#4f46e5] to-[#8b5cf6] hover:from-[#4f46e5] hover:to-[#ec4899] hover:shadow-lg'
+                        ? 'bg-gradient-to-r from-[#524be2]/80 to-[#8d63ee]/80 cursor-wait'
+                        : 'bg-gradient-to-r from-[#4f46e5] to-[#8b5cf6] hover:from-[#4f46e5] hover:to-[#ec4899] hover:shadow-lg hover:scale-[1.02]'
                       }`}
                   >
                     {isOtpVerifying ? (
                       <div className="flex items-center justify-center gap-2">
-                        <LucideLoaderCircle className="h-4 w-4 animate-spin" />
+                        <LucideLoaderCircle className="h-5 w-5 animate-spin" />
                         <span>Verifying...</span>
                       </div>
                     ) : (
@@ -626,28 +634,28 @@ const AuthForm = ({type}: {type: string}) => {
                     )}
                   </Button>
 
-                  <div className="flex flex-col items-center space-y-2">
-                    <p className="text-gray-600 text-sm">
+                  <div className="flex flex-col items-center gap-4">
+                    <p className="text-gray-500 text-sm">
                       Didn't receive the code?
                     </p>
-                    <div className="flex items-center">
+                    <div className="flex items-center gap-6">
                       <Button
                         type="button"
                         variant="ghost"
                         onClick={onResendOtp}
                         disabled={resendCooldown > 0}
-                        className="h-auto p-0 text-[#4f46e5] hover:text-[#8b5cf6] font-medium text-sm"
+                        className="h-auto px-0 text-[#4f46e5] hover:text-[#8b5cf6] font-medium text-sm hover:bg-transparent"
                       >
                         {resendCooldown > 0
-                          ? `Resend code (${resendCooldown}s)`
+                          ? `Resend in ${resendCooldown}s`
                           : 'Resend code'}
                       </Button>
-                      <span className="mx-2 text-gray-400">•</span>
+                      <div className="h-4 w-px bg-gray-200" />
                       <Button
                         type="button"
                         variant="ghost"
                         onClick={handleGoBack}
-                        className="h-auto p-0 text-gray-500 hover:text-gray-700 text-sm"
+                        className="h-auto px-0 text-gray-500 hover:text-gray-700 text-sm hover:bg-transparent"
                       >
                         Change email
                       </Button>
@@ -662,4 +670,5 @@ const AuthForm = ({type}: {type: string}) => {
     </div>
   )
 }
+
 export default AuthForm
