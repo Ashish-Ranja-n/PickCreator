@@ -25,7 +25,7 @@ export const sendDealNotification = async (
       userId,
       singleUser: true, // Ensure notification only goes to this specific user
       icon: '/icon1.png',
-      badge: '/icons/notification-badge.png',
+      badge: '/icon.png',
       data: data || {}
     });
     
