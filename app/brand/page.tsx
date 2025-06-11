@@ -35,6 +35,7 @@ import {
   ExternalLink,
   Instagram,
   ChevronsUpDown,
+  MapPinCheck,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { INDIAN_CITIES } from '../influencer/onboarding/data/indianCities';
@@ -54,6 +55,7 @@ interface Influencer {
   followers: number;
   bio: string;
   instagramUsername: string;
+  gender?: 'male' | 'female' | 'other';
   // Instagram Analytics data from the model
   instagramAnalytics?: {
     totalPosts: number;
@@ -883,93 +885,106 @@ const Brand: NextPage = () => {
                         />
                       </div>
                     )}
-                    <div className="w-16 h-16 rounded-full overflow-hidden bg-gradient-to-br from-blue-50 to-purple-50 flex-shrink-0 border border-blue-100">
+                    <div className="w-20 h-20 rounded-full overflow-hidden bg-gradient-to-br from-blue-100 to-purple-200 flex-shrink-0 border-2 border-blue-200 shadow-lg relative">
                       {influencer.profilePictureUrl ? (
                         <Image
                           src={influencer.profilePictureUrl}
                           alt={influencer.name}
                           className="w-full h-full object-cover"
-                          width={64}
-                          height={64}
+                          width={80}
+                          height={80}
                           unoptimized={isInstagramUrl(influencer.profilePictureUrl)}
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-gray-200">
+                        <div className="w-full h-full flex items-center justify-center bg-gray-200 text-2xl font-bold text-blue-600">
                           {influencer.name.charAt(0)}
                         </div>
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <CardTitle className="text-xl font-semibold mb-1 truncate">
-                        {influencer.name}
-                      </CardTitle>
-                      <div className="flex items-center text-muted-foreground">
-                        <MapPin className="w-4 h-4 mr-1 flex-shrink-0" />
-                        <span className="text-sm truncate">{influencer.city}</span>
+                      <div className="flex items-center gap-2 mb-1">
+                        <CardTitle className="text-xl font-semibold truncate">
+                          {influencer.name}
+                        </CardTitle>
+                        {/* Always show Instagram verified badge - improved SVG */}
+                        <span title="Instagram Verified" className="inline-flex items-center ml-1">
+                          <Instagram className="w-6 h-6 text-pink-600" />
+                          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" className="ml-1">
+                            <circle cx="10" cy="10" r="9" fill="#22c55e" />
+                            <path d="M6.5 10.5l2.2 2 4-4" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        </span>
+                      </div>
+                      {/* Gender below name */}
+                      {influencer.gender && (
+                        <div className="text-xs font-medium text-blue-700 mb-1 capitalize">
+                          {influencer.gender === 'male' && 'Male'}
+                          {influencer.gender === 'female' && 'Female'}
+                          {influencer.gender === 'other' && 'Other'}
+                        </div>
+                      )}
+                      <div className="flex items-center text-muted-foreground gap-1">
+                        <MapPinCheck className="w-4 h-4 flex-shrink-0 text-blue-500" />
+                        <span className="text-sm truncate font-medium">{influencer.city} <span className="ml-1">🇮🇳</span></span>
                       </div>
                     </div>
-                    {/* Hidden Connect button - keeping for future use */}
-                    {!isCampaignMode && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="ml-2 flex-shrink-0 border-blue-200 text-white bg-blue-600 hover:bg-blue-700 hover:text-white px-2 sm:px-3 hidden"
-                        onClick={() => {
-                          setConnectInfluencer(influencer);
-                          setShowConnectPopup(true);
-                          setSelectedInfluencer(null); // Close view profile popup if open
-                        }}
-                      >
-                        <Plus className="h-3 w-3" />
-                        <span className="sm:inline">Connect</span>
-                      </Button>
-                    )}
                   </div>
                 </CardHeader>
 
                 <CardContent className="p-4 pt-2">
-                  <div className="grid grid-cols-3 gap-2 my-3">
-                    <div className="text-center p-2 bg-blue-50 rounded-md border border-blue-100">
-                      <div className="text-sm text-muted-foreground flex items-center justify-center">
-                        <Users className="w-3 h-3 mr-1 text-blue-500" />
-                        Followers
-                      </div>
-                      <div className="font-semibold text-blue-700">
-                        {formatCompactNumber(influencer.followers || 0)}
-                      </div>
-                    </div>
-
-                    <div className="text-center p-2 bg-purple-50 rounded-md border border-purple-100">
-                      <div className="text-sm text-muted-foreground flex items-center justify-center">
-                        <Zap className="w-3 h-3 mr-1 text-purple-500" />
-                        Avg. Views
-                      </div>
-                      <div className="font-semibold text-purple-700">
-                        {formatCompactNumber(influencer.instagramAnalytics?.avgReelViews || 0)}
-                      </div>
-                    </div>
-
-                    <div className="text-center p-2 bg-pink-50 rounded-md border border-pink-100">
-                      <div className="text-sm text-muted-foreground flex items-center justify-center">
-                        <Heart className="w-3 h-3 mr-1 text-pink-500" />
-                        Avg. Likes
-                      </div>
-                      <div className="font-semibold text-pink-700">
-                        {formatCompactNumber(influencer.instagramAnalytics?.avgReelLikes || 0)}
-                      </div>
+                  <div className="flex items-center gap-2 my-3">
+                    <div className="flex items-center gap-1 bg-blue-50 rounded-md border border-blue-100 px-3 py-1">
+                      <Users className="w-4 h-4 text-blue-500 mr-1" />
+                      <span className="font-semibold text-blue-700 text-base">{formatCompactNumber(influencer.followers || 0)}</span>
+                      <span className="text-xs text-muted-foreground ml-1">Followers</span>
                     </div>
                   </div>
 
-                  <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
-                    {influencer.bio || "No bio available"}
-                  </p>
+                  <div className="mb-3">
+                    <p className="text-sm text-gray-700 whitespace-pre-line">
+                      {influencer.bio || "No bio available"}
+                    </p>
+                  </div>
+
+                  {/* Brand Preferences (Preferred Industries) */}
+                  {influencer.brandPreferences?.preferredBrandTypes && influencer.brandPreferences.preferredBrandTypes.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-2">
+                      {influencer.brandPreferences.preferredBrandTypes.slice(0, 3).map((brandType, idx) => (
+                        <span key={brandType} className="px-2 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-medium">
+                          {brandType}
+                        </span>
+                      ))}
+                      {influencer.brandPreferences.preferredBrandTypes.length > 3 && (
+                        <span className="px-2 py-1 rounded-full bg-gray-100 text-gray-600 text-xs font-medium">
+                          +{influencer.brandPreferences.preferredBrandTypes.length - 3} more
+                        </span>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Professional Pricing Section */}
+                  {influencer.pricingModels?.fixedPricing?.enabled && (
+                    <div className="flex flex-wrap gap-3 mb-4">
+                      {[
+                        { label: 'Reel', price: influencer.pricingModels.fixedPricing.reelPrice },
+                        { label: 'Post', price: influencer.pricingModels.fixedPricing.postPrice },
+                        { label: 'Story', price: influencer.pricingModels.fixedPricing.storyPrice },
+                        { label: 'Live', price: influencer.pricingModels.fixedPricing.livePrice },
+                      ].filter(item => item.price).map(item => (
+                        <div key={item.label} className="flex items-center border border-gray-200 rounded-md px-3 py-1 bg-white text-gray-800 text-xs font-medium shadow-sm">
+                          <span className="font-semibold mr-1">{item.label}:</span>
+                          <span>₹{item.price?.toLocaleString()}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </CardContent>
 
                 <CardFooter className="p-4 pt-0 flex justify-between items-center">
                   <div className="text-xs text-muted-foreground">
                     {influencer.lastUpdated ?
-                      `Updated ${format(new Date(influencer.lastUpdated), 'MMM d, yyyy')}` :
-                      'Recently updated'}
+                      `Last seen: ${format(new Date(influencer.lastUpdated), 'MMM d, yyyy')}` :
+                      'Last seen: Recently'}
                   </div>
                   {isCampaignMode ? (
                     <div className="flex gap-2">
@@ -977,7 +992,7 @@ const Brand: NextPage = () => {
                         variant="outline"
                         size="sm"
                         onClick={() => setSelectedInfluencer(influencer)}
-                        className="border-blue-200 text-blue-700 hover:bg-blue-50 hover:text-blue-800"
+                        className="border-blue-200 text-blue-700 hover:bg-blue-50 hover:text-blue-800 rounded-full px-4 font-semibold"
                       >
                         View Profile
                       </Button>
@@ -995,21 +1010,34 @@ const Brand: NextPage = () => {
                           });
                         }}
                         className={selectedInfluencers.some(inf => inf.id === influencer.id) ?
-                          "bg-blue-600 hover:bg-blue-700 text-white" :
-                          "border-blue-200 text-blue-700 hover:bg-blue-50 hover:text-blue-800"}
+                          "bg-blue-600 hover:bg-blue-700 text-white rounded-full px-4 font-semibold" :
+                          "border-blue-200 text-blue-700 hover:bg-blue-50 hover:text-blue-800 rounded-full px-4 font-semibold"}
                       >
                         {selectedInfluencers.some(inf => inf.id === influencer.id) ? "Selected" : "Select"}
                       </Button>
                     </div>
                   ) : (
-                    <Button
-                      variant="default"
-                      size="sm"
-                      onClick={() => setSelectedInfluencer(influencer)}
-                      className="bg-blue-600 hover:bg-blue-700 text-white"
-                    >
-                      View Profile
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setSelectedInfluencer(influencer)}
+                        className="border-blue-200 text-blue-700 hover:bg-blue-50 hover:text-blue-800 rounded-full px-4 font-semibold"
+                      >
+                        View Profile
+                      </Button>
+                      <Button
+                        variant="default"
+                        size="sm"
+                        onClick={() => {
+                          setConnectInfluencer(influencer);
+                          setShowConnectPopup(true);
+                        }}
+                        className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-4 font-semibold shadow"
+                      >
+                        Connect
+                      </Button>
+                    </div>
                   )}
                 </CardFooter>
               </Card>

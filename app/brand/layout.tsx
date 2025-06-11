@@ -33,7 +33,7 @@ const BrandLayout: React.FC<BrandLayoutProps> = (props) => {
       {isMobile && !hideNavbar && <Navbar />}
       <div className="bg-background">
         {!hideNavbar && <DesktopNav />}
-        <div className={`${isMobile && !hideNavbar ? 'pt-[50px]' : ''} h-screen}`}>
+        <div className={`${isMobile && !hideNavbar ? 'pt-[50px] pb-10' : ''} h-screen}`}>
           {showPrompt && <NotificationPermissionPrompt userType="brand" />}
           {props.children}
         </div>
