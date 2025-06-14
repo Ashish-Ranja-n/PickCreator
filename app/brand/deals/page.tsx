@@ -314,7 +314,7 @@ const BrandDealsPage = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 min-h-screen overflow-y-auto">
+    <div className="container mx-auto px-4 py-10 min-h-screen overflow-y-auto">
       {/* Wrap the TabHandler in a Suspense boundary */}
       <Suspense fallback={null}>
         <TabHandler activeTab={activeTab} setActiveTab={setActiveTab} />
@@ -334,35 +334,47 @@ const BrandDealsPage = () => {
         setActiveTab(value);
         router.push(`/brand/deals?tab=${value}`);
       }}>
-        <TabsList className="grid w-full grid-cols-4 mb-8">
-          <TabsTrigger value="requested">
-            Requested
+        <TabsList className="grid w-full grid-cols-4 mb-8 bg-gray-50 rounded-lg p-1 gap-1 relative">
+          <TabsTrigger 
+            value="requested"
+            className="relative flex items-center justify-center px-3 py-1.5 text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm transition-all"
+          >
+            <span className="whitespace-nowrap">Requested</span>
             {deals.filter(deal => deal.status === 'requested' || deal.status === 'counter-offered').length > 0 && (
-              <span className="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-semibold rounded-full bg-blue-500 text-white min-w-[20px]">
+              <span className="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs font-semibold rounded-full bg-blue-500 text-white">
                 {deals.filter(deal => deal.status === 'requested' || deal.status === 'counter-offered').length}
               </span>
             )}
           </TabsTrigger>
-          <TabsTrigger value="pending">
-            Pending
+          <TabsTrigger 
+            value="pending"
+            className="relative flex items-center justify-center px-3 py-1.5 text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm transition-all"
+          >
+            <span className="whitespace-nowrap">Pending</span>
             {deals.filter(deal => deal.status === 'accepted').length > 0 && (
-              <span className="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-semibold rounded-full bg-yellow-500 text-white min-w-[20px]">
+              <span className="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs font-semibold rounded-full bg-yellow-500 text-white">
                 {deals.filter(deal => deal.status === 'accepted').length}
               </span>
             )}
           </TabsTrigger>
-          <TabsTrigger value="ongoing">
-            Ongoing
+          <TabsTrigger 
+            value="ongoing"
+            className="relative flex items-center justify-center px-3 py-1.5 text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm transition-all"
+          >
+            <span className="whitespace-nowrap">Ongoing</span>
             {deals.filter(deal => deal.status === 'ongoing' || deal.status === 'content_approved').length > 0 && (
-              <span className="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-semibold rounded-full bg-green-500 text-white min-w-[20px]">
+              <span className="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs font-semibold rounded-full bg-green-500 text-white">
                 {deals.filter(deal => deal.status === 'ongoing' || deal.status === 'content_approved').length}
               </span>
             )}
           </TabsTrigger>
-          <TabsTrigger value="history">
-            History
+          <TabsTrigger 
+            value="history"
+            className="relative flex items-center justify-center px-3 py-1.5 text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm transition-all"
+          >
+            <span className="whitespace-nowrap">History</span>
             {deals.filter(deal => ['completed', 'cancelled'].includes(deal.status)).length > 0 && (
-              <span className="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-semibold rounded-full bg-gray-500 text-white min-w-[20px]">
+              <span className="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs font-semibold rounded-full bg-gray-500 text-white">
                 {deals.filter(deal => ['completed', 'cancelled'].includes(deal.status)).length}
               </span>
             )}

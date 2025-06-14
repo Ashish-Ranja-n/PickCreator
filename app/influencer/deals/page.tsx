@@ -351,47 +351,47 @@ const InfluencerDealsPage = () => {
         setActiveTab(value);
         router.push(`/influencer/deals?tab=${value}`);
       }}>
-        <TabsList className="grid w-full grid-cols-4 mb-8 bg-gray-100 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 p-1">
+        <TabsList className="grid w-full grid-cols-4 mb-8 bg-gray-50 dark:bg-zinc-900/50 rounded-lg p-1 gap-1 relative">
           <TabsTrigger
             value="requested"
-            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-500 data-[state=active]:to-fuchsia-500 dark:data-[state=active]:from-violet-600 dark:data-[state=active]:to-fuchsia-600 data-[state=active]:text-white data-[state=active]:border-0"
+            className="relative flex items-center justify-center px-3 py-1.5 text-sm font-medium data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-500 data-[state=active]:to-fuchsia-500 dark:data-[state=active]:from-violet-600 dark:data-[state=active]:to-fuchsia-600 data-[state=active]:text-white transition-all"
           >
-            Requested
+            <span className="whitespace-nowrap">Requested</span>
             {deals.filter(deal => deal.status === 'requested' || deal.status === 'counter-offered').length > 0 && (
-              <span className="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-semibold rounded-full bg-blue-500 text-white min-w-[20px]">
+              <span className="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs font-semibold rounded-full bg-blue-500 text-white">
                 {deals.filter(deal => deal.status === 'requested' || deal.status === 'counter-offered').length}
               </span>
             )}
           </TabsTrigger>
           <TabsTrigger
             value="pending"
-            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-500 data-[state=active]:to-fuchsia-500 dark:data-[state=active]:from-violet-600 dark:data-[state=active]:to-fuchsia-600 data-[state=active]:text-white data-[state=active]:border-0"
+            className="relative flex items-center justify-center px-3 py-1.5 text-sm font-medium data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-500 data-[state=active]:to-fuchsia-500 dark:data-[state=active]:from-violet-600 dark:data-[state=active]:to-fuchsia-600 data-[state=active]:text-white transition-all"
           >
-            Pending
+            <span className="whitespace-nowrap">Pending</span>
             {deals.filter(deal => deal.status === 'accepted').length > 0 && (
-              <span className="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-semibold rounded-full bg-yellow-500 text-white min-w-[20px]">
+              <span className="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs font-semibold rounded-full bg-yellow-500 text-white">
                 {deals.filter(deal => deal.status === 'accepted').length}
               </span>
             )}
           </TabsTrigger>
           <TabsTrigger
             value="ongoing"
-            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-500 data-[state=active]:to-fuchsia-500 dark:data-[state=active]:from-violet-600 dark:data-[state=active]:to-fuchsia-600 data-[state=active]:text-white data-[state=active]:border-0"
+            className="relative flex items-center justify-center px-3 py-1.5 text-sm font-medium data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-500 data-[state=active]:to-fuchsia-500 dark:data-[state=active]:from-violet-600 dark:data-[state=active]:to-fuchsia-600 data-[state=active]:text-white transition-all"
           >
-            Ongoing
+            <span className="whitespace-nowrap">Ongoing</span>
             {deals.filter(deal => deal.status === 'ongoing' || deal.status === 'content_approved').length > 0 && (
-              <span className="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-semibold rounded-full bg-green-500 text-white min-w-[20px]">
+              <span className="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs font-semibold rounded-full bg-green-500 text-white">
                 {deals.filter(deal => deal.status === 'ongoing' || deal.status === 'content_approved').length}
               </span>
             )}
           </TabsTrigger>
           <TabsTrigger
             value="history"
-            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-500 data-[state=active]:to-fuchsia-500 dark:data-[state=active]:from-violet-600 dark:data-[state=active]:to-fuchsia-600 data-[state=active]:text-white data-[state=active]:border-0"
+            className="relative flex items-center justify-center px-3 py-1.5 text-sm font-medium data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-500 data-[state=active]:to-fuchsia-500 dark:data-[state=active]:from-violet-600 dark:data-[state=active]:to-fuchsia-600 data-[state=active]:text-white transition-all"
           >
-            History
+            <span className="whitespace-nowrap">History</span>
             {deals.filter(deal => ['completed', 'cancelled'].includes(deal.status)).length > 0 && (
-              <span className="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-semibold rounded-full bg-gray-500 text-white min-w-[20px]">
+              <span className="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs font-semibold rounded-full bg-gray-500 text-white">
                 {deals.filter(deal => ['completed', 'cancelled'].includes(deal.status)).length}
               </span>
             )}
