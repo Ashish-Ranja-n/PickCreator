@@ -6,11 +6,13 @@ import { usePathname } from "next/navigation";
 import React, { useMemo } from "react";
 import { motion } from "framer-motion";
 import { useThemeContext } from "@/context/ThemeContext";
+import { useDealStatusDot } from "@/hook/useDealStatusDot";
 
 // Use React.memo to prevent unnecessary re-renders
 const MobileNav = React.memo(() => {
   const pathname = usePathname();
   const { isDarkMode } = useThemeContext();
+  const hasActiveDeal = useDealStatusDot();
 
   // Memoize the tabs array to prevent it from being recreated on each render
   const tabs = useMemo(() => [
@@ -24,55 +26,57 @@ const MobileNav = React.memo(() => {
   // Memoize the nav content based on pathname
   const navContent = useMemo(() => (
     <nav className={cn(
-      "lg:hidden fixed bottom-0 left-0 right-0 h-16 z-50 shadow-lg",
-      isDarkMode
-        ? "bg-gray-950 border-t border-zinc-800/50"
-        : "bg-slate-50 border-t border-gray-200/50"
+      "lg:hidden fixed bottom-0 left-0 right-0 w-full z-50 border-t",
+      isDarkMode 
+        ? "bg-gray-950 border-gray-800"
+        : "bg-slate-50 border-slate-200"
     )}>
-      <div className="grid grid-cols-5 h-full max-w-md mx-auto px-1">
+      <div className="flex justify-between items-center h-16 px-6 max-w-screen-sm mx-auto">
         {tabs.map(({ icon: Icon, label, path }) => {
           const isActive = pathname === path;
+          const isDealTab = label === "Deals";
           return (
             <Link
               key={path}
               href={path}
-              className={cn(
-                "flex flex-col items-center justify-center relative",
-                isActive
-                  ? isDarkMode ? "text-white" : "text-gray-900"
-                  : isDarkMode ? "text-zinc-400" : "text-gray-500"
-              )}
+              className="relative group"
             >
-
-              <motion.div
-                layoutId="navIndicator"
-                initial={false}
-                transition={{ type: "spring", stiffness: 500, damping: 30 }}
+              <div
                 className={cn(
-                "flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300",
-                isActive
-                  ? isDarkMode
-                    ? "bg-gradient-to-r from-violet-600/30 to-fuchsia-600/30 shadow-[0_0_8px_rgba(192,38,211,0.3)]"
-                    : "bg-gradient-to-r from-violet-400/30 to-fuchsia-400/30 shadow-[0_0_8px_rgba(192,38,211,0.2)]"
-                  : "bg-transparent"
-              )}>
+                  "relative flex items-center justify-center w-12 h-12 rounded-xl transition-all duration-200",
+                  isActive
+                    ? isDarkMode
+                      ? "bg-gray-800"
+                      : "bg-white shadow-sm"
+                    : "hover:bg-slate-100"
+                )}
+              >
                 <Icon
-                  size={20}
+                  size={26}
                   className={cn(
-                    "transition-all duration-300",
+                    "transition-all duration-200",
                     isActive
-                      ? isDarkMode ? "text-fuchsia-400" : "text-fuchsia-500"
-                      : isDarkMode ? "text-zinc-400" : "text-gray-500"
+                      ? isDarkMode
+                        ? "text-fuchsia-400"
+                        : "text-fuchsia-600"
+                      : isDarkMode
+                        ? "text-zinc-400 group-hover:text-fuchsia-400"
+                        : "text-slate-600 group-hover:text-fuchsia-500"
                   )}
                 />
-              </motion.div>
-              <span className="text-xs font-medium mt-1">{label}</span>
+                {isDealTab && hasActiveDeal && (
+                  <div className="absolute -top-1 -right-1 flex items-center justify-center">
+                    <span className="absolute w-4 h-4 bg-red-500/20 rounded-full animate-ping" />
+                    <span className="relative w-3 h-3 bg-red-500 rounded-full" />
+                  </div>
+                )}
+              </div>
             </Link>
           );
         })}
       </div>
     </nav>
-  ), [pathname, tabs, isDarkMode]);
+  ), [pathname, tabs, isDarkMode, hasActiveDeal]);
 
   return navContent;
 });

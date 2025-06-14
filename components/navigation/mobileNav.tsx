@@ -3,8 +3,11 @@ import { cn } from "@/lib/utils";
 import { Home, ShoppingBag, MessageCircleMore, User2 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useDealStatusDot } from "@/hook/useDealStatusDot";
+
 const MobileNav = () => {
   const pathname = usePathname();
+  const hasActiveDeal = useDealStatusDot();
 
   const tabs = [
     { icon: Home, label: "Home", path: "/brand" },
@@ -14,30 +17,43 @@ const MobileNav = () => {
   ];
 
   return (
-    <nav className="lg:hidden fixed left-0 right-0 bottom-0 h-16 bg-white z-30 border-t border-gray-200">
-      <div className="grid grid-cols-4 h-full">
-        {tabs.map(({ icon: Icon, label, path }) => (
-          <Link
-            key={path}
-            href={path}
-            className={cn(
-              "flex flex-col items-center justify-center space-y-1",
-              pathname === path
-                ? "text-blue-700"
-                : "text-gray-500 hover:text-gray-700"
-            )}
-          >
-            <Icon
-              size={24}
-              className={cn(
-                "transition-colors duration-200",
-                pathname === path && "text-blue-500",
-                !pathname?.includes(path) && "text-gray-500 group-hover:text-gray-700"
-              )}
-            />
-            <span className="text-xs font-medium">{label}</span>
-          </Link>
-        ))}
+    <nav className="lg:hidden fixed bottom-0 left-0 right-0 w-full z-50 bg-slate-50 border-t border-slate-200">
+      <div className="flex justify-between items-center h-16 px-6 max-w-screen-sm mx-auto">
+        {tabs.map(({ icon: Icon, label, path }) => {
+          const isActive = pathname === path;
+          return (
+            <Link
+              key={path}
+              href={path}
+              className="relative group"
+            >
+              <div
+                className={cn(
+                  "relative flex items-center justify-center w-12 h-12 rounded-xl transition-all duration-200",
+                  isActive
+                    ? "bg-white shadow-sm"
+                    : "hover:bg-slate-100"
+                )}
+              >
+                <Icon
+                  size={26}
+                  className={cn(
+                    "transition-all duration-200",
+                    isActive
+                      ? "text-blue-600"
+                      : "text-slate-600 group-hover:text-blue-500"
+                  )}
+                />
+                {label === "Deals" && hasActiveDeal && (
+                  <div className="absolute -top-1 -right-1 flex items-center justify-center">
+                    <span className="absolute w-4 h-4 bg-red-500/20 rounded-full animate-ping" />
+                    <span className="relative w-3 h-3 bg-red-500 rounded-full" />
+                  </div>
+                )}
+              </div>
+            </Link>
+          );
+        })}
       </div>
     </nav>
   );
