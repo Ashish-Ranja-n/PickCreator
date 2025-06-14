@@ -1,6 +1,6 @@
 'use client';
 import { cn } from "@/lib/utils";
-import { Home, ShoppingBag, MessageCircle, User, Users2Icon } from "lucide-react";
+import { Home, ShoppingBag, MessageCircle, User, Users2Icon,User2 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useMemo } from "react";
@@ -18,16 +18,16 @@ const MobileNav = React.memo(() => {
     { icon: ShoppingBag, label: "Deals", path: "/influencer/deals" },
     { icon: Users2Icon, label: "Community", path: "/influencer/community" },
     { icon: MessageCircle, label: "Chat", path: "/influencer/chat" },
-    { icon: User, label: "Profile", path: "/influencer/profile" },
+    { icon: User2, label: "Profile", path: "/influencer/profile" },
   ], []);
 
   // Memoize the nav content based on pathname
   const navContent = useMemo(() => (
     <nav className={cn(
-      "lg:hidden fixed bottom-0 left-0 right-0 h-16 backdrop-blur-lg z-50 shadow-lg",
+      "lg:hidden fixed bottom-0 left-0 right-0 h-16 z-50 shadow-lg",
       isDarkMode
-        ? "bg-zinc-900/90 border-t border-zinc-800/50"
-        : "bg-slate-100/90 border-t border-gray-200/50"
+        ? "bg-gray-950 border-t border-zinc-800/50"
+        : "bg-slate-50 border-t border-gray-200/50"
     )}>
       <div className="grid grid-cols-5 h-full max-w-md mx-auto px-1">
         {tabs.map(({ icon: Icon, label, path }) => {
@@ -57,7 +57,7 @@ const MobileNav = React.memo(() => {
                   : "bg-transparent"
               )}>
                 <Icon
-                  size={24}
+                  size={20}
                   className={cn(
                     "transition-all duration-300",
                     isActive
