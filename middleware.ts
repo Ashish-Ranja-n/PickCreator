@@ -84,41 +84,7 @@ export async function middleware(request: NextRequest) {
         }
         return NextResponse.next();
     }
-
-    // Special case for Instagram connection page - accessible for influencers
-    if(path === '/connect-instagram') {
-        if(!token) {
-            return NextResponse.redirect(`${baseUrl}/log-in`);
-        }
-
-        try {
-            const payload = await getDataFromToken(request, token);
-            const role = payload?.role;
-            const instagramConnected = payload?.instagramConnected === true;
-
-            // Only influencers can access this page
-            if(role !== 'Influencer') {
-                if(role === 'Brand') {
-                    return NextResponse.redirect(`${baseUrl}/brand`);
-                }
-                if(role === 'Admin') {
-                    return NextResponse.redirect(`${baseUrl}/admin`);
-                }
-                return NextResponse.redirect(`${baseUrl}/log-in`);
-            }
-            if(role === 'Influencer' && instagramConnected) {
-                return NextResponse.redirect(`${baseUrl}/influencer`);
-            }
-
-            return NextResponse.next();
-        } catch (error: any) {
-            // Token is invalid or expired - redirect to login page
-            console.error("Token verification failed:", error.message);
-            const response = NextResponse.redirect(`${baseUrl}/log-in`);
-            response.cookies.delete('token');
-            return response;
-        }
-    }
+   
 
     // For protected routes, verify token
     if(path.startsWith('/brand') || path.startsWith('/influencer') || path.startsWith('/admin')) {
@@ -143,21 +109,6 @@ export async function middleware(request: NextRequest) {
                     return NextResponse.redirect(`${baseUrl}/admin`);
                 }
                 return NextResponse.redirect(`${baseUrl}/brand`);
-            }
-
-            // Check Instagram connection for influencers
-            // We can now do this directly from the token without database queries
-            if(path.startsWith('/influencer') && role === 'Influencer') {
-                // Skip this check for the onboarding paths
-                if(!path.includes('/onboarding') && !path.includes('/connect-instagram')) {
-                    // Check if Instagram is connected using the token data
-                    const instagramConnected = payload?.instagramConnected === true;
-
-                    if(!instagramConnected) {
-                        console.log("Middleware: Instagram not connected, redirecting to connect-instagram");
-                        return NextResponse.redirect(`${baseUrl}/connect-instagram`);
-                    }
-                }
             }
 
             if(path.startsWith('/admin') && role !== 'Admin') {
