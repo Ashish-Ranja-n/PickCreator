@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCurrentUser } from '@/hook/useCurrentUser';
+import { convertAndCompressImage } from './imageUtils';
 
 export default function VerifyInstagram() {
   const [profilePic, setProfilePic] = useState<File | null>(null);
@@ -13,9 +14,16 @@ export default function VerifyInstagram() {
   const router = useRouter();
   const user = useCurrentUser();
 
-  const handleProfilePicChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleProfilePicChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setProfilePic(e.target.files[0]);
+      setError('');
+      try {
+        const processedFile = await convertAndCompressImage(e.target.files[0]);
+        setProfilePic(processedFile);
+      } catch (err: any) {
+        setError(err.message || 'Image processing failed.');
+        setProfilePic(null);
+      }
     }
   };
 
