@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { LayoutGrid, MessageSquare, User, Settings, HelpCircle, Clock, Tag, CheckSquare, XCircle, ArrowRight } from "lucide-react";
 import { useParams, useRouter } from 'next/navigation';
 import { AdminChatStats } from '@/components/chat/AdminChatStats';
+import InstagramVerificationRequests from '@/components/admin/InstagramVerificationRequests';
 
 interface ContactQuery {
   _id: string;
@@ -160,8 +161,14 @@ export default function AdminChatPage() {
                 </div>
                 
                 {activeUserTab === 'users' && (
-                  <div className="flex items-center justify-center h-[calc(100vh-18rem)]">
-                    <p className="text-muted-foreground">User management will be available here</p>
+                  <div className="h-[calc(100vh-18rem)] overflow-auto">
+                    {/* Instagram Verification Requests */}
+                    <div className="mb-8">
+                      <InstagramVerificationRequests />
+                    </div>
+                    <div className="flex items-center justify-center h-full">
+                      <p className="text-muted-foreground">User management will be available here</p>
+                    </div>
                   </div>
                 )}
                 
@@ -359,4 +366,4 @@ export default function AdminChatPage() {
       </div>
     </div>
   );
-} 
+}

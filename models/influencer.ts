@@ -92,6 +92,9 @@ interface IInfluencer {
   // Onboarding status
   onboardingCompleted?: boolean;
   onboardingStep?: number; // Current step in onboarding process
+
+  // Instagram manual verification reference
+  instagramVerification?: Types.ObjectId; // Reference to InstagramVerification model
 }
 
 const InfluencerSchema = new Schema<IInfluencer>({
@@ -176,7 +179,13 @@ const InfluencerSchema = new Schema<IInfluencer>({
 
   // Onboarding status
   onboardingCompleted: { type: Boolean, default: false },
-  onboardingStep: { type: Number, default: 0 }
+  onboardingStep: { type: Number, default: 0 },
+
+  // Instagram manual verification reference
+  instagramVerification: {
+    type: Schema.Types.ObjectId,
+    ref: 'InstagramVerification',
+  }
 });
 
 // Create a discriminator - an Influencer IS-A User

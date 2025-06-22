@@ -294,7 +294,7 @@ const AuthForm = ({type}: {type: string}) => {
 
       // Handle role-specific redirections using the role from response
       if (userRole === 'Influencer') {
-        navigateWithHardRedirect('/connect-instagram?fresh=true');
+        navigateWithHardRedirect('/verify-instagram');
         return;
       }
 
