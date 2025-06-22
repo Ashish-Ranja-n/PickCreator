@@ -33,7 +33,8 @@ import {
   Loader,
   KeyRoundIcon,
   Moon,
-  Sun
+  Sun,
+  ShieldCheck
 } from 'lucide-react';
 import { useCurrentUser } from '@/hook/useCurrentUser';
 import { useInfluencerProfile } from '@/hook/useInfluencerProfile';
@@ -51,31 +52,36 @@ import { useLogout } from '@/hook/useLogout';
 import { useTheme } from 'next-themes';
 
 const ProfilePage = () => {
+  // All hooks must be called at the top level, before any return or conditional
   const { toast } = useToast();
   const router = useRouter();
   const currentUser = useCurrentUser();
   const userId = currentUser?._id;
   const { theme, setTheme } = useTheme();
-
-  // Always call hooks at the top level unconditionally
   const logout = useLogout();
   const { isSupported, isSubscribed, requestPermission } = useNotifications();
+  const { data: profileData, isLoading: isLoadingProfile } = useInfluencerProfile();
 
-  // Add state for connection loading
+  // State hooks
   const [isConnecting, setIsConnecting] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editData, setEditData] = useState({ bio: profileData?.bio || '' });
+  const [verifyModalOpen, setVerifyModalOpen] = useState(false);
+  const [verificationStatus, setVerificationStatus] = useState<'none'|'pending'|'approved'|'rejected'|null>(null);
+  const [verificationCode, setVerificationCode] = useState('');
+  const [verificationError, setVerificationError] = useState('');
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [isResending, setIsResending] = useState(false);
 
-  // Log theme information when component mounts
+  // Effects
   useEffect(() => {
     console.log('Theme from useTheme:', theme);
   }, [theme]);
 
-  // Define logout handler with useCallback at the top level with other hooks
+  // Define logout handler with useCallback at the top level
   const handleLogout = useCallback(() => {
     logout();
   }, [logout]);
-
-  // Use the new unified hook for all influencer data
-  const { data: profileData, isLoading: isLoadingProfile } = useInfluencerProfile();
 
   // Instagram info directly from profileData
   const instagramUsername = profileData?.instagramUsername || '';
@@ -121,12 +127,6 @@ const ProfilePage = () => {
       return 0;
     }
   };
-
-  // State for editing profile
-  const [isEditing, setIsEditing] = useState(false);
-  const [editData, setEditData] = useState({
-    bio: profileData?.bio || '',
-  });
 
   // Loading state
   const isLoading = isLoadingProfile;
@@ -303,6 +303,58 @@ const ProfilePage = () => {
     router.push("/contact");
   };
 
+  // Check verification status
+  const checkVerificationStatus = async () => {
+    setVerificationError('');
+    setIsVerifying(false);
+    setIsResending(false);
+    setVerificationCode('');
+    setVerifyModalOpen(true);
+    try {
+      const res = await axios.get('/api/verify-instagram/status');
+      setVerificationStatus(res.data.status || 'none');
+    } catch (err) {
+      setVerificationStatus('none');
+    }
+  };
+
+  // Handle code verification
+  const handleVerifyCode = async () => {
+    setIsVerifying(true);
+    setVerificationError('');
+    try {
+      const res = await axios.post('/api/verify-instagram/verify', { code: verificationCode });
+      if (res.data.success) {
+        setVerifyModalOpen(false);
+        toast({ title: 'Verified!', description: 'Your account is now verified.', variant: 'default' });
+        router.refresh();
+      } else {
+        setVerificationError(res.data.message || 'Invalid code');
+      }
+    } catch (err: any) {
+      setVerificationError(err.response?.data?.message || 'Verification failed');
+    }
+    setIsVerifying(false);
+  };
+
+  // Handle resend request
+  const handleResendRequest = async () => {
+    setIsResending(true);
+    setVerificationError('');
+    try {
+      const res = await axios.post('/api/verify-instagram/resend');
+      if (res.data.success) {
+        setVerificationStatus('pending');
+        toast({ title: 'Request Sent', description: 'Verification request sent again.', variant: 'default' });
+      } else {
+        setVerificationError(res.data.message || 'Failed to resend request');
+      }
+    } catch (err: any) {
+      setVerificationError(err.response?.data?.message || 'Failed to resend request');
+    }
+    setIsResending(false);
+  };
+
   return (
     <div className="container py-16 bg-white dark:bg-black min-h-screen overflow-x-hidden">
       <div className="space-y-8">
@@ -342,9 +394,22 @@ const ProfilePage = () => {
               </p>
               {/* Instagram connection badge */}
               {instagramUsername && (
-                <div className="mt-1 inline-flex items-center">
+                <div className="mt-1 inline-flex items-center space-x-1">
                   <Instagram className="h-3.5 w-3.5 text-pink-500 mr-1" />
                   <span className="text-xs font-medium text-gray-600 dark:text-gray-300">@{instagramUsername}</span>
+                  {/* Verified badge */}
+                  {profileData?.isInstagramVerified ? (
+                    <span title="Verified" className="ml-1">
+                      <ShieldCheck className="w-4 h-4 text-fuchsia-500 dark:text-fuchsia-400" />
+                    </span>
+                  ) : (
+                    <span title="Not Verified" className="ml-1">
+                      <ShieldCheck className="w-4 h-4 text-gray-400 dark:text-zinc-600" />
+                    </span>
+                  )}
+                  <span className="ml-1 text-xs font-medium" style={{ color: profileData?.isInstagramVerified ? '#d946ef' : '#a1a1aa' }}>
+                    {profileData?.isInstagramVerified ? 'Verified' : 'Not Verified'}
+                  </span>
                 </div>
               )}
             </div>
@@ -691,6 +756,28 @@ const ProfilePage = () => {
                       <span className="text-lg font-semibold text-gray-900 dark:text-white">Followers</span>
                       <span className="text-2xl font-bold text-fuchsia-500 dark:text-fuchsia-400">{instagramFollowerCount?.toLocaleString() || '0'}</span>
                     </div>
+                    {/* Verify Account Button - Instagram Tab */}
+                    <button
+                      className="mt-6 bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white rounded-full px-5 py-2 flex items-center gap-2 shadow-lg hover:scale-105 transition-all mx-auto"
+                      style={{ fontSize: 16 }}
+                      onClick={checkVerificationStatus}
+                      title="Verify Account"
+                    >
+                      <ShieldCheck className="w-5 h-5" />
+                      Verify Account
+                    </button>
+                    {/* Verification status message */}
+                    <div className="mt-4 text-center">
+                      {profileData?.isInstagramVerified ? (
+                        <span className="text-green-600 dark:text-green-400 font-medium">
+                          Your account is verified and visible to all brands.
+                        </span>
+                      ) : (
+                        <span className="text-red-500 dark:text-red-400 font-medium">
+                          Your account is not verified and brands cannot see you.
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1024,6 +1111,65 @@ const ProfilePage = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Instagram Verification Modal */}
+      <Dialog open={verifyModalOpen} onOpenChange={setVerifyModalOpen}>
+        <DialogContent className="max-w-sm w-full rounded-2xl p-6 bg-white dark:bg-zinc-900 text-center">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold text-gradient bg-gradient-to-r from-violet-500 to-fuchsia-500 bg-clip-text text-transparent">Instagram Verification</DialogTitle>
+          </DialogHeader>
+          {verificationStatus === 'pending' && (
+            <div className="py-4">
+              <p className="text-gray-700 dark:text-gray-200">Your verification request is <span className="font-semibold text-amber-500">pending</span>. Please wait for admin approval.</p>
+            </div>
+          )}
+          {verificationStatus === 'approved' && (
+            <div className="py-4">
+              <p className="text-gray-700 dark:text-gray-200 mb-2">Your request is <span className="font-semibold text-green-500">approved</span>! Enter the code sent to your Instagram DM:</p>
+              <input
+                type="text"
+                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-zinc-700 focus:outline-none focus:ring-2 focus:ring-fuchsia-500 text-lg text-center mb-2"
+                placeholder="Enter code"
+                value={verificationCode}
+                onChange={e => setVerificationCode(e.target.value)}
+                maxLength={8}
+              />
+              {verificationError && <div className="text-red-500 text-sm mb-2">{verificationError}</div>}
+              <Button
+                onClick={handleVerifyCode}
+                className="w-full bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white font-bold mt-2"
+                disabled={isVerifying || !verificationCode}
+              >
+                {isVerifying ? 'Verifying...' : 'Verify'}
+              </Button>
+            </div>
+          )}
+          {verificationStatus === 'rejected' && (
+            <div className="py-4">
+              <p className="text-gray-700 dark:text-gray-200 mb-2">Your request was <span className="font-semibold text-red-500">rejected</span>. You can send a new request.</p>
+              {verificationError && <div className="text-red-500 text-sm mb-2">{verificationError}</div>}
+              <Button
+                onClick={handleResendRequest}
+                className="w-full bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white font-bold mt-2"
+                disabled={isResending}
+              >
+                {isResending ? 'Sending...' : 'Send Request Again'}
+              </Button>
+            </div>
+          )}
+          {verificationStatus === 'none' && (
+            <div className="py-4">
+              <p className="text-gray-700 dark:text-gray-200 mb-2">You have not requested Instagram verification yet.</p>
+              <Button
+                asChild
+                className="w-full bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white font-bold mt-2"
+              >
+                <Link href="/verify-instagram">Send Verification Request</Link>
+              </Button>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

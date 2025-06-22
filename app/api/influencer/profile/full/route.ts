@@ -57,6 +57,7 @@ export async function GET(request: NextRequest) {
       pricingModels: influencer.pricingModels || {},
       brandPreferences: influencer.brandPreferences || {},
       availability: influencer.availability || [],
+      isInstagramVerified: influencer.isInstagramVerified || false,
     };
     return NextResponse.json(profile);
   } catch (error) {

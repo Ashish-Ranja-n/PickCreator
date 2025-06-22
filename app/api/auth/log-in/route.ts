@@ -29,7 +29,7 @@ export async function POST(request: Request) {
             // Query the Influencer model to get the correct Instagram connection status
             const influencer = await Influencer.findById(user._id);
             if (influencer) {
-                instagramConnected = influencer.instagramConnected === true;
+                instagramConnected = true;
                 onboardingCompleted = influencer.onboardingCompleted === true;
                 console.log(`Login: Found influencer record, Instagram connected: ${instagramConnected}`);
             } else {

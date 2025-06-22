@@ -42,7 +42,10 @@ export async function GET(request: NextRequest) {
     // Build query filters
     const filters: any = {
       onboardingCompleted: true,
-      instagramConnected: true
+      $or: [
+        { isConnected: true },
+        { isInstagramVerified: true }
+      ]
     };
 
     // Add city filter if provided

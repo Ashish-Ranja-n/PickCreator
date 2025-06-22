@@ -20,6 +20,7 @@ export interface InfluencerProfile {
   pricingModels?: any;
   brandPreferences?: any;
   availability?: any;
+  isInstagramVerified?: boolean;
 }
 
 export function useInfluencerProfile() {

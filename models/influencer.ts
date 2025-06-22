@@ -95,6 +95,9 @@ interface IInfluencer {
 
   // Instagram manual verification reference
   instagramVerification?: Types.ObjectId; // Reference to InstagramVerification model
+
+  // Boolean field for verification status
+  isInstagramVerified?: boolean; // Manual verification status
 }
 
 const InfluencerSchema = new Schema<IInfluencer>({
@@ -185,7 +188,10 @@ const InfluencerSchema = new Schema<IInfluencer>({
   instagramVerification: {
     type: Schema.Types.ObjectId,
     ref: 'InstagramVerification',
-  }
+  },
+
+  // Boolean field for verification status
+  isInstagramVerified: { type: Boolean, default: false },
 });
 
 // Create a discriminator - an Influencer IS-A User

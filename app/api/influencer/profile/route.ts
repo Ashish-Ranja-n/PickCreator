@@ -154,16 +154,21 @@ export async function PATCH(request: NextRequest) {
     console.log("Influencer profile update: Received update data:", updateData);
     
     // Only allow updating specific fields
-    const allowedFields = ['bio', 'socialMediaLinks'];
+    const allowedFields = ['bio', 'socialMediaLinks', 'isInstagramVerified'];
     const filteredUpdateData: Record<string, any> = {};
-    
+
     // Filter out any fields that are not allowed
     for (const field of allowedFields) {
       if (field in updateData) {
         filteredUpdateData[field] = updateData[field];
       }
     }
-    
+
+    // If isInstagramVerified is being set, also clear instagramVerification
+    if ('isInstagramVerified' in filteredUpdateData) {
+      filteredUpdateData.instagramVerification = null;
+    }
+
     if (Object.keys(filteredUpdateData).length === 0) {
       console.log("Influencer profile update: No valid update fields provided");
       return NextResponse.json({ 
@@ -171,7 +176,7 @@ export async function PATCH(request: NextRequest) {
         error: 'No valid update fields provided' 
       }, { status: 400 });
     }
-    
+
     // Try updating using direct ID first
     let result = await Influencer.updateOne(
       { _id: userId },
