@@ -39,7 +39,7 @@ export async function POST(request: Request) {
                     // Influencer-specific fields
                     socialMediaLinks: [],
                     followers: 0,
-                    instagramConnected: false,
+                    instagramConnected: true,
                     // Add explicit fields to prevent caching issues
                     onboardingCompleted: false,
                     onboardingStep: 0

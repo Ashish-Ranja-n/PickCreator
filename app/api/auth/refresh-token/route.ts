@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
       role: user.role,
       // Add role-specific fields
       ...(user.role === 'Influencer' ? {
-        instagramConnected: user.instagramConnected || false,
+        instagramConnected: true,
         onboardingCompleted: user.onboardingCompleted || false
       } : {})
     };
