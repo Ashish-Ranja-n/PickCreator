@@ -36,7 +36,7 @@ import {
   Sun
 } from 'lucide-react';
 import { useCurrentUser } from '@/hook/useCurrentUser';
-import { useInfluencerData, useInstagramData, useOnboardingData } from '@/hook/useInfluencerData';
+import { useInfluencerProfile } from '@/hook/useInfluencerProfile';
 import { useNotifications } from '@/hook/useNotifications';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -74,13 +74,12 @@ const ProfilePage = () => {
     logout();
   }, [logout]);
 
-  // Use React Query hooks for data fetching
-  const { data: profileData, isLoading: isLoadingProfile } = useInfluencerData();
-  const { data, isLoading: isLoadingInstagram, refreshData } = useInstagramData();
-  const { data: onboardingData, isLoading: isLoadingOnboarding } = useOnboardingData();
+  // Use the new unified hook for all influencer data
+  const { data: profileData, isLoading: isLoadingProfile } = useInfluencerProfile();
 
-  // Rename the variable to make it clear it's the Instagram data
-  const instagramData = data;
+  // Instagram info directly from profileData
+  const instagramUsername = profileData?.instagramUsername || '';
+  const instagramFollowerCount = profileData?.followerCount || 0;
 
   // Calculate account age in days
   const calculateAccountAge = () => {
@@ -130,7 +129,7 @@ const ProfilePage = () => {
   });
 
   // Loading state
-  const isLoading = isLoadingProfile || isLoadingInstagram || isLoadingOnboarding;
+  const isLoading = isLoadingProfile;
 
   // Add a clear loading state component
   const LoadingState = () => (
@@ -156,30 +155,30 @@ const ProfilePage = () => {
   }
 
   // Add a function to refresh Instagram data
-  const refreshInstagramData = async () => {
-    try {
-      toast({
-        title: "Refreshing Data",
-        description: "Please wait while we refresh your Instagram data...",
-        variant: "default",
-      });
+  // const refreshInstagramData = async () => {
+  //   try {
+  //     toast({
+  //       title: "Refreshing Data",
+  //       description: "Please wait while we refresh your Instagram data...",
+  //       variant: "default",
+  //     });
 
-      await refreshData();
+  //     await refreshData();
 
-      toast({
-        title: "Data Refreshed",
-        description: "Instagram data has been successfully refreshed and stored in your profile.",
-        variant: "default",
-      });
-    } catch (error) {
-      console.error('Error refreshing Instagram data:', error);
-      toast({
-        title: "Refresh Failed",
-        description: "Failed to refresh Instagram data. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
+  //     toast({
+  //       title: "Data Refreshed",
+  //       description: "Instagram data has been successfully refreshed and stored in your profile.",
+  //       variant: "default",
+  //     });
+  //   } catch (error) {
+  //     console.error('Error refreshing Instagram data:', error);
+  //     toast({
+  //       title: "Refresh Failed",
+  //       description: "Failed to refresh Instagram data. Please try again.",
+  //       variant: "destructive",
+  //     });
+  //   }
+  // };
 
   // Handle reconnecting Instagram directly
   const handleReconnectInstagram = async () => {
@@ -312,11 +311,11 @@ const ProfilePage = () => {
           <div className="flex items-center">
             {/* Profile image on the left */}
             <div className="relative mr-4 flex-shrink-0">
-              {instagramData?.isConnected && instagramData.profile?.profile_picture_url ? (
+              {profileData?.profilePictureUrl ? (
                 <div className="relative">
                   <div className="absolute -inset-0.5 rounded-full bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 opacity-75 blur-sm"></div>
                   <Image
-                    src={instagramData.profile.profile_picture_url}
+                    src={profileData.profilePictureUrl}
                     alt={profileData?.name || 'Profile'}
                     width={72}
                     height={72}
@@ -342,10 +341,10 @@ const ProfilePage = () => {
                 {profileData?.email}
               </p>
               {/* Instagram connection badge */}
-              {instagramData?.isConnected && instagramData.profile && (
+              {instagramUsername && (
                 <div className="mt-1 inline-flex items-center">
                   <Instagram className="h-3.5 w-3.5 text-pink-500 mr-1" />
-                  <span className="text-xs font-medium text-gray-600 dark:text-gray-300">@{instagramData.profile.username}</span>
+                  <span className="text-xs font-medium text-gray-600 dark:text-gray-300">@{instagramUsername}</span>
                 </div>
               )}
             </div>
@@ -682,269 +681,17 @@ const ProfilePage = () => {
           <TabsContent value="instagram" className="space-y-8 pt-6 pb-16">
             {/* Instagram Overview Container */}
             <div className="relative">
-              {/* Header with profile overview - Modern Design with Light/Dark Mode Support */}
               <div className="relative mb-10 overflow-hidden rounded-3xl shadow-xl bg-gradient-to-br from-slate-100 via-white to-slate-100 dark:from-zinc-900 dark:via-black dark:to-zinc-900 border border-slate-200 dark:border-zinc-800">
-                {/* Subtle gradient effects */}
-                <div className="absolute inset-0 opacity-20">
-                  <div className="absolute -left-20 -top-20 w-72 h-72 rounded-full bg-violet-500/10 dark:bg-fuchsia-900/20 blur-3xl"></div>
-                  <div className="absolute right-10 top-20 w-80 h-80 rounded-full bg-fuchsia-500/10 dark:bg-violet-900/20 blur-3xl"></div>
-                  <div className="absolute bottom-0 left-1/3 w-96 h-32 rounded-full bg-gradient-to-r from-violet-500/10 to-fuchsia-500/10 dark:from-violet-900/20 dark:to-fuchsia-900/20 blur-3xl"></div>
-                </div>
-
-                {/* Subtle pattern overlay */}
-                <div className="absolute inset-0 opacity-5 mix-blend-overlay">
-                  <svg viewBox="0 0 1024 1024" className="absolute inset-0 h-full w-full" xmlns="http://www.w3.org/2000/svg">
-                    <filter id="noise">
-                      <feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="4" stitchTiles="stitch" />
-                    </filter>
-                    <rect width="100%" height="100%" filter="url(#noise)" />
-                  </svg>
-                </div>
-
                 <div className="relative p-8 md:p-10">
-                  {/* Profile info - Centered design without duplicate profile image */}
                   <div className="flex-1 text-center">
                     <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-2 bg-gradient-to-r from-fuchsia-500 to-violet-500 dark:from-fuchsia-400 dark:to-violet-400 bg-clip-text text-transparent">
-                      @{instagramData?.profile?.username || 'username'}
+                      @{instagramUsername || 'username'}
                     </h2>
-
-                    <div className="flex flex-wrap justify-center gap-2 mt-3 mb-6">
-                      <Link
-                        href={`https://instagram.com/${instagramData?.profile?.username || ''}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center px-4 py-1.5 bg-white dark:bg-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-700 rounded-full transition-colors text-gray-800 dark:text-white border border-gray-200 dark:border-zinc-700"
-                      >
-                        <LinkIcon className="h-3.5 w-3.5 mr-1.5" />
-                        <span className="text-sm font-medium">View Profile</span>
-                      </Link>
-
-                      <button
-                        onClick={handleReconnectInstagram}
-                        disabled={isConnecting}
-                        className="flex items-center px-4 py-1.5 bg-white dark:bg-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-700 rounded-full transition-colors text-gray-800 dark:text-white disabled:opacity-70 disabled:cursor-not-allowed border border-gray-200 dark:border-zinc-700"
-                      >
-                        {isConnecting ? (
-                          <Loader className="h-3.5 w-3.5 mr-1.5 animate-spin" />
-                        ) : (
-                          <Instagram className="h-3.5 w-3.5 mr-1.5 text-pink-500" />
-                        )}
-                        <span className="text-sm font-medium">
-                          {isConnecting ? "Connecting..." : "Reconnect"}
-                        </span>
-                      </button>
-
-                      <button
-                        onClick={refreshInstagramData}
-                        disabled={isConnecting}
-                        className="flex items-center px-4 py-1.5 bg-white dark:bg-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-700 rounded-full transition-colors text-gray-800 dark:text-white disabled:opacity-70 disabled:cursor-not-allowed border border-gray-200 dark:border-zinc-700"
-                      >
-                        <RefreshCw className="h-3.5 w-3.5 mr-1.5 text-blue-500" />
-                        <span className="text-sm font-medium">Refresh</span>
-                      </button>
-                    </div>
-
-                    {/* Stats tiles */}
-                    <div className="grid grid-cols-3 gap-3 max-w-2xl mx-auto">
-                      <div className="bg-white/80 dark:bg-zinc-800/80 backdrop-blur-sm rounded-xl p-4 text-center border border-gray-200/50 dark:border-zinc-700/50 shadow-sm">
-                        <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                          {instagramData?.profile?.followers_count?.toLocaleString() || '0'}
-                        </div>
-                        <div className="text-xs font-medium text-gray-500 dark:text-zinc-400 uppercase tracking-wide">Followers</div>
-                      </div>
-
-                      <div className="bg-white/80 dark:bg-zinc-800/80 backdrop-blur-sm rounded-xl p-4 text-center border border-gray-200/50 dark:border-zinc-700/50 shadow-sm">
-                        <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                          {instagramData?.profile?.media_count?.toLocaleString() || '0'}
-                        </div>
-                        <div className="text-xs font-medium text-gray-500 dark:text-zinc-400 uppercase tracking-wide">Posts</div>
-                      </div>
-
-                      <div className="bg-white/80 dark:bg-zinc-800/80 backdrop-blur-sm rounded-xl p-4 text-center border border-gray-200/50 dark:border-zinc-700/50 shadow-sm">
-                        <div className="text-sm font-bold truncate text-gray-900 dark:text-white">
-                          {instagramData?.profile?.account_type
-                            ? instagramData.profile.account_type
-                              .split('_')
-                              .map(word => word.charAt(0) + word.slice(1).toLowerCase())
-                              .join(' ')
-                            : 'Unknown'}
-                        </div>
-                        <div className="text-xs font-medium text-gray-500 dark:text-zinc-400 uppercase tracking-wide">Account Type</div>
-                      </div>
+                    <div className="flex flex-col items-center justify-center mt-4">
+                      <span className="text-lg font-semibold text-gray-900 dark:text-white">Followers</span>
+                      <span className="text-2xl font-bold text-fuchsia-500 dark:text-fuchsia-400">{instagramFollowerCount?.toLocaleString() || '0'}</span>
                     </div>
                   </div>
-                </div>
-              </div>
-
-              {/* Main Content Section */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Left Column: Analytics Summary */}
-                <div className="col-span-1 transform-gpu">
-                  <div className="sticky top-6 space-y-6">
-                    {/* Automation Card */}
-                    {/* <div className="relative overflow-hidden bg-white dark:bg-zinc-900 rounded-2xl border border-gray-200 dark:border-zinc-800 shadow-lg hover:shadow-xl transition-shadow">
-                      <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-violet-500 to-fuchsia-500 dark:from-violet-600 dark:to-fuchsia-600"></div>
-                      <div className="p-6">
-                        <h3 className="text-xl font-bold flex items-center text-gray-900 dark:text-white mb-4">
-                          <MessageSquare className="h-5 w-5 text-violet-500 dark:text-violet-400 mr-2" />
-                          <span>Automation</span>
-                        </h3>
-
-                        <p className="text-sm text-gray-500 dark:text-zinc-400 mb-5">
-                          Set up automated responses and enhance your Instagram engagement.
-                        </p>
-
-                        <div className="flex flex-col gap-3">
-                          <button
-                            onClick={() => router.push('/influencer/instagram/automation')}
-                            className="w-full flex items-center justify-center py-3 px-4 rounded-xl bg-gray-50 dark:bg-zinc-800 text-gray-800 dark:text-white border border-gray-200 dark:border-zinc-700 hover:bg-gray-100 dark:hover:bg-zinc-700 transition-colors"
-                          >
-                            <MessageSquare className="h-4 w-4 mr-2 text-violet-500" />
-                            <span className="font-medium">Message Automation</span>
-                          </button>
-
-                          <button
-                            onClick={handleReconnectInstagram}
-                            disabled={isConnecting}
-                            className="w-full flex items-center justify-center py-3 px-4 rounded-xl bg-gradient-to-r from-violet-500 to-fuchsia-500 dark:from-violet-600 dark:to-fuchsia-600 text-white hover:from-violet-600 hover:to-fuchsia-600 dark:hover:from-violet-700 dark:hover:to-fuchsia-700 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
-                          >
-                            {isConnecting ? (
-                              <Loader className="h-4 w-4 mr-2 animate-spin" />
-                            ) : (
-                              <Instagram className="h-4 w-4 mr-2" />
-                            )}
-                            <span className="font-medium">
-                              {isConnecting ? "Connecting..." : "Reconnect Instagram"}
-                            </span>
-                          </button>
-                        </div>
-                      </div>
-                    </div> */}
-
-                    {/* Key Performance Indicators */}
-                    {instagramData?.analytics && (
-                      <div className="relative overflow-hidden bg-white dark:bg-zinc-900 rounded-2xl border border-gray-200 dark:border-zinc-800 shadow-lg">
-                        <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-fuchsia-500 to-violet-500 dark:from-fuchsia-600 dark:to-violet-600"></div>
-                        <div className="p-6">
-                          <h3 className="text-xl font-bold flex items-center text-gray-900 dark:text-white mb-4">
-                            <BarChart3 className="h-5 w-5 text-fuchsia-500 dark:text-fuchsia-400 mr-2" />
-                            <span>Key Metrics</span>
-                          </h3>
-
-                          <div className="space-y-3">
-                            <div className="relative overflow-hidden rounded-xl bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 p-4 flex items-center">
-                              <div className="bg-white dark:bg-zinc-900 rounded-full p-2 mr-3 border border-blue-300 dark:border-blue-500/30">
-                                <Play className="h-5 w-5 text-blue-500 dark:text-blue-400" />
-                              </div>
-                              <div className="flex-1">
-                                <div className="flex justify-between mb-1">
-                                  <span className="text-xs font-medium text-gray-500 dark:text-zinc-400">Avg. Reel Views</span>
-                                  <span className="flex items-center text-xs font-medium text-blue-500 dark:text-blue-400">
-                                    <Trophy className="h-3 w-3 mr-1" />
-                                    Last 30
-                                  </span>
-                                </div>
-                                <div className="text-xl font-bold text-gray-900 dark:text-white">
-                                  {(instagramData.analytics.avgReelViews || 0).toLocaleString()}
-                                </div>
-                              </div>
-                            </div>
-
-                            <div className="relative overflow-hidden rounded-xl bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 p-4 flex items-center">
-                              <div className="bg-white dark:bg-zinc-900 rounded-full p-2 mr-3 border border-rose-300 dark:border-rose-500/30">
-                                <Heart className="h-5 w-5 text-rose-500 dark:text-rose-400" />
-                              </div>
-                              <div className="flex-1">
-                                <div className="flex justify-between mb-1">
-                                  <span className="text-xs font-medium text-gray-500 dark:text-zinc-400">Avg. Reel Likes</span>
-                                  <span className="flex items-center text-xs font-medium text-rose-500 dark:text-rose-400">
-                                    <Flame className="h-3 w-3 mr-1" />
-                                    Last 30
-                                  </span>
-                                </div>
-                                <div className="text-xl font-bold text-gray-900 dark:text-white">
-                                  {(instagramData.analytics.avgReelLikes || 0).toLocaleString()}
-                                </div>
-                              </div>
-                            </div>
-
-                            <div className="relative overflow-hidden rounded-xl bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 p-4 flex items-center">
-                              <div className="bg-white dark:bg-zinc-900 rounded-full p-2 mr-3 border border-green-300 dark:border-green-500/30">
-                                <LineChart className="h-5 w-5 text-green-500 dark:text-green-400" />
-                              </div>
-                              <div className="flex-1">
-                                <div className="flex justify-between mb-1">
-                                  <span className="text-xs font-medium text-gray-500 dark:text-zinc-400">Avg. Engagement</span>
-                                  <span className="flex items-center text-xs font-medium text-green-500 dark:text-green-400">
-                                    <Users className="h-3 w-3 mr-1" />
-                                    Per Post
-                                  </span>
-                                </div>
-                                <div className="text-xl font-bold text-gray-900 dark:text-white">
-                                  {instagramData.analytics.averageEngagement.toLocaleString()}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Right Column: Content & Performance Details */}
-                <div className="col-span-1 lg:col-span-2 space-y-6 transform-gpu">
-                  {/* Latest Content */}
-                  {!instagramData?.analytics ? (
-                    <div className="p-10 bg-white dark:bg-zinc-900 rounded-2xl border border-gray-200 dark:border-zinc-800 shadow-lg">
-                      <div className="flex flex-col items-center justify-center text-center space-y-4">
-                        <div className="w-20 h-20 bg-gray-100 dark:bg-zinc-800 rounded-full flex items-center justify-center border border-gray-200 dark:border-zinc-700">
-                          <Instagram className="h-10 w-10 text-gray-400 dark:text-zinc-500" />
-                        </div>
-                        <h3 className="text-xl font-semibold text-gray-900 dark:text-white">No Analytics Available</h3>
-                        <p className="text-gray-500 dark:text-zinc-400 max-w-md">
-                          Connect your Instagram account to view your analytics and performance data.
-                        </p>
-                        <button
-                          onClick={handleReconnectInstagram}
-                          disabled={isConnecting}
-                          className="mt-4 px-6 py-3 rounded-xl bg-gradient-to-r from-violet-500 to-fuchsia-500 dark:from-violet-600 dark:to-fuchsia-600 text-white hover:from-violet-600 hover:to-fuchsia-600 dark:hover:from-violet-700 dark:hover:to-fuchsia-700 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
-                        >
-                          {isConnecting ? (
-                            <Loader className="inline-block mr-2 h-4 w-4 animate-spin" />
-                          ) : (
-                            <Instagram className="inline-block mr-2 h-4 w-4" />
-                          )}
-                          {isConnecting ? "Connecting..." : "Connect Instagram"}
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <>
-                      {/* Account Details Card */}
-                      <div className="relative overflow-hidden bg-white dark:bg-zinc-900 rounded-2xl border border-gray-200 dark:border-zinc-800 shadow-lg">
-                        <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-gray-300 to-gray-400 dark:from-zinc-600 dark:to-zinc-700"></div>
-                        <div className="p-6">
-                          <div className="mb-4 flex items-center justify-between">
-                            <h3 className="text-xl font-bold flex items-center text-gray-900 dark:text-white">
-                              <Clipboard className="h-5 w-5 text-gray-500 dark:text-zinc-400 mr-2" />
-                              <span>Account Details</span>
-                            </h3>
-
-                            <div className="text-xs text-gray-500 dark:text-zinc-400 bg-gray-100 dark:bg-zinc-800 px-2 py-1 rounded-full border border-gray-200 dark:border-zinc-700">
-                              {instagramData.analytics.lastUpdated &&
-                                `Updated ${new Date(instagramData.analytics.lastUpdated).toLocaleDateString()}`
-                              }
-                            </div>
-                          </div>
-
-                          <InstagramDebugInfo
-                            instagramData={instagramData || null}
-                          />
-                        </div>
-                      </div>
-                    </>
-                  )}
                 </div>
               </div>
             </div>
@@ -971,7 +718,7 @@ const ProfilePage = () => {
                       <Clipboard className="h-6 w-6 text-fuchsia-500 dark:text-fuchsia-400" />
                       <CardTitle className="text-xl font-semibold text-gray-900 dark:text-white">Onboarding Status</CardTitle>
                     </div>
-                     {onboardingData?.influencer?.onboardingCompleted ? (
+                     {profileData?.onboardingCompleted ? (
                         <div className="bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-300 px-4 py-1 rounded-full text-sm font-medium flex items-center shadow-sm border border-green-200 dark:border-green-700/50">
                           <Check className="h-4 w-4 mr-1.5" />
                           Completed
@@ -993,9 +740,9 @@ const ProfilePage = () => {
                     <div>
                       <h3 className="font-medium text-gray-900 dark:text-white">Current Progress</h3>
                       <p className="text-sm text-gray-500 dark:text-zinc-400">
-                        {onboardingData?.influencer?.onboardingCompleted
+                        {profileData?.onboardingCompleted
                           ? 'All onboarding steps completed successfully.'
-                          : `Currently on step ${(onboardingData?.influencer?.onboardingStep ?? 0) + 1} of 4`}
+                          : `Currently on step ${(profileData?.onboardingStep ?? 0) + 1} of 4`}
                       </p>
                     </div>
                     {/* Progress indicator could go here if needed */}
@@ -1010,7 +757,7 @@ const ProfilePage = () => {
                       <div className="space-y-2">
                         <label className="text-sm font-medium text-gray-500 dark:text-zinc-400 block">Bio Summary</label>
                         <p className="text-sm p-3 bg-gray-50 dark:bg-zinc-900 rounded-md border border-gray-200 dark:border-zinc-800 min-h-[5rem] text-gray-900 dark:text-white">
-                          {onboardingData?.influencer?.bio || <span className="italic text-gray-400 dark:text-zinc-500">No bio provided</span>}
+                          {profileData?.bio || <span className="italic text-gray-400 dark:text-zinc-500">No bio provided</span>}
                         </p>
                       </div>
 
@@ -1019,7 +766,7 @@ const ProfilePage = () => {
                         <label className="text-sm font-medium text-gray-500 dark:text-zinc-400 block">Location</label>
                         <div className="flex items-center space-x-2 p-3 bg-gray-50 dark:bg-zinc-900 rounded-md border border-gray-200 dark:border-zinc-800">
                           <MapPin className="h-4 w-4 text-gray-400 dark:text-zinc-500 shrink-0" />
-                          <span className="text-sm text-gray-900 dark:text-white">{onboardingData?.influencer?.city || <span className="italic text-gray-400 dark:text-zinc-500">No city provided</span>}</span>
+                          <span className="text-sm text-gray-900 dark:text-white">{profileData?.city || <span className="italic text-gray-400 dark:text-zinc-500">No city provided</span>}</span>
                         </div>
                       </div>
                     </div>
@@ -1084,21 +831,21 @@ const ProfilePage = () => {
                       <div className="flex items-center justify-between">
                         <h3 className="font-semibold text-lg text-gray-900 dark:text-white">Fixed Pricing</h3>
                         <div className={`px-3 py-1 rounded-full text-xs font-medium ${
-                          onboardingData?.influencer?.pricingModels?.fixedPricing?.enabled
+                          profileData?.pricingModels?.fixedPricing?.enabled
                             ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-300 border border-green-200 dark:border-green-700/50'
                             : 'bg-gray-100 dark:bg-zinc-800 text-gray-500 dark:text-zinc-400 border border-gray-200 dark:border-zinc-700'
                         }`}>
-                          {onboardingData?.influencer?.pricingModels?.fixedPricing?.enabled ? 'Enabled' : 'Disabled'}
+                          {profileData?.pricingModels?.fixedPricing?.enabled ? 'Enabled' : 'Disabled'}
                         </div>
                       </div>
 
-                      {onboardingData?.influencer?.pricingModels?.fixedPricing?.enabled ? (
+                      {profileData?.pricingModels?.fixedPricing?.enabled ? (
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
                           {[
-                            { label: 'Story', price: onboardingData?.influencer?.pricingModels?.fixedPricing?.storyPrice },
-                            { label: 'Reel', price: onboardingData?.influencer?.pricingModels?.fixedPricing?.reelPrice },
-                            { label: 'Post', price: onboardingData?.influencer?.pricingModels?.fixedPricing?.postPrice },
-                            { label: 'Live', price: onboardingData?.influencer?.pricingModels?.fixedPricing?.livePrice }
+                            { label: 'Story', price: profileData?.pricingModels?.fixedPricing?.storyPrice },
+                            { label: 'Reel', price: profileData?.pricingModels?.fixedPricing?.reelPrice },
+                            { label: 'Post', price: profileData?.pricingModels?.fixedPricing?.postPrice },
+                            { label: 'Live', price: profileData?.pricingModels?.fixedPricing?.livePrice }
                           ].map((item, index) => item.price !== null && item.price !== undefined ? (
                             <div key={index} className="bg-white dark:bg-black p-3 rounded-md border border-gray-200 dark:border-zinc-800 text-center shadow-sm">
                               <div className="text-xs text-gray-500 dark:text-zinc-400 uppercase tracking-wider">{item.label}</div>
@@ -1116,11 +863,11 @@ const ProfilePage = () => {
                         <div className="flex items-center justify-between p-4 border border-gray-200 dark:border-zinc-800 rounded-lg bg-gray-50 dark:bg-zinc-900">
                           <h3 className="font-semibold text-gray-900 dark:text-white">Negotiable Pricing</h3>
                           <div className={`px-3 py-1 rounded-full text-xs font-medium ${
-                            onboardingData?.influencer?.pricingModels?.negotiablePricing
+                            profileData?.pricingModels?.negotiablePricing
                               ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-300 border border-green-200 dark:border-green-700/50'
                               : 'bg-gray-100 dark:bg-zinc-800 text-gray-500 dark:text-zinc-400 border border-gray-200 dark:border-zinc-700'
                           }`}>
-                            {onboardingData?.influencer?.pricingModels?.negotiablePricing ? 'Enabled' : 'Disabled'}
+                            {profileData?.pricingModels?.negotiablePricing ? 'Enabled' : 'Disabled'}
                           </div>
                         </div>
 
@@ -1128,11 +875,11 @@ const ProfilePage = () => {
                          <div className="flex items-center justify-between p-4 border border-gray-200 dark:border-zinc-800 rounded-lg bg-gray-50 dark:bg-zinc-900">
                           <h3 className="font-semibold text-gray-900 dark:text-white">Barter Deals</h3>
                            <div className={`px-3 py-1 rounded-full text-xs font-medium ${
-                              onboardingData?.influencer?.pricingModels?.barterDeals?.enabled
+                              profileData?.pricingModels?.barterDeals?.enabled
                                 ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-300 border border-green-200 dark:border-green-700/50'
                                 : 'bg-gray-100 dark:bg-zinc-800 text-gray-500 dark:text-zinc-400 border border-gray-200 dark:border-zinc-700'
                             }`}>
-                              {onboardingData?.influencer?.pricingModels?.barterDeals?.enabled ? 'Enabled' : 'Disabled'}
+                              {profileData?.pricingModels?.barterDeals?.enabled ? 'Enabled' : 'Disabled'}
                             </div>
                         </div>
                     </div>
@@ -1142,18 +889,18 @@ const ProfilePage = () => {
                       <div className="flex items-center justify-between">
                         <h3 className="font-semibold text-lg text-gray-900 dark:text-white">Package Deals</h3>
                         <div className={`px-3 py-1 rounded-full text-xs font-medium ${
-                          onboardingData?.influencer?.pricingModels?.packageDeals?.enabled
+                          profileData?.pricingModels?.packageDeals?.enabled
                              ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-300 border border-green-200 dark:border-green-700/50'
                              : 'bg-gray-100 dark:bg-zinc-800 text-gray-500 dark:text-zinc-400 border border-gray-200 dark:border-zinc-700'
                         }`}>
-                          {onboardingData?.influencer?.pricingModels?.packageDeals?.enabled ? 'Enabled' : 'Disabled'}
+                          {profileData?.pricingModels?.packageDeals?.enabled ? 'Enabled' : 'Disabled'}
                         </div>
                       </div>
 
-                      {onboardingData?.influencer?.pricingModels?.packageDeals?.enabled &&
-                        onboardingData?.influencer?.pricingModels?.packageDeals?.packages.length > 0 ? (
+                      {profileData?.pricingModels?.packageDeals?.enabled &&
+                        profileData?.pricingModels?.packageDeals?.packages?.length > 0 ? (
                         <div className="space-y-4 pt-2">
-                          {onboardingData?.influencer?.pricingModels?.packageDeals?.packages.map((pkg, index) => (
+                          {profileData?.pricingModels?.packageDeals?.packages.map((pkg: any, index: number) => (
                             <div key={index} className="bg-white dark:bg-black p-4 rounded-md border border-gray-200 dark:border-zinc-800 shadow-sm">
                               <div className="flex justify-between items-start">
                                  <div>
@@ -1165,7 +912,7 @@ const ProfilePage = () => {
                             </div>
                           ))}
                         </div>
-                      ) : onboardingData?.influencer?.pricingModels?.packageDeals?.enabled ? (
+                      ) : profileData?.pricingModels?.packageDeals?.enabled ? (
                          <p className="text-sm text-gray-500 dark:text-zinc-500 italic">No package deals have been created yet.</p>
                       ): (
                          <p className="text-sm text-gray-500 dark:text-zinc-500 italic">Package deals are currently disabled.</p>
@@ -1173,15 +920,15 @@ const ProfilePage = () => {
                     </div>
 
                     {/* Barter Deals Details */}
-                    {onboardingData?.influencer?.pricingModels?.barterDeals?.enabled && (
+                    {profileData?.pricingModels?.barterDeals?.enabled && (
                        <div className="space-y-4 p-4 border border-gray-200 dark:border-zinc-800 rounded-lg bg-gray-50 dark:bg-zinc-900">
                           <h3 className="font-semibold text-lg text-gray-900 dark:text-white">Barter Deal Preferences</h3>
 
-                            {onboardingData?.influencer?.pricingModels?.barterDeals?.acceptedCategories.length > 0 ? (
+                            {profileData?.pricingModels?.barterDeals?.acceptedCategories?.length > 0 ? (
                               <div>
                                 <label className="text-sm font-medium text-gray-500 dark:text-zinc-400 block mb-2">Accepted Categories</label>
                                 <div className="flex flex-wrap gap-2">
-                                  {onboardingData?.influencer?.pricingModels?.barterDeals?.acceptedCategories.map((category, index) => (
+                                  {profileData?.pricingModels?.barterDeals?.acceptedCategories.map((category: string, index: number) => (
                                     <div key={index} className="bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-300 px-3 py-1 rounded-full text-sm font-medium border border-violet-200 dark:border-violet-700/50">
                                       {category}
                                     </div>
@@ -1192,10 +939,10 @@ const ProfilePage = () => {
                                <p className="text-sm text-gray-500 dark:text-zinc-500 italic">No specific categories accepted for barter deals.</p>
                             )}
 
-                            {onboardingData?.influencer?.pricingModels?.barterDeals?.restrictions && (
+                            {profileData?.pricingModels?.barterDeals?.restrictions && (
                               <div className="mt-4">
                                 <label className="text-sm font-medium text-gray-500 dark:text-zinc-400 block mb-1">Restrictions / Notes</label>
-                                <p className="text-sm p-3 bg-white dark:bg-black rounded-md border border-gray-200 dark:border-zinc-800 text-gray-900 dark:text-white">{onboardingData?.influencer?.pricingModels?.barterDeals?.restrictions}</p>
+                                <p className="text-sm p-3 bg-white dark:bg-black rounded-md border border-gray-200 dark:border-zinc-800 text-gray-900 dark:text-white">{profileData?.pricingModels?.barterDeals?.restrictions}</p>
                               </div>
                             )}
                        </div>
@@ -1219,18 +966,18 @@ const ProfilePage = () => {
 
                 <CardContent className="p-6">
                    <div className="space-y-6">
-                     {(onboardingData?.influencer?.brandPreferences?.preferredBrandTypes?.length ?? 0) === 0 &&
-                      (onboardingData?.influencer?.brandPreferences?.exclusions?.length ?? 0) === 0 &&
-                      (onboardingData?.influencer?.brandPreferences?.collabStyles?.length ?? 0) === 0 ? (
+                     {(profileData?.brandPreferences?.preferredBrandTypes?.length ?? 0) === 0 &&
+                      (profileData?.brandPreferences?.exclusions?.length ?? 0) === 0 &&
+                      (profileData?.brandPreferences?.collabStyles?.length ?? 0) === 0 ? (
                          <p className="text-sm text-gray-500 dark:text-zinc-500 italic text-center py-4">No brand preferences specified during onboarding.</p>
                      ) : (
                        <>
                          {/* Preferred Brand Types */}
-                         {(onboardingData?.influencer?.brandPreferences?.preferredBrandTypes?.length ?? 0) > 0 && (
+                         {(profileData?.brandPreferences?.preferredBrandTypes?.length ?? 0) > 0 && (
                            <div>
                              <h3 className="font-semibold mb-3 text-gray-900 dark:text-white">Preferred Brand Types</h3>
                              <div className="flex flex-wrap gap-2">
-                               {onboardingData?.influencer?.brandPreferences?.preferredBrandTypes?.map((type, index) => (
+                               {profileData?.brandPreferences?.preferredBrandTypes?.map((type: string, index: number) => (
                                  <div key={index} className="bg-fuchsia-100 dark:bg-fuchsia-900/30 text-fuchsia-600 dark:text-fuchsia-300 px-3 py-1 rounded-full text-sm font-medium border border-fuchsia-200 dark:border-fuchsia-700/50">
                                    {type}
                                  </div>
@@ -1240,11 +987,11 @@ const ProfilePage = () => {
                          )}
 
                          {/* Exclusions */}
-                         {(onboardingData?.influencer?.brandPreferences?.exclusions?.length ?? 0) > 0 && (
+                         {(profileData?.brandPreferences?.exclusions?.length ?? 0) > 0 && (
                            <div>
                              <h3 className="font-semibold mb-3 text-gray-900 dark:text-white">Brand Exclusions</h3>
                              <div className="flex flex-wrap gap-2">
-                               {onboardingData?.influencer?.brandPreferences?.exclusions?.map((exclusion, index) => (
+                               {profileData?.brandPreferences?.exclusions?.map((exclusion: string, index: number) => (
                                  <div key={index} className="bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-300 px-3 py-1 rounded-full text-sm font-medium border border-red-200 dark:border-red-700/50">
                                    {exclusion}
                                  </div>
@@ -1254,11 +1001,11 @@ const ProfilePage = () => {
                          )}
 
                          {/* Collaboration Styles */}
-                         {(onboardingData?.influencer?.brandPreferences?.collabStyles?.length ?? 0) > 0 && (
+                         {(profileData?.brandPreferences?.collabStyles?.length ?? 0) > 0 && (
                            <div>
                              <h3 className="font-semibold mb-3 text-gray-900 dark:text-white">Preferred Collaboration Styles</h3>
                              <div className="flex flex-wrap gap-2">
-                               {onboardingData?.influencer?.brandPreferences?.collabStyles?.map((style, index) => (
+                               {profileData?.brandPreferences?.collabStyles?.map((style: string, index: number) => (
                                  <div key={index} className="bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-300 px-3 py-1 rounded-full text-sm font-medium border border-violet-200 dark:border-violet-700/50">
                                    {style}
                                  </div>

@@ -14,6 +14,9 @@ interface ProfileData {
   city?: string;
   gender?: string;
   age?: number;
+  instagramUsername?: string; // Added
+  followerCount?: number;     // Added
+  profilePictureUrl?: string; // Added for DB profile picture
 }
 
 interface OnboardingData {
@@ -51,6 +54,8 @@ interface OnboardingData {
       collabStyles: string[];
     };
     availability?: string[];
+    instagramUsername?: string; // Added for onboarding
+    followerCount?: number;     // Added for onboarding
   };
 }
 
@@ -130,4 +135,4 @@ export function useOnboardingData() {
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
   });
-} 
+}

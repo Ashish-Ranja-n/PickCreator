@@ -160,7 +160,8 @@ export async function PUT(request: NextRequest) {
       updateData.age = body.age;
       console.log('Onboarding PUT - Setting age:', body.age);
     }
-    if ('gender' in body) {
+    // Only update gender if it is present and not an empty string
+    if ('gender' in body && body.gender !== undefined && body.gender !== '') {
       updateData.gender = body.gender;
       console.log('Onboarding PUT - Setting gender:', body.gender);
     }
@@ -291,4 +292,4 @@ export async function PUT(request: NextRequest) {
     console.error('Error updating influencer onboarding data:', error);
     return NextResponse.json({ error: 'Server error' }, { status: 500 });
   }
-} 
+}

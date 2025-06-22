@@ -80,8 +80,9 @@ export default function PersonalInfoPage() {
   };
 
   return (
-    <div className="max-w-xl mx-auto">
-      <h2 className="text-2xl font-bold mb-4">Personal Information</h2>
+    <>
+      <h2 className="text-3xl font-bold mb-4 text-primary">Personal Information</h2>
+      <p className="mb-6 text-muted-foreground text-base">Please provide your personal details. This information will remain private and secure.</p>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <FormField
@@ -114,17 +115,51 @@ export default function PersonalInfoPage() {
               <FormItem>
                 <FormLabel>Gender</FormLabel>
                 <FormControl>
-                  <div className="relative">
-                    <select
-                      className="w-full rounded-lg border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/30 px-4 py-3 text-base transition bg-white dark:bg-zinc-900"
-                      {...field}
-                    >
-                      <option value="male">Male</option>
-                      <option value="female">Female</option>
-                      <option value="other">Other</option>
-                    </select>
+                  <div className="flex gap-6 mt-2">
+                    <label className={
+                      `flex flex-col items-center cursor-pointer rounded-lg border-2 px-4 py-3 transition-all duration-150
+                      ${field.value === 'male' ? 'border-primary bg-primary/10 shadow-md' : 'border-gray-300 bg-white dark:bg-zinc-900'}`
+                    }>
+                      <input
+                        type="radio"
+                        value="male"
+                        checked={field.value === 'male'}
+                        onChange={() => field.onChange('male')}
+                        className="hidden"
+                      />
+                      <span className="text-lg font-medium">👨 Male</span>
+                    </label>
+                    <label className={
+                      `flex flex-col items-center cursor-pointer rounded-lg border-2 px-4 py-3 transition-all duration-150
+                      ${field.value === 'female' ? 'border-primary bg-primary/10 shadow-md' : 'border-gray-300 bg-white dark:bg-zinc-900'}`
+                    }>
+                      <input
+                        type="radio"
+                        value="female"
+                        checked={field.value === 'female'}
+                        onChange={() => field.onChange('female')}
+                        className="hidden"
+                      />
+                      <span className="text-lg font-medium">👩 Female</span>
+                    </label>
+                    <label className={
+                      `flex flex-col items-center cursor-pointer rounded-lg border-2 px-4 py-3 transition-all duration-150
+                      ${field.value === 'other' ? 'border-primary bg-primary/10 shadow-md' : 'border-gray-300 bg-white dark:bg-zinc-900'}`
+                    }>
+                      <input
+                        type="radio"
+                        value="other"
+                        checked={field.value === 'other'}
+                        onChange={() => field.onChange('other')}
+                        className="hidden"
+                      />
+                      <span className="text-lg font-medium">🌈 Other</span>
+                    </label>
                   </div>
                 </FormControl>
+                <FormDescription>
+                  Select your gender. This helps us personalize your experience.
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -183,6 +218,6 @@ export default function PersonalInfoPage() {
           <AlertDescription>All fields are required and must be valid.</AlertDescription>
         </Alert>
       )}
-    </div>
+    </>
   );
 }

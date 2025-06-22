@@ -100,7 +100,9 @@ export async function GET(request: NextRequest) {
       mobile: (influencer as any).mobile || '',
       city: (influencer as any).city || '',
       gender: (influencer as any).gender || '',
-      age: (influencer as any).age || ''
+      age: (influencer as any).age || '',
+      instagramUsername: (influencer as any).instagramUsername || '',
+      followerCount: (influencer as any).followerCount || 0
     };
     
     console.log("Influencer profile route: Successfully retrieved profile data");
@@ -210,4 +212,4 @@ export async function PATCH(request: NextRequest) {
       message: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 });
   }
-} 
+}
