@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
     const filters: any = {
       onboardingCompleted: true,
       $or: [
-        { isConnected: true },
+        { instagramConnected: true },
         { isInstagramVerified: true }
       ]
     };
