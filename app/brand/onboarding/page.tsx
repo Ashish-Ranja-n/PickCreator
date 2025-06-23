@@ -21,7 +21,6 @@ export default function BrandOnboarding() {
     businessType: "",
     businessName: "",
     location: "",
-    mobile: "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -46,7 +45,6 @@ export default function BrandOnboarding() {
           businessType: form.businessType,
           businessName: form.businessName,
           location: form.location,
-          mobile: form.mobile,
         }),
       });
       if (!res.ok) throw new Error("Failed to save data");
@@ -189,21 +187,6 @@ export default function BrandOnboarding() {
               </PopoverContent>
             </Popover>
             <p className="mt-1 text-sm text-gray-500">Your location helps connect with local influencers</p>
-          </div>
-
-          <div>
-            <label className="block mb-2 font-medium text-gray-700">Mobile Number</label>
-            <input
-              type="tel"
-              name="mobile"
-              value={form.mobile}
-              onChange={handleChange}
-              required
-              pattern="[0-9]{10}"
-              className="w-full h-12 px-4 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-              placeholder="Enter 10-digit mobile number"
-            />
-            <p className="mt-1 text-sm text-gray-500">This number is used to verify the business</p>
           </div>
 
           {error && (

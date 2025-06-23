@@ -12,8 +12,8 @@ export async function POST(req: NextRequest) {
     if (!userData || !userData._id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    const { businessType, businessName, location, mobile } = await req.json();
-    if (!businessType || !businessName || !location || !mobile) {
+    const { businessType, businessName, location } = await req.json();
+    if (!businessType || !businessName || !location) {
       return NextResponse.json({ error: "All fields are required." }, { status: 400 });
     }
 
@@ -24,7 +24,6 @@ export async function POST(req: NextRequest) {
         companyName: businessName,
         businessType,
         location,
-        phoneNumber: mobile,
         onboardingCompleted: true
       },
       { new: true }
