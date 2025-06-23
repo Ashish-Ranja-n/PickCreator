@@ -3,7 +3,7 @@ import User from "@/models/user";
 import { NextResponse } from "next/server";
 import { SignJWT } from "jose";
 
-connect();
+await connect();
 
 export async function POST(req: Request) {
   try {
@@ -12,7 +12,7 @@ export async function POST(req: Request) {
     const identifier = email || phone;
     let query = {};
     if (email) query = { email };
-    if (phone) query = { phone };
+    if (phone) query = { phoneNumber: phone };
     if (!identifier) {
       return NextResponse.json({ error: "Email or phone required" }, { status: 400 });
     }
@@ -27,7 +27,7 @@ export async function POST(req: Request) {
       };
     } else {
       // New user: create in DB without role, assign role 'needed' only in token
-      const newUser = await User.create({ email: email || undefined, phone: phone || undefined });
+      const newUser = await User.create({ email: email || undefined, phoneNumber: phone || undefined, role: "needed" });
       tokenData = {
         id: newUser._id,
         _id: newUser._id,

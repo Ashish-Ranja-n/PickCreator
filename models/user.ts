@@ -20,7 +20,7 @@ const UserSchema = new Schema<IUser>(
     name: { type: String },
     email: { type: String, unique: true },
     password: { type: String },
-    role: { type: String, enum: ["Brand", "Influencer", "Admin"] },
+    role: { type: String, enum: ["Brand", "Influencer", "Admin", "needed"] },
     avatar: { type: String },
     isVerified: { type: Boolean, default: false },
     forgotPasswordToken: String,

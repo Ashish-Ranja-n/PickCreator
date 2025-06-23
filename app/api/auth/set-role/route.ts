@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connect } from "@/lib/mongoose";
 import User from "@/models/user";
-import { SignJWT } from "jose";
 
 export async function POST(req: NextRequest) {
   try {
@@ -28,24 +27,8 @@ export async function POST(req: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
-    // Generate new token with updated role
-    const tokenData = {
-      id: user._id,
-      _id: user._id,
-      email: user.email,
-      role: user.role,
-    };
-    const token = await new SignJWT(tokenData)
-      .setProtectedHeader({ alg: "HS256" })
-      .setExpirationTime("7d")
-      .sign(new TextEncoder().encode(process.env.JWT_SECRET!));
-    const response = NextResponse.json({ success: true, role: user.role });
-    response.cookies.set("token", token, {
-      httpOnly: true,
-      secure: true,
-      maxAge: 7 * 24 * 60 * 60, // 7 days
-    });
-    return response;
+    // Only update the role, do not set cookie or generate token here
+    return NextResponse.json({ success: true, role: user.role });
   } catch (err) {
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }

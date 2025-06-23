@@ -15,9 +15,12 @@ export default function PickRolePage() {
         credentials: "include",
       });
       if (!res.ok) throw new Error("Failed to set role");
-      const data = await res.json();
-      // Optionally, update localStorage for client-side use
-      localStorage.setItem("userRole", role);
+      // Refresh the token after role update
+      const refreshRes = await fetch("/api/auth/refresh-token", {
+        method: "GET",
+        credentials: "include",
+      });
+      if (!refreshRes.ok) throw new Error("Failed to refresh token");
       // Redirect to onboarding or dashboard as per role
       if (role === "Brand") {
         router.push("/brand/onboarding");
