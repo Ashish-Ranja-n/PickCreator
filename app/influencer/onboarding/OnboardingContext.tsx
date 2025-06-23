@@ -45,7 +45,6 @@ interface OnboardingState {
   // Personal info
   age: number | null;
   gender: 'male' | 'female' | 'other' | '';
-  mobile: string;
 
   // Basic info
   bio: string;
@@ -83,7 +82,6 @@ const OnboardingContext = createContext<OnboardingContextType | undefined>(undef
 const defaultOnboardingState: OnboardingState = {
   age: null,
   gender: '',
-  mobile: '',
   bio: '',
   city: '',
 
@@ -140,7 +138,6 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
           const transformedData: OnboardingState = {
             age: influencer.age || null,
             gender: influencer.gender || '',
-            mobile: influencer.mobile || '',
             bio: influencer.bio || '',
             city: influencer.city || '',
 
@@ -225,7 +222,6 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
       const dataToSave = {
         age: formData?.age !== undefined ? formData.age : onboardingData.age,
         gender: formData?.gender !== undefined ? formData.gender : onboardingData.gender,
-        mobile: formData?.mobile !== undefined ? formData.mobile : onboardingData.mobile,
         bio: formData?.bio !== undefined ? formData.bio : onboardingData.bio,
         city: formData?.city !== undefined ? formData.city : onboardingData.city,
         fixedPricing: formData?.fixedPricing || onboardingData.fixedPricing,
@@ -282,7 +278,6 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
       const dataToSave = {
         age: formData?.age !== undefined ? formData.age : onboardingData.age,
         gender: formData?.gender !== undefined ? formData.gender : onboardingData.gender,
-        mobile: formData?.mobile !== undefined ? formData.mobile : onboardingData.mobile,
         bio: formData?.bio !== undefined ? formData.bio : onboardingData.bio,
         city: formData?.city !== undefined ? formData.city : onboardingData.city,
         fixedPricing: formData?.fixedPricing || onboardingData.fixedPricing,

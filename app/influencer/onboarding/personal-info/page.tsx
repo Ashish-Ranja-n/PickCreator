@@ -28,10 +28,6 @@ const formSchema = z.object({
   gender: z.enum(["male", "female", "other"], {
     required_error: "Gender is required",
   }),
-  mobile: z
-    .string()
-    .min(10, "Mobile number must be at least 10 digits")
-    .max(15, "Mobile number is too long"),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -47,7 +43,6 @@ export default function PersonalInfoPage() {
     defaultValues: {
       age: typeof onboardingData.age === 'number' ? onboardingData.age : 18,
       gender: (onboardingData.gender === 'male' || onboardingData.gender === 'female' || onboardingData.gender === 'other') ? onboardingData.gender : 'male',
-      mobile: onboardingData.mobile || '',
     },
   });
 
@@ -159,30 +154,6 @@ export default function PersonalInfoPage() {
                 </FormControl>
                 <FormDescription>
                   Select your gender. This helps us personalize your experience.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="mobile"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Mobile Number</FormLabel>
-                <FormControl>
-                  <div className="relative">
-                    <input
-                      type="tel"
-                      className="w-full rounded-lg border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/30 px-4 py-3 text-base transition placeholder:text-gray-400 bg-white dark:bg-zinc-900"
-                      placeholder="Enter your mobile number"
-                      maxLength={15}
-                      {...field}
-                    />
-                  </div>
-                </FormControl>
-                <FormDescription>
-                  The money will be transferred to this number and we will contact you before sending the money once the deal is completed. Your number will remain private and will not be visible to anyone else.
                 </FormDescription>
                 <FormMessage />
               </FormItem>

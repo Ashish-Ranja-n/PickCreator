@@ -212,9 +212,9 @@ export default function WelcomeAuthPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#ffb6c1] via-[#ff7eb3] to-[#ff65a3]">
+    <div className="min-h-screen flex flex-col bg-white">
       {/* Top artwork */}
-      <div className="h-64 w-full flex items-end justify-center bg-gradient-to-b from-[#ffb6c1] to-[#ff65a3] rounded-b-3xl relative overflow-hidden">
+      <div className="h-64 w-full flex items-end justify-center bg-[#ffe4ef] rounded-b-3xl relative overflow-hidden">
         <div className="relative w-full h-64 flex items-center justify-center overflow-hidden">
           <Image
             src={images[currentImage].src}
@@ -228,10 +228,10 @@ export default function WelcomeAuthPage() {
 
       {/* Main content */}
       <div className="flex-1 flex flex-col items-center px-6 pt-8">
-        <h1 className="text-3xl font-extrabold text-white text-center mb-2 drop-shadow-xl">
+        <h1 className="text-3xl font-extrabold text-[#e94e8a] text-center mb-2 drop-shadow-sm">
           Welcome to PickCreator
         </h1>
-        <p className="text-lg text-[#ffe3f0] text-center mb-6 font-semibold drop-shadow">
+        <p className="text-base text-[#7d6c6c] text-center mb-6 font-medium">
           Create your journey. Connect.<br />Collaborate. Grow.
         </p>
 
@@ -242,20 +242,20 @@ export default function WelcomeAuthPage() {
               autoComplete="on"
               inputMode="email"
               placeholder="Email or mobile number"
-              className="w-full rounded-xl bg-[#fff0f6] px-4 py-3 text-[#ff2d55] placeholder-[#ff7eb3] focus:outline-none focus:ring-2 focus:ring-[#fff] text-base shadow-md font-semibold"
+              className="w-full rounded-xl bg-white border-2 border-[#e94e8a] px-4 py-3 text-[#e94e8a] placeholder-[#e94e8a]/60 focus:outline-none focus:ring-2 focus:ring-[#e94e8a] text-base shadow font-semibold transition"
               value={input}
               onChange={e => setInput(e.target.value)}
               required
             />
             <button
               type="submit"
-              className="w-full rounded-full bg-gradient-to-r from-[#ff2d55] to-[#ff65a3] text-white font-bold py-3 text-lg shadow-lg hover:from-[#ff65a3] hover:to-[#ff2d55] transition flex items-center justify-center"
+              className="w-full rounded-full bg-[#e94e8a] text-white font-bold py-3 text-lg shadow-md hover:bg-[#c2185b] transition flex items-center justify-center"
               disabled={(!isEmail && !isPhone) || loading}
             >
               {loading ? <span className="loader mr-2"></span> : null}Continue
             </button>
             {firebaseError && (
-              <div className="text-[#fff] bg-[#ff2d55]/80 rounded px-2 py-1 text-xs text-center mb-2 font-bold drop-shadow">{firebaseError}</div>
+              <div className="text-[#e94e8a] bg-[#ffe4ef] rounded px-2 py-1 text-xs text-center mb-2 font-bold drop-shadow">{firebaseError}</div>
             )}
           </form>
         )}
@@ -268,14 +268,14 @@ export default function WelcomeAuthPage() {
               pattern="\d{6}"
               maxLength={6}
               placeholder="Enter OTP"
-              className="w-full rounded-xl bg-[#fff0f6] px-4 py-3 text-[#ff2d55] placeholder-[#ff7eb3] focus:outline-none focus:ring-2 focus:ring-[#fff] text-base shadow-md tracking-widest text-center font-semibold"
+              className="w-full rounded-xl bg-white border-2 border-[#e94e8a] px-4 py-3 text-[#e94e8a] placeholder-[#e94e8a]/60 focus:outline-none focus:ring-2 focus:ring-[#e94e8a] text-base shadow tracking-widest text-center font-semibold transition"
               value={otp}
               onChange={e => setOtp(e.target.value.replace(/\D/g, ""))}
               required
             />
             <button
               type="submit"
-              className="w-full rounded-full bg-gradient-to-r from-[#ff2d55] to-[#ff65a3] text-white font-bold py-3 text-lg shadow-lg hover:from-[#ff65a3] hover:to-[#ff2d55] transition flex items-center justify-center"
+              className="w-full rounded-full bg-[#e94e8a] text-white font-bold py-3 text-lg shadow-md hover:bg-[#c2185b] transition flex items-center justify-center"
               disabled={otp.length !== 6 || otpLoading}
             >
               {otpLoading ? <span className="loader mr-2"></span> : null}Verify OTP
@@ -283,7 +283,7 @@ export default function WelcomeAuthPage() {
             <div className="flex flex-row justify-between items-center mt-2">
               <button
                 type="button"
-                className="text-xs text-[#fff] font-bold disabled:opacity-50 hover:text-[#ffe3f0]"
+                className="text-xs text-[#e94e8a] font-bold disabled:opacity-50 hover:text-[#b71c50]"
                 onClick={handleResendOtp}
                 disabled={!canResend || loading}
               >
@@ -291,29 +291,29 @@ export default function WelcomeAuthPage() {
               </button>
               <button
                 type="button"
-                className="text-xs text-[#ffe3f0] underline font-bold hover:text-white"
+                className="text-xs text-[#7d6c6c] underline font-bold hover:text-[#e94e8a]"
                 onClick={() => { setStep(1); setOtp(""); setFirebaseError(""); setResendTimer(30); setCanResend(false); }}
               >
                 Change
               </button>
             </div>
             {firebaseError && (
-              <div className="text-[#fff] bg-[#ff2d55]/80 rounded px-2 py-1 text-xs text-center mb-2 font-bold drop-shadow">{firebaseError}</div>
+              <div className="text-[#e94e8a] bg-[#ffe4ef] rounded px-2 py-1 text-xs text-center mb-2 font-bold drop-shadow">{firebaseError}</div>
             )}
           </form>
         )}
 
         {/* Step indicator */}
         <div className="flex items-center justify-center gap-2 mt-8 mb-4">
-          <span className={`h-2 w-2 rounded-full ${step === 1 ? "bg-[#fff]" : "bg-[#ffb6c1]"}`}></span>
-          <span className={`h-2 w-2 rounded-full ${step === 2 ? "bg-[#fff]" : "bg-[#ffb6c1]"}`}></span>
+          <span className={`h-2 w-2 rounded-full ${step === 1 ? "bg-[#e94e8a]" : "bg-[#ffe4ef]"}`}></span>
+          <span className={`h-2 w-2 rounded-full ${step === 2 ? "bg-[#e94e8a]" : "bg-[#ffe4ef]"}`}></span>
         </div>
 
         {/* Privacy Policy and Terms - inline, no underline, bold, faded color */}
-        <div className="mt-auto pb-6 flex flex-row items-center justify-center gap-4 text-xs font-bold text-[#ffe3f0] drop-shadow">
-          <a href="/legal/privacy-policy" className="hover:text-[#fff] transition-colors">Privacy Policy</a>
+        <div className="mt-auto pb-6 flex flex-row items-center justify-center gap-4 text-xs font-bold text-[#b7aeb0]">
+          <a href="/legal/privacy-policy" className="hover:text-[#e94e8a] transition-colors">Privacy Policy</a>
           <span className="opacity-60">|</span>
-          <a href="/legal/terms-of-service" className="hover:text-[#fff] transition-colors">Terms & Services</a>
+          <a href="/legal/terms-of-service" className="hover:text-[#e94e8a] transition-colors">Terms & Services</a>
         </div>
       </div>
 

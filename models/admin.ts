@@ -2,13 +2,13 @@ import { models, Schema } from "mongoose";
 import User from "./user";
 
 interface IAdmin {
-  permissions: string[];
+  permissions?: string[];
   bio?: string;
   instagram?: {
     username?: string;
     profilePicture?: string;
     followersCount?: number;
-    connected: boolean;
+    connected?: boolean;
   };
 }
 

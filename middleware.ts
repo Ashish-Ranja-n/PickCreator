@@ -71,6 +71,9 @@ export async function middleware(request: NextRequest) {
                 const payload = await getDataFromToken(request, token);
                 const role = payload?.role;
 
+                if(role === 'needed' && !path.startsWith('/pickRole')) {
+                    return NextResponse.redirect(`${baseUrl}/pickRole`);
+                }
                 if(role === 'Brand') {
                     return NextResponse.redirect(`${baseUrl}/brand`);
                 }

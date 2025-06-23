@@ -72,6 +72,12 @@ const ProfilePage = () => {
   const [verificationError, setVerificationError] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
   const [isResending, setIsResending] = useState(false);
+  // New state for update request
+  const [updateInstagramId, setUpdateInstagramId] = useState(profileData?.instagramUsername || '');
+  const [updateFollowerCount, setUpdateFollowerCount] = useState(profileData?.followerCount?.toString() || '');
+  const [isUpdateLoading, setIsUpdateLoading] = useState(false);
+  const [updateError, setUpdateError] = useState('');
+  const [updateSuccess, setUpdateSuccess] = useState('');
 
   // Effects
   useEffect(() => {
@@ -327,6 +333,7 @@ const ProfilePage = () => {
       if (res.data.success) {
         setVerifyModalOpen(false);
         toast({ title: 'Verified!', description: 'Your account is now verified.', variant: 'default' });
+        // Refresh profile data after successful verification
         router.refresh();
       } else {
         setVerificationError(res.data.message || 'Invalid code');
@@ -353,6 +360,30 @@ const ProfilePage = () => {
       setVerificationError(err.response?.data?.message || 'Failed to resend request');
     }
     setIsResending(false);
+  };
+
+  // Handler for sending update request
+  const handleSendUpdateRequest = async () => {
+    setIsUpdateLoading(true);
+    setUpdateError('');
+    setUpdateSuccess('');
+    if (!userId) {
+      setUpdateError('User ID not found. Please refresh and try again.');
+      setIsUpdateLoading(false);
+      return;
+    }
+    try {
+      const formData = new FormData();
+      formData.append('userId', userId);
+      formData.append('instagramId', updateInstagramId);
+      formData.append('followerCount', updateFollowerCount);
+      const res = await axios.post('/api/verify-instagram/update-request', formData);
+      setUpdateSuccess('Update request sent! Please wait for admin approval.');
+      setVerificationStatus('pending');
+    } catch (err: any) {
+      setUpdateError(err.response?.data?.message || 'Failed to send update request');
+    }
+    setIsUpdateLoading(false);
   };
 
   return (
@@ -441,7 +472,8 @@ const ProfilePage = () => {
                       <div className="grid grid-cols-1 gap-2">
                         <Button
                           variant="ghost"
-                          onClick={() => setIsEditing(true)}
+                          onClick={() => setIsEditing(true)
+                          }
                           className="flex justify-start items-center w-full text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-800 hover:text-gray-900 dark:hover:text-white"
                         >
                           <Edit className="h-5 w-5 mr-3" />
@@ -1118,6 +1150,40 @@ const ProfilePage = () => {
           <DialogHeader>
             <DialogTitle className="text-lg font-bold text-gradient bg-gradient-to-r from-violet-500 to-fuchsia-500 bg-clip-text text-transparent">Instagram Verification</DialogTitle>
           </DialogHeader>
+          {/* If user is verified, show update form */}
+          {profileData?.isInstagramVerified && userId && verificationStatus !== 'pending' && verificationStatus !== 'approved' && verificationStatus !== 'rejected' && verificationStatus !== 'none' && (
+            <div className="py-4">
+              <div className="mb-2 text-green-600 dark:text-green-400 font-medium">
+                Your account is verified and visible to all brands.
+              </div>
+              <div className="mb-2 text-gray-700 dark:text-gray-200">Update your Instagram ID or followers count:</div>
+              <input
+                type="text"
+                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-zinc-700 focus:outline-none focus:ring-2 focus:ring-fuchsia-500 text-base text-center mb-2"
+                placeholder="Instagram ID"
+                value={updateInstagramId}
+                onChange={e => setUpdateInstagramId(e.target.value)}
+                maxLength={64}
+              />
+              <input
+                type="number"
+                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-zinc-700 focus:outline-none focus:ring-2 focus:ring-fuchsia-500 text-base text-center mb-2"
+                placeholder="Followers Count"
+                value={updateFollowerCount}
+                onChange={e => setUpdateFollowerCount(e.target.value.replace(/[^0-9]/g, ''))}
+                min={0}
+              />
+              {updateError && <div className="text-red-500 text-sm mb-2">{updateError}</div>}
+              {updateSuccess && <div className="text-green-500 text-sm mb-2">{updateSuccess}</div>}
+              <Button
+                onClick={handleSendUpdateRequest}
+                className="w-full bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white font-bold mt-2"
+                disabled={isUpdateLoading || !updateInstagramId || !updateFollowerCount}
+              >
+                {isUpdateLoading ? 'Sending...' : 'Send Request'}
+              </Button>
+            </div>
+          )}
           {verificationStatus === 'pending' && (
             <div className="py-4">
               <p className="text-gray-700 dark:text-gray-200">Your verification request is <span className="font-semibold text-amber-500">pending</span>. Please wait for admin approval.</p>

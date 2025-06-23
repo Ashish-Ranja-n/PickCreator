@@ -31,6 +31,23 @@ export async function convertAndCompressImage(file) {
     }
   }
 
+  // Crop image to square (centered)
+  try {
+    const imageBitmap = await createImageBitmap(processedFile);
+    const size = Math.min(imageBitmap.width, imageBitmap.height);
+    const offsetX = (imageBitmap.width - size) / 2;
+    const offsetY = (imageBitmap.height - size) / 2;
+    const canvas = document.createElement('canvas');
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(imageBitmap, offsetX, offsetY, size, size, 0, 0, size, size);
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.95));
+    processedFile = new File([blob], processedFile.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' });
+  } catch (err) {
+    // If cropping fails, fallback to original
+  }
+
   // Compress image (JPEG/PNG/WebP)
   try {
     processedFile = await imageCompression.default(processedFile, {

@@ -87,18 +87,13 @@ export default function ReviewPage() {
       });
       return;
     }
-    
     try {
       setIsSaving(true);
-      
-      // Show a minimal loading toast
       toast({
         title: "Saving",
         description: "Finalizing your profile...",
         duration: 2000
       });
-      
-      // Compile all the data from the current state to ensure everything is saved
       const formData = {
         bio: onboardingData.bio,
         city: onboardingData.city, 
@@ -109,17 +104,9 @@ export default function ReviewPage() {
         brandPreferences: onboardingData.brandPreferences,
         currentStep: 3
       };
-      
-      // Log what we're about to save
       console.log("Completing onboarding with full data:", JSON.stringify(formData));
-      
-      // Save all form data and complete onboarding
       await saveAndCompleteOnboarding(formData);
-      
-      // Navigate immediately to dashboard
-      router.push('/influencer');
-      
-      // Show completion toast after navigation starts
+      router.push('/verify-instagram');
       toast({
         title: "Complete! 🎉",
         description: "Your profile is now live",
@@ -127,7 +114,6 @@ export default function ReviewPage() {
       });
     } catch (error) {
       console.error('Error completing onboarding:', error);
-      
       toast({
         title: "Error",
         description: "Failed to complete profile setup",
@@ -159,7 +145,7 @@ export default function ReviewPage() {
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle>Personal Information</CardTitle>
-            <CardDescription>Your age, gender, and mobile number</CardDescription>
+            <CardDescription>Your age and gender</CardDescription>
           </div>
           <Button variant="ghost" size="sm" asChild>
             <Link href="/influencer/onboarding/personal-info">
@@ -179,12 +165,6 @@ export default function ReviewPage() {
             <h4 className="font-medium text-sm">Gender</h4>
             <p className="text-sm text-muted-foreground mt-1">
               {onboardingData.gender ? onboardingData.gender.charAt(0).toUpperCase() + onboardingData.gender.slice(1) : 'Not provided'}
-            </p>
-          </div>
-          <div>
-            <h4 className="font-medium text-sm">Mobile Number</h4>
-            <p className="text-sm text-muted-foreground mt-1">
-              {onboardingData.mobile || 'Not provided'}
             </p>
           </div>
         </CardContent>
@@ -429,4 +409,4 @@ export default function ReviewPage() {
       </div>
     </div>
   );
-} 
+}

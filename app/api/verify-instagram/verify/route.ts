@@ -19,10 +19,16 @@ export async function POST(request: NextRequest) {
   if (reqDoc.randomCode !== code) {
     return NextResponse.json({ success: false, message: 'Invalid code.' }, { status: 400 });
   }
-  // Mark influencer as verified
+  // Mark influencer as verified and update Instagram info
+  const updateFields: any = {
+    isInstagramVerified: true,
+  };
+  if (reqDoc.username) updateFields.instagramUsername = reqDoc.username;
+  if (typeof reqDoc.followerCount === 'number') updateFields.followerCount = reqDoc.followerCount;
+  if (reqDoc.profilePicUrl) updateFields.profilePictureUrl = reqDoc.profilePicUrl;
   await Influencer.findOneAndUpdate(
     { _id: userId },
-    { $set: { isInstagramVerified: true } }
+    { $set: updateFields }
   );
   // Delete the verification request
   await InstagramVerification.deleteOne({ _id: reqDoc._id });

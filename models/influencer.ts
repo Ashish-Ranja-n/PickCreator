@@ -35,9 +35,8 @@ interface IInstagramAnalytics {
 // Main Influencer interface
 
 interface IInfluencer {
-  // No user field needed for discriminator
-  socialMediaLinks: { platform: string; url: string }[];
-  followers: number;
+  socialMediaLinks?: { platform?: string; url?: string }[];
+  followers?: number;
   profilePicture?: string;
 
   // Personal info fields
@@ -47,9 +46,9 @@ interface IInfluencer {
   // Instagram-specific fields
   instagramConnected?: boolean;
   instagramToken?: {
-    accessToken: string;
-    expiresIn: number;
-    createdAt: Date;
+    accessToken?: string;
+    expiresIn?: number;
+    createdAt?: Date;
   };
   instagramUsername?: string;
   instagramId?: string;
@@ -69,20 +68,20 @@ interface IInfluencer {
 
   // Pricing models
   pricingModels?: {
-    fixedPricing: IFixedPriceOption;
-    negotiablePricing: boolean;
-    packageDeals: {
-      enabled: boolean;
-      packages: IPackageDeal[];
+    fixedPricing?: IFixedPriceOption;
+    negotiablePricing?: boolean;
+    packageDeals?: {
+      enabled?: boolean;
+      packages?: IPackageDeal[];
     };
-    barterDeals: IBarterDeal;
+    barterDeals?: IBarterDeal;
   };
 
   // Brand preferences
   brandPreferences?: {
-    preferredBrandTypes: string[]; // Types of brands they prefer to work with
-    exclusions: string[]; // Brand types they exclude
-    collabStyles: string[]; // Styles of collaboration they prefer
+    preferredBrandTypes?: string[]; // Types of brands they prefer to work with
+    exclusions?: string[]; // Brand types they exclude
+    collabStyles?: string[]; // Styles of collaboration they prefer
   };
 
   // Availability

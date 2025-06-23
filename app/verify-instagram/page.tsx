@@ -46,7 +46,7 @@ export default function VerifyInstagram() {
       });
       if (res.ok) {
         setSuccess(true);
-        router.push('/influencer/onboarding/basic-info');
+        router.push('/influencer/profile');
       } else {
         const data = await res.json();
         setError(data.message || 'Failed to send request');

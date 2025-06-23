@@ -50,8 +50,7 @@ function OnboardingLayoutContent({ children }: { children: React.ReactNode }) {
       case 3: // Personal Info
         return (
           typeof onboardingData.age === 'number' && onboardingData.age >= 13 && onboardingData.age <= 100 &&
-          !!onboardingData.gender &&
-          typeof onboardingData.mobile === 'string' && onboardingData.mobile.length >= 10
+          !!onboardingData.gender
         );
       default:
         return false;
@@ -151,4 +150,4 @@ export default function OnboardingLayout({ children }: { children: React.ReactNo
       </OnboardingLayoutContent>
     </OnboardingProvider>
   );
-} 
+}

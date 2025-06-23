@@ -26,17 +26,23 @@ export async function POST(req: Request) {
         role: user.role,
       };
     } else {
-      // New user, assign only identifier (no role)
-      tokenData = { email: email || null, phone: phone || null };
+      // New user: create in DB without role, assign role 'needed' only in token
+      const newUser = await User.create({ email: email || undefined, phone: phone || undefined });
+      tokenData = {
+        id: newUser._id,
+        _id: newUser._id,
+        role: "needed",
+      };
+      user = newUser;
     }
     const token = await new SignJWT(tokenData)
       .setProtectedHeader({ alg: "HS256" })
       .setExpirationTime("7d")
       .sign(new TextEncoder().encode(process.env.JWT_SECRET!));
     const response = NextResponse.json({
-      message: user ? "User exists" : "New user",
+      message: user ? (user.role === "needed" ? "New user" : "User exists") : "New user",
       user,
-      isNew: !user,
+      isNew: !user || user.role === "needed",
     });
     response.cookies.set("token", token, {
       httpOnly: true,
