@@ -12,7 +12,7 @@ export interface IInstagramVerification extends Document {
 
 const InstagramVerificationSchema = new Schema<IInstagramVerification>({
   userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  profilePicUrl: { type: String, required: true },
+  profilePicUrl: { type: String },
   username: { type: String, required: true },
   followerCount: { type: Number, required: true },
   randomCode: { type: String, required: true },

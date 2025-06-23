@@ -788,16 +788,28 @@ const ProfilePage = () => {
                       <span className="text-lg font-semibold text-gray-900 dark:text-white">Followers</span>
                       <span className="text-2xl font-bold text-fuchsia-500 dark:text-fuchsia-400">{instagramFollowerCount?.toLocaleString() || '0'}</span>
                     </div>
-                    {/* Verify Account Button - Instagram Tab */}
-                    <button
-                      className="mt-6 bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white rounded-full px-5 py-2 flex items-center gap-2 shadow-lg hover:scale-105 transition-all mx-auto"
-                      style={{ fontSize: 16 }}
-                      onClick={checkVerificationStatus}
-                      title="Verify Account"
-                    >
-                      <ShieldCheck className="w-5 h-5" />
-                      Verify Account
-                    </button>
+                    {/* Instagram Action Button - Instagram Tab */}
+                    {!profileData?.isInstagramVerified ? (
+                      <button
+                        className="mt-6 bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white rounded-full px-5 py-2 flex items-center gap-2 shadow-lg hover:scale-105 transition-all mx-auto"
+                        style={{ fontSize: 16 }}
+                        onClick={checkVerificationStatus}
+                        title="Verify Account"
+                      >
+                        <ShieldCheck className="w-5 h-5" />
+                        Verify Account
+                      </button>
+                    ) : (
+                      <button
+                        className="mt-6 bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white rounded-full px-5 py-2 flex items-center gap-2 shadow-lg hover:scale-105 transition-all mx-auto"
+                        style={{ fontSize: 16 }}
+                        onClick={() => setVerifyModalOpen(true)}
+                        title="Update Instagram Info"
+                      >
+                        <ShieldCheck className="w-5 h-5" />
+                        Update Instagram Info
+                      </button>
+                    )}
                     {/* Verification status message */}
                     <div className="mt-4 text-center">
                       {profileData?.isInstagramVerified ? (
