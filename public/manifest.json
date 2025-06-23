@@ -19,7 +19,7 @@
   "background_color": "#ffffff",
   "display": "standalone",
   "orientation": "portrait",
-  "start_url": "/log-in",
+  "start_url": "/welcome",
   "scope": "/",
   "prefer_related_applications": false,
   "gcm_sender_id": "103953800507"

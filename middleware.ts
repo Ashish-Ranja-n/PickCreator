@@ -8,6 +8,11 @@ export async function middleware(request: NextRequest) {
     // Get the base URL from environment variables
     const baseUrl = process.env.CLIENT_URL || 'https://pickcreator.com';
 
+    // Redirect all /log-in and /sign-up requests to /welcome
+    if (path.startsWith('/log-in') || path.startsWith('/sign-up')) {
+        return NextResponse.redirect(`${baseUrl}/welcome`);
+    }
+
     // Handle API routes
     if(path.startsWith('/api/')) {
         // Define public API routes that don't need authentication
@@ -58,8 +63,8 @@ export async function middleware(request: NextRequest) {
         }
     }
 
-    // Handle authentication routes - no token needed
-    if(path.startsWith('/log-in') || path.startsWith('/sign-up') || path === '/') {
+    // Handle public onboarding routes - no token needed
+    if(path.startsWith('/welcome') || path.startsWith('/pickRole') || path === '/') {
         if(token) {
             try {
                 const payload = await getDataFromToken(request, token);
@@ -69,14 +74,13 @@ export async function middleware(request: NextRequest) {
                     return NextResponse.redirect(`${baseUrl}/brand`);
                 }
                 if(role === 'Influencer') {
-                    // Middleware will handle the redirect to connect-instagram page if needed
                     return NextResponse.redirect(`${baseUrl}/influencer`);
                 }
                 if(role === 'Admin') {
                     return NextResponse.redirect(`${baseUrl}/admin`);
                 }
             } catch (error: any) {
-                // If token verification fails, clear the token and stay on login page
+                // If token verification fails, clear the token and stay on onboarding page
                 const response = NextResponse.next();
                 response.cookies.delete('token');
                 return response;
@@ -89,7 +93,7 @@ export async function middleware(request: NextRequest) {
     // For protected routes, verify token
     if(path.startsWith('/brand') || path.startsWith('/influencer') || path.startsWith('/admin')) {
         if(!token) {
-            return NextResponse.redirect(`${baseUrl}/log-in`);
+            return NextResponse.redirect(`${baseUrl}/welcome`);
         }
 
         try {
@@ -122,7 +126,7 @@ export async function middleware(request: NextRequest) {
         } catch (error: any) {
             // Token is invalid or expired - redirect to login page
             console.error("Token verification failed:", error.message);
-            const response = NextResponse.redirect(`${baseUrl}/log-in`);
+            const response = NextResponse.redirect(`${baseUrl}/welcome`);
             response.cookies.delete('token');
             return response;
         }
@@ -134,6 +138,7 @@ export async function middleware(request: NextRequest) {
 export const config = {
     matcher: [
         '/',
+        '/welcome/:path*',
         '/log-in/:path*',
         '/sign-up/:path*',
         '/brand/:path*',

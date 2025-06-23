@@ -9,7 +9,6 @@ interface IBrand extends Document {
   logo?: string; // Cloudinary URL
   avatar?: string;
   bio?: string;
-  phoneNumber?: string;
   location?: string;
   onboardingCompleted?: boolean;
   verifiedBrand?: boolean;
@@ -22,7 +21,6 @@ const BrandSchema = new Schema<IBrand>({
   logo: { type: String },
   avatar: { type: String },
   bio: { type: String },
-  phoneNumber: { type: String },
   location: { type: String },
   onboardingCompleted: { type: Boolean, default: false },
   verifiedBrand: { type: Boolean, default: false },

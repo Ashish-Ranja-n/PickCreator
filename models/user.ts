@@ -12,6 +12,7 @@ interface IUser extends Document {
   forgotPasswordTokenExpiry?: Date;
   verifyToken?: string;
   verifyTokenExpiry?: Date;
+  phoneNumber?: string;
 }
 
 const UserSchema = new Schema<IUser>(
@@ -25,7 +26,8 @@ const UserSchema = new Schema<IUser>(
     forgotPasswordToken: String,
     forgotPasswordTokenExpiry: Date,
     verifyToken: String,
-    verifyTokenExpiry: Date
+    verifyTokenExpiry: Date,
+    phoneNumber: { type: String },
   },
   { timestamps: true, discriminatorKey: "role" }
 );

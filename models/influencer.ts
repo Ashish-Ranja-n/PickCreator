@@ -43,7 +43,6 @@ interface IInfluencer {
   // Personal info fields
   age?: number;
   gender?: 'male' | 'female' | 'other';
-  mobile?: string;
 
   // Instagram-specific fields
   instagramConnected?: boolean;
@@ -104,7 +103,6 @@ const InfluencerSchema = new Schema<IInfluencer>({
   // Personal info fields
   age: { type: Number },
   gender: { type: String, enum: ['male', 'female', 'other'] },
-  mobile: { type: String },
   // Remove user field - not needed for discriminator
   socialMediaLinks: {
     type: [{
