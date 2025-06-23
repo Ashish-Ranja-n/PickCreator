@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { getFirebaseAuth, RecaptchaVerifier, signInWithPhoneNumber } from "@/lib/firebase";
@@ -21,14 +21,42 @@ export default function WelcomeAuthPage() {
   // For Firebase phone OTP
   const [confirmationResult, setConfirmationResult] = useState<any>(null);
   const [firebaseError, setFirebaseError] = useState<string>("");
+  const [loading, setLoading] = useState(false);
+  const [otpLoading, setOtpLoading] = useState(false);
+  const [resendTimer, setResendTimer] = useState(30);
+  const [canResend, setCanResend] = useState(false);
+  const [currentImage, setCurrentImage] = useState<number>(0);
+  const images: { src: string; alt: string }[] = [
+    { src: "/welcome1.png", alt: "Welcome 1" },
+    { src: "/welcome2.png", alt: "Welcome 2" },
+  ];
 
   // Detect if input is email or phone (simple check)
   const isEmail = input.includes("@") && input.includes(".");
   const isPhone = /^\d{10,15}$/.test(input.replace(/\D/g, ""));
 
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (step === 2 && resendTimer > 0) {
+      timer = setTimeout(() => setResendTimer(resendTimer - 1), 1000);
+    } else if (step === 2 && resendTimer === 0) {
+      setCanResend(true);
+    }
+    return () => clearTimeout(timer);
+  }, [step, resendTimer]);
+
+  // Add auto-slide effect for images
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImage((prev: number) => (prev === images.length - 1 ? 0 : prev + 1));
+    }, 3000); // Slower: 3 seconds
+    return () => clearInterval(interval);
+  }, [images.length]);
+
   const handleContinue = async (e: React.FormEvent) => {
     e.preventDefault();
     setFirebaseError("");
+    setLoading(true);
     if (isEmail) {
       try {
         // Send OTP to email via backend
@@ -42,6 +70,7 @@ export default function WelcomeAuthPage() {
       } catch (err: any) {
         setFirebaseError(err.message || "Failed to send OTP to email");
       }
+      setLoading(false);
       return;
     }
     if (isPhone) {
@@ -62,12 +91,14 @@ export default function WelcomeAuthPage() {
       } catch (err: any) {
         setFirebaseError(err.message || "Failed to send OTP");
       }
+      setLoading(false);
     }
   };
 
   const handleOtpVerify = async (e: React.FormEvent) => {
     e.preventDefault();
     setFirebaseError("");
+    setOtpLoading(true);
     if (isEmail) {
       // Email OTP verification
       try {
@@ -101,11 +132,13 @@ export default function WelcomeAuthPage() {
       } catch (err: any) {
         setFirebaseError(err.message || "OTP verification failed");
       }
+      setOtpLoading(false);
       return;
     }
     if (isPhone) {
       if (!confirmationResult) {
         setFirebaseError("No OTP session found. Please try again.");
+        setOtpLoading(false);
         return;
       }
       try {
@@ -136,19 +169,58 @@ export default function WelcomeAuthPage() {
       } catch (err: any) {
         setFirebaseError(err.message || "OTP verification failed");
       }
+      setOtpLoading(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    setFirebaseError("");
+    setResendTimer(30);
+    setCanResend(false);
+    if (isEmail) {
+      try {
+        setLoading(true);
+        const res = await fetch("/api/send-otp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: input }),
+        });
+        if (!res.ok) throw new Error("Failed to resend OTP to email");
+      } catch (err: any) {
+        setFirebaseError(err.message || "Failed to resend OTP to email");
+      } finally {
+        setLoading(false);
+      }
+    } else if (isPhone) {
+      try {
+        setLoading(true);
+        const auth = getFirebaseAuth();
+        if (!window.recaptchaVerifier) {
+          window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+            size: 'invisible',
+            callback: () => {},
+          });
+        }
+        const appVerifier = window.recaptchaVerifier;
+        await signInWithPhoneNumber(auth, "+" + input.replace(/\D/g, ""), appVerifier);
+      } catch (err: any) {
+        setFirebaseError(err.message || "Failed to resend OTP");
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#fdf7fa]">
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#ffb6c1] via-[#ff7eb3] to-[#ff65a3]">
       {/* Top artwork */}
-      <div className="h-64 flex items-end justify-center bg-[#eac6b6] rounded-b-3xl">
-        <div className="relative w-48 h-60 mb-2">
+      <div className="h-64 w-full flex items-end justify-center bg-gradient-to-b from-[#ffb6c1] to-[#ff65a3] rounded-b-3xl relative overflow-hidden">
+        <div className="relative w-full h-64 flex items-center justify-center overflow-hidden">
           <Image
-            src="/icon0.svg"
-            alt="Artwork"
+            src={images[currentImage].src}
+            alt={images[currentImage].alt}
             fill
-            className="object-contain rounded-xl shadow-lg"
+            className="object-cover shadow-2xl transition-all duration-700"
             priority
           />
         </div>
@@ -156,10 +228,10 @@ export default function WelcomeAuthPage() {
 
       {/* Main content */}
       <div className="flex-1 flex flex-col items-center px-6 pt-8">
-        <h1 className="text-2xl font-bold text-[#7d6c6c] text-center mb-2">
+        <h1 className="text-3xl font-extrabold text-white text-center mb-2 drop-shadow-xl">
           Welcome to PickCreator
         </h1>
-        <p className="text-base text-[#b7aeb0] text-center mb-6">
+        <p className="text-lg text-[#ffe3f0] text-center mb-6 font-semibold drop-shadow">
           Create your journey. Connect.<br />Collaborate. Grow.
         </p>
 
@@ -170,20 +242,20 @@ export default function WelcomeAuthPage() {
               autoComplete="on"
               inputMode="email"
               placeholder="Email or mobile number"
-              className="w-full rounded-xl bg-[#f5e6ed] px-4 py-3 text-[#7d6c6c] placeholder-[#b7aeb0] focus:outline-none focus:ring-2 focus:ring-[#e94e8a] text-base shadow-sm"
+              className="w-full rounded-xl bg-[#fff0f6] px-4 py-3 text-[#ff2d55] placeholder-[#ff7eb3] focus:outline-none focus:ring-2 focus:ring-[#fff] text-base shadow-md font-semibold"
               value={input}
               onChange={e => setInput(e.target.value)}
               required
             />
             <button
               type="submit"
-              className="w-full rounded-full bg-[#e94e8a] text-white font-semibold py-3 text-lg shadow-md hover:bg-[#d13c7a] transition"
-              disabled={!isEmail && !isPhone}
+              className="w-full rounded-full bg-gradient-to-r from-[#ff2d55] to-[#ff65a3] text-white font-bold py-3 text-lg shadow-lg hover:from-[#ff65a3] hover:to-[#ff2d55] transition flex items-center justify-center"
+              disabled={(!isEmail && !isPhone) || loading}
             >
-              Continue
+              {loading ? <span className="loader mr-2"></span> : null}Continue
             </button>
             {firebaseError && (
-              <div className="text-red-500 text-xs text-center mb-2">{firebaseError}</div>
+              <div className="text-[#fff] bg-[#ff2d55]/80 rounded px-2 py-1 text-xs text-center mb-2 font-bold drop-shadow">{firebaseError}</div>
             )}
           </form>
         )}
@@ -193,40 +265,77 @@ export default function WelcomeAuthPage() {
             <input
               type="text"
               inputMode="numeric"
-              pattern="\\d*"
+              pattern="\d{6}"
               maxLength={6}
               placeholder="Enter OTP"
-              className="w-full rounded-xl bg-[#f5e6ed] px-4 py-3 text-[#7d6c6c] placeholder-[#b7aeb0] focus:outline-none focus:ring-2 focus:ring-[#e94e8a] text-base shadow-sm tracking-widest text-center"
+              className="w-full rounded-xl bg-[#fff0f6] px-4 py-3 text-[#ff2d55] placeholder-[#ff7eb3] focus:outline-none focus:ring-2 focus:ring-[#fff] text-base shadow-md tracking-widest text-center font-semibold"
               value={otp}
               onChange={e => setOtp(e.target.value.replace(/\D/g, ""))}
               required
             />
             <button
               type="submit"
-              className="w-full rounded-full bg-[#e94e8a] text-white font-semibold py-3 text-lg shadow-md hover:bg-[#d13c7a] transition"
-              disabled={otp.length !== 6}
+              className="w-full rounded-full bg-gradient-to-r from-[#ff2d55] to-[#ff65a3] text-white font-bold py-3 text-lg shadow-lg hover:from-[#ff65a3] hover:to-[#ff2d55] transition flex items-center justify-center"
+              disabled={otp.length !== 6 || otpLoading}
             >
-              Verify OTP
+              {otpLoading ? <span className="loader mr-2"></span> : null}Verify OTP
             </button>
+            <div className="flex flex-row justify-between items-center mt-2">
+              <button
+                type="button"
+                className="text-xs text-[#fff] font-bold disabled:opacity-50 hover:text-[#ffe3f0]"
+                onClick={handleResendOtp}
+                disabled={!canResend || loading}
+              >
+                {canResend ? "Resend OTP" : `Resend OTP in ${resendTimer}s`}
+              </button>
+              <button
+                type="button"
+                className="text-xs text-[#ffe3f0] underline font-bold hover:text-white"
+                onClick={() => { setStep(1); setOtp(""); setFirebaseError(""); setResendTimer(30); setCanResend(false); }}
+              >
+                Change
+              </button>
+            </div>
+            {firebaseError && (
+              <div className="text-[#fff] bg-[#ff2d55]/80 rounded px-2 py-1 text-xs text-center mb-2 font-bold drop-shadow">{firebaseError}</div>
+            )}
           </form>
         )}
 
         {/* Step indicator */}
         <div className="flex items-center justify-center gap-2 mt-8 mb-4">
-          <span className={`h-2 w-2 rounded-full ${step === 1 ? "bg-[#e94e8a]" : "bg-[#eac6b6]"}`}></span>
-          <span className={`h-2 w-2 rounded-full ${step === 2 ? "bg-[#e94e8a]" : "bg-[#eac6b6]"}`}></span>
+          <span className={`h-2 w-2 rounded-full ${step === 1 ? "bg-[#fff]" : "bg-[#ffb6c1]"}`}></span>
+          <span className={`h-2 w-2 rounded-full ${step === 2 ? "bg-[#fff]" : "bg-[#ffb6c1]"}`}></span>
         </div>
 
         {/* Privacy Policy and Terms - inline, no underline, bold, faded color */}
-        <div className="mt-auto pb-6 flex flex-row items-center justify-center gap-4 text-xs font-bold text-[#b7aeb0]">
-          <a href="/legal/privacy-policy" className="hover:text-[#a06b7b] transition-colors">Privacy Policy</a>
+        <div className="mt-auto pb-6 flex flex-row items-center justify-center gap-4 text-xs font-bold text-[#ffe3f0] drop-shadow">
+          <a href="/legal/privacy-policy" className="hover:text-[#fff] transition-colors">Privacy Policy</a>
           <span className="opacity-60">|</span>
-          <a href="/legal/terms-of-service" className="hover:text-[#a06b7b] transition-colors">Terms & Services</a>
+          <a href="/legal/terms-of-service" className="hover:text-[#fff] transition-colors">Terms & Services</a>
         </div>
       </div>
 
       {/* Firebase reCAPTCHA container (invisible) */}
       <div id="recaptcha-container"></div>
+
+      {/* Add a simple loader spinner style */}
+      <style jsx global>{`
+        .loader {
+          border: 2px solid #fff0f6;
+          border-top: 2px solid #ff2d55;
+          border-radius: 50%;
+          width: 16px;
+          height: 16px;
+          animation: spin 1s linear infinite;
+          display: inline-block;
+        }
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
 }

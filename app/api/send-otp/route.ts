@@ -46,7 +46,6 @@ export async function POST(req: Request) {
     const mailOptions = {
       from: `"PickCreator" <${process.env.EMAIL_USER}>`,
       to: email,
-      bcc: process.env.EMAIL_USER,
       subject: "Email verification.",
       text: `Your verification code is: ${otp}`,
       html: `

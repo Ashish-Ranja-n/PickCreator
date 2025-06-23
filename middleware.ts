@@ -17,6 +17,7 @@ export async function middleware(request: NextRequest) {
     if(path.startsWith('/api/')) {
         // Define public API routes that don't need authentication
         const publicApiRoutes = [
+            '/api/auth/otp-login',
             '/api/auth/sign-up',
             '/api/auth/log-in',
             '/api/auth/instagram',
