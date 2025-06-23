@@ -18,10 +18,6 @@ export default function PickRolePage() {
       const data = await res.json();
       // Optionally, update localStorage for client-side use
       localStorage.setItem("userRole", role);
-      // Set cookie with userId and role
-      if (data && data.userId && data.role) {
-        document.cookie = `pickcreator_user=${JSON.stringify({ userId: data.userId, role: data.role })}; path=/;`;
-      }
       // Redirect to onboarding or dashboard as per role
       if (role === "Brand") {
         router.push("/brand/onboarding");
@@ -34,72 +30,136 @@ export default function PickRolePage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#fdf7fa] px-0 py-0">
-      {/* Header */}
-      <div className="flex items-center px-4 pt-6 pb-2">
-        <button
-          className="mr-2 text-[#7d6c6c] text-2xl font-bold"
-          onClick={() => router.back()}
-          aria-label="Back"
-        >
-          &#8592;
-        </button>
-        <h1 className="flex-1 text-center text-lg font-semibold text-[#2d2323] tracking-tight">
-          PickCreator
-        </h1>
+    <div className="min-h-screen flex flex-col items-center justify-start bg-[#fff6f9] px-4 py-0">
+      {/* Top Row: Pickcreator and Help Icon */}
+      <div className="w-full max-w-xl flex items-center justify-between px-4 pt-6 pb-2">
         <div className="w-8" />
+        <span className="font-semibold text-[#2d2323] text-base text-center flex-1">
+          Pickcreator
+        </span>
+        <button
+          className="w-8 h-8 flex items-center justify-center rounded-full border border-[#e0e0e0] bg-white hover:bg-[#f3f3f3] transition"
+          aria-label="Help"
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 20 20"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <circle
+              cx="10"
+              cy="10"
+              r="9"
+              stroke="#2d2323"
+              strokeWidth="1.5"
+              fill="none"
+            />
+            <text
+              x="10"
+              y="14"
+              textAnchor="middle"
+              fontSize="12"
+              fill="#2d2323"
+              fontFamily="Arial, sans-serif"
+            >
+              ?
+            </text>
+          </svg>
+        </button>
       </div>
-      {/* Main Content */}
-      <div className="flex flex-col flex-1 px-4 pt-4 pb-0">
-        <h2 className="text-xl font-bold text-[#2d2323] mb-1 mt-2">What are you here to do?</h2>
-        <p className="text-[#7d6c6c] text-base mb-6">We'll personalize your PickCreator experience.</p>
-        <div className="flex flex-col gap-6">
-          {/* Business Card */}
-          <button
-            className="flex flex-row items-center gap-4 bg-white rounded-2xl shadow-md px-4 py-5 w-full transition hover:shadow-lg focus:outline-none"
-            onClick={() => handleRoleSelect("Brand")}
-          >
-            <div className="flex items-center justify-center w-14 h-14 rounded-full bg-[#1976f7]">
-              {/* Briefcase SVG Icon */}
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="3" y="7" width="18" height="13" rx="3" fill="#fff" />
-                <rect x="3" y="7" width="18" height="13" rx="3" stroke="#1976f7" strokeWidth="2" />
-                <rect x="8" y="4" width="8" height="5" rx="2" fill="#fff" />
-                <rect x="8" y="4" width="8" height="5" rx="2" stroke="#1976f7" strokeWidth="2" />
-                <rect x="11" y="13" width="2" height="4" rx="1" fill="#1976f7" />
-              </svg>
-            </div>
-            <div className="flex flex-col items-start text-left">
-              <span className="text-xs font-bold text-[#1976f7] tracking-widest mb-1">BUSINESS</span>
-              <span className="text-lg font-bold text-[#2d2323] mb-1">I'm a Business</span>
-              <span className="text-[#7d6c6c] text-sm">Promote your brand and discover talented influencers to collaborate with.</span>
-            </div>
-          </button>
-          {/* Influencer Card */}
-          <button
-            className="flex flex-row items-center gap-4 bg-white rounded-2xl shadow-md px-4 py-5 w-full transition hover:shadow-lg focus:outline-none"
-            onClick={() => handleRoleSelect("Influencer")}
-          >
-            <div className="flex items-center justify-center w-14 h-14 rounded-full bg-[#ff5ca8]">
-              {/* Megaphone SVG Icon */}
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M3 13V11C3 9.89543 3.89543 9 5 9H7V15H5C3.89543 15 3 14.1046 3 13Z" fill="#fff" />
-                <path d="M7 9V15L19 19V5L7 9Z" fill="#fff" stroke="#ff5ca8" strokeWidth="2" />
-                <circle cx="17.5" cy="12" r="1.5" fill="#ff5ca8" />
-                <rect x="9" y="17" width="3" height="4" rx="1.5" fill="#ff5ca8" />
-              </svg>
-            </div>
-            <div className="flex flex-col items-start text-left">
-              <span className="text-xs font-bold text-[#ff5ca8] tracking-widest mb-1">INFLUENCER</span>
-              <span className="text-lg font-bold text-[#2d2323] mb-1">I'm an Influencer</span>
-              <span className="text-[#7d6c6c] text-sm">Find exciting brand collaborations and grow your influence.</span>
-            </div>
-          </button>
-        </div>
-        <div className="flex-1" />
-        <div className="text-center text-xs text-[#b7aeb0] font-medium mt-8 mb-4">
-          PickCreator will help you find the perfect match.
-        </div>
+      {/* Header */}
+      <h1 className="mb-2 text-2xl font-extrabold text-[#2d2323] text-center tracking-tight">
+        Welcome to Pickcreator
+      </h1>
+      {/* Subheader: Who are you? */}
+      <div className="w-full max-w-xs">
+        <h2 className="mb-6 text-xl font-bold text-[#c03a5b] text-center">
+          Who are you?
+        </h2>
+      </div>
+      {/* Role Cards */}
+      <div className="w-full max-w-xs flex flex-col gap-6">
+        {/* Business Card */}
+        <button
+          className="flex flex-row items-center gap-4 bg-[#eaf2ff] rounded-2xl px-4 py-6 w-full shadow-md transition-all duration-150 active:scale-95 hover:shadow-lg focus:outline-none border-2 border-transparent hover:border-[#1976f7]"
+          onClick={() => handleRoleSelect("Brand")}
+          style={{
+            boxShadow: "0 4px 16px 0 rgba(25, 118, 247, 0.08)",
+          }}
+        >
+          <div className="flex items-center justify-center w-14 h-14 rounded-xl bg-white">
+            {/* Storefront Icon */}
+            <svg
+              width="36"
+              height="36"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect x="3" y="7" width="18" height="13" rx="3" fill="#fff" />
+              <rect
+                x="3"
+                y="7"
+                width="18"
+                height="13"
+                rx="3"
+                stroke="#1976f7"
+                strokeWidth="2"
+              />
+              <rect x="8" y="4" width="8" height="5" rx="2" fill="#fff" />
+              <rect
+                x="8"
+                y="4"
+                width="8"
+                height="5"
+                rx="2"
+                stroke="#1976f7"
+                strokeWidth="2"
+              />
+              <rect x="11" y="13" width="2" height="4" rx="1" fill="#1976f7" />
+            </svg>
+          </div>
+          <div className="flex flex-col items-start text-left">
+            <span className="text-lg font-bold text-[#1976f7] mb-1">
+              Business
+            </span>
+            <span className="text-sm text-[#1976f7] font-medium">
+              Promote your brand
+            </span>
+          </div>
+        </button>
+        {/* Influencer Card */}
+        <button
+          className="flex flex-row items-center gap-4 bg-[#ffe3ef] rounded-2xl px-4 py-6 w-full shadow-md transition-all duration-150 active:scale-95 hover:shadow-lg focus:outline-none border-2 border-transparent hover:border-[#ff5ca8]"
+          onClick={() => handleRoleSelect("Influencer")}
+          style={{
+            boxShadow: "0 4px 16px 0 rgba(255, 92, 168, 0.08)",
+          }}
+        >
+          <div className="flex items-center justify-center w-14 h-14 rounded-xl bg-white">
+            {/* Person Icon */}
+            <svg
+              width="36"
+              height="36"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle cx="12" cy="9" r="4" fill="#ff5ca8" />
+              <rect x="6" y="15" width="12" height="6" rx="3" fill="#ff5ca8" />
+            </svg>
+          </div>
+          <div className="flex flex-col items-start text-left">
+            <span className="text-lg font-bold text-[#ff5ca8] mb-1">
+              Influencer
+            </span>
+            <span className="text-sm text-[#ff5ca8] font-medium">
+              Work with brands
+            </span>
+          </div>
+        </button>
       </div>
     </div>
   );
