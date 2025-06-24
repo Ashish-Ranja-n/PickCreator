@@ -165,7 +165,7 @@ export default function BasicInfoPage() {
       toast({
         title: "Saved",
         description: "Basic information saved",
-        duration: 1500
+        duration: 1000
       });
     } catch (error) {
       console.error('Error saving basic info:', error);
@@ -193,8 +193,8 @@ export default function BasicInfoPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Basic Information</h2>
-        <p className="text-muted-foreground mt-2">
+        <h2 className="text-2xl font-bold tracking-tight text-[#C13B7B]">Basic Information</h2>
+        <p className="text-[#A07BA6] mt-2">
           Share details about yourself to help brands understand who you are.
         </p>
       </div>
@@ -207,9 +207,9 @@ export default function BasicInfoPage() {
       
       {showValidationError && (
         <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4 mr-2" />
+          <AlertCircle className="h-4 w-4 mr-2 text-[#C13B7B]" />
           <AlertDescription>
-            Please complete all required fields before proceeding.
+            <span className="text-[#C13B7B]">Please complete all required fields before proceeding.</span>
           </AlertDescription>
         </Alert>
       )}
@@ -222,7 +222,7 @@ export default function BasicInfoPage() {
             render={({ field }) => (
               <FormItem className="space-y-3">
                 <FormLabel>
-                  Select a Bio That Best Describes You <span className="text-destructive">*</span>
+                  <span className="text-[#C13B7B]">Select a Bio That Best Describes You <span className="text-[#C13B7B]">*</span></span>
                 </FormLabel>
                 <FormControl>
                   <RadioGroup
@@ -231,14 +231,14 @@ export default function BasicInfoPage() {
                     className="space-y-3"
                   >
                     {BIO_OPTIONS_GROUPED.map((group) => (
-                      <Card key={group.category} className="overflow-hidden">
+                      <Card key={group.category} className="overflow-hidden border-[#C13B7B]/30">
                         <Collapsible 
                           open={openCategories.includes(group.category)}
                           onOpenChange={() => toggleCategory(group.category)}
                         >
                           <CollapsibleTrigger asChild>
-                            <div className="flex items-center justify-between p-4 cursor-pointer hover:bg-muted/50">
-                              <h3 className="font-medium">{group.category}</h3>
+                            <div className="flex items-center justify-between p-4 cursor-pointer hover:bg-[#F8E6F4]">
+                              <span className="font-semibold text-[#C13B7B]">{group.category}</span>
                               {openCategories.includes(group.category) ? (
                                 <ChevronUp className="h-5 w-5 text-muted-foreground" />
                               ) : (
@@ -271,9 +271,6 @@ export default function BasicInfoPage() {
                     ))}
                   </RadioGroup>
                 </FormControl>
-                <FormDescription>
-                  This bio will be visible to brands looking to collaborate with you.
-                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -389,4 +386,4 @@ export default function BasicInfoPage() {
       </Form>
     </div>
   );
-} 
+}

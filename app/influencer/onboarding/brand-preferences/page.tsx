@@ -146,7 +146,7 @@ export default function BrandPreferencesPage() {
       toast({
         title: "Saved",
         description: "Brand preferences saved",
-        duration: 1500
+        duration: 1000
       });
     } catch (error) {
       console.error('Error saving brand preferences:', error);
@@ -156,7 +156,7 @@ export default function BrandPreferencesPage() {
         title: "Error",
         description: "Failed to save preferences",
         variant: "destructive",
-        duration: 3000,
+        duration: 1000,
       });
     } finally {
       setIsSaving(false);
@@ -166,8 +166,8 @@ export default function BrandPreferencesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Brand Preferences</h2>
-        <p className="text-muted-foreground mt-2">
+        <h2 className="text-2xl font-bold tracking-tight text-[#C13B7B]">Brand Preferences</h2>
+        <p className="text-[#A07BA6] mt-2">
           Tell us what types of brands you prefer to work with and any restrictions you have.
         </p>
       </div>
@@ -180,9 +180,9 @@ export default function BrandPreferencesPage() {
       
       {showValidationError && (
         <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4 mr-2" />
+          <AlertCircle className="h-4 w-4 mr-2 text-[#C13B7B]" />
           <AlertDescription>
-            Please complete all required fields before proceeding.
+            <span className="text-[#C13B7B]">Please complete all required fields before proceeding.</span>
           </AlertDescription>
         </Alert>
       )}
@@ -190,10 +190,10 @@ export default function BrandPreferencesPage() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           {/* Preferred Brand Types */}
-          <Card>
+          <Card className="border-[#C13B7B]/30">
             <CardHeader>
-              <CardTitle>Preferred Brand Types</CardTitle>
-              <CardDescription>Select the types of brands you prefer to work with</CardDescription>
+              <CardTitle className="text-[#C13B7B]">Preferred Brand Types</CardTitle>
+              <CardDescription className="text-[#A07BA6]">Select the types of brands you prefer to work with</CardDescription>
             </CardHeader>
             <CardContent>
               <FormField
@@ -382,4 +382,4 @@ export default function BrandPreferencesPage() {
       </Form>
     </div>
   );
-} 
+}

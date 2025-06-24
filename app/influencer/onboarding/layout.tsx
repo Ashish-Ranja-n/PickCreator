@@ -58,31 +58,36 @@ function OnboardingLayoutContent({ children }: { children: React.ReactNode }) {
   };
   
   return (
-    <div className="container max-w-4xl px-6 py-10 relative">
-      {/* Loading Overlay - Simplified version */}
+    <div className="min-h-screen flex flex-col bg-[#F8F6FA] px-4 pt-0 pb-0 relative">
+      {/* Top Bar: PickCreator + Help */}
+      <div className="flex items-center justify-between pt-6 px-1 mb-6">
+        <h2 className="text-[#C13B7B] text-2xl font-extrabold tracking-wide select-none" style={{letterSpacing: '0.04em'}}>PickCreator</h2>
+        <button type="button" className="text-[#C13B7B] hover:text-[#A07BA6] text-2xl" title="Help">
+          <span className="text-3xl font-bold">?</span>
+        </button>
+      </div>
+      {/* Loading Overlay - Darker Pink version */}
       {isLoading && (
-        <div className="absolute inset-0 bg-white/70 z-50 flex items-center justify-center">
-          <div className="h-10 w-10 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
+        <div className="absolute inset-0 bg-[#F8F6FA]/80 z-50 flex items-center justify-center">
+          <div className="h-10 w-10 rounded-full border-4 border-[#C13B7B] border-t-transparent animate-spin"></div>
         </div>
       )}
-      
-      <div className="flex flex-col space-y-8">
-        {/* Header with Instagram icon */}
+      <div className="flex flex-col space-y-8 flex-1">
+        {/* Header */}
         <div className="flex flex-col items-center space-y-4">
-          <h1 className="text-3xl font-bold text-center tracking-tight">Complete Your Profile</h1>
-          <p className="text-center text-muted-foreground max-w-2xl">
+          <h1 className="text-3xl font-bold text-center tracking-tight text-[#23111A]">Complete Your Profile</h1>
+          <p className="text-center text-[#A07BA6] max-w-2xl">
             Tell brands about yourself and your collaboration preferences to get discovered.
           </p>
         </div>
-        
         {/* Progress Steps */}
         <div className="relative">
           <div className="flex justify-between mb-2">
             {ONBOARDING_STEPS.map((step, index) => (
               <div key={index} className="flex flex-col items-center">
                 <div 
-                  className={`w-10 h-10 rounded-full flex items-center justify-center border-2 
-                    ${index <= currentStepIndex ? 'bg-primary border-primary text-primary-foreground' : 'border-muted bg-background text-muted-foreground'}`}
+                  className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors duration-300
+                    ${index <= currentStepIndex ? 'bg-[#C13B7B] border-[#C13B7B] text-white' : 'border-[#E2B6C6] bg-[#F8E6F4] text-[#A07BA6]'}`}
                 >
                   {index < currentStepIndex ? (
                     <Check className="h-5 w-5" />
@@ -90,27 +95,23 @@ function OnboardingLayoutContent({ children }: { children: React.ReactNode }) {
                     <span>{index + 1}</span>
                   )}
                 </div>
-                <span className={`text-xs mt-1 ${index <= currentStepIndex ? 'text-primary font-medium' : 'text-muted-foreground'}`}>
-                  {step.label}
-                </span>
+                <span className={`text-xs mt-1 ${index <= currentStepIndex ? 'text-[#C13B7B] font-medium' : 'text-[#A07BA6]'}`}>{step.label}</span>
               </div>
             ))}
           </div>
-          <div className="absolute top-5 left-0 right-0 h-0.5 bg-muted -z-10">
+          <div className="absolute top-5 left-0 right-0 h-0.5 bg-[#E2B6C6] -z-10">
             <div 
-              className="h-full bg-primary transition-all" 
+              className="h-full bg-[#C13B7B] transition-all" 
               style={{ width: `${(currentStepIndex / (ONBOARDING_STEPS.length - 1)) * 100}%` }}
             ></div>
           </div>
         </div>
-        
         {/* Main Content */}
-        <div className="bg-card rounded-lg border shadow-sm p-6">
+        <div className="bg-white rounded-2xl border border-[#F9D6C7] shadow-sm p-6">
           {children}
         </div>
-        
-        {/* Navigation Buttons - These will be used by child components */}
-        <div className="flex justify-between pt-4">
+        {/* Navigation Buttons */}
+        <div className="flex justify-between pt-4 pb-8">
           <Button
             variant="outline"
             onClick={() => {
@@ -121,15 +122,15 @@ function OnboardingLayoutContent({ children }: { children: React.ReactNode }) {
               }
             }}
             disabled={currentStepIndex === 0 || isLoading}
+            className="border-[#C13B7B] text-[#C13B7B] hover:bg-[#F8E6F4]"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back
           </Button>
-          
           {currentStepIndex < ONBOARDING_STEPS.length - 1 && hasRequiredFieldsForStep(currentStepIndex) && (
             <Button
               onClick={() => router.push(ONBOARDING_STEPS[currentStepIndex + 1].path)}
-              className="ml-auto"
+              className="ml-auto bg-[#C13B7B] hover:bg-[#a02c63] text-white"
               disabled={isLoading}
             >
               Skip

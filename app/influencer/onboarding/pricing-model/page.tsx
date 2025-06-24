@@ -234,7 +234,7 @@ export default function PricingModelPage() {
       toast({
         title: "Saved",
         description: "Pricing models saved",
-        duration: 1500
+        duration: 1000
       });
     } catch (error) {
       console.error('Error saving pricing models:', error);
@@ -276,9 +276,9 @@ export default function PricingModelPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Pricing Models</h2>
-        <p className="text-muted-foreground mt-2">
-          Set up how you charge for promotions and collaborations.
+        <h2 className="text-2xl font-bold tracking-tight text-[#C13B7B]">Pricing Models</h2>
+        <p className="text-[#A07BA6] mt-2">
+          Set your pricing and deal preferences for brands.
         </p>
       </div>
       
@@ -290,9 +290,9 @@ export default function PricingModelPage() {
       
       {showRequired && (
         <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4 mr-2" />
+          <AlertCircle className="h-4 w-4 mr-2 text-[#C13B7B]" />
           <AlertDescription>
-            {getValidationErrorMessage()}
+            <span className="text-[#C13B7B]">Please fill all required pricing fields.</span>
           </AlertDescription>
         </Alert>
       )}
@@ -312,28 +312,10 @@ export default function PricingModelPage() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           {/* Fixed Pricing */}
-          <Card>
+          <Card className="border-[#C13B7B]/30">
             <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle>Fixed Pricing</CardTitle>
-                <FormField
-                  control={form.control}
-                  name="fixedPricing.enabled"
-                  render={({ field }) => (
-                    <FormItem className="flex items-center space-x-2">
-                      <FormControl>
-                        <Switch
-                          checked={true}
-                          disabled={true}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                      <div className="text-xs text-muted-foreground whitespace-nowrap">(Required)</div>
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <CardDescription>Set specific prices for different types of content</CardDescription>
+              <CardTitle className="text-[#C13B7B]">Fixed Pricing</CardTitle>
+              <CardDescription className="text-[#A07BA6]">Set your fixed rates for different content types</CardDescription>
             </CardHeader>
             
             {form.watch("fixedPricing.enabled") && (
@@ -728,4 +710,4 @@ export default function PricingModelPage() {
       </Form>
     </div>
   );
-} 
+}

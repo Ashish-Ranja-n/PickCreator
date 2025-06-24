@@ -110,7 +110,7 @@ export default function ReviewPage() {
       toast({
         title: "Complete! 🎉",
         description: "Your profile is now live",
-        duration: 2000
+        duration: 1000
       });
     } catch (error) {
       console.error('Error completing onboarding:', error);
@@ -118,7 +118,7 @@ export default function ReviewPage() {
         title: "Error",
         description: "Failed to complete profile setup",
         variant: "destructive",
-        duration: 3000,
+        duration: 2000,
       });
     } finally {
       setIsSaving(false);
@@ -128,24 +128,24 @@ export default function ReviewPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Review Your Profile</h2>
-        <p className="text-muted-foreground mt-2">
+        <h2 className="text-2xl font-bold tracking-tight text-[#C13B7B]">Review Your Profile</h2>
+        <p className="text-[#A07BA6] mt-2">
           Review your information before finalizing your profile.
         </p>
       </div>
       
       {error && (
         <Alert variant="destructive">
-          <AlertDescription>{error}</AlertDescription>
+          <AlertDescription className="text-[#C13B7B]">{error}</AlertDescription>
         </Alert>
       )}
       
       {/* Personal Info */}
-      <Card>
+      <Card className="border-[#C13B7B]/30">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
-            <CardTitle>Personal Information</CardTitle>
-            <CardDescription>Your age and gender</CardDescription>
+            <CardTitle className="text-[#C13B7B]">Personal Information</CardTitle>
+            <CardDescription className="text-[#A07BA6]">Your age and gender</CardDescription>
           </div>
           <Button variant="ghost" size="sm" asChild>
             <Link href="/influencer/onboarding/personal-info">
