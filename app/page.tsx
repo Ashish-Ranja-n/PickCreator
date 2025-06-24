@@ -229,7 +229,7 @@ export default function Home() {
                     transition={{ duration: 0.6, delay: 0.45 }}
                     className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12 w-full max-w-2xl mx-auto px-4"
                   >
-                    <a href="/sign-up?type=influencer" className="w-full sm:w-auto">
+                    <a href="/welcome" className="w-full sm:w-auto">
                       <motion.button
                         className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium py-4 px-8 rounded-full shadow-lg transition-all duration-200"
                         whileHover={{ y: -2, boxShadow: "0 10px 25px -5px rgba(124, 58, 237, 0.5)" }}
@@ -243,7 +243,7 @@ export default function Home() {
                         </span>
                       </motion.button>
                     </a>
-                    <a href="/sign-up?type=brand" className="w-full sm:w-auto">
+                    <a href="/welcome" className="w-full sm:w-auto">
                       <motion.button
                         className="w-full bg-white border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-50 font-medium py-4 px-8 rounded-full shadow-md transition-all duration-200"
                         whileHover={{ y: -2 }}

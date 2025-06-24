@@ -2,15 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from "@/lib/utils";
 import Link from 'next/link';
-import { Menu, Instagram, Facebook, Twitter, ChevronDown } from 'lucide-react';
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-  SheetClose
-} from "@/components/ui/sheet";
+import { ChevronDown } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,7 +13,6 @@ import {
 const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [viewportWidth, setViewportWidth] = useState(0);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   // Footer links for mobile menu
   const footerLinks = [
@@ -31,13 +22,6 @@ const Header: React.FC = () => {
     { title: "Refund Policy", href: "/legal/pricing-policy" },
     { title: "Privacy Policy", href: "/legal/privacy-policy" },
     { title: "Terms of Service", href: "/legal/terms-of-service" }
-  ];
-
-  // Social links for mobile menu
-  const socialLinks = [
-    { icon: <Instagram size={20} />, href: "https://instagram.com/pickcreator", label: "Instagram" },
-    { icon: <Facebook size={20} />, href: "#facebook", label: "Facebook" },
-    { icon: <Twitter size={20} />, href: "#twitter", label: "Twitter" }
   ];
 
   // Track both scroll position and viewport size
@@ -239,15 +223,23 @@ const Header: React.FC = () => {
         getHeaderSize()
       )}
     >
-      <div className="container-custom flex items-center justify-between">
-        {/* Simplified logo for better performance */}
-        <a href="#" className="inline-flex items-center">
-          <span className={`${getLogoSize()} font-black tracking-tight text-indigo-600`}>
-            PICKCREATOR
+      <div className="container-custom flex items-center justify-center">
+        {/* Centered logo with image replacing 'P' */}
+        <div className="flex items-center justify-center gap-2 select-none">
+          <span className="flex items-center">
+            <img
+              src="/pickcreatorLogo.png"
+              alt="Pickcreator Logo"
+              className="w-8 h-8 md:w-10 md:h-10 object-contain mr-1"
+              style={{ display: 'inline', verticalAlign: 'middle' }}
+            />
+            <span className="text-pink-500 font-black tracking-tight text-2xl md:text-4xl lg:text-4xl" style={{ letterSpacing: '0.05em' }}>
+              ICKCREATOR
+            </span>
           </span>
-        </a>
+        </div>
 
-        <div className="flex items-center gap-3 md:gap-6">
+        <div className="flex items-center gap-3 md:gap-6 absolute right-0 top-1/2 -translate-y-1/2">
           {/* Desktop Navigation Links */}
           <div className="hidden md:flex items-center space-x-6">
             {/* Main Links */}
@@ -255,7 +247,7 @@ const Header: React.FC = () => {
               <Link
                 key={index}
                 href={link.href}
-                className="text-gray-700 hover:text-pick-blue transition-colors text-sm font-medium"
+                className="text-gray-700 hover:text-pink-500 transition-colors text-sm font-medium"
               >
                 {link.title}
               </Link>
@@ -263,7 +255,7 @@ const Header: React.FC = () => {
 
             {/* Legal Links Dropdown */}
             <DropdownMenu>
-              <DropdownMenuTrigger className="flex items-center text-gray-700 hover:text-pick-blue transition-colors text-sm font-medium">
+              <DropdownMenuTrigger className="flex items-center text-gray-700 hover:text-pink-500 transition-colors text-sm font-medium">
                 Legal
                 <ChevronDown className="ml-1 h-4 w-4" />
               </DropdownMenuTrigger>
@@ -294,127 +286,7 @@ const Header: React.FC = () => {
             </svg>
           </div>
 
-          {/* Mobile Menu Button - Only visible on mobile */}
-          <div className="md:hidden">
-            <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
-              <SheetTrigger asChild>
-                <motion.button
-                  className="p-2 shadow-sm text-gray-700 hover:text-indigo-600"
-                  aria-label="Menu"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                >
-                  <motion.div
-                    animate={isMenuOpen ? "open" : "closed"}
-                    variants={{
-                      open: { rotate: 90 },
-                      closed: { rotate: 0 }
-                    }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <Menu size={24} />
-                  </motion.div>
-                </motion.button>
-              </SheetTrigger>
-              <SheetContent 
-                side="right" 
-                className="w-[80vw] sm:w-[300px] p-0 will-change-transform"
-                onOpenAutoFocus={(e) => e.preventDefault()}
-              >
-                <motion.div 
-                  initial={{ x: 300, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  exit={{ x: 300, opacity: 0 }}
-                  transition={{ 
-                    type: "spring",
-                    stiffness: 100,
-                    damping: 20,
-                    duration: 0.5
-                  }}
-                >
-                <div className="h-full flex flex-col">
-                  <SheetHeader className="p-4 border-b">
-                    <SheetTitle className="text-2xl font-bold text-indigo-600">
-                      PickCreator
-                    </SheetTitle>
-                  </SheetHeader>
-
-                  <div className="flex-1 overflow-auto py-6 px-6">
-                    {/* Navigation Links */}
-                    <div className="mb-8">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-4">Menu</h3>
-                      <ul className="space-y-4">
-                        {footerLinks.map((link, index) => (
-                          <li key={index}>
-                            <Link
-                              href={link.href}
-                              className="text-gray-700 hover:text-pick-blue transition-colors text-base flex items-center"
-                              onClick={() => setIsMenuOpen(false)}
-                            >
-                              {link.title}
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    {/* Sign Up Button */}
-                    <div className="mb-8">
-                      <Link
-                        href="/sign-up"
-                        className="w-full flex items-center justify-center text-white font-medium rounded-full bg-indigo-600 py-3 px-6 shadow-md hover:bg-indigo-700 transition-colors"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        Sign-up
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-2" viewBox="0 0 20 20" fill="currentColor">
-                          <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                        </svg>
-                      </Link>
-                    </div>
-                    <div className="mb-8">
-                      <Link
-                        href="/log-in"
-                        className="w-full flex items-center justify-center text-white font-medium rounded-full bg-teal-600 py-3 px-6 shadow-md hover:bg-teal-700 transition-colors"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        Log-in
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-2" viewBox="0 0 20 20" fill="currentColor">
-                          <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                        </svg>
-                      </Link>
-                    </div>
-
-                    {/* Social Links */}
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-4">Connect With Us</h3>
-                      <div className="flex space-x-4">
-                        {socialLinks.map((social, index) => (
-                          <a
-                            key={index}
-                            href={social.href}
-                            className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-pick-blue hover:text-white transition-colors"
-                            aria-label={social.label}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            {social.icon}
-                          </a>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="p-6 border-t text-center text-sm text-gray-500">
-                    &copy; {new Date().getFullYear()} PickCreator. All rights reserved.
-                  </div>
-                </div>
-                </motion.div>
-              </SheetContent>
-            </Sheet>
-          </div>
-
-          {/* Button with subtler gradient border - responsive size - hidden on mobile when menu is shown */}
+          {/* Sign Up Button - always visible */}
           <motion.div
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
