@@ -30,7 +30,7 @@ export async function POST(req: Request) {
     } else {
       try {
         // New user: create in DB without role, assign role 'needed' only in token
-        const newUser = await User.create({ email: email || undefined, phoneNumber: phone || undefined, role: "needed" });
+        const newUser = await User.create({ email: email || undefined, phoneNumber: phone || undefined });
         tokenData = {
           id: newUser._id,
           _id: newUser._id,

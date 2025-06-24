@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
       id: user._id,
       _id: user._id,
       email: user.email,
-      role: user.role,
+      role: user.role || "needed",
       // Add role-specific fields
       ...(user.role === 'Influencer' ? {
         instagramConnected: true,
@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
     // Sign a new token
     const newToken = await new SignJWT(tokenData)
       .setProtectedHeader({ alg: 'HS256' })
-      .setExpirationTime('1d')
+      .setExpirationTime('7d')
       .sign(new TextEncoder().encode(process.env.JWT_SECRET!));
     
     // Create the response
@@ -71,7 +71,7 @@ export async function GET(request: NextRequest) {
     response.cookies.set("token", newToken, {
       httpOnly: true,
       secure: true,
-      maxAge: 24 * 60 * 60, // 1 day in seconds
+      maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
     });
     
     return response;
@@ -82,4 +82,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}
