@@ -31,13 +31,30 @@ export async function POST(req: NextRequest) {
     }
     await User.deleteOne({ _id: userData.id });
     // Create a new user document with the same _id and new role, copying over other fields as needed
-    const { email, ...rest } = userBefore.toObject();
-    const newUser = await User.create({
-      _id: userData.id,
-      email,
-      role,
-      ...rest,
-    });
+    let newUser;
+    if (role === "Influencer") {
+      const { Influencer } = await import("@/models/influencer");
+      newUser = new Influencer({
+        _id: userData.id,
+        email: userBefore.email || undefined,
+        phoneNumber: userBefore.phoneNumber || undefined,
+        role,
+        name: userBefore.name || "",
+        isVerified: true,
+        onboardingCompleted: false,
+        onboardingStep: 0,
+      });
+    } else {
+      newUser = new User({
+        _id: userData.id,
+        email: userBefore.email || undefined,
+        phoneNumber: userBefore.phoneNumber || undefined,
+        role,
+        name: userBefore.name || "",
+        isVerified: true,
+      });
+    }
+    await newUser.save();
     console.log("New user after recreation:", newUser);
     return NextResponse.json({ success: true, role: newUser.role });
   } catch (err) {
