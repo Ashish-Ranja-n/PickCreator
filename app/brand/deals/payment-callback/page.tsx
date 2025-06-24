@@ -37,10 +37,10 @@ const PaymentParamsHandler = ({
   const router = useRouter();
 
   useEffect(() => {
-    const dealIdParam = searchParams?.get('dealId');
-    const merchantOrderIdParam = searchParams?.get('merchantOrderId');
-    const transactionIdParam = searchParams?.get('transactionId');
-    const code = searchParams?.get('code'); // PhonePe sometimes returns a code parameter
+    const dealIdParam = searchParams?.get('dealId') ?? null;
+    const merchantOrderIdParam = searchParams?.get('merchantOrderId') ?? null;
+    const transactionIdParam = searchParams?.get('transactionId') ?? null;
+    const code = searchParams?.get('code') ?? null; // PhonePe sometimes returns a code parameter
 
     if (dealIdParam) {
       setDealId(dealIdParam);
