@@ -20,14 +20,6 @@ export async function GET(request: NextRequest) {
       }, { status: 401 });
     }
 
-    // Check if user is a brand
-    if (userData.role !== 'Brand') {
-      return NextResponse.json({
-        success: false,
-        error: 'Only brands can access this endpoint'
-      }, { status: 403 });
-    }
-
     // Connect to the database
     await connect();
 

@@ -42,6 +42,8 @@ export default function AnalyticsTab() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [verifiedInfluencers, setVerifiedInfluencers] = useState<any[]>([]);
+  const [loadingInfluencers, setLoadingInfluencers] = useState(true);
   const slideInterval = useRef<ReturnType<typeof setInterval> | null>(null);
   const slideContainer = useRef<HTMLDivElement>(null);
   const touchStart = useRef<number>(0);
@@ -264,69 +266,85 @@ export default function AnalyticsTab() {
     fetchNotices();
   }, []);
 
+  // Fetch verified influencers
+  useEffect(() => {
+    async function fetchInfluencers() {
+      try {
+        setLoadingInfluencers(true);
+        const res = await fetch('/api/influencer/search?sortBy=followers&sortOrder=desc&limit=30');
+        if (!res.ok) throw new Error('Failed to fetch influencers');
+        const data = await res.json();
+        setVerifiedInfluencers(data.influencers || []);
+      } catch (e) {
+        setVerifiedInfluencers([]);
+      } finally {
+        setLoadingInfluencers(false);
+      }
+    }
+    fetchInfluencers();
+  }, []);
+
   return (
     <div className="py-4">
-      <div className="flex items-center gap-2 mb-6">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-          Notice Board
-        </h2>
-        {notices.length > 0 && (
-          <span className="px-2 py-0.5 text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-full">
-            {notices.length}
-          </span>
-        )}
-        {isAdmin && (
-          <Button
-            size="sm"
-            variant="ghost"
-            className="ml-auto"
-            onClick={() => setOpen(true)}
-          >
-            <Plus className="h-4 w-4" />
-          </Button>
-        )}
-      </div>
-
-      {loading ? (
-        <div className="flex justify-center items-center h-[360px] bg-white dark:bg-gray-900 rounded-xl">
-          <svg className="animate-spin h-5 w-5 text-gray-400" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" fill="none" />
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-          </svg>
-        </div>
-      ) : notices.length === 0 ? (
-        <div className="flex flex-col items-center justify-center h-[360px] bg-white dark:bg-gray-900 rounded-xl">
-          <AlertCircle className="h-8 w-8 text-gray-400 mb-3" />
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            No updates yet
-          </p>
-        </div>
-      ) : (
-        <div className="relative">
-          <div 
-            ref={slideContainer}
-            className="overflow-hidden bg-white dark:bg-gray-900 rounded-xl"
-          >
-            <div
-              className="flex transition-transform duration-300 ease-out"
-              style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+      {/* Remove Notice Board heading, make notice area wider and bigger */}
+      <div className="mb-6">
+        {loading ? (
+          <div className="flex justify-center items-center h-[360px] bg-white dark:bg-gray-900 rounded-xl">
+            <svg className="animate-spin h-5 w-5 text-gray-400" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" fill="none" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+            </svg>
+          </div>
+        ) : notices.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-[360px] bg-white dark:bg-gray-900 rounded-xl">
+            <AlertCircle className="h-8 w-8 text-gray-400 mb-3" />
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              No updates yet
+            </p>
+          </div>
+        ) : (
+          <div className="relative">
+            <div 
+              ref={slideContainer}
+              className="overflow-hidden bg-white dark:bg-gray-900 rounded-xl"
             >
-              {notices.map((notice, index) => (
-                <div
-                  key={notice._id}
-                  className="w-full flex-shrink-0"
-                  style={{ width: '100%' }}
-                >
-                  <div className="p-5 h-[360px] flex flex-col">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center gap-3">
-                        <div className={`
-                          relative h-9 w-9 rounded-full flex items-center justify-center text-sm font-medium overflow-hidden
-                          ${notice.isPinned 
-                            ? 'bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 ring-1 ring-violet-200 dark:ring-violet-800' 
-                            : 'bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400'
-                          }
-                        `}>
+              <div
+                className="flex transition-transform duration-300 ease-out"
+                style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+              >
+                {notices.map((notice, index) => (
+                  <div
+                    key={notice._id}
+                    className="relative w-full flex-shrink-0 flex justify-center items-start"
+                    style={{ width: '100%' }}
+                  >
+                    <div
+                      className="sticky-note w-full max-w-3xl mx-auto mt-8 mb-8 px-8 py-6 relative"
+                      style={{
+                        minHeight: '160px',
+                        background: 'linear-gradient(135deg, #fffbe6 90%, #ffe066 100%)',
+                        boxShadow: '0 6px 32px 0 rgba(0,0,0,0.13), 0 2px 8px 0 rgba(80,80,80,0.13)',
+                        borderRadius: '16px',
+                        border: '2px solid #ffe066',
+                        fontFamily: '"Comic Sans MS", "Comic Sans", cursive',
+                        position: 'relative',
+                        overflow: 'visible',
+                      }}
+                    >
+                      {/* Folded corner */}
+                      <div style={{
+                        position: 'absolute',
+                        right: 0,
+                        bottom: 0,
+                        width: '48px',
+                        height: '48px',
+                        background: 'linear-gradient(135deg, #ffe066 60%, #fffbe6 100%)',
+                        clipPath: 'polygon(100% 0, 0 100%, 100% 100%)',
+                        boxShadow: '-2px 2px 8px 0 rgba(0,0,0,0.10)',
+                        zIndex: 2,
+                      }} />
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="relative h-8 w-8 rounded-full flex items-center justify-center text-sm font-medium overflow-hidden bg-yellow-200 text-yellow-900 border border-yellow-300">
                           {notice.createdBy.avatar ? (
                             <img
                               src={notice.createdBy.avatar}
@@ -338,99 +356,82 @@ export default function AnalyticsTab() {
                           )}
                         </div>
                         <div>
-                          <h3 className={`
-                            font-medium text-sm
-                            ${notice.isPinned 
-                              ? 'text-violet-600 dark:text-violet-400' 
-                              : 'text-gray-900 dark:text-gray-100'
-                            }
-                          `}>
+                          <h3 className="font-bold text-base text-yellow-900">
                             {notice.title}
                           </h3>
                           <div className="flex items-center gap-2 mt-0.5">
-                            <span className="text-xs text-gray-500 dark:text-gray-400">
+                            <span className="text-xs text-yellow-700">
                               {notice.createdBy.name}
                             </span>
-                            <span className="text-xs text-gray-400 dark:text-gray-500 tabular-nums">
+                            <span className="text-xs text-yellow-500 tabular-nums">
                               {formatDistanceToNow(new Date(notice.createdAt), { addSuffix: true })}
                             </span>
                           </div>
                         </div>
+                        {isAdmin && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7 text-yellow-500 hover:text-red-500 ml-auto"
+                            onClick={() => deleteNotice(notice._id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        )}
                       </div>
-                      {isAdmin && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-gray-400 hover:text-red-500"
-                          onClick={() => deleteNotice(notice._id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                      {/* Collapsible content */}
+                      <NoticeContentPreview content={notice.content} />
+                      {notice.isPinned && (
+                        <div className="mt-1 flex items-center gap-1.5 text-yellow-700 text-[13px]">
+                          <span className="font-medium">Pinned</span>
+                        </div>
                       )}
                     </div>
-                    
-                    <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-700 scrollbar-track-transparent">
-                      <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
-                        {notice.content}
-                      </p>
-                    </div>
-
-                    {notice.isPinned && (
-                      <div className="mt-4 flex items-center gap-1.5 text-violet-600 dark:text-violet-400">
-                        <Pin className="h-3.5 w-3.5" />
-                        <span className="text-xs font-medium">Pinned</span>
-                      </div>
-                    )}
                   </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {notices.length > 1 && (
-            <>
-              <div className="absolute inset-y-0 left-0 flex items-center">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 bg-white/90 dark:bg-gray-900/90 shadow-sm border border-gray-200/50 dark:border-gray-800/50 rounded-full -ml-4"
-                  onClick={handlePrevSlide}
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-              </div>
-              
-              <div className="absolute inset-y-0 right-0 flex items-center">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 bg-white/90 dark:bg-gray-900/90 shadow-sm border border-gray-200/50 dark:border-gray-800/50 rounded-full -mr-4"
-                  onClick={handleNextSlide}
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
-
-              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
-                {notices.map((_, index) => (
-                  <button
-                    key={index}
-                    className={`
-                      h-1.5 rounded-full transition-all
-                      ${currentSlide === index 
-                        ? 'w-4 bg-violet-600 dark:bg-violet-400' 
-                        : 'w-1.5 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600'
-                      }
-                    `}
-                    onClick={() => setCurrentSlide(index)}
-                  />
                 ))}
               </div>
-            </>
-          )}
-        </div>
-      )}
+            </div>
 
+            {notices.length > 1 && (
+              <>
+                <div className="absolute inset-y-0 left-0 flex items-center">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 bg-white/90 dark:bg-gray-900/90 shadow-sm border border-gray-200/50 dark:border-gray-800/50 rounded-full -ml-4"
+                    onClick={handlePrevSlide}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                </div>
+                <div className="absolute inset-y-0 right-0 flex items-center">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 bg-white/90 dark:bg-gray-900/90 shadow-sm border border-gray-200/50 dark:border-gray-800/50 rounded-full -mr-4"
+                    onClick={handleNextSlide}
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+                  {notices.map((_, index) => (
+                    <button
+                      key={index}
+                      className={
+                        `h-1.5 rounded-full transition-all ${currentSlide === index 
+                          ? 'w-4 bg-violet-600 dark:bg-violet-400' 
+                          : 'w-1.5 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600'}`
+                      }
+                      onClick={() => setCurrentSlide(index)}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        )}
+      </div>
       {/* Dialog for creating new notice */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-md">
@@ -478,6 +479,73 @@ export default function AnalyticsTab() {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Influencer section below notice board */}
+      <div className="mt-10">
+        <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Meet the Creators & Brands</h3>
+        {loadingInfluencers ? (
+          <div className="flex justify-center items-center h-24">
+            <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+          </div>
+        ) : verifiedInfluencers.length === 0 ? (
+          <div className="text-center text-gray-400 text-sm">No verified influencers found.</div>
+        ) : (
+          <div className="flex gap-6 overflow-x-auto pb-2 hide-scrollbar">
+            {verifiedInfluencers.map((influencer) => (
+              <InfluencerCard key={influencer._id} influencer={influencer} />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
+
+// Add this helper component above the return statement:
+
+function NoticeContentPreview({ content }: { content: string }) {
+  const [expanded, setExpanded] = useState(false);
+  const maxChars = 90;
+  const isLong = content.length > maxChars;
+  return (
+    <div className="text-lg text-yellow-900 leading-relaxed whitespace-pre-wrap mt-3 mb-2 font-[Comic_Sans_MS] tracking-wide" style={{ lineHeight: 1.8, letterSpacing: '0.02em' }}>
+      {expanded || !isLong ? content : content.slice(0, maxChars) + '...'}
+      {isLong && (
+        <button
+          className="ml-2 text-yellow-700 hover:underline text-base font-semibold"
+          onClick={() => setExpanded((e) => !e)}
+        >
+          {expanded ? 'Show less' : 'Read more'}
+        </button>
+      )}
+    </div>
+  );
+}
+
+// InfluencerCard component for verified influencers
+function InfluencerCard({ influencer }: { influencer: any }) {
+  // Use profilePictureUrl for avatar, name for display, followers for count
+  return (
+    <div className="flex flex-col items-center bg-[#fdf6f0] rounded-2xl p-4 min-w-[160px] max-w-[180px] shadow-sm border border-[#f5e6d6]">
+      <div className="w-20 h-20 rounded-xl overflow-hidden mb-2 bg-[#fbead9] flex items-center justify-center">
+        {influencer.profilePictureUrl ? (
+          <img
+            src={influencer.profilePictureUrl}
+            alt={influencer.name}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <span className="text-3xl font-bold text-[#c2a07e]">
+            {influencer.name ? influencer.name.charAt(0).toUpperCase() : '?'}
+          </span>
+        )}
+      </div>
+      <div className="text-sm font-semibold text-gray-900 mb-0.5">@{influencer.instagramUsername || influencer.name}</div>
+      <div className="text-xs text-[#b48b5e]">{influencer.followers?.toLocaleString() || '0'} followers</div>
+    </div>
+  );
+}
+
+// Add this to your global CSS or in a style tag/component:
+// .hide-scrollbar::-webkit-scrollbar { display: none; }
+// .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
