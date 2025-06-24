@@ -27,7 +27,7 @@ const UserSchema = new Schema<IUser>(
     forgotPasswordTokenExpiry: Date,
     verifyToken: String,
     verifyTokenExpiry: Date,
-    phoneNumber: { type: String },
+    phoneNumber: { type: String, unique: true },
   },
   { timestamps: true, discriminatorKey: "role" }
 );

@@ -11,8 +11,10 @@ export async function POST(req: Request) {
     let user = null;
     const identifier = email || phone;
     let query = {};
-    if (email) query = { email };
-    if (phone) query = { phoneNumber: phone };
+    // Improved query logic: check for both email and phone if both are provided
+    if (email && phone) query = { $or: [{ email }, { phoneNumber: phone }] };
+    else if (email) query = { email };
+    else if (phone) query = { phoneNumber: phone };
     if (!identifier) {
       return NextResponse.json({ error: "Email or phone required" }, { status: 400 });
     }
@@ -26,14 +28,36 @@ export async function POST(req: Request) {
         role: user.role,
       };
     } else {
-      // New user: create in DB without role, assign role 'needed' only in token
-      const newUser = await User.create({ email: email || undefined, phoneNumber: phone || undefined, role: "needed" });
-      tokenData = {
-        id: newUser._id,
-        _id: newUser._id,
-        role: "needed",
-      };
-      user = newUser;
+      try {
+        // New user: create in DB without role, assign role 'needed' only in token
+        const newUser = await User.create({ email: email || undefined, phoneNumber: phone || undefined, role: "needed" });
+        tokenData = {
+          id: newUser._id,
+          _id: newUser._id,
+          role: "needed",
+        };
+        user = newUser;
+      } catch (createErr: any) {
+        // Handle duplicate key error gracefully
+        if (createErr.code === 11000) {
+          // Find the user again
+          user = await User.findOne(query);
+          if (user) {
+            tokenData = {
+              id: user._id,
+              _id: user._id,
+              email: user.email,
+              role: user.role,
+            };
+          } else {
+            return NextResponse.json({ error: "Duplicate key error but user not found." }, { status: 500 });
+          }
+        } else {
+          // Log and return the actual error for debugging
+          console.error("User creation error:", createErr);
+          return NextResponse.json({ error: createErr.message || "User creation failed" }, { status: 500 });
+        }
+      }
     }
     const token = await new SignJWT(tokenData)
       .setProtectedHeader({ alg: "HS256" })
@@ -50,7 +74,9 @@ export async function POST(req: Request) {
       maxAge: 7 * 24 * 60 * 60,
     });
     return response;
-  } catch (error) {
-    return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
+  } catch (error: any) {
+    // Log and return the actual error for debugging
+    console.error("POST /api/auth/otp-login error:", error);
+    return NextResponse.json({ error: error.message || "Something went wrong" }, { status: 500 });
   }
 }
