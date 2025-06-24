@@ -490,7 +490,7 @@ export default function AnalyticsTab() {
         ) : verifiedInfluencers.length === 0 ? (
           <div className="text-center text-gray-400 text-sm">No verified influencers found.</div>
         ) : (
-          <div className="flex gap-6 overflow-x-auto pb-2 hide-scrollbar">
+          <div className="flex gap-8 overflow-x-auto pb-2 hide-scrollbar">
             {verifiedInfluencers.map((influencer) => (
               <InfluencerCard key={influencer._id} influencer={influencer} />
             ))}
@@ -525,9 +525,10 @@ function NoticeContentPreview({ content }: { content: string }) {
 // InfluencerCard component for verified influencers
 function InfluencerCard({ influencer }: { influencer: any }) {
   // Use profilePictureUrl for avatar, name for display, followers for count
+  const instaUrl = influencer.instagramUsername ? `https://instagram.com/${influencer.instagramUsername}` : undefined;
   return (
-    <div className="flex flex-col items-center bg-[#fdf6f0] rounded-2xl p-4 min-w-[160px] max-w-[180px] shadow-sm border border-[#f5e6d6]">
-      <div className="w-20 h-20 rounded-xl overflow-hidden mb-2 bg-[#fbead9] flex items-center justify-center">
+    <div className="flex flex-col items-center bg-[#fdf6f0] rounded-2xl p-6 min-w-[210px] max-w-[240px] shadow-md border border-[#f5e6d6] transition-transform hover:scale-105 cursor-pointer">
+      <div className="w-28 h-28 rounded-2xl overflow-hidden mb-3 bg-[#fbead9] flex items-center justify-center">
         {influencer.profilePictureUrl ? (
           <img
             src={influencer.profilePictureUrl}
@@ -535,15 +536,35 @@ function InfluencerCard({ influencer }: { influencer: any }) {
             className="w-full h-full object-cover"
           />
         ) : (
-          <span className="text-3xl font-bold text-[#c2a07e]">
+          <span className="text-4xl font-bold text-[#c2a07e]">
             {influencer.name ? influencer.name.charAt(0).toUpperCase() : '?'}
           </span>
         )}
       </div>
-      <div className="text-sm font-semibold text-gray-900 mb-0.5">@{influencer.instagramUsername || influencer.name}</div>
-      <div className="text-xs text-[#b48b5e]">{influencer.followers?.toLocaleString() || '0'} followers</div>
+      <div className="text-base font-semibold text-gray-900 mb-1">
+        {instaUrl ? (
+          <a
+            href={instaUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:underline text-[#b48b5e]"
+          >
+            @{influencer.instagramUsername}
+          </a>
+        ) : (
+          `@${influencer.name}`
+        )}
+      </div>
+      <div className="text-sm text-[#b48b5e]">{formatFollowers(influencer.followers || 0)} followers</div>
     </div>
   );
+}
+
+function formatFollowers(count: number) {
+  if (count >= 1000) {
+    return (count / 1000).toFixed(count % 1000 === 0 ? 0 : 1) + 'K';
+  }
+  return count.toLocaleString();
 }
 
 // Add this to your global CSS or in a style tag/component:
