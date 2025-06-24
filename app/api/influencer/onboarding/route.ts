@@ -81,9 +81,9 @@ export async function GET(request: NextRequest) {
     // Extract only the onboarding-related fields
     const onboardingData = {
       influencer: {
+        name: (influencer as any).name || '', // <-- Added
         age: (influencer as any).age || null,
         gender: (influencer as any).gender || '',
-        mobile: (influencer as any).mobile || '',
         bio: (influencer as any).bio || '',
         city: (influencer as any).city || '',
         onboardingCompleted: (influencer as any).onboardingCompleted || false,
@@ -156,6 +156,10 @@ export async function PUT(request: NextRequest) {
     const updateData: any = {};
     
     // Handle personal info fields
+    if ('name' in body) {
+      updateData.name = body.name;
+      console.log('Onboarding PUT - Setting name:', body.name);
+    }
     if ('age' in body) {
       updateData.age = body.age;
       console.log('Onboarding PUT - Setting age:', body.age);
@@ -279,6 +283,7 @@ export async function PUT(request: NextRequest) {
       success: true, 
       message: 'Influencer data updated successfully',
       influencer: {
+        name: updatedInfluencer.name,
         bio: updatedInfluencer.bio,
         city: updatedInfluencer.city,
         pricingModels: updatedInfluencer.pricingModels,

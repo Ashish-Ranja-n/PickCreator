@@ -21,6 +21,9 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "@/components/ui/use-toast";
 
 const formSchema = z.object({
+  name: z
+    .string({ required_error: "Name is required" })
+    .min(2, "Name must be at least 2 characters"),
   age: z
     .number({ invalid_type_error: "Age is required" })
     .min(13, "You must be at least 13 years old")
@@ -41,6 +44,7 @@ export default function PersonalInfoPage() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      name: typeof onboardingData.name === 'string' ? onboardingData.name : '',
       age: typeof onboardingData.age === 'number' ? onboardingData.age : 18,
       gender: (onboardingData.gender === 'male' || onboardingData.gender === 'female' || onboardingData.gender === 'other') ? onboardingData.gender : 'male',
     },
@@ -80,6 +84,24 @@ export default function PersonalInfoPage() {
       <p className="mb-6 text-muted-foreground text-base">Please provide your personal details. This information will remain private and secure.</p>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Name</FormLabel>
+                <FormControl>
+                  <input
+                    type="text"
+                    className="w-full rounded-lg border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/30 px-4 py-3 text-base transition placeholder:text-gray-400 bg-white dark:bg-zinc-900"
+                    placeholder="Enter your name"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <FormField
             control={form.control}
             name="age"

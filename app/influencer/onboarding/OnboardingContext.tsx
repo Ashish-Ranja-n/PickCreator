@@ -40,9 +40,9 @@ interface BrandPreferences {
 }
 
 // Define the shape of our onboarding state
-
 interface OnboardingState {
   // Personal info
+  name: string;
   age: number | null;
   gender: 'male' | 'female' | 'other' | '';
 
@@ -80,6 +80,7 @@ const OnboardingContext = createContext<OnboardingContextType | undefined>(undef
 // Default onboarding state
 
 const defaultOnboardingState: OnboardingState = {
+  name: '',
   age: null,
   gender: '',
   bio: '',
@@ -136,6 +137,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
 
           // Transform the data to match our state structure
           const transformedData: OnboardingState = {
+            name: influencer.name || '',
             age: influencer.age || null,
             gender: influencer.gender || '',
             bio: influencer.bio || '',
@@ -220,6 +222,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
       // 2. Any form data passed directly (has priority)
       // 3. The new step
       const dataToSave = {
+        name: formData?.name !== undefined ? formData.name : onboardingData.name,
         age: formData?.age !== undefined ? formData.age : onboardingData.age,
         gender: formData?.gender !== undefined ? formData.gender : onboardingData.gender,
         bio: formData?.bio !== undefined ? formData.bio : onboardingData.bio,
@@ -276,6 +279,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
       // 2. Any form data passed directly (has priority)
       // 3. Setting onboardingCompleted to true
       const dataToSave = {
+        name: formData?.name !== undefined ? formData.name : onboardingData.name,
         age: formData?.age !== undefined ? formData.age : onboardingData.age,
         gender: formData?.gender !== undefined ? formData.gender : onboardingData.gender,
         bio: formData?.bio !== undefined ? formData.bio : onboardingData.bio,
