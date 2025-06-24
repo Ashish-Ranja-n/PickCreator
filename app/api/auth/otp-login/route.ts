@@ -25,12 +25,12 @@ export async function POST(req: Request) {
         id: user._id,
         _id: user._id,
         email: user.email,
-        role: user.role,
+        role: user.role || "needed", // Default to 'needed' if no role is set
       };
     } else {
       try {
         // New user: create in DB without role, assign role 'needed' only in token
-        const newUser = await User.create({ email: email || undefined, phoneNumber: phone || undefined });
+        const newUser = await User.create({ email: email || undefined, phoneNumber: phone || undefined, isVerified: true });
         tokenData = {
           id: newUser._id,
           _id: newUser._id,
@@ -47,7 +47,7 @@ export async function POST(req: Request) {
               id: user._id,
               _id: user._id,
               email: user.email,
-              role: user.role,
+              role: user.role || "needed", // Default to 'needed' if no role is set
             };
           } else {
             return NextResponse.json({ error: "Duplicate key error but user not found." }, { status: 500 });

@@ -1,11 +1,13 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function PickRolePage() {
   const router = useRouter();
+  const [loadingRole, setLoadingRole] = useState<null | "Brand" | "Influencer">(null);
 
   const handleRoleSelect = async (role: "Brand" | "Influencer") => {
+    setLoadingRole(role);
     try {
       // Save role to backend (update user role)
       const res = await fetch("/api/auth/set-role", {
@@ -21,32 +23,33 @@ export default function PickRolePage() {
         credentials: "include",
       });
       if (!refreshRes.ok) throw new Error("Failed to refresh token");
-      // Redirect to onboarding or dashboard as per role
       if (role === "Brand") {
-        router.push("/brand/onboarding");
+        router.replace("/brand/onboarding");
       } else {
-        router.push("/influencer/onboarding/basic-info");
+        router.replace("/influencer/onboarding/basic-info");
       }
     } catch (err) {
       alert("There was a problem setting your role. Please try again.");
+    } finally {
+      setLoadingRole(null);
     }
   };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-start bg-[#fff6f9] px-4 py-0">
       {/* Top Row: Pickcreator and Help Icon */}
-      <div className="w-full max-w-xl flex items-center justify-between px-4 pt-6 pb-2">
+      <div className="w-full max-w-xl flex items-center justify-between px-2 pt-6 pb-2">
         <div className="w-8" />
-        <span className="font-semibold text-[#2d2323] text-base text-center flex-1">
+        <span className="font-extrabold text-[#2d2323] text-lg text-center flex-1 tracking-wider">
           Pickcreator
         </span>
         <button
-          className="w-8 h-8 flex items-center justify-center rounded-full border border-[#e0e0e0] bg-white hover:bg-[#f3f3f3] transition"
+          className="w-9 h-9 flex items-center justify-center rounded-full border border-[#e0e0e0] bg-white hover:bg-[#f3f3f3] transition"
           aria-label="Help"
         >
           <svg
-            width="18"
-            height="18"
+            width="20"
+            height="20"
             viewBox="0 0 20 20"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -73,30 +76,33 @@ export default function PickRolePage() {
         </button>
       </div>
       {/* Header */}
-      <h1 className="mb-2 text-2xl font-extrabold text-[#2d2323] text-center tracking-tight">
+      <h1 className="mb-1 text-3xl font-black text-[#2d2323] text-center tracking-tight leading-tight">
         Welcome to Pickcreator
       </h1>
       {/* Subheader: Who are you? */}
       <div className="w-full max-w-xs">
-        <h2 className="mb-6 text-xl font-bold text-[#c03a5b] text-center">
+        <h2 className="mb-8 text-lg font-semibold text-[#c03a5b] text-center tracking-wide">
           Who are you?
         </h2>
       </div>
       {/* Role Cards */}
-      <div className="w-full max-w-xs flex flex-col gap-6">
+      <div className="w-full max-w-xs flex flex-col gap-7">
         {/* Business Card */}
         <button
-          className="flex flex-row items-center gap-4 bg-[#eaf2ff] rounded-2xl px-4 py-6 w-full shadow-md transition-all duration-150 active:scale-95 hover:shadow-lg focus:outline-none border-2 border-transparent hover:border-[#1976f7]"
+          className="flex flex-row items-center gap-5 bg-[#eaf2ff] rounded-3xl px-5 py-7 w-full shadow-lg transition-all duration-150 active:scale-95 hover:shadow-xl focus:outline-none border-2 border-transparent hover:border-[#1976f7] relative"
           onClick={() => handleRoleSelect("Brand")}
           style={{
-            boxShadow: "0 4px 16px 0 rgba(25, 118, 247, 0.08)",
+            boxShadow: "0 6px 24px 0 rgba(25, 118, 247, 0.10)",
+            opacity: loadingRole ? 0.7 : 1,
+            pointerEvents: loadingRole ? "none" : "auto",
           }}
+          disabled={!!loadingRole}
         >
-          <div className="flex items-center justify-center w-14 h-14 rounded-xl bg-white">
+          <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-white shadow-sm">
             {/* Storefront Icon */}
             <svg
-              width="36"
-              height="36"
+              width="40"
+              height="40"
               viewBox="0 0 24 24"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -125,27 +131,38 @@ export default function PickRolePage() {
             </svg>
           </div>
           <div className="flex flex-col items-start text-left">
-            <span className="text-lg font-bold text-[#1976f7] mb-1">
+            <span className="text-xl font-extrabold text-[#1976f7] mb-1 leading-tight">
               Business
             </span>
-            <span className="text-sm text-[#1976f7] font-medium">
+            <span className="text-base text-[#1976f7] font-medium opacity-80">
               Promote your brand
             </span>
           </div>
+          {loadingRole === "Brand" && (
+            <span className="absolute right-4 top-4">
+              <svg className="animate-spin" width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" stroke="#1976f7" strokeWidth="4" opacity="0.2" />
+                <path d="M22 12a10 10 0 0 1-10 10" stroke="#1976f7" strokeWidth="4" strokeLinecap="round" />
+              </svg>
+            </span>
+          )}
         </button>
         {/* Influencer Card */}
         <button
-          className="flex flex-row items-center gap-4 bg-[#ffe3ef] rounded-2xl px-4 py-6 w-full shadow-md transition-all duration-150 active:scale-95 hover:shadow-lg focus:outline-none border-2 border-transparent hover:border-[#ff5ca8]"
+          className="flex flex-row items-center gap-5 bg-[#ffe3ef] rounded-3xl px-5 py-7 w-full shadow-lg transition-all duration-150 active:scale-95 hover:shadow-xl focus:outline-none border-2 border-transparent hover:border-[#ff5ca8] relative"
           onClick={() => handleRoleSelect("Influencer")}
           style={{
-            boxShadow: "0 4px 16px 0 rgba(255, 92, 168, 0.08)",
+            boxShadow: "0 6px 24px 0 rgba(255, 92, 168, 0.10)",
+            opacity: loadingRole ? 0.7 : 1,
+            pointerEvents: loadingRole ? "none" : "auto",
           }}
+          disabled={!!loadingRole}
         >
-          <div className="flex items-center justify-center w-14 h-14 rounded-xl bg-white">
+          <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-white shadow-sm">
             {/* Person Icon */}
             <svg
-              width="36"
-              height="36"
+              width="40"
+              height="40"
               viewBox="0 0 24 24"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -155,15 +172,25 @@ export default function PickRolePage() {
             </svg>
           </div>
           <div className="flex flex-col items-start text-left">
-            <span className="text-lg font-bold text-[#ff5ca8] mb-1">
+            <span className="text-xl font-extrabold text-[#ff5ca8] mb-1 leading-tight">
               Influencer
             </span>
-            <span className="text-sm text-[#ff5ca8] font-medium">
+            <span className="text-base text-[#ff5ca8] font-medium opacity-80">
               Work with brands
             </span>
           </div>
+          {loadingRole === "Influencer" && (
+            <span className="absolute right-4 top-4">
+              <svg className="animate-spin" width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" stroke="#ff5ca8" strokeWidth="4" opacity="0.2" />
+                <path d="M22 12a10 10 0 0 1-10 10" stroke="#ff5ca8" strokeWidth="4" strokeLinecap="round" />
+              </svg>
+            </span>
+          )}
         </button>
       </div>
+      {/* Extra spacing for mobile bottom safe area */}
+      <div className="h-8" />
     </div>
   );
 }
