@@ -142,9 +142,9 @@ export default function PersonalInfoPage() {
                         value="male"
                         checked={field.value === 'male'}
                         onChange={() => field.onChange('male')}
-                        className="hidden"
+                        className="hidden onboarding-radio"
                       />
-                      <span className="text-lg font-medium text-[#C13B7B]">468 Male</span>
+                      <span className="text-lg font-medium text-[#C13B7B]">👨‍🦱 Male</span>
                     </label>
                     <label className={
                       `flex flex-col items-center cursor-pointer rounded-lg border-2 px-4 py-3 transition-all duration-150
@@ -155,9 +155,9 @@ export default function PersonalInfoPage() {
                         value="female"
                         checked={field.value === 'female'}
                         onChange={() => field.onChange('female')}
-                        className="hidden"
+                        className="hidden onboarding-radio"
                       />
-                      <span className="text-lg font-medium text-[#C13B7B]">469 Female</span>
+                      <span className="text-lg font-medium text-[#C13B7B]">👩‍🦰 Female</span>
                     </label>
                     <label className={
                       `flex flex-col items-center cursor-pointer rounded-lg border-2 px-4 py-3 transition-all duration-150
@@ -168,9 +168,9 @@ export default function PersonalInfoPage() {
                         value="other"
                         checked={field.value === 'other'}
                         onChange={() => field.onChange('other')}
-                        className="hidden"
+                        className="hidden onboarding-radio"
                       />
-                      <span className="text-lg font-medium text-[#C13B7B]">308 Other</span>
+                      <span className="text-lg font-medium text-[#C13B7B]">🏳️‍🌈 Other</span>
                     </label>
                   </div>
                 </FormControl>
@@ -190,6 +190,7 @@ export default function PersonalInfoPage() {
                   e.preventDefault();
                 }
               }}
+              className="bg-[#C13B7B] hover:bg-[#a02c63] text-white font-semibold shadow-md px-6 py-3 rounded-lg transition-colors duration-200"
             >
               {isSaving ? (
                 <>

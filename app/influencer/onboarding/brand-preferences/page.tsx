@@ -364,6 +364,7 @@ export default function BrandPreferencesPage() {
             <Button
               type="submit"
               disabled={isSaving || isLoading}
+              className="bg-[#C13B7B] hover:bg-[#a02c63] text-white font-semibold shadow-md px-6 py-3 rounded-lg transition-colors duration-200"
             >
               {isSaving ? (
                 <>

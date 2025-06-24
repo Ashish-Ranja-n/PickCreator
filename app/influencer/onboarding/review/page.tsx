@@ -393,6 +393,7 @@ export default function ReviewPage() {
         <Button
           onClick={handleSubmit}
           disabled={isSaving || isLoading || !termsAccepted}
+          className="bg-[#C13B7B] hover:bg-[#a02c63] text-white font-semibold shadow-md px-6 py-3 rounded-lg transition-colors duration-200"
         >
           {isSaving ? (
             <>
