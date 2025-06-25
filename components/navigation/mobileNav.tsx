@@ -14,10 +14,13 @@ const MobileNav = () => {
   const navClass = cn(
     "lg:hidden fixed bottom-4 left-1/2 -translate-x-1/2 w-[95vw] max-w-md z-50 rounded-full px-2 py-1 flex justify-between items-center backdrop-blur-md border",
     isDarkMode
-      ? "bg-gray-950/90 border-gray-800 shadow-2xl"
-      : "bg-white/90 border-slate-200 shadow-2xl"
+      ? "bg-gray-950/90 border-gray-800 shadow-2xl dark:bg-gray-950/90 dark:border-gray-800"
+      : "bg-white/90 border-slate-200 shadow-2xl dark:bg-gray-950/90 dark:border-gray-800"
   );
-  const navInnerClass = "flex w-full justify-between items-center h-16";
+  const navInnerClass = cn(
+    "flex w-full justify-between items-center h-16",
+    isDarkMode ? "dark" : ""
+  );
 
   const tabs = [
     { icon: Home, label: "Home", path: "/brand" },
