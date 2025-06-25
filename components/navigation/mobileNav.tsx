@@ -1,6 +1,6 @@
 'use client';
 import { cn } from "@/lib/utils";
-import { Home, ShoppingBag } from "lucide-react";
+import { Home, ShoppingBag, MessageCircle, User2 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useDealStatusDot } from "@/hook/useDealStatusDot";
@@ -25,6 +25,8 @@ const MobileNav = () => {
   const tabs = [
     { icon: Home, label: "Home", path: "/brand" },
     { icon: ShoppingBag, label: "Deals", path: "/brand/deals" },
+    { icon: MessageCircle, label: "Chats", path: "/brand/chat" },
+    { icon: User2, label: "Profile", path: "/brand/profile" },
   ];
 
   const navContent = (
