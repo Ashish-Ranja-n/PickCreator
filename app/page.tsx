@@ -6,6 +6,7 @@ import BrandsSection from '@/components/LandingpageComponents/BrandsSection';
 import InfluencersSection from '@/components/LandingpageComponents/InfluencersSection';
 import PricingSection from '@/components/LandingpageComponents/PricingSection';
 import Footer from '@/components/LandingpageComponents/Footer';
+import Header from '@/components/LandingpageComponents/Header';
 
 
 
@@ -167,30 +168,11 @@ export default function Home() {
           transition={{ duration: 0.3 }}
           className={loading ? 'invisible' : 'visible'}
         >
+          <Header />
           <main>
             {/* Hero Section */}
             <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-b from-indigo-50 via-white to-purple-50">
               <div className="container-custom relative z-10">
-                {/* Logo and Brand Name - now inside hero section, above the tagline */}
-                <div className="flex items-center justify-center gap-2 select-none pt-6 pb-4">
-                  <img
-                    src="/pickcreatorLogo.png"
-                    alt="Pickcreator Logo"
-                    className="w-16 h-16 md:w-24 md:h-24 object-contain drop-shadow-lg"
-                    style={{ display: 'inline', verticalAlign: 'middle' }}
-                  />
-                  <span
-                    className="font-black tracking-tight text-4xl md:text-6xl"
-                    style={{
-                      background: 'linear-gradient(90deg, #ec4899 0%, #d946ef 100%)',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                      letterSpacing: '0.08em',
-                    }}
-                  >
-                   !ckCreator
-                  </span>
-                </div>
                 <div className="text-center max-w-5xl mx-auto pt-4 sm:pt-8 md:pt-12">
                   <motion.span
                     initial={{ opacity: 0, y: 20 }}
