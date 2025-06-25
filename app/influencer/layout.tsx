@@ -39,7 +39,7 @@ const InfluencerLayoutInner: React.FC<InfluencerLayoutProps> = React.memo((props
       {isMobile && !hideNavbar && <Navbar />}
       <div className="bg-background">
         {!hideNavbar && <DesktopNav />}
-        <div className="h-full">
+        <div className={`${isMobile && !hideNavbar ? 'pb-10' : ''} h-screen}`}>
           {showPrompt && <NotificationPermissionPrompt userType="influencer" />}
           {props.children}
         </div>

@@ -47,7 +47,7 @@ export default function InfluencerPage() {
 
         {/* Scrollable content area with padding to account for fixed header */}
         <div className="flex-1 overflow-y-auto pt-4">
-          <TabsContent value="analytics" className="h-full pt-8">
+          <TabsContent value="analytics" className="h-full pt-2">
             <AnalyticsTab />
           </TabsContent>
 

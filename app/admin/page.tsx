@@ -47,7 +47,7 @@ export default function AdminPage() {
 
         {/* Scrollable content area with padding to account for fixed header */}
         <div className="flex-1 overflow-y-auto pt-4">
-          <TabsContent value="analytics" className="h-full pt-8">
+          <TabsContent value="analytics" className="h-full">
             <Card className="bg-white/90 dark:bg-zinc-900/90 border-gray-200/50 dark:border-zinc-800/50 shadow-md text-gray-900 dark:text-white">
               <CardContent className="pt-6">
                 <AnalyticsTab />
