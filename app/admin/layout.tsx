@@ -34,7 +34,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = React.memo((props) => {
       {isMobile && !hideNavbar && <Navbar />}
       <div className="bg-background">
         {!hideNavbar && <AdminDesktopNav />}
-        <div className={`${isMobile && !hideNavbar ? 'pt-12 pb-16' : ''} h-screen`}>
+        <div className={`${isMobile && !hideNavbar ? 'pt-11 pb-16' : ''} h-screen`}>
           {showPrompt && <NotificationPermissionPrompt userType="admin" />}
           {props.children}
         </div>

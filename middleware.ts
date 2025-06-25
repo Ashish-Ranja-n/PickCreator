@@ -171,6 +171,7 @@ export async function middleware(request: NextRequest) {
 export const config = {
     matcher: [
         '/',
+        '/verify-instagram',
         '/pickRole',
         '/welcome',
         '/pickRole/:path*',
