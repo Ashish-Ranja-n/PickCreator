@@ -333,8 +333,14 @@ const ProfilePage = () => {
       if (res.data.success) {
         setVerifyModalOpen(false);
         toast({ title: 'Verified!', description: 'Your account is now verified.', variant: 'default' });
-        // Refresh profile data after successful verification
-        router.refresh();
+        // Refresh token after successful verification
+        try {
+          await axios.get('/api/auth/refresh-token');
+        } catch (e) {
+          console.error('Error refreshing token:', e);
+        }
+        // Force a client-side refresh to update the profile
+       window.location.reload();
       } else {
         setVerificationError(res.data.message || 'Invalid code');
       }

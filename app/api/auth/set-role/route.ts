@@ -43,6 +43,7 @@ export async function POST(req: NextRequest) {
         isVerified: true,
         onboardingCompleted: false,
         onboardingStep: 0,
+        isInstagramVerified: false,
       });
     } else {
       newUser = new User({

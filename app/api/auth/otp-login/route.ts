@@ -24,8 +24,13 @@ export async function POST(req: Request) {
       tokenData = {
         id: user._id,
         _id: user._id,
-        email: user.email,
+        email: user.email || '',
         role: user.role || "needed", // Default to 'needed' if no role is set
+        ...(user.role === 'Influencer' ? {
+        instagramConnected: true,
+        isInstagramVerified: user.isInstagramVerified || false,
+        onboardingCompleted: user.onboardingCompleted || false
+      } : {})
       };
     } else {
       try {
@@ -46,8 +51,13 @@ export async function POST(req: Request) {
             tokenData = {
               id: user._id,
               _id: user._id,
-              email: user.email,
+              email: user.email || '',
               role: user.role || "needed", // Default to 'needed' if no role is set
+              ...(user.role === 'Influencer' ? {
+        instagramConnected: true,
+        isInstagramVerified: user.isInstagramVerified || false,
+        onboardingCompleted: user.onboardingCompleted || false
+      } : {})
             };
           } else {
             return NextResponse.json({ error: "Duplicate key error but user not found." }, { status: 500 });

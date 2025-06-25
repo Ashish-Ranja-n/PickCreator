@@ -13,6 +13,24 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(`${baseUrl}/welcome`);
     }
 
+    if (path.startsWith('/verify-instagram')) {
+        if (!token) {
+            return NextResponse.redirect(`${baseUrl}/welcome`);
+        }
+        try {
+            const payload = await getDataFromToken(request, token);
+
+            if (payload?.role === 'Influencer' && payload?.isInstagramVerified) {
+                return NextResponse.redirect(`${baseUrl}/influencer/profile`);
+            }
+        } catch (error: any) {
+            console.error("Token verification failed:", error.message);
+            const response = NextResponse.redirect(`${baseUrl}/welcome`);
+            response.cookies.delete('token');
+            return response;
+        }
+    }
+
     // Handle API routes
     if(path.startsWith('/api/')) {
         // Define public API routes that don't need authentication
@@ -70,6 +88,7 @@ export async function middleware(request: NextRequest) {
             try {
                 const payload = await getDataFromToken(request, token);
                 const role = payload?.role;
+                const isInstagramVerified = payload?.isInstagramVerified;
 
                 if(role === 'needed' && !path.startsWith('/pickRole')) {
                     return NextResponse.redirect(`${baseUrl}/pickRole`);
@@ -103,6 +122,16 @@ export async function middleware(request: NextRequest) {
         try {
             const payload = await getDataFromToken(request, token);
             const role = payload?.role;
+            const onboardingCompleted = payload?.onboardingCompleted;
+
+            if(role === 'needed') {
+                return NextResponse.redirect(`${baseUrl}/pickRole`);
+            }
+
+            // Influencer onboarding check
+            if (path.startsWith('/influencer') && role === 'Influencer' && onboardingCompleted === false && !path.startsWith('/influencer/onboarding')) {
+                return NextResponse.redirect(`${baseUrl}/influencer/onboarding/basic-info`);
+            }
 
             // Role-based access control
             if(path.startsWith('/brand') && role !== 'Brand') {
@@ -142,6 +171,9 @@ export async function middleware(request: NextRequest) {
 export const config = {
     matcher: [
         '/',
+        '/pickRole',
+        '/welcome',
+        '/pickRole/:path*',
         '/welcome/:path*',
         '/log-in/:path*',
         '/sign-up/:path*',

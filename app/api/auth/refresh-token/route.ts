@@ -46,11 +46,12 @@ export async function GET(request: NextRequest) {
     const tokenData = {
       id: user._id,
       _id: user._id,
-      email: user.email,
+      email: user.email || '',
       role: user.role || "needed",
       // Add role-specific fields
       ...(user.role === 'Influencer' ? {
         instagramConnected: true,
+        isInstagramVerified: user.isInstagramVerified || false,
         onboardingCompleted: user.onboardingCompleted || false
       } : {})
     };
