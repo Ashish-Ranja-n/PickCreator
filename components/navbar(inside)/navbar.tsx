@@ -1,12 +1,11 @@
 import React from 'react';
 import "@/app/globals.css";
-import { motion, AnimatePresence } from 'framer-motion';
-import { BellIcon, UserIcon, SunIcon, MoonIcon, Bars3Icon } from '@heroicons/react/24/outline';
+import { motion } from 'framer-motion';
+import { BellIcon, SunIcon, MoonIcon } from '@heroicons/react/24/outline';
 import { useTheme } from 'next-themes';
 
 const Navbar: React.FC = () => {
   const { theme, setTheme } = useTheme();
-  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => setMounted(true), []);
@@ -33,18 +32,8 @@ const Navbar: React.FC = () => {
         <div className="absolute inset-0 dark:bg-black"></div>
         <div className="absolute inset-0 bg-[linear-gradient(to_right,transparent_0%,rgba(255,255,255,0.1)_20%,transparent_40%)] dark:bg-[linear-gradient(to_right,transparent_0%,rgba(255,255,255,0.05)_20%,transparent_40%)] animate-[shimmer_3s_infinite]"></div>
         
-        {/* Mobile menu button */}
-        <motion.button
-          className="lg:hidden relative z-10"
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-        >
-          <Bars3Icon className="h-6 w-6 text-gray-600 dark:text-gray-300" />
-        </motion.button>
-
         {/* Logo section with modern tech style */}
-        <div className="flex-grow flex items-center justify-center lg:justify-start relative">
+        <div className="flex items-center justify-start relative">
           <motion.div
             variants={logoVariants}
             initial="hidden"
@@ -106,15 +95,6 @@ const Navbar: React.FC = () => {
               />
             </div>
           </motion.button>
-
-          {/* User profile */}
-          <motion.button
-            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <UserIcon className="h-5 w-5 text-gray-600 dark:text-gray-300" />
-          </motion.button>
         </div>
 
         {/* Animated bottom border - subtle tech style */}
@@ -127,30 +107,6 @@ const Navbar: React.FC = () => {
           }}
         />
       </div>
-
-      {/* Mobile menu */}
-      <AnimatePresence>
-        {isMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden backdrop-blur-md bg-white/90 dark:bg-gray-900/90 border-b border-slate-200/20 dark:border-slate-700/30"
-          >
-            <div className="px-4 py-4 space-y-3">
-              <a href="#" className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
-                Dashboard
-              </a>
-              <a href="#" className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
-                Profile
-              </a>
-              <a href="#" className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
-                Settings
-              </a>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 };
