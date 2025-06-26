@@ -102,7 +102,7 @@ export default function VerifyInstagram() {
             onChange={e => setFollowerCount(e.target.value)}
             required
           />
-          <span className="text-xs text-[#A07BA6] -mt-2 mb-2">Must be over 4,000 followers Or having good engagement rate</span>
+          <span className="text-xs text-[#A07BA6] -mt-2 mb-2"></span>
           {success && <div className="text-green-500 text-center font-medium">Request sent!</div>}
           {error && <div className="text-red-500 text-center font-medium">{error}</div>}
           <button
