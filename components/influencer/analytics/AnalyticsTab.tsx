@@ -285,7 +285,7 @@ export default function AnalyticsTab() {
   }, []);
 
   return (
-    <div className="py-8 px-2 md:px-8 bg-gradient-to-br from-indigo-50 to-sky-100 dark:bg-black min-h-screen transition-colors">
+    <div className="py-8 px-2 md:px-8 bg-gradient-to-br from-indigo-50 to-sky-100 dark:from-black dark:to-neutral-900 min-h-screen transition-colors">
       {/* Notice Board Section */}
       <div className="mb-10">
         {isAdmin && (
