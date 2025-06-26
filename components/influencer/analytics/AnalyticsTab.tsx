@@ -319,7 +319,7 @@ export default function AnalyticsTab() {
                     style={{ width: '100%' }}
                   >
                     <div
-                      className="sticky-note w-full max-w-3xl mx-auto mt-8 mb-8 px-8 py-6 relative"
+                      className="sticky-note w-full max-w-3xl mx-auto mt-8 mb-8 px-8 py-6 relative dark:bg-gradient-to-br dark:from-[#2d2a1a] dark:to-[#3a320a] dark:border-yellow-900"
                       style={{
                         minHeight: '160px',
                         background: 'linear-gradient(135deg, #fffbe6 90%, #ffe066 100%)',
@@ -332,19 +332,22 @@ export default function AnalyticsTab() {
                       }}
                     >
                       {/* Folded corner */}
-                      <div style={{
-                        position: 'absolute',
-                        right: 0,
-                        bottom: 0,
-                        width: '48px',
-                        height: '48px',
-                        background: 'linear-gradient(135deg, #ffe066 60%, #fffbe6 100%)',
-                        clipPath: 'polygon(100% 0, 0 100%, 100% 100%)',
-                        boxShadow: '-2px 2px 8px 0 rgba(0,0,0,0.10)',
-                        zIndex: 2,
-                      }} />
+                      <div
+                        style={{
+                          position: 'absolute',
+                          right: 0,
+                          bottom: 0,
+                          width: '48px',
+                          height: '48px',
+                          background: 'linear-gradient(135deg, #ffe066 60%, #fffbe6 100%)',
+                          clipPath: 'polygon(100% 0, 0 100%, 100% 100%)',
+                          boxShadow: '-2px 2px 8px 0 rgba(0,0,0,0.10)',
+                          zIndex: 2,
+                        }}
+                        className="dark:bg-gradient-to-br dark:from-yellow-900 dark:to-yellow-800"
+                      />
                       <div className="flex items-center gap-3 mb-2">
-                        <div className="relative h-8 w-8 rounded-full flex items-center justify-center text-sm font-medium overflow-hidden bg-yellow-200 text-yellow-900 border border-yellow-300">
+                        <div className="relative h-8 w-8 rounded-full flex items-center justify-center text-sm font-medium overflow-hidden bg-yellow-200 text-yellow-900 border border-yellow-300 dark:bg-yellow-900 dark:text-yellow-100 dark:border-yellow-800">
                           {notice.createdBy.avatar ? (
                             <img
                               src={notice.createdBy.avatar}
@@ -356,14 +359,14 @@ export default function AnalyticsTab() {
                           )}
                         </div>
                         <div>
-                          <h3 className="font-bold text-base text-yellow-900">
+                          <h3 className="font-bold text-base text-yellow-900 dark:text-yellow-100">
                             {notice.title}
                           </h3>
                           <div className="flex items-center gap-2 mt-0.5">
-                            <span className="text-xs text-yellow-700">
+                            <span className="text-xs text-yellow-700 dark:text-yellow-200">
                               {notice.createdBy.name}
                             </span>
-                            <span className="text-xs text-yellow-500 tabular-nums">
+                            <span className="text-xs text-yellow-500 tabular-nums dark:text-yellow-300">
                               {formatDistanceToNow(new Date(notice.createdAt), { addSuffix: true })}
                             </span>
                           </div>
@@ -382,7 +385,7 @@ export default function AnalyticsTab() {
                       {/* Collapsible content */}
                       <NoticeContentPreview content={notice.content} />
                       {notice.isPinned && (
-                        <div className="mt-1 flex items-center gap-1.5 text-yellow-700 text-[13px]">
+                        <div className="mt-1 flex items-center gap-1.5 text-yellow-700 text-[13px] dark:text-yellow-200">
                           <span className="font-medium">Pinned</span>
                         </div>
                       )}
@@ -508,11 +511,14 @@ function NoticeContentPreview({ content }: { content: string }) {
   const maxChars = 90;
   const isLong = content.length > maxChars;
   return (
-    <div className="text-lg text-yellow-900 leading-relaxed whitespace-pre-wrap mt-3 mb-2 font-[Comic_Sans_MS] tracking-wide" style={{ lineHeight: 1.8, letterSpacing: '0.02em' }}>
+    <div
+      className="text-lg text-yellow-900 leading-relaxed whitespace-pre-wrap mt-3 mb-2 font-[Comic_Sans_MS] tracking-wide dark:text-yellow-100"
+      style={{ lineHeight: 1.8, letterSpacing: '0.02em' }}
+    >
       {expanded || !isLong ? content : content.slice(0, maxChars) + '...'}
       {isLong && (
         <button
-          className="ml-2 text-yellow-700 hover:underline text-base font-semibold"
+          className="ml-2 text-yellow-700 hover:underline text-base font-semibold dark:text-yellow-300"
           onClick={() => setExpanded((e) => !e)}
         >
           {expanded ? 'Show less' : 'Read more'}
@@ -527,8 +533,8 @@ function InfluencerCard({ influencer }: { influencer: any }) {
   // Use profilePictureUrl for avatar, name for display, followers for count
   const instaUrl = influencer.instagramUsername ? `https://instagram.com/${influencer.instagramUsername}` : undefined;
   return (
-    <div className="flex flex-col items-center bg-[#fdf6f0] rounded-2xl p-6 min-w-[210px] max-w-[240px] shadow-md border border-[#f5e6d6] transition-transform hover:scale-105 cursor-pointer scrollbar-hide">
-      <div className="w-28 h-28 rounded-2xl overflow-hidden mb-3 bg-[#fbead9] flex items-center justify-center">
+    <div className="flex flex-col items-center bg-[#fdf6f0] rounded-2xl p-6 min-w-[210px] max-w-[240px] shadow-md border border-[#f5e6d6] transition-transform hover:scale-105 cursor-pointer scrollbar-hide dark:bg-[#23200f] dark:border-yellow-900">
+      <div className="w-28 h-28 rounded-2xl overflow-hidden mb-3 bg-[#fbead9] flex items-center justify-center dark:bg-yellow-900">
         {influencer.profilePictureUrl ? (
           <img
             src={influencer.profilePictureUrl}
@@ -536,18 +542,18 @@ function InfluencerCard({ influencer }: { influencer: any }) {
             className="w-full h-full object-cover"
           />
         ) : (
-          <span className="text-4xl font-bold text-[#c2a07e]">
+          <span className="text-4xl font-bold text-[#c2a07e] dark:text-yellow-200">
             {influencer.name ? influencer.name.charAt(0).toUpperCase() : '?'}
           </span>
         )}
       </div>
-      <div className="text-base font-semibold text-gray-900 mb-1">
+      <div className="text-base font-semibold text-gray-900 mb-1 dark:text-yellow-100">
         {instaUrl ? (
           <a
             href={instaUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:underline text-[#b48b5e]"
+            className="hover:underline text-[#b48b5e] dark:text-yellow-300"
           >
             @{influencer.instagramUsername}
           </a>
@@ -555,7 +561,7 @@ function InfluencerCard({ influencer }: { influencer: any }) {
           `@${influencer.name}`
         )}
       </div>
-      <div className="text-sm text-[#b48b5e]">{formatFollowers(influencer.followers || 0)} followers</div>
+      <div className="text-sm text-[#b48b5e] dark:text-yellow-400">{formatFollowers(influencer.followers || 0)} followers</div>
     </div>
   );
 }
@@ -566,7 +572,3 @@ function formatFollowers(count: number) {
   }
   return count.toLocaleString();
 }
-
-// Add this to your global CSS or in a style tag/component:
-// .hide-scrollbar::-webkit-scrollbar { display: none; }
-// .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

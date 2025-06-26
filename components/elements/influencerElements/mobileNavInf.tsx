@@ -44,7 +44,7 @@ const MobileNav = React.memo(() => {
             "relative flex items-center justify-center w-12 h-12 rounded-full shadow-md border transition-all duration-200",
             isActive
               ? isDarkMode
-                ? "border-fuchsia-500 bg-fuchsia-950/40 -translate-y-0.8"
+                ? "border-fuchsia-700 bg-fuchsia-900/80 -translate-y-0.8"
                 : "border-fuchsia-500 bg-fuchsia-50 -translate-y-0.8"
               : isDarkMode
                 ? "bg-gray-900 border-gray-800"
