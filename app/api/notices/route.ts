@@ -2,13 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connect } from '@/lib/mongoose';
 import { Notice, User } from '@/models';
 import { getDataFromToken } from '@/helpers/getDataFromToken';
-import mongoose from 'mongoose';
 
 // GET /api/notices - Get all notices
 export async function GET(request: NextRequest) {
-  try {
-    await connect();
 
+  await connect();
+  
+  try {
     // Get notices sorted by pinned status (pinned first) and then by creation date (newest first)
     const notices = await Notice.find({})
       .sort({ isPinned: -1, createdAt: -1 })

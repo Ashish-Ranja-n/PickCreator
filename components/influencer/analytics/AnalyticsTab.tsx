@@ -285,172 +285,74 @@ export default function AnalyticsTab() {
   }, []);
 
   return (
-    <div className="py-4">
-      {/* Remove Notice Board heading, make notice area wider and bigger */}
-      <div className="mb-6">
-        {/* Admin Add Note Button - always visible for admins */}
+    <div className="py-8 px-2 md:px-8 bg-gradient-to-br from-indigo-50 to-sky-100 dark:bg-black min-h-screen">
+      {/* Notice Board Section */}
+      <div className="mb-10">
         {isAdmin && (
-          <div className="flex justify-end mb-2">
+          <div className="flex justify-end mb-4">
             <Button
               onClick={() => setOpen(true)}
-              className="bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-bold px-4 py-2 rounded-full shadow-lg dark:bg-gradient-to-r dark:from-fuchsia-700 dark:to-yellow-600 dark:text-yellow-100 dark:hover:from-fuchsia-800 dark:hover:to-yellow-700 transition"
+              className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-5 py-2 rounded-xl shadow-md transition"
             >
               <Plus className="mr-2 h-5 w-5" /> Add Notice
             </Button>
           </div>
         )}
-        {loading ? (
-          <div className="flex justify-center items-center h-[360px] bg-white dark:bg-gray-900 rounded-xl">
-            <svg className="animate-spin h-5 w-5 text-gray-400" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" fill="none" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-            </svg>
-          </div>
-        ) : notices.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-[360px] bg-white dark:bg-gray-900 rounded-xl">
-            <AlertCircle className="h-8 w-8 text-gray-400 mb-3" />
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              No updates yet
-            </p>
-          </div>
-        ) : (
-          <div className="relative">
-            <div 
-              ref={slideContainer}
-              className="overflow-hidden bg-white dark:bg-gray-900 rounded-xl"
-            >
-              <div
-                className="flex transition-transform duration-300 ease-out"
-                style={{ transform: `translateX(-${currentSlide * 100}%)` }}
-              >
-                {notices.map((notice, index) => (
-                  <div
-                    key={notice._id}
-                    className="relative w-full flex-shrink-0 flex justify-center items-start"
-                    style={{ width: '100%' }}
-                  >
-                    <div
-                      className="sticky-note w-full max-w-3xl mx-auto mt-8 mb-8 px-8 py-6 relative dark:bg-gradient-to-br dark:from-[#2a1746] dark:to-[#1a102b] dark:border-yellow-400 dark:shadow-[0_0_32px_0_rgba(255,221,77,0.18)]"
-                      style={{
-                        minHeight: '160px',
-                        background: 'linear-gradient(135deg, #fffbe6 90%, #ffe066 100%)',
-                        boxShadow: '0 6px 32px 0 rgba(0,0,0,0.13), 0 2px 8px 0 rgba(80,80,80,0.13)',
-                        borderRadius: '16px',
-                        border: '2px solid #ffe066',
-                        fontFamily: '"Comic Sans MS", "Comic Sans", cursive',
-                        position: 'relative',
-                        overflow: 'visible',
-                      }}
-                    >
-                      {/* Folded corner */}
-                      <div
-                        style={{
-                          position: 'absolute',
-                          right: 0,
-                          bottom: 0,
-                          width: '48px',
-                          height: '48px',
-                          background: 'linear-gradient(135deg, #ffe066 60%, #fffbe6 100%)',
-                          clipPath: 'polygon(100% 0, 0 100%, 100% 100%)',
-                          boxShadow: '-2px 2px 8px 0 rgba(0,0,0,0.10)',
-                          zIndex: 2,
-                        }}
-                        className="dark:bg-gradient-to-br dark:from-yellow-500 dark:to-yellow-700"
-                      />
-                      <div className="flex items-center gap-3 mb-2">
-                        <div className="relative h-8 w-8 rounded-full flex items-center justify-center text-sm font-medium overflow-hidden bg-yellow-200 text-yellow-900 border border-yellow-300 dark:bg-yellow-700 dark:text-yellow-100 dark:border-yellow-400">
-                          {notice.createdBy.avatar ? (
-                            <img
-                              src={notice.createdBy.avatar}
-                              alt={notice.createdBy.name}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            notice.createdBy.name.charAt(0).toUpperCase()
-                          )}
-                        </div>
-                        <div>
-                          <h3 className="font-bold text-base text-yellow-900 dark:text-yellow-100 dark:drop-shadow-[0_1px_2px_rgba(255,221,77,0.25)]">
-                            {notice.title}
-                          </h3>
-                          <div className="flex items-center gap-2 mt-0.5">
-                            <span className="text-xs text-yellow-700 dark:text-yellow-200">
-                              {notice.createdBy.name}
-                            </span>
-                            <span className="text-xs text-yellow-500 tabular-nums dark:text-yellow-300">
-                              {formatDistanceToNow(new Date(notice.createdAt), { addSuffix: true })}
-                            </span>
-                          </div>
-                        </div>
-                        {isAdmin && (
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-7 w-7 text-yellow-500 hover:text-red-500 ml-auto"
-                            onClick={() => deleteNotice(notice._id)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        )}
-                      </div>
-                      {/* Collapsible content */}
-                      <NoticeContentPreview content={notice.content} />
+        <div className="relative">
+          {loading ? (
+            <div className="flex justify-center items-center h-[340px] bg-white/80 dark:bg-black/80 rounded-2xl shadow-md">
+              <Loader2 className="h-8 w-8 animate-spin text-indigo-400" />
+            </div>
+          ) : notices.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-[340px] bg-white/80 dark:bg-black/80 rounded-2xl shadow-md">
+              <AlertCircle className="h-10 w-10 text-slate-400 mb-3" />
+              <p className="text-base text-slate-500 dark:text-slate-300">No updates yet</p>
+            </div>
+          ) : (
+            <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {notices.map((notice, idx) => (
+                <div
+                  key={notice._id}
+                  className={`relative bg-yellow-100 dark:bg-neutral-900 shadow-lg rounded-lg p-5 min-h-[180px] flex flex-col justify-between border-2 border-yellow-200 dark:border-neutral-800 transition-transform hover:scale-[1.03] rotate-[${(idx % 2 === 0) ? '-2' : '2'}deg]`}
+                  style={{ boxShadow: '0 4px 16px 0 rgba(0,0,0,0.10), 0 1.5px 0 #f6e58d', transform: `rotate(${idx % 2 === 0 ? -2 : 2}deg)` }}
+                >
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className="font-bold text-lg text-yellow-900 dark:text-yellow-100 truncate">{notice.title}</h3>
                       {notice.isPinned && (
-                        <div className="mt-1 flex items-center gap-1.5 text-yellow-700 text-[13px] dark:text-yellow-200">
-                          <span className="font-medium">Pinned</span>
-                        </div>
+                        <Pin className="h-4 w-4 text-yellow-500" />
                       )}
                     </div>
+                    <div className="text-base text-yellow-900/90 dark:text-yellow-100 mb-2 break-words whitespace-pre-line">
+                      {notice.content.length > 120 ? notice.content.slice(0, 120) + '…' : notice.content}
+                    </div>
                   </div>
-                ))}
-              </div>
+                  <div className="flex items-center justify-between mt-2 text-xs text-yellow-700 dark:text-yellow-200/80">
+                    <span>{notice.createdBy.name}</span>
+                    <span>{formatDistanceToNow(new Date(notice.createdAt), { addSuffix: true })}</span>
+                    {isAdmin && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-yellow-400 hover:text-red-500"
+                        onClick={() => deleteNotice(notice._id)}
+                        aria-label="Delete notice"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
-
-            {notices.length > 1 && (
-              <>
-                <div className="absolute inset-y-0 left-0 flex items-center">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 bg-white/90 dark:bg-gray-900/90 shadow-sm border border-gray-200/50 dark:border-gray-800/50 rounded-full -ml-4"
-                    onClick={handlePrevSlide}
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                  </Button>
-                </div>
-                <div className="absolute inset-y-0 right-0 flex items-center">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 bg-white/90 dark:bg-gray-900/90 shadow-sm border border-gray-200/50 dark:border-gray-800/50 rounded-full -mr-4"
-                    onClick={handleNextSlide}
-                  >
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </div>
-                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
-                  {notices.map((_, index) => (
-                    <button
-                      key={index}
-                      className={
-                        `h-1.5 rounded-full transition-all ${currentSlide === index 
-                          ? 'w-4 bg-violet-600 dark:bg-violet-400' 
-                          : 'w-1.5 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600'}`
-                      }
-                      onClick={() => setCurrentSlide(index)}
-                    />
-                  ))}
-                </div>
-              </>
-            )}
-          </div>
-        )}
+          )}
+        </div>
       </div>
       {/* Dialog for creating new notice */}
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md bg-white/90 dark:bg-black/90 rounded-2xl shadow-xl">
           <DialogHeader>
-            <DialogTitle>Create Notice</DialogTitle>
+            <DialogTitle className="text-indigo-700 dark:text-indigo-300">Create Notice</DialogTitle>
           </DialogHeader>
           <form onSubmit={createNotice} className="space-y-4">
             <div className="space-y-2">
@@ -458,14 +360,14 @@ export default function AnalyticsTab() {
                 ref={titleRef}
                 placeholder="Title"
                 required
-                className="h-9"
+                className="h-10 border-indigo-200 dark:border-slate-600 focus:ring-indigo-400"
               />
               <Textarea
                 ref={contentRef}
                 placeholder="Write your announcement..."
                 rows={6}
                 required
-                className="resize-none"
+                className="resize-none border-indigo-200 dark:border-slate-600 focus:ring-indigo-400"
               />
             </div>
             <div className="flex items-center gap-2">
@@ -473,13 +375,14 @@ export default function AnalyticsTab() {
                 id="isPinned"
                 checked={isPinned}
                 onCheckedChange={(checked) => setIsPinned(checked as boolean)}
+                className="accent-indigo-500"
               />
-              <label htmlFor="isPinned" className="text-sm">
+              <label htmlFor="isPinned" className="text-sm text-slate-700 dark:text-slate-200">
                 Pin this notice
               </label>
             </div>
             <DialogFooter>
-              <Button type="submit" disabled={isSubmitting}>
+              <Button type="submit" disabled={isSubmitting} className="bg-indigo-600 hover:bg-indigo-700 text-white">
                 {isSubmitting ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -493,16 +396,15 @@ export default function AnalyticsTab() {
           </form>
         </DialogContent>
       </Dialog>
-
       {/* Influencer section below notice board */}
-      <div className="mt-10">
-        <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Meet the Creators & Brands</h3>
+      <div className="mt-14">
+        <h3 className="text-2xl font-bold text-slate-800 dark:text-yellow-100 mb-6 tracking-tight">Influencers on Our platform</h3>
         {loadingInfluencers ? (
           <div className="flex justify-center items-center h-24">
-            <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+            <Loader2 className="h-7 w-7 animate-spin text-yellow-200" />
           </div>
         ) : verifiedInfluencers.length === 0 ? (
-          <div className="text-center text-gray-400 text-sm">No verified influencers found.</div>
+          <div className="text-center text-yellow-200 text-base">No verified influencers found.</div>
         ) : (
           <div className="flex gap-8 overflow-x-auto pb-2 hide-scrollbar">
             {verifiedInfluencers.map((influencer) => (
@@ -523,13 +425,13 @@ function NoticeContentPreview({ content }: { content: string }) {
   const isLong = content.length > maxChars;
   return (
     <div
-      className="text-lg leading-relaxed whitespace-pre-wrap mt-3 mb-2 font-[Comic_Sans_MS] tracking-wide text-yellow-900 dark:text-yellow-100 dark:drop-shadow-[0_2px_8px_rgba(255,221,77,0.25)] dark:font-semibold"
-      style={{ lineHeight: 1.8, letterSpacing: '0.02em' }}
+      className="text-base leading-relaxed whitespace-pre-wrap mt-3 mb-2 font-sans tracking-wide text-slate-700 dark:text-indigo-100 dark:font-medium"
+      style={{ lineHeight: 1.7, letterSpacing: '0.01em' }}
     >
       {expanded || !isLong ? content : content.slice(0, maxChars) + '...'}
       {isLong && (
         <button
-          className="ml-2 text-yellow-700 hover:underline text-base font-semibold dark:text-yellow-300 dark:hover:text-yellow-100"
+          className="ml-2 text-indigo-600 hover:underline text-base font-semibold dark:text-indigo-300 dark:hover:text-indigo-100"
           onClick={() => setExpanded((e) => !e)}
         >
           {expanded ? 'Show less' : 'Read more'}
@@ -544,8 +446,8 @@ function InfluencerCard({ influencer }: { influencer: any }) {
   // Use profilePictureUrl for avatar, name for display, followers for count
   const instaUrl = influencer.instagramUsername ? `https://instagram.com/${influencer.instagramUsername}` : undefined;
   return (
-    <div className="flex flex-col items-center bg-[#fdf6f0] rounded-2xl p-6 min-w-[210px] max-w-[240px] shadow-md border border-[#f5e6d6] transition-transform hover:scale-105 cursor-pointer scrollbar-hide dark:bg-gradient-to-br dark:from-[#2a1746] dark:to-[#1a102b] dark:border-yellow-400 dark:shadow-[0_0_16px_0_rgba(255,221,77,0.18)]">
-      <div className="w-28 h-28 rounded-2xl overflow-hidden mb-3 bg-[#fbead9] flex items-center justify-center dark:bg-yellow-700">
+    <div className="flex flex-col items-center bg-white/80 dark:bg-slate-800/80 rounded-2xl p-6 min-w-[210px] max-w-[240px] shadow-lg border border-indigo-100 dark:border-slate-700 transition-transform hover:scale-105 cursor-pointer scrollbar-hide">
+      <div className="w-24 h-24 rounded-full overflow-hidden mb-3 bg-indigo-100 flex items-center justify-center dark:bg-slate-700">
         {influencer.profilePictureUrl ? (
           <img
             src={influencer.profilePictureUrl}
@@ -553,18 +455,18 @@ function InfluencerCard({ influencer }: { influencer: any }) {
             className="w-full h-full object-cover"
           />
         ) : (
-          <span className="text-4xl font-bold text-[#c2a07e] dark:text-yellow-200">
+          <span className="text-3xl font-bold text-indigo-400 dark:text-indigo-200">
             {influencer.name ? influencer.name.charAt(0).toUpperCase() : '?'}
           </span>
         )}
       </div>
-      <div className="text-base font-semibold text-gray-900 mb-1 dark:text-yellow-100">
+      <div className="text-base font-semibold text-slate-800 mb-1 dark:text-indigo-100">
         {instaUrl ? (
           <a
             href={instaUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:underline text-[#b48b5e] dark:text-yellow-300"
+            className="hover:underline text-indigo-500 dark:text-indigo-300"
           >
             @{influencer.instagramUsername}
           </a>
@@ -572,7 +474,7 @@ function InfluencerCard({ influencer }: { influencer: any }) {
           `@${influencer.name}`
         )}
       </div>
-      <div className="text-sm text-[#b48b5e] dark:text-yellow-200">{formatFollowers(influencer.followers || 0)} followers</div>
+      <div className="text-sm text-indigo-400 dark:text-indigo-200">{formatFollowers(influencer.followers || 0)} followers</div>
     </div>
   );
 }
