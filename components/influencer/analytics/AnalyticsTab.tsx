@@ -288,6 +288,17 @@ export default function AnalyticsTab() {
     <div className="py-4">
       {/* Remove Notice Board heading, make notice area wider and bigger */}
       <div className="mb-6">
+        {/* Admin Add Note Button - always visible for admins */}
+        {isAdmin && (
+          <div className="flex justify-end mb-2">
+            <Button
+              onClick={() => setOpen(true)}
+              className="bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-bold px-4 py-2 rounded-full shadow-lg dark:bg-gradient-to-r dark:from-fuchsia-700 dark:to-yellow-600 dark:text-yellow-100 dark:hover:from-fuchsia-800 dark:hover:to-yellow-700 transition"
+            >
+              <Plus className="mr-2 h-5 w-5" /> Add Notice
+            </Button>
+          </div>
+        )}
         {loading ? (
           <div className="flex justify-center items-center h-[360px] bg-white dark:bg-gray-900 rounded-xl">
             <svg className="animate-spin h-5 w-5 text-gray-400" viewBox="0 0 24 24">
@@ -319,7 +330,7 @@ export default function AnalyticsTab() {
                     style={{ width: '100%' }}
                   >
                     <div
-                      className="sticky-note w-full max-w-3xl mx-auto mt-8 mb-8 px-8 py-6 relative dark:bg-gradient-to-br dark:from-[#18120a] dark:to-[#2a210d] dark:border-yellow-600 dark:shadow-[0_0_32px_0_rgba(255,221,77,0.10)]"
+                      className="sticky-note w-full max-w-3xl mx-auto mt-8 mb-8 px-8 py-6 relative dark:bg-gradient-to-br dark:from-[#2a1746] dark:to-[#1a102b] dark:border-yellow-400 dark:shadow-[0_0_32px_0_rgba(255,221,77,0.18)]"
                       style={{
                         minHeight: '160px',
                         background: 'linear-gradient(135deg, #fffbe6 90%, #ffe066 100%)',
@@ -344,10 +355,10 @@ export default function AnalyticsTab() {
                           boxShadow: '-2px 2px 8px 0 rgba(0,0,0,0.10)',
                           zIndex: 2,
                         }}
-                        className="dark:bg-gradient-to-br dark:from-yellow-700 dark:to-yellow-900"
+                        className="dark:bg-gradient-to-br dark:from-yellow-500 dark:to-yellow-700"
                       />
                       <div className="flex items-center gap-3 mb-2">
-                        <div className="relative h-8 w-8 rounded-full flex items-center justify-center text-sm font-medium overflow-hidden bg-yellow-200 text-yellow-900 border border-yellow-300 dark:bg-yellow-800 dark:text-yellow-100 dark:border-yellow-600">
+                        <div className="relative h-8 w-8 rounded-full flex items-center justify-center text-sm font-medium overflow-hidden bg-yellow-200 text-yellow-900 border border-yellow-300 dark:bg-yellow-700 dark:text-yellow-100 dark:border-yellow-400">
                           {notice.createdBy.avatar ? (
                             <img
                               src={notice.createdBy.avatar}
@@ -359,14 +370,14 @@ export default function AnalyticsTab() {
                           )}
                         </div>
                         <div>
-                          <h3 className="font-bold text-base text-yellow-900 dark:text-yellow-200">
+                          <h3 className="font-bold text-base text-yellow-900 dark:text-yellow-100 dark:drop-shadow-[0_1px_2px_rgba(255,221,77,0.25)]">
                             {notice.title}
                           </h3>
                           <div className="flex items-center gap-2 mt-0.5">
-                            <span className="text-xs text-yellow-700 dark:text-yellow-300">
+                            <span className="text-xs text-yellow-700 dark:text-yellow-200">
                               {notice.createdBy.name}
                             </span>
-                            <span className="text-xs text-yellow-500 tabular-nums dark:text-yellow-400">
+                            <span className="text-xs text-yellow-500 tabular-nums dark:text-yellow-300">
                               {formatDistanceToNow(new Date(notice.createdAt), { addSuffix: true })}
                             </span>
                           </div>
@@ -385,7 +396,7 @@ export default function AnalyticsTab() {
                       {/* Collapsible content */}
                       <NoticeContentPreview content={notice.content} />
                       {notice.isPinned && (
-                        <div className="mt-1 flex items-center gap-1.5 text-yellow-700 text-[13px] dark:text-yellow-300">
+                        <div className="mt-1 flex items-center gap-1.5 text-yellow-700 text-[13px] dark:text-yellow-200">
                           <span className="font-medium">Pinned</span>
                         </div>
                       )}
@@ -512,13 +523,13 @@ function NoticeContentPreview({ content }: { content: string }) {
   const isLong = content.length > maxChars;
   return (
     <div
-      className="text-lg text-yellow-900 leading-relaxed whitespace-pre-wrap mt-3 mb-2 font-[Comic_Sans_MS] tracking-wide dark:text-yellow-100 dark:drop-shadow-[0_1px_2px_rgba(255,221,77,0.10)]"
+      className="text-lg leading-relaxed whitespace-pre-wrap mt-3 mb-2 font-[Comic_Sans_MS] tracking-wide text-yellow-900 dark:text-yellow-100 dark:drop-shadow-[0_2px_8px_rgba(255,221,77,0.25)] dark:font-semibold"
       style={{ lineHeight: 1.8, letterSpacing: '0.02em' }}
     >
       {expanded || !isLong ? content : content.slice(0, maxChars) + '...'}
       {isLong && (
         <button
-          className="ml-2 text-yellow-700 hover:underline text-base font-semibold dark:text-yellow-400 dark:hover:text-yellow-200"
+          className="ml-2 text-yellow-700 hover:underline text-base font-semibold dark:text-yellow-300 dark:hover:text-yellow-100"
           onClick={() => setExpanded((e) => !e)}
         >
           {expanded ? 'Show less' : 'Read more'}
@@ -533,8 +544,8 @@ function InfluencerCard({ influencer }: { influencer: any }) {
   // Use profilePictureUrl for avatar, name for display, followers for count
   const instaUrl = influencer.instagramUsername ? `https://instagram.com/${influencer.instagramUsername}` : undefined;
   return (
-    <div className="flex flex-col items-center bg-[#fdf6f0] rounded-2xl p-6 min-w-[210px] max-w-[240px] shadow-md border border-[#f5e6d6] transition-transform hover:scale-105 cursor-pointer scrollbar-hide dark:bg-gradient-to-br dark:from-[#18120a] dark:to-[#2a210d] dark:border-yellow-700 dark:shadow-[0_0_16px_0_rgba(255,221,77,0.10)]">
-      <div className="w-28 h-28 rounded-2xl overflow-hidden mb-3 bg-[#fbead9] flex items-center justify-center dark:bg-yellow-800">
+    <div className="flex flex-col items-center bg-[#fdf6f0] rounded-2xl p-6 min-w-[210px] max-w-[240px] shadow-md border border-[#f5e6d6] transition-transform hover:scale-105 cursor-pointer scrollbar-hide dark:bg-gradient-to-br dark:from-[#2a1746] dark:to-[#1a102b] dark:border-yellow-400 dark:shadow-[0_0_16px_0_rgba(255,221,77,0.18)]">
+      <div className="w-28 h-28 rounded-2xl overflow-hidden mb-3 bg-[#fbead9] flex items-center justify-center dark:bg-yellow-700">
         {influencer.profilePictureUrl ? (
           <img
             src={influencer.profilePictureUrl}
@@ -542,12 +553,12 @@ function InfluencerCard({ influencer }: { influencer: any }) {
             className="w-full h-full object-cover"
           />
         ) : (
-          <span className="text-4xl font-bold text-[#c2a07e] dark:text-yellow-300">
+          <span className="text-4xl font-bold text-[#c2a07e] dark:text-yellow-200">
             {influencer.name ? influencer.name.charAt(0).toUpperCase() : '?'}
           </span>
         )}
       </div>
-      <div className="text-base font-semibold text-gray-900 mb-1 dark:text-yellow-200">
+      <div className="text-base font-semibold text-gray-900 mb-1 dark:text-yellow-100">
         {instaUrl ? (
           <a
             href={instaUrl}
@@ -561,7 +572,7 @@ function InfluencerCard({ influencer }: { influencer: any }) {
           `@${influencer.name}`
         )}
       </div>
-      <div className="text-sm text-[#b48b5e] dark:text-yellow-300">{formatFollowers(influencer.followers || 0)} followers</div>
+      <div className="text-sm text-[#b48b5e] dark:text-yellow-200">{formatFollowers(influencer.followers || 0)} followers</div>
     </div>
   );
 }
