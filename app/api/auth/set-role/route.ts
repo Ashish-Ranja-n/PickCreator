@@ -23,14 +23,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid role" }, { status: 400 });
     }
     await connect();
-    // Find and delete the old user document
+    // Find the user document
     const userBefore = await User.findOne({ _id: userData.id });
-    console.log("User before delete:", userBefore);
+    console.log("User before set-role:", userBefore);
     if (!userBefore) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
+    // If user already has a valid role, do not allow changing it
+    if (["Brand", "Influencer", "Admin"].includes(userBefore.role)) {
+      console.log("User already has a role, cannot change:", userBefore.role);
+      return NextResponse.json({ error: "Role already set", role: userBefore.role }, { status: 400 });
+    }
+    // Delete the old user document and create a new one with the selected role
     await User.deleteOne({ _id: userData.id });
-    // Create a new user document with the same _id and new role, copying over other fields as needed
     let newUser;
     if (role === "Influencer") {
       const { Influencer } = await import("@/models/influencer");

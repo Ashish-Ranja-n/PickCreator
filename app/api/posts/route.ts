@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { connect } from "@/lib/mongoose";
 import Post from "@/models/post";
+import User from "@/models/user";
 import { getDataFromToken } from "@/helpers/getDataFromToken";
 
 // Create a new post

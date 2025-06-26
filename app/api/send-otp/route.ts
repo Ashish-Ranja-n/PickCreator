@@ -4,7 +4,7 @@ import Otp from "@/models/otp";
 import { connect } from "@/lib/mongoose";
 import User from "@/models/user";
 
-connect();
+await connect();
 // Function to generate a 6-digit OTP
 const generateOTP = () => {
   // Ensure we always get a 6-digit number as a string
@@ -13,11 +13,9 @@ const generateOTP = () => {
 };
 
 export async function POST(req: Request) {
-  let email: string = "";
-  
   try {
     const reqBody = await req.json();
-    email = reqBody.email || "";
+    const email = typeof reqBody.email === 'string' && reqBody.email.trim() !== '' ? reqBody.email.trim() : null;
     console.log("Sending OTP to email:", email);
 
     if (!email) {
@@ -72,13 +70,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ message: "Verification code sent successfully" });
   } catch (error: any) {
     console.error("Error sending OTP:", error);
-    try {
-      if (email) {
-        await User.deleteOne({ email });
-      }
-    } catch (deleteError) {
-      console.error("Error during user cleanup:", deleteError);
-    }
     return NextResponse.json({ error: "Failed to send verification code. Please try again."}, { status: 471 });
   }
 }

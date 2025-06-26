@@ -9,13 +9,12 @@ export async function POST(req: Request) {
   try {
     const { email, phone } = await req.json();
     let user = null;
-    const identifier = email || phone;
     let query = {};
-    // Improved query logic: check for both email and phone if both are provided
-    if (email && phone) query = { $or: [{ email }, { phoneNumber: phone }] };
-    else if (email) query = { email };
-    else if (phone) query = { phoneNumber: phone };
-    if (!identifier) {
+    if (email) {
+      query = { email };
+    } else if (phone) {
+      query = { phoneNumber: phone };
+    } else {
       return NextResponse.json({ error: "Email or phone required" }, { status: 400 });
     }
     user = await User.findOne(query);

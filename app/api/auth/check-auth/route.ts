@@ -28,7 +28,7 @@ export async function GET(request: Request) {
     response.cookies.set("token", token, {
       httpOnly: true,
       secure: true,
-      maxAge: 24 * 60 * 60, // 1 day in seconds
+      maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
     });
     
     return response;

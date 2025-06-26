@@ -88,7 +88,19 @@ export async function middleware(request: NextRequest) {
             try {
                 const payload = await getDataFromToken(request, token);
                 const role = payload?.role;
-                const isInstagramVerified = payload?.isInstagramVerified;
+
+                // If user has a valid role and tries to access /pickRole, redirect to their respective dashboard
+                if (role !== 'needed' && path.startsWith('/pickRole')) {
+                    if (role === 'Brand') {
+                        return NextResponse.redirect(`${baseUrl}/brand`);
+                    }
+                    if (role === 'Influencer') {
+                        return NextResponse.redirect(`${baseUrl}/influencer`);
+                    }
+                    if (role === 'Admin') {
+                        return NextResponse.redirect(`${baseUrl}/admin`);
+                    }
+                }
 
                 if(role === 'needed' && !path.startsWith('/pickRole')) {
                     return NextResponse.redirect(`${baseUrl}/pickRole`);
