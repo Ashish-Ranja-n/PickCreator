@@ -285,7 +285,7 @@ export default function AnalyticsTab() {
   }, []);
 
   return (
-    <div className="py-8 px-2 md:px-8 bg-gradient-to-br from-indigo-50 to-sky-100 dark:bg-black min-h-screen">
+    <div className="py-8 px-2 md:px-8 bg-gradient-to-br from-indigo-50 to-sky-100 dark:bg-black min-h-screen transition-colors">
       {/* Notice Board Section */}
       <div className="mb-10">
         {isAdmin && (
@@ -300,25 +300,25 @@ export default function AnalyticsTab() {
         )}
         <div className="relative">
           {loading ? (
-            <div className="flex justify-center items-center h-[340px] bg-white/80 dark:bg-black/80 rounded-2xl shadow-md">
-              <Loader2 className="h-8 w-8 animate-spin text-indigo-400" />
+            <div className="flex justify-center items-center h-[340px] bg-white/80 dark:bg-neutral-900/90 rounded-2xl shadow-md">
+              <Loader2 className="h-8 w-8 animate-spin text-indigo-400 dark:text-yellow-200" />
             </div>
           ) : notices.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-[340px] bg-white/80 dark:bg-black/80 rounded-2xl shadow-md">
-              <AlertCircle className="h-10 w-10 text-slate-400 mb-3" />
-              <p className="text-base text-slate-500 dark:text-slate-300">No updates yet</p>
+            <div className="flex flex-col items-center justify-center h-[340px] bg-white/80 dark:bg-neutral-900/90 rounded-2xl shadow-md">
+              <AlertCircle className="h-10 w-10 text-slate-400 dark:text-yellow-200 mb-3" />
+              <p className="text-base text-slate-500 dark:text-yellow-200">No updates yet</p>
             </div>
           ) : (
             <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {notices.map((notice, idx) => (
                 <div
                   key={notice._id}
-                  className={`relative bg-yellow-100 dark:bg-neutral-900 shadow-lg rounded-lg p-5 min-h-[180px] flex flex-col justify-between border-2 border-yellow-200 dark:border-neutral-800 transition-transform hover:scale-[1.03] rotate-[${(idx % 2 === 0) ? '-2' : '2'}deg]`}
-                  style={{ boxShadow: '0 4px 16px 0 rgba(0,0,0,0.10), 0 1.5px 0 #f6e58d', transform: `rotate(${idx % 2 === 0 ? -2 : 2}deg)` }}
+                  className={`relative bg-yellow-100 dark:bg-neutral-900 shadow-lg rounded-lg p-5 min-h-[180px] flex flex-col justify-between border-2 border-yellow-200 dark:border-yellow-800 transition-transform hover:scale-[1.03] rotate-[${(idx % 2 === 0) ? '-2' : '2'}deg]`}
+                  style={{ boxShadow: '0 4px 16px 0 rgba(0,0,0,0.10), 0 1.5px 0 #f6e58d', transform: `rotate(${idx % 2 === 0 ? -2 : 2}deg)`, background: idx % 2 === 0 ? undefined : undefined }}
                 >
                   <div>
                     <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-bold text-lg text-yellow-900 dark:text-yellow-100 truncate">{notice.title}</h3>
+                      <h3 className="font-bold text-lg text-yellow-900 dark:text-yellow-200 truncate">{notice.title}</h3>
                       {notice.isPinned && (
                         <Pin className="h-4 w-4 text-yellow-500" />
                       )}
@@ -334,7 +334,7 @@ export default function AnalyticsTab() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="text-yellow-400 hover:text-red-500"
+                        className="text-yellow-400 dark:text-yellow-200 hover:text-red-500"
                         onClick={() => deleteNotice(notice._id)}
                         aria-label="Delete notice"
                       >
@@ -350,7 +350,7 @@ export default function AnalyticsTab() {
       </div>
       {/* Dialog for creating new notice */}
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-md bg-white/90 dark:bg-black/90 rounded-2xl shadow-xl">
+        <DialogContent className="sm:max-w-md bg-white/90 dark:bg-neutral-900/95 rounded-2xl shadow-xl">
           <DialogHeader>
             <DialogTitle className="text-indigo-700 dark:text-indigo-300">Create Notice</DialogTitle>
           </DialogHeader>
