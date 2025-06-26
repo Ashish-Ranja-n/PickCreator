@@ -102,21 +102,19 @@ export default function VerifyInstagram() {
             onChange={e => setFollowerCount(e.target.value)}
             required
           />
-          <span className="text-xs text-[#A07BA6] -mt-2 mb-2">Must be over 5,000 followers</span>
+          <span className="text-xs text-[#A07BA6] -mt-2 mb-2">Must be over 4,000 followers Or having good engagement rate</span>
           {success && <div className="text-green-500 text-center font-medium">Request sent!</div>}
           {error && <div className="text-red-500 text-center font-medium">{error}</div>}
+          <button
+            type="submit"
+            className="w-full py-4 rounded-none bg-[#FF2DAF] text-white font-bold text-lg hover:bg-[#e0269b] transition shadow-md fixed bottom-0 left-0 right-0 z-10"
+            disabled={loading}
+            style={{ borderRadius: 0 }}
+          >
+            {loading ? 'Sending...' : 'Send Verification Request'}
+          </button>
         </form>
       </div>
-      <button
-        type="submit"
-        form=""
-        onClick={handleSubmit}
-        className="w-full py-4 rounded-none bg-[#FF2DAF] text-white font-bold text-lg hover:bg-[#e0269b] transition shadow-md fixed bottom-0 left-0 right-0 z-10"
-        disabled={loading}
-        style={{ borderRadius: 0 }}
-      >
-        {loading ? 'Sending...' : 'Send Verification Request'}
-      </button>
     </div>
   );
 }
