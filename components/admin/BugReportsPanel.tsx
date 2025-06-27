@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useCurrentUser } from '@/hook/useCurrentUser';
 import { CheckCircle, MessageSquare } from 'lucide-react';
 
 interface BugReport {
@@ -47,9 +48,24 @@ export default function BugReportsPanel() {
     }
   };
 
-  const startChat = (userId: string) => {
-    // Redirect to chat with userId (implement as per your routing)
-    window.location.href = `/admin/chat?userId=${userId}`;
+  const currentUser = useCurrentUser();
+  const startChat = async (userId: string) => {
+    if (!currentUser?._id) {
+      alert('Current user not found.');
+      return;
+    }
+    try {
+      const res = await fetch('/api/conversation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentUserId: currentUser._id, otherUserId: userId })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.conversationId) throw new Error(data.message || 'Failed to start chat');
+      window.location.href = `/admin/chat/${data.conversationId}`;
+    } catch (err: any) {
+      alert(err.message || 'Failed to start chat');
+    }
   };
 
   return (
