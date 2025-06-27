@@ -131,12 +131,13 @@ export default function WelcomeAuthPage() {
         });
         if (!loginRes.ok) throw new Error("Failed to login. Try again.");
         const data = await loginRes.json();
-        if (data.isNewUser) {
+        // ...existing code...
+        if (data.isNew) {
           router.push("/(auth)/pickRole");
         } else {
-          if (data.role === "Brand") {
+          if (data.user?.role === "Brand") {
             router.push("/brand");
-          } else if (data.role === "Influencer") {
+          } else if (data.user?.role === "Influencer") {
             router.push("/influencer");
           } else {
             router.push("/");
@@ -157,12 +158,13 @@ export default function WelcomeAuthPage() {
         });
         if (!res.ok) throw new Error("Failed to login. Try again.");
         const data = await res.json();
-        if (data.isNewUser) {
+        // ...existing code...
+        if (data.isNew) {
           router.push("/(auth)/pickRole");
         } else {
-          if (data.role === "Brand") {
+          if (data.user?.role === "Brand") {
             router.push("/brand");
-          } else if (data.role === "Influencer") {
+          } else if (data.user?.role === "Influencer") {
             router.push("/influencer");
           } else {
             router.push("/");

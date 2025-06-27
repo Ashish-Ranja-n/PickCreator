@@ -34,6 +34,8 @@ export async function POST(req: Request) {
     const query: Record<string, any> = email ? { email } : { phoneNumber: phone };
     let user = await User.findOne(query);
     let isNew = false;
+    console.log('OTP-LOGIN API: Query:', query);
+    console.log('OTP-LOGIN API: User found:', user);
 
     if (!user) {
       try {
@@ -58,6 +60,7 @@ export async function POST(req: Request) {
     }
 
     const tokenData = buildTokenData(user);
+    console.log('OTP-LOGIN API: tokenData:', tokenData);
     const jwtSecret = process.env.JWT_SECRET;
     if (!jwtSecret) {
       return NextResponse.json({ error: "JWT secret not configured" }, { status: 500 });
