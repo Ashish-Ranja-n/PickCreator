@@ -9,6 +9,7 @@ import { LayoutGrid, MessageSquare, User, Settings, HelpCircle, Clock, Tag, Chec
 import { useParams, useRouter } from 'next/navigation';
 import { AdminChatStats } from '@/components/chat/AdminChatStats';
 import InstagramVerificationRequests from '@/components/admin/InstagramVerificationRequests';
+import BugReportsPanel from '@/components/admin/BugReportsPanel';
 
 interface ContactQuery {
   _id: string;
@@ -356,9 +357,7 @@ export default function AdminChatPage() {
           <TabsContent value="settings">
             <Card className="shadow-sm rounded-md">
               <CardContent className="p-6">
-                <div className="flex items-center justify-center h-[calc(100vh-14rem)]">
-                  <p className="text-muted-foreground">Chat settings will be available here</p>
-                </div>
+                <BugReportsPanel />
               </CardContent>
             </Card>
           </TabsContent>

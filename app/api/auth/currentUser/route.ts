@@ -4,7 +4,7 @@ import { getDataFromToken } from "@/helpers/getDataFromToken";
 import { connect } from "@/lib/mongoose";
 
 // Connect to MongoDB
-connect();
+await connect();
 
 // Helper function to add timeout to promises
 const withTimeout = <T>(promise: Promise<T>, timeoutMs: number): Promise<T> => {

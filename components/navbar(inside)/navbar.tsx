@@ -1,13 +1,44 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import "@/app/globals.css";
 import { motion } from 'framer-motion';
-import { BellIcon, SunIcon, MoonIcon } from '@heroicons/react/24/outline';
+import { BellIcon, SunIcon, MoonIcon, BugAntIcon } from '@heroicons/react/24/outline';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { useTheme } from 'next-themes';
 
 const Navbar: React.FC = () => {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
+  const [bugDialogOpen, setBugDialogOpen] = React.useState(false);
+  const [bugTitle, setBugTitle] = React.useState('');
+  const [bugDescription, setBugDescription] = React.useState('');
+  const [bugSubmitting, setBugSubmitting] = React.useState(false);
+  const [bugSuccess, setBugSuccess] = React.useState(false);
+  const [bugError, setBugError] = React.useState('');
 
+  const handleBugSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBugSubmitting(true);
+    setBugError('');
+    setBugSuccess(false);
+    try {
+      const res = await fetch('/api/bug-report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: bugTitle, description: bugDescription }),
+      });
+      if (!res.ok) throw new Error('Failed to submit bug report');
+      setBugSuccess(true);
+      setBugTitle('');
+      setBugDescription('');
+      setTimeout(() => setBugDialogOpen(false), 1200);
+    } catch (err: any) {
+      setBugError(err.message || 'Failed to submit bug report');
+    } finally {
+      setBugSubmitting(false);
+    }
+  };
   React.useEffect(() => setMounted(true), []);
 
   const logoVariants = {
@@ -95,6 +126,107 @@ const Navbar: React.FC = () => {
               />
             </div>
           </motion.button>
+
+          {/* Bug report button and dialog */}
+          {/* Bug report button */}
+          <motion.button
+            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            aria-label="Report a bug"
+            onClick={() => setBugDialogOpen(true)}
+            type="button"
+          >
+            <BugAntIcon className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+          </motion.button>
+          {/* Bug report dialog rendered in a portal to escape navbar stacking context */}
+          {bugDialogOpen && typeof window !== 'undefined' && (() => {
+            const modalRoot = document.getElementById('modal-root') || (() => {
+              const el = document.createElement('div');
+              el.id = 'modal-root';
+              document.body.appendChild(el);
+              return el;
+            })();
+            return createPortal(
+              <div style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                width: '100vw',
+                height: '100vh',
+                zIndex: 9999,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+                <div
+                  style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    width: '100vw',
+                    height: '100vh',
+                    background: 'rgba(0,0,0,0.4)',
+                    backdropFilter: 'blur(6px)',
+                    zIndex: 9998,
+                  }}
+                  onClick={() => setBugDialogOpen(false)}
+                />
+                <div
+                  style={{
+                    position: 'relative',
+                    zIndex: 10000,
+                    background: theme === 'dark' ? '#18181b' : '#fff',
+                    borderRadius: '1rem',
+                    boxShadow: '0 8px 32px rgba(0,0,0,0.25)',
+                    padding: '1.5rem',
+                    width: '100%',
+                    maxWidth: 400,
+                    border: theme === 'dark' ? '1px solid #374151' : '1px solid #e5e7eb',
+                  }}
+                >
+                  <h2 className="text-lg font-bold mb-2 text-gray-800 dark:text-gray-100">Report a Bug</h2>
+                  <form onSubmit={handleBugSubmit} className="space-y-3">
+                    <Input
+                      placeholder="Bug title"
+                      value={bugTitle}
+                      onChange={e => setBugTitle(e.target.value)}
+                      required
+                      className="border-gray-300 dark:border-gray-700"
+                    />
+                    <Textarea
+                      placeholder="Describe the bug..."
+                      value={bugDescription}
+                      onChange={e => setBugDescription(e.target.value)}
+                      rows={4}
+                      required
+                      className="border-gray-300 dark:border-gray-700"
+                    />
+                    {bugError && <div className="text-red-500 text-sm">{bugError}</div>}
+                    {bugSuccess && <div className="text-green-600 text-sm">Thank you for your report!</div>}
+                    <div className="flex justify-end gap-2 mt-2">
+                      <button
+                        type="button"
+                        className="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600"
+                        onClick={() => setBugDialogOpen(false)}
+                        disabled={bugSubmitting}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        className="px-4 py-1.5 rounded bg-indigo-600 text-white font-semibold hover:bg-indigo-700 disabled:opacity-60"
+                        disabled={bugSubmitting}
+                      >
+                        {bugSubmitting ? 'Submitting...' : 'Submit'}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>,
+              modalRoot
+            );
+          })()}
         </div>
 
         {/* Animated bottom border - subtle tech style */}

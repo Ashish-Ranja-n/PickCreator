@@ -323,9 +323,7 @@ export default function AnalyticsTab() {
                         <Pin className="h-4 w-4 text-yellow-500" />
                       )}
                     </div>
-                    <div className="text-base text-yellow-900/90 dark:text-yellow-100 mb-2 break-words whitespace-pre-line">
-                      {notice.content.length > 120 ? notice.content.slice(0, 120) + '…' : notice.content}
-                    </div>
+                  <NoticeContentPreview content={notice.content} />
                   </div>
                   <div className="flex items-center justify-between mt-2 text-xs text-yellow-700 dark:text-yellow-200/80">
                     <span>{notice.createdBy.name}</span>
