@@ -1,12 +1,15 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 
 export default function PickRolePage() {
   const router = useRouter();
   const [loadingRole, setLoadingRole] = useState<null | "Brand" | "Influencer">(null);
+  const isSubmitting = useRef(false);
 
-  const handleRoleSelect = async (role: "Brand" | "Influencer") => {
+  const handleRoleSelect = useCallback(async (role: "Brand" | "Influencer") => {
+    if (isSubmitting.current || loadingRole) return;
+    isSubmitting.current = true;
     setLoadingRole(role);
     try {
       // Save role to backend (update user role)
@@ -29,11 +32,13 @@ export default function PickRolePage() {
         router.replace("/influencer/onboarding/basic-info");
       }
     } catch (err) {
-      alert("There was a problem setting your role. Please try again.");
+      // Use a more user-friendly error display
+      window.alert("There was a problem setting your role. Please try again.");
     } finally {
       setLoadingRole(null);
+      isSubmitting.current = false;
     }
-  };
+  }, [router, loadingRole]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-start bg-[#fff6f9] px-4 py-0">
@@ -96,7 +101,9 @@ export default function PickRolePage() {
             opacity: loadingRole ? 0.7 : 1,
             pointerEvents: loadingRole ? "none" : "auto",
           }}
-          disabled={!!loadingRole}
+          disabled={!!loadingRole || isSubmitting.current}
+          aria-disabled={!!loadingRole || isSubmitting.current}
+          aria-busy={loadingRole === "Brand"}
         >
           <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-white shadow-sm">
             {/* Storefront Icon */}
@@ -156,7 +163,9 @@ export default function PickRolePage() {
             opacity: loadingRole ? 0.7 : 1,
             pointerEvents: loadingRole ? "none" : "auto",
           }}
-          disabled={!!loadingRole}
+          disabled={!!loadingRole || isSubmitting.current}
+          aria-disabled={!!loadingRole || isSubmitting.current}
+          aria-busy={loadingRole === "Influencer"}
         >
           <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-white shadow-sm">
             {/* Person Icon */}

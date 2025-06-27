@@ -1,7 +1,8 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
 import { getFirebaseAuth, RecaptchaVerifier, signInWithPhoneNumber } from "@/lib/firebase";
+import { useRouter } from "next/navigation";
 
 declare global {
   interface Window {
@@ -25,13 +26,18 @@ export default function WelcomeAuthPage() {
   const [resendTimer, setResendTimer] = useState(30);
   const [canResend, setCanResend] = useState(false);
   const [currentImage, setCurrentImage] = useState<number>(0);
+  const isSubmitting = useRef(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const otpRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
   const images: { src: string; alt: string }[] = [
     { src: "/welcome1.png", alt: "Welcome 1" },
     { src: "/welcome2.png", alt: "Welcome 2" },
   ];
 
   // Detect if input is email or phone (simple check)
-  const isEmail = input.includes("@") && input.includes(".");
+  // Improved email and phone validation
+  const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.trim());
   const isPhone = /^\d{10,15}$/.test(input.replace(/\D/g, ""));
 
   useEffect(() => {
@@ -48,17 +54,23 @@ export default function WelcomeAuthPage() {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentImage((prev: number) => (prev === images.length - 1 ? 0 : prev + 1));
-    }, 3000); // Slower: 3 seconds
+    }, 3000);
     return () => clearInterval(interval);
   }, [images.length]);
 
-  const handleContinue = async (e: React.FormEvent) => {
+  const handleContinue = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting.current) return;
+    isSubmitting.current = true;
     setFirebaseError("");
     setLoading(true);
-    if (isEmail) {
-      try {
-        // Send OTP to email via backend
+    try {
+      if (!isEmail && !isPhone) {
+        setFirebaseError("Please enter a valid email or phone number.");
+        inputRef.current?.focus();
+        return;
+      }
+      if (isEmail) {
         const res = await fetch("/api/send-otp", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -66,17 +78,9 @@ export default function WelcomeAuthPage() {
         });
         if (!res.ok) throw new Error("Failed to send OTP to email");
         setStep(2);
-      } catch (err: any) {
-        setFirebaseError(err.message || "Failed to send OTP to email");
-      }
-      setLoading(false);
-      return;
-    }
-    if (isPhone) {
-      try {
-        // Setup invisible reCAPTCHA
+        setTimeout(() => otpRef.current?.focus(), 100); // focus OTP input
+      } else if (isPhone) {
         const auth = getFirebaseAuth();
-        // Add to allow window.recaptchaVerifier
         if (!window.recaptchaVerifier) {
           window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
             size: 'invisible',
@@ -87,20 +91,31 @@ export default function WelcomeAuthPage() {
         const result = await signInWithPhoneNumber(auth, "+" + input.replace(/\D/g, ""), appVerifier);
         setConfirmationResult(result);
         setStep(2);
-      } catch (err: any) {
-        setFirebaseError(err.message || "Failed to send OTP");
+        setTimeout(() => otpRef.current?.focus(), 100);
       }
+    } catch (err: any) {
+      setFirebaseError(err.message || "Failed to send OTP");
+      inputRef.current?.focus();
+    } finally {
       setLoading(false);
+      isSubmitting.current = false;
     }
-  };
+  }, [input, isEmail, isPhone]);
 
-  const handleOtpVerify = async (e: React.FormEvent) => {
+  const handleOtpVerify = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting.current) return;
+    isSubmitting.current = true;
     setFirebaseError("");
     setOtpLoading(true);
-    if (isEmail) {
-      // Email OTP verification
-      try {
+    try {
+      // Validate OTP: must be 6 digits
+      if (!/^\d{6}$/.test(otp)) {
+        setFirebaseError("Please enter a valid 6-digit OTP.");
+        otpRef.current?.focus();
+        return;
+      }
+      if (isEmail) {
         const res = await fetch("/api/verify-otp", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -108,7 +123,6 @@ export default function WelcomeAuthPage() {
           credentials: "include",
         });
         if (!res.ok) throw new Error("Invalid OTP or verification failed");
-        // On success, call backend to check user existence and set cookie
         const loginRes = await fetch("/api/auth/otp-login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -118,34 +132,23 @@ export default function WelcomeAuthPage() {
         if (!loginRes.ok) throw new Error("Failed to login. Try again.");
         const data = await loginRes.json();
         if (data.isNewUser) {
-          window.location.href = "/(auth)/pickRole";
+          router.push("/(auth)/pickRole");
         } else {
           if (data.role === "Brand") {
-            window.location.href = "/brand";
+            router.push("/brand");
           } else if (data.role === "Influencer") {
-            window.location.href = "/influencer";
+            router.push("/influencer");
           } else {
-            window.location.href = "/";
+            router.push("/");
           }
         }
-      } catch (err: any) {
-        setFirebaseError(err.message || "OTP verification failed");
-      }
-      setOtpLoading(false);
-      return;
-    }
-    if (isPhone) {
-      if (!confirmationResult) {
-        setFirebaseError("No OTP session found. Please try again.");
-        setOtpLoading(false);
-        return;
-      }
-      try {
-        // Verify OTP with Firebase
+      } else if (isPhone) {
+        if (!confirmationResult) {
+          setFirebaseError("No OTP session found. Please try again.");
+          otpRef.current?.focus();
+          return;
+        }
         const result = await confirmationResult.confirm(otp);
-        // Get user info from Firebase result
-        const user = result.user;
-        // Call backend to check user existence and set cookie
         const res = await fetch("/api/auth/otp-login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -155,44 +158,40 @@ export default function WelcomeAuthPage() {
         if (!res.ok) throw new Error("Failed to login. Try again.");
         const data = await res.json();
         if (data.isNewUser) {
-          window.location.href = "/(auth)/pickRole";
+          router.push("/(auth)/pickRole");
         } else {
           if (data.role === "Brand") {
-            window.location.href = "/brand";
+            router.push("/brand");
           } else if (data.role === "Influencer") {
-            window.location.href = "/influencer";
+            router.push("/influencer");
           } else {
-            window.location.href = "/";
+            router.push("/");
           }
         }
-      } catch (err: any) {
-        setFirebaseError(err.message || "OTP verification failed");
       }
+    } catch (err: any) {
+      setFirebaseError(err.message || "OTP verification failed");
+      otpRef.current?.focus();
+    } finally {
       setOtpLoading(false);
+      isSubmitting.current = false;
     }
-  };
+  }, [input, otp, isEmail, isPhone, confirmationResult, router]);
 
-  const handleResendOtp = async () => {
+  const handleResendOtp = useCallback(async () => {
     setFirebaseError("");
     setResendTimer(30);
     setCanResend(false);
-    if (isEmail) {
-      try {
-        setLoading(true);
+    setLoading(true);
+    try {
+      if (isEmail) {
         const res = await fetch("/api/send-otp", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email: input }),
         });
         if (!res.ok) throw new Error("Failed to resend OTP to email");
-      } catch (err: any) {
-        setFirebaseError(err.message || "Failed to resend OTP to email");
-      } finally {
-        setLoading(false);
-      }
-    } else if (isPhone) {
-      try {
-        setLoading(true);
+      } else if (isPhone) {
         const auth = getFirebaseAuth();
         if (!window.recaptchaVerifier) {
           window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
@@ -202,13 +201,13 @@ export default function WelcomeAuthPage() {
         }
         const appVerifier = window.recaptchaVerifier;
         await signInWithPhoneNumber(auth, "+" + input.replace(/\D/g, ""), appVerifier);
-      } catch (err: any) {
-        setFirebaseError(err.message || "Failed to resend OTP");
-      } finally {
-        setLoading(false);
       }
+    } catch (err: any) {
+      setFirebaseError(err.message || "Failed to resend OTP");
+    } finally {
+      setLoading(false);
     }
-  };
+  }, [input, isEmail, isPhone]);
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
@@ -235,47 +234,57 @@ export default function WelcomeAuthPage() {
         </p>
 
         {step === 1 && (
-          <form onSubmit={handleContinue} className="w-full max-w-sm flex flex-col gap-4">
+          <form onSubmit={handleContinue} className="w-full max-w-sm flex flex-col gap-4" autoComplete="on" aria-label="Login form">
             <input
+              ref={inputRef}
               type="text"
               autoComplete="on"
               inputMode="email"
-              placeholder="Email"
+              placeholder="Email or Phone"
+              aria-label="Email or Phone"
               className="w-full rounded-xl bg-white border-2 border-[#e94e8a] px-4 py-3 text-[#e94e8a] placeholder-[#e94e8a]/60 focus:outline-none focus:ring-2 focus:ring-[#e94e8a] text-base shadow font-semibold transition"
               value={input}
               onChange={e => setInput(e.target.value)}
               required
+              aria-invalid={!isEmail && !isPhone}
             />
             <button
               type="submit"
               className="w-full rounded-full bg-[#e94e8a] text-white font-bold py-3 text-lg shadow-md hover:bg-[#c2185b] transition flex items-center justify-center"
-              disabled={(!isEmail && !isPhone) || loading}
+              disabled={(!isEmail && !isPhone) || loading || isSubmitting.current}
+              aria-disabled={(!isEmail && !isPhone) || loading || isSubmitting.current}
+              title={!isEmail && !isPhone ? "Enter a valid email or phone number" : loading ? "Loading..." : undefined}
             >
               {loading ? <span className="loader mr-2"></span> : null}Continue
             </button>
             {firebaseError && (
-              <div className="text-[#e94e8a] bg-[#ffe4ef] rounded px-2 py-1 text-xs text-center mb-2 font-bold drop-shadow">{firebaseError}</div>
+              <div className="text-[#e94e8a] bg-[#ffe4ef] rounded px-2 py-1 text-xs text-center mb-2 font-bold drop-shadow" tabIndex={-1}>{firebaseError}</div>
             )}
           </form>
         )}
 
         {step === 2 && (
-          <form onSubmit={handleOtpVerify} className="w-full max-w-sm flex flex-col gap-4">
+          <form onSubmit={handleOtpVerify} className="w-full max-w-sm flex flex-col gap-4" aria-label="OTP form">
             <input
+              ref={otpRef}
               type="text"
               inputMode="numeric"
               pattern="\d{6}"
               maxLength={6}
               placeholder="Enter OTP"
+              aria-label="Enter OTP"
               className="w-full rounded-xl bg-white border-2 border-[#e94e8a] px-4 py-3 text-[#e94e8a] placeholder-[#e94e8a]/60 focus:outline-none focus:ring-2 focus:ring-[#e94e8a] text-base shadow tracking-widest text-center font-semibold transition"
               value={otp}
               onChange={e => setOtp(e.target.value.replace(/\D/g, ""))}
               required
+              aria-invalid={otp.length !== 6}
             />
             <button
               type="submit"
               className="w-full rounded-full bg-[#e94e8a] text-white font-bold py-3 text-lg shadow-md hover:bg-[#c2185b] transition flex items-center justify-center"
-              disabled={otp.length !== 6 || otpLoading}
+              disabled={otp.length !== 6 || otpLoading || isSubmitting.current}
+              aria-disabled={otp.length !== 6 || otpLoading || isSubmitting.current}
+              title={otp.length !== 6 ? "Enter a valid 6-digit OTP" : otpLoading ? "Loading..." : undefined}
             >
               {otpLoading ? <span className="loader mr-2"></span> : null}Verify OTP
             </button>
@@ -285,19 +294,21 @@ export default function WelcomeAuthPage() {
                 className="text-xs text-[#e94e8a] font-bold disabled:opacity-50 hover:text-[#b71c50]"
                 onClick={handleResendOtp}
                 disabled={!canResend || loading}
+                aria-disabled={!canResend || loading}
+                title={!canResend ? `Resend OTP in ${resendTimer}s` : loading ? "Loading..." : undefined}
               >
                 {canResend ? "Resend OTP" : `Resend OTP in ${resendTimer}s`}
               </button>
               <button
                 type="button"
                 className="text-xs text-[#7d6c6c] underline font-bold hover:text-[#e94e8a]"
-                onClick={() => { setStep(1); setOtp(""); setFirebaseError(""); setResendTimer(30); setCanResend(false); }}
+                onClick={() => { setStep(1); setOtp(""); setFirebaseError(""); setResendTimer(30); setCanResend(false); setTimeout(() => inputRef.current?.focus(), 100); }}
               >
                 Change
               </button>
             </div>
             {firebaseError && (
-              <div className="text-[#e94e8a] bg-[#ffe4ef] rounded px-2 py-1 text-xs text-center mb-2 font-bold drop-shadow">{firebaseError}</div>
+              <div className="text-[#e94e8a] bg-[#ffe4ef] rounded px-2 py-1 text-xs text-center mb-2 font-bold drop-shadow" tabIndex={-1}>{firebaseError}</div>
             )}
           </form>
         )}
@@ -317,7 +328,7 @@ export default function WelcomeAuthPage() {
       </div>
 
       {/* Firebase reCAPTCHA container (invisible) */}
-      <div id="recaptcha-container"></div>
+      <div id="recaptcha-container" aria-hidden="true"></div>
 
       {/* Add a simple loader spinner style */}
       <style jsx global>{`
