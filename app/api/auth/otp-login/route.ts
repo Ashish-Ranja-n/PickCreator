@@ -1,90 +1,86 @@
+
 import { connect } from "@/lib/mongoose";
 import User from "@/models/user";
 import { NextResponse } from "next/server";
 import { SignJWT } from "jose";
 
-await connect();
+// Utility to build token data for a user
+function buildTokenData(user: any) {
+  const base = {
+    id: user._id,
+    _id: user._id,
+    email: user.email || '',
+    role: user.role || "needed",
+  };
+  if (user.role === 'Influencer') {
+    return {
+      ...base,
+      instagramConnected: true,
+      isInstagramVerified: user.isInstagramVerified || false,
+      onboardingCompleted: user.onboardingCompleted || false,
+    };
+  }
+  return base;
+}
 
 export async function POST(req: Request) {
+  await connect();
   try {
     const { email, phone } = await req.json();
-    let user = null;
-    let query = {};
-    if (email) {
-      query = { email };
-    } else if (phone) {
-      query = { phoneNumber: phone };
-    } else {
+    if (!email && !phone) {
       return NextResponse.json({ error: "Email or phone required" }, { status: 400 });
     }
-    user = await User.findOne(query);
-    let tokenData;
-    if (user) {
-      tokenData = {
-        id: user._id,
-        _id: user._id,
-        email: user.email || '',
-        role: user.role || "needed", // Default to 'needed' if no role is set
-        ...(user.role === 'Influencer' ? {
-        instagramConnected: true,
-        isInstagramVerified: user.isInstagramVerified || false,
-        onboardingCompleted: user.onboardingCompleted || false
-      } : {})
-      };
-    } else {
+
+    const query: Record<string, any> = email ? { email } : { phoneNumber: phone };
+    let user = await User.findOne(query);
+    let isNew = false;
+
+    if (!user) {
       try {
-        // New user: create in DB without role, assign role 'needed' only in token
-        const newUser = await User.create({ email: email || undefined, phoneNumber: phone || undefined, isVerified: true });
-        tokenData = {
-          id: newUser._id,
-          _id: newUser._id,
-          role: "needed",
-        };
-        user = newUser;
-      } catch (createErr: any) {
-        // Handle duplicate key error gracefully
-        if (createErr.code === 11000) {
-          // Find the user again
+        user = await User.create({
+          email: email || undefined,
+          phoneNumber: phone || undefined,
+          isVerified: true,
+        });
+        isNew = true;
+      } catch (err: any) {
+        // Handle duplicate key error (race condition)
+        if (err.code === 11000) {
           user = await User.findOne(query);
-          if (user) {
-            tokenData = {
-              id: user._id,
-              _id: user._id,
-              email: user.email || '',
-              role: user.role || "needed", // Default to 'needed' if no role is set
-              ...(user.role === 'Influencer' ? {
-        instagramConnected: true,
-        isInstagramVerified: user.isInstagramVerified || false,
-        onboardingCompleted: user.onboardingCompleted || false
-      } : {})
-            };
-          } else {
+          if (!user) {
             return NextResponse.json({ error: "Duplicate key error but user not found." }, { status: 500 });
           }
         } else {
-          // Log and return the actual error for debugging
-          console.error("User creation error:", createErr);
-          return NextResponse.json({ error: createErr.message || "User creation failed" }, { status: 500 });
+          console.error("User creation error:", err);
+          return NextResponse.json({ error: err.message || "User creation failed" }, { status: 500 });
         }
       }
+    }
+
+    const tokenData = buildTokenData(user);
+    const jwtSecret = process.env.JWT_SECRET;
+    if (!jwtSecret) {
+      return NextResponse.json({ error: "JWT secret not configured" }, { status: 500 });
     }
     const token = await new SignJWT(tokenData)
       .setProtectedHeader({ alg: "HS256" })
       .setExpirationTime("7d")
-      .sign(new TextEncoder().encode(process.env.JWT_SECRET!));
+      .sign(new TextEncoder().encode(jwtSecret));
+
     const response = NextResponse.json({
-      message: user ? (user.role === "needed" ? "New user" : "User exists") : "New user",
+      message: isNew ? "New user" : "User exists",
       user,
-      isNew: !user || user.role === "needed",
+      isNew,
     });
     response.cookies.set("token", token, {
       httpOnly: true,
       secure: true,
-      maxAge: 7 * 24 * 60 * 60,
+      maxAge: 7 * 24 * 60 * 60, // 7 days
+      sameSite: "lax",
+      path: "/",
     });
     return response;
   } catch (error: any) {
-    // Log and return the actual error for debugging
     console.error("POST /api/auth/otp-login error:", error);
     return NextResponse.json({ error: error.message || "Something went wrong" }, { status: 500 });
   }
