@@ -1080,7 +1080,8 @@ const Brand: NextPage = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4"
+            onClick={() => setShowConnectPopup(false)}
           >
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -1093,6 +1094,7 @@ const Brand: NextPage = () => {
                 mass: 0.8
               }}
               className="bg-white rounded-3xl shadow-lg max-w-md w-full max-h-[80vh] overflow-y-auto"
+              onClick={e => e.stopPropagation()}
             >
               {/* Header */}
               <div className="sticky top-0 bg-white/30 z-10 px-6 py-4 border-b flex justify-between items-center backdrop-blur-lg">
