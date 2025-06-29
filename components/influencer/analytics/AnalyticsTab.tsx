@@ -286,11 +286,11 @@ export default function AnalyticsTab() {
   }, []);
 
   return (
-    <div className="py-6 px-2 sm:px-6 min-h-screen transition-colors bg-gradient-to-br from-[#f5f6fa] to-[#e9eafc] dark:from-[#181825] dark:to-[#232946]">
+    <div className="py-6 px-2 sm:px-6 min-h-screen transition-colors bg-gradient-to-br from-[#f5f6fa] to-[#e9eafc] dark:bg-black">
       {/* Notice Board Section - Professional & Mobile First */}
-      <section className="mb-6 w-full max-w-2xl mx-auto">
+  <section className="mb-6 w-full max-w-2xl mx-auto">
         <div className="flex items-center justify-between mb-2 px-1">
-          <h2 className="text-lg sm:text-xl font-bold text-indigo-700 dark:text-yellow-200 tracking-tight">Notice Board</h2>
+          <h2 className="text-lg sm:text-xl font-bold text-[#2d3a4a] dark:text-[#7ddaff] tracking-tight">Notice Board</h2>
           {isAdmin && (
             <Button
               onClick={() => setOpen(true)}
@@ -302,16 +302,16 @@ export default function AnalyticsTab() {
         </div>
         <div className="relative w-full flex flex-col items-center">
           {loading ? (
-            <div className="flex justify-center items-center h-16 bg-white/80 dark:bg-neutral-900/90 rounded-xl shadow-md w-full">
-              <Loader2 className="h-7 w-7 animate-spin text-indigo-400 dark:text-yellow-200" />
+            <div className="flex justify-center items-center h-16 bg-white/80 dark:bg-[#181c20] rounded-xl shadow-md w-full">
+              <Loader2 className="h-7 w-7 animate-spin text-[#4f8cff] dark:text-[#7ddaff]" />
             </div>
           ) : notices.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-16 bg-white/80 dark:bg-neutral-900/90 rounded-xl shadow-md w-full">
-              <AlertCircle className="h-8 w-8 text-slate-400 dark:text-yellow-200 mb-1" />
-              <p className="text-sm text-slate-500 dark:text-yellow-200">No updates yet</p>
+            <div className="flex flex-col items-center justify-center h-16 bg-white/80 dark:bg-[#181c20] rounded-xl shadow-md w-full">
+              <AlertCircle className="h-8 w-8 text-[#b0b8c1] dark:text-[#7ddaff] mb-1" />
+              <p className="text-sm text-[#6b7a8f] dark:text-[#7ddaff]">No updates yet</p>
             </div>
           ) : (
-            <div className="relative w-full flex items-center bg-white dark:bg-neutral-900 rounded-xl shadow-lg border border-slate-200 dark:border-yellow-800 h-16 px-2 sm:px-4 overflow-hidden">
+            <div className="relative w-full flex items-center bg-white dark:bg-[#181c20] rounded-xl shadow-lg border border-slate-200 dark:border-[#222c36] h-16 px-2 sm:px-4 overflow-hidden">
               {/* Prev Button */}
               {notices.length > 1 && (
                 <button
@@ -320,15 +320,15 @@ export default function AnalyticsTab() {
                   aria-label="Previous notice"
                   style={{ top: '50%', transform: 'translateY(-50%)' }}
                 >
-                  <ChevronLeft className="h-4 w-4 text-indigo-400 dark:text-yellow-200" />
+                  <ChevronLeft className="h-4 w-4 text-[#4f8cff] dark:text-[#7ddaff]" />
                 </button>
               )}
               {/* Notice Marquee */}
               <div className="flex-1 flex flex-col items-center justify-center h-full select-none min-w-0">
                 <div className="flex items-center gap-2 mb-0.5 w-full min-w-0">
-                  <span className="font-semibold text-sm sm:text-base text-indigo-700 dark:text-yellow-200 truncate max-w-[120px] sm:max-w-[180px]">{notices[currentSlide]?.title}</span>
+                  <span className="font-semibold text-sm sm:text-base text-[#2d3a4a] dark:text-[#7ddaff] truncate max-w-[120px] sm:max-w-[180px]">{notices[currentSlide]?.title}</span>
                   {notices[currentSlide]?.isPinned && (
-                    <Pin className="h-3.5 w-3.5 text-yellow-500" />
+                    <Pin className="h-3.5 w-3.5 text-[#ffd166]" />
                   )}
                 </div>
                 <MarqueeText text={notices[currentSlide]?.content || ''} speed={40} />
@@ -338,7 +338,7 @@ export default function AnalyticsTab() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="absolute right-2 top-2 text-indigo-400 dark:text-yellow-200 hover:text-red-500"
+                  className="absolute right-2 top-2 text-[#4f8cff] dark:text-[#7ddaff] hover:text-red-500"
                   onClick={() => deleteNotice(notices[currentSlide]._id)}
                   aria-label="Delete notice"
                 >
@@ -353,7 +353,7 @@ export default function AnalyticsTab() {
                   aria-label="Next notice"
                   style={{ top: '50%', transform: 'translateY(-50%)' }}
                 >
-                  <ChevronRight className="h-4 w-4 text-indigo-400 dark:text-yellow-200" />
+                  <ChevronRight className="h-4 w-4 text-[#4f8cff] dark:text-[#7ddaff]" />
                 </button>
               )}
             </div>
@@ -362,9 +362,9 @@ export default function AnalyticsTab() {
       </section>
       {/* Dialog for creating new notice */}
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-md bg-white/90 dark:bg-neutral-900/95 rounded-2xl shadow-xl">
+        <DialogContent className="sm:max-w-md bg-white/90 dark:bg-[#181c20] rounded-2xl shadow-xl">
           <DialogHeader>
-            <DialogTitle className="text-indigo-700 dark:text-indigo-300">Create Notice</DialogTitle>
+            <DialogTitle className="text-[#2d3a4a] dark:text-[#7ddaff]">Create Notice</DialogTitle>
           </DialogHeader>
           <form onSubmit={createNotice} className="space-y-4">
             <div className="space-y-2">
@@ -372,14 +372,14 @@ export default function AnalyticsTab() {
                 ref={titleRef}
                 placeholder="Title"
                 required
-                className="h-10 border-indigo-200 dark:border-slate-600 focus:ring-indigo-400"
+                className="h-10 border-[#b0b8c1] dark:border-[#222c36] focus:ring-[#4f8cff] dark:focus:ring-[#7ddaff]"
               />
               <Textarea
                 ref={contentRef}
                 placeholder="Write your announcement..."
                 rows={6}
                 required
-                className="resize-none border-indigo-200 dark:border-slate-600 focus:ring-indigo-400"
+                className="resize-none border-[#b0b8c1] dark:border-[#222c36] focus:ring-[#4f8cff] dark:focus:ring-[#7ddaff]"
               />
             </div>
             <div className="flex items-center gap-2">
@@ -389,12 +389,12 @@ export default function AnalyticsTab() {
                 onCheckedChange={(checked) => setIsPinned(checked as boolean)}
                 className="accent-indigo-500"
               />
-              <label htmlFor="isPinned" className="text-sm text-slate-700 dark:text-slate-200">
+              <label htmlFor="isPinned" className="text-sm text-[#2d3a4a] dark:text-[#7ddaff]">
                 Pin this notice
               </label>
             </div>
             <DialogFooter>
-              <Button type="submit" disabled={isSubmitting} className="bg-indigo-600 hover:bg-indigo-700 text-white">
+              <Button type="submit" disabled={isSubmitting} className="bg-[#4f8cff] hover:bg-[#2563eb] text-white">
                 {isSubmitting ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -409,17 +409,16 @@ export default function AnalyticsTab() {
         </DialogContent>
       </Dialog>
       {/* Influencer section below notice board */}
-  <section className="mt-16 rounded-3xl shadow-xl bg-gradient-to-br from-white/80 to-indigo-50/60 dark:from-[#191a23]/80 dark:to-[#232946]/90 px-2 sm:px-8 py-10 max-w-6xl mx-auto border border-indigo-100 dark:border-[#3b3c4a]">
-    <h3 className="text-4xl sm:text-5xl font-extrabold mb-2 tracking-tight text-center text-indigo-700 dark:text-[#ffe066] drop-shadow-lg">
-      Meet the Creators & Brands
+  <section className="mt-16 px-2 sm:px-8 py-6 max-w-6xl mx-auto">
+    <h3 className="text-xl sm:text-3xl font-extrabold mb-2 tracking-tight text-center text-indigo-700 dark:text-[#ffe066]">
+      Influencer on our Platform
     </h3>
-    <p className="text-center text-lg sm:text-xl font-medium text-indigo-400 dark:text-[#ffe066] mb-8">Discover top influencers and brands on PickCreator</p>
-    {loadingInfluencers ? (
+   {loadingInfluencers ? (
       <div className="flex justify-center items-center h-24">
-        <Loader2 className="h-7 w-7 animate-spin text-indigo-400 dark:text-[#f6c177]" />
+        <Loader2 className="h-7 w-7 animate-spin text-[#4f8cff] dark:text-[#7ddaff]" />
       </div>
     ) : verifiedInfluencers.length === 0 ? (
-      <div className="text-center text-indigo-400 dark:text-[#f6c177] text-base">No verified influencers found.</div>
+      <div className="text-center text-[#4f8cff] dark:text-[#7ddaff] text-base">No verified influencers found.</div>
     ) : (
       <div className="flex flex-row gap-7 w-full max-w-5xl mx-auto overflow-x-auto pb-4 hide-scrollbar">
         {verifiedInfluencers.map((influencer, idx) => (
@@ -437,46 +436,47 @@ export default function AnalyticsTab() {
 // Flat, minimal influencer block with improved design and dark mode
 function InfluencerFlatBlock({ influencer, index }: { influencer: any, index: number }) {
   const instaUrl = influencer.instagramUsername ? `https://instagram.com/${influencer.instagramUsername}` : undefined;
-  // Subtle outline, no big card, and no background for text below
+  // Appealing, soft colors for both modes
   const pastelColors = [
-    '#f8f6fa', '#fdf6f0', '#f5f7fa', '#f9f6f3', '#f6f8f5', '#f6f7fa', '#f8f7f3', '#f7f6fa',
-    '#e9eafc', '#f6eaff', '#eafaf6', '#f6faff', '#f9f6fa', '#f6f9fa', '#f8f6f9', '#f6f8fa'
+    '#f7fafc', '#e3f6fd', '#f0f4ef', '#f9f9f9', '#f6f8fa', '#eaf6fb', '#f5f7fa', '#f3f8f2',
+    '#f8f6fa', '#eaf2fb', '#f6faff', '#f9f6fa', '#f6f9fa', '#f8f6f9', '#f6f8fa', '#f3f7fa'
   ];
-  // New dark mode colors for outline and text
   const darkPastelColors = [
-    '#191a23', '#1a1b2e', '#181825', '#20212b', '#232946', '#23283b', '#23283a', '#23293a',
-    '#23293b', '#23294a', '#23294b', '#23294c', '#23294d', '#23294e', '#23294f', '#232950'
+    '#181c20', '#1a232b', '#20242c', '#23272e', '#232a34', '#232d3a', '#1a232b', '#181c20',
+    '#232a34', '#232d3a', '#23272e', '#20242c', '#1a232b', '#181c20', '#232a34', '#232d3a'
   ];
+  const borderColor = typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches
+    ? '#232d3a' : '#b0b8c1';
   const bg = typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches
     ? darkPastelColors[index % darkPastelColors.length]
     : pastelColors[index % pastelColors.length];
   return (
     <div
-      className="flex flex-col items-center justify-start min-w-[180px] max-w-[200px] w-[180px] mx-1 border border-indigo-200 dark:border-[#3b3c4a] transition-transform duration-200 hover:scale-105 group bg-transparent"
-      style={{ background: 'transparent', borderRadius: 18, padding: 0 }}
+      className="flex flex-col items-center justify-start min-w-[180px] max-w-[200px] w-[180px] mx-1 transition-transform duration-200 hover:scale-105 group bg-transparent"
+      style={{ background: 'transparent', borderRadius: 18, padding: 0, border: `1.5px solid ${borderColor}` }}
     >
       <div className="w-full flex flex-col items-center">
         {influencer.profilePictureUrl ? (
           <img
             src={influencer.profilePictureUrl}
             alt={influencer.name}
-            className="w-full aspect-square object-cover rounded-[18px] border-2 border-indigo-100 dark:border-[#ffe066] group-hover:border-indigo-400 group-hover:shadow-xl"
+            className="w-full aspect-square object-cover rounded-[18px] border-2 border-[#b0b8c1] dark:border-[#7ddaff] group-hover:border-[#4f8cff] group-hover:shadow-xl"
             style={{ borderRadius: 18, marginBottom: 0 }}
           />
         ) : (
-          <div className="w-full aspect-square flex items-center justify-center bg-[#e7e3e0] dark:bg-[#232946] rounded-[18px] text-5xl font-extrabold text-indigo-400 dark:text-[#ffe066]">
+          <div className="w-full aspect-square flex items-center justify-center bg-[#e3f6fd] dark:bg-[#232a34] rounded-[18px] text-5xl font-extrabold text-[#4f8cff] dark:text-[#7ddaff]">
             {influencer.name ? influencer.name.charAt(0).toUpperCase() : '?'}
           </div>
         )}
       </div>
       <div className="w-full flex flex-col items-center mt-3">
-        <div className="text-base font-bold text-indigo-700 dark:text-[#ffe066] mb-0.5 text-center w-full truncate">
+        <div className="text-base font-bold text-[#2d3a4a] dark:text-[#7ddaff] mb-0.5 text-center w-full truncate">
           {instaUrl ? (
             <a
               href={instaUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:underline hover:text-indigo-500 dark:hover:text-[#ffe066] transition-colors"
+              className="hover:underline hover:text-[#4f8cff] dark:hover:text-[#4f8cff] transition-colors"
             >
               @{influencer.instagramUsername}
             </a>
@@ -484,7 +484,7 @@ function InfluencerFlatBlock({ influencer, index }: { influencer: any, index: nu
             `@${influencer.name}`
           )}
         </div>
-        <div className="text-sm font-medium text-[#7c3aed] dark:text-[#b8c1ec] text-center w-full tracking-wide">
+        <div className="text-sm font-medium text-[#4f8cff] dark:text-[#7ddaff] text-center w-full tracking-wide">
           {formatFollowers(influencer.followers || 0)} followers
         </div>
       </div>
