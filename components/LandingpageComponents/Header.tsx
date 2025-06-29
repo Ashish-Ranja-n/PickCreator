@@ -42,7 +42,11 @@ const Header: React.FC = () => {
       <div className="container-custom flex items-center justify-center">
         <div className="flex flex-col items-center justify-center select-none py-2">
           <span className="font-extrabold tracking-tight text-2xl md:text-4xl lg:text-5xl text-gray-900 dark:text-white" style={{ letterSpacing: '0.08em', fontFamily: 'Inter, ui-sans-serif, system-ui, sans-serif' }}>
-            pickcreator <span className="mx-2 text-gray-400 font-light">|</span> <span className="text-indigo-600">STUDIO</span>
+            <span>
+              <span style={{ color: '#222B45' }}>pick</span>
+              <span style={{ background: 'linear-gradient(90deg, #3B82F6 0%, #A855F7 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>creator</span>
+            </span>
+            <span className="mx-2 text-gray-400 font-light">|</span> <span className="text-indigo-600">STUDIO</span>
           </span>
         </div>
       </div>
