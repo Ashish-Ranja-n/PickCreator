@@ -43,6 +43,9 @@ export default function AnalyticsTab() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  // New: controls whether to show heading or content in marquee area
+  const [showHeading, setShowHeading] = useState(true);
+  const headingTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [verifiedInfluencers, setVerifiedInfluencers] = useState<any[]>([]);
   const [loadingInfluencers, setLoadingInfluencers] = useState(true);
   const slideInterval = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -228,16 +231,32 @@ export default function AnalyticsTab() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handlePrevSlide, handleNextSlide]);
 
-  // Auto-slide setup with pause functionality
+  // Auto-slide setup with pause functionality and heading/content toggle
   useEffect(() => {
-    if (notices.length > 1 && !isPaused) {
-      if (slideInterval.current) {
-        clearInterval(slideInterval.current);
-      }
-      
-      slideInterval.current = setInterval(() => {
-        handleNextSlide();
-      }, 5000);
+    // Clear any previous intervals/timeouts
+    if (slideInterval.current) {
+      clearInterval(slideInterval.current);
+      slideInterval.current = null;
+    }
+    if (headingTimeout.current) {
+      clearTimeout(headingTimeout.current);
+      headingTimeout.current = null;
+    }
+
+    if (notices.length > 0 && !isPaused) {
+      // Show heading first
+      setShowHeading(true);
+      // After 2.5s, show content
+      headingTimeout.current = setTimeout(() => {
+        setShowHeading(false);
+        // Start auto-slide interval only when content is showing
+        if (notices.length > 1) {
+          slideInterval.current = setInterval(() => {
+            setShowHeading(true); // Show heading for next slide
+            setCurrentSlide((prev) => (prev + 1) % notices.length);
+          }, 5000);
+        }
+      }, 2500);
     }
 
     return () => {
@@ -245,8 +264,12 @@ export default function AnalyticsTab() {
         clearInterval(slideInterval.current);
         slideInterval.current = null;
       }
+      if (headingTimeout.current) {
+        clearTimeout(headingTimeout.current);
+        headingTimeout.current = null;
+      }
     };
-  }, [notices.length, isPaused, handleNextSlide]);
+  }, [notices.length, isPaused, currentSlide]);
 
   // Reset interval on manual navigation
   const resetInterval = () => {
@@ -254,12 +277,12 @@ export default function AnalyticsTab() {
       clearInterval(slideInterval.current);
       slideInterval.current = null;
     }
-
-    if (notices.length > 1) {
-      slideInterval.current = setInterval(() => {
-        setCurrentSlide((prev) => (prev + 1) % notices.length);
-      }, 5000);
+    if (headingTimeout.current) {
+      clearTimeout(headingTimeout.current);
+      headingTimeout.current = null;
     }
+    // When manually navigating, always show heading first
+    setShowHeading(true);
   };
 
   // Initial fetch
@@ -330,7 +353,7 @@ export default function AnalyticsTab() {
               <p className="text-sm text-gray-500 dark:text-zinc-400">No updates yet</p>
             </div>
           ) : (
-            <div className="relative w-full flex items-center bg-white dark:bg-zinc-900 rounded-xl shadow-lg border border-gray-200 dark:border-zinc-800 h-16 px-2 sm:px-4 overflow-hidden">
+            <div className="relative w-full flex items-center bg-white dark:bg-zinc-900 rounded-xl shadow-lg border border-gray-200 dark:border-zinc-800 h-24 sm:h-28 px-2 sm:px-6 overflow-hidden">
               {/* Prev Button */}
               {notices.length > 1 && (
                 <button
@@ -342,15 +365,27 @@ export default function AnalyticsTab() {
                   <ChevronLeft className="h-4 w-4 text-gray-700 dark:text-white" />
                 </button>
               )}
-              {/* Notice Marquee */}
+              {/* Notice Marquee - now alternates heading and content */}
               <div className="flex-1 flex flex-col items-center justify-center h-full select-none min-w-0">
-                <div className="flex items-center gap-2 mb-0.5 w-full min-w-0">
-                  <span className="font-semibold text-sm sm:text-base text-gray-900 dark:text-white truncate max-w-[120px] sm:max-w-[180px]">{notices[currentSlide]?.title}</span>
-                  {notices[currentSlide]?.isPinned && (
-                    <Pin className="h-3.5 w-3.5 text-gray-700 dark:text-zinc-400" />
-                  )}
-                </div>
-                <MarqueeText text={notices[currentSlide]?.content || ''} speed={40} />
+                {showHeading ? (
+                  <div className="flex items-center gap-3 w-full min-w-0 justify-center">
+                    <span className="font-extrabold text-xl sm:text-2xl text-gray-900 dark:text-white truncate max-w-[320px] sm:max-w-[480px]">
+                      {notices[currentSlide]?.title}
+                    </span>
+                    {notices[currentSlide]?.isPinned && (
+                      <Pin className="h-5 w-5 text-gray-700 dark:text-zinc-400" />
+                    )}
+                  </div>
+                ) : (
+                  <div className="w-full flex items-center justify-center">
+                    <span className="font-semibold text-lg sm:text-xl text-gray-800 dark:text-white max-w-[90%]">
+                      <MarqueeText 
+                        text={notices[currentSlide]?.content || ''} 
+                        speed={40}
+                      />
+                    </span>
+                  </div>
+                )}
               </div>
               {/* Delete button for admin */}
               {isAdmin && (

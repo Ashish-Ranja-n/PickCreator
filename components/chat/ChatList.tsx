@@ -251,12 +251,12 @@ const ConversationItem = ({
 
   return (
     <div
-      className="mx-2 my-1.5 rounded-xl bg-white p-3 cursor-pointer transition-all duration-300 hover:bg-gray-50 hover:shadow-md group"
+      className="mx-2 my-1.5 rounded-xl bg-white dark:bg-zinc-900 p-3 cursor-pointer transition-all duration-300 hover:bg-gray-50 dark:hover:bg-zinc-800 hover:shadow-md group"
       onClick={onSelect}
     >
       <div className="flex items-center">
         <div className="relative">
-          <Avatar className="h-12 w-12 border bg-white shadow-sm">
+          <Avatar className="h-12 w-12 border bg-white dark:bg-zinc-900 shadow-sm">
             <div className="h-full w-full absolute inset-0">
               <Image
                 src={getAvatarUrl()}
@@ -270,15 +270,15 @@ const ConversationItem = ({
                 }}
               />
             </div>
-            <AvatarFallback className="bg-gradient-to-br from-purple-50 to-blue-50">
+            <AvatarFallback className="bg-gradient-to-br from-purple-50 to-blue-50 dark:from-zinc-800 dark:to-zinc-900">
               {conversation.name ? conversation.name.charAt(0).toUpperCase() : 'U'}
             </AvatarFallback>
           </Avatar>
 
           <span
-            className={`absolute -bottom-1 -right-1 h-3.5 w-3.5 rounded-full border-2 border-white ${
+            className={`absolute -bottom-1 -right-1 h-3.5 w-3.5 rounded-full border-2 border-white dark:border-zinc-900 ${
               isUserOnline(conversation.userId)
-                ? 'bg-emerald-500 ring-2 ring-emerald-100'
+                ? 'bg-emerald-500 ring-2 ring-emerald-100 dark:ring-emerald-900'
                 : 'bg-slate-400'
             }`}
           />
@@ -287,25 +287,25 @@ const ConversationItem = ({
         <div className="ml-4 flex-1">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
-              <h3 className="font-semibold text-gray-800">{conversation.name}</h3>
+              <h3 className="font-semibold text-gray-800 dark:text-white">{conversation.name}</h3>
               <span className={`text-xs px-2 py-0.5 rounded-full ${
                 conversation.role === 'Brand'
-                  ? 'bg-blue-100 text-blue-700'
+                  ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300'
                   : conversation.role === 'Admin'
-                    ? 'bg-purple-100 text-purple-700'
-                    : 'bg-green-100 text-green-700'
+                    ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300'
+                    : 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300'
               }`}>
                 {conversation.role}
               </span>
             </div>
-            <span className="text-xs text-gray-500 font-medium">
+            <span className="text-xs text-gray-500 dark:text-zinc-400 font-medium">
               {formatLastMessageTime(conversation.lastMessageTime)}
             </span>
           </div>
 
           <div className="flex justify-between items-center mt-1">
             <div className="flex items-center gap-2 max-w-[70%]">
-              <p className="text-sm text-gray-600 truncate w-full overflow-hidden text-ellipsis whitespace-nowrap">
+              <p className="text-sm text-gray-600 dark:text-zinc-300 truncate w-full overflow-hidden text-ellipsis whitespace-nowrap">
                 {!conversation.lastMessage || conversation.lastMessage.length === 0
                   ? "No messages yet"
                   : conversation.lastMessage.length > 30
@@ -320,8 +320,8 @@ const ConversationItem = ({
             </div>
             <span className={`text-xs px-2 py-0.5 rounded-full ${
               isUserOnline(conversation.userId)
-                ? 'bg-emerald-50 text-emerald-600 border border-emerald-100'
-                : 'bg-gray-100 text-gray-600'
+                ? 'bg-emerald-50 text-emerald-600 border border-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-900'
+                : 'bg-gray-100 text-gray-600 dark:bg-zinc-800 dark:text-zinc-400'
             }`}>
               {isUserOnline(conversation.userId) ? 'online' : 'offline'}
             </span>
@@ -334,26 +334,26 @@ const ConversationItem = ({
 
 const RoomItem = ({ room, onSelect }: { room: ChatRoom; onSelect: () => void }) => (
   <div
-    className="mx-2 my-1.5 rounded-xl bg-white p-3 cursor-pointer transition-all duration-300 hover:bg-gray-50 hover:shadow-md group"
+    className="mx-2 my-1.5 rounded-xl bg-white dark:bg-zinc-900 p-3 cursor-pointer transition-all duration-300 hover:bg-gray-50 dark:hover:bg-zinc-800 hover:shadow-md group"
     onClick={onSelect}
   >
     <div className="flex items-center">
       <div className="relative">
-        <div className="bg-gradient-to-br from-blue-100 to-cyan-100 rounded-full p-3 shadow-sm">
-          <UsersIcon className="h-5 w-5 text-blue-600" />
+        <div className="bg-gradient-to-br from-blue-100 to-cyan-100 dark:from-blue-900/40 dark:to-cyan-900/30 rounded-full p-3 shadow-sm">
+          <UsersIcon className="h-5 w-5 text-blue-600 dark:text-blue-300" />
         </div>
       </div>
 
       <div className="ml-4 flex-1">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <h3 className="font-semibold text-gray-800">{room.name}</h3>
+            <h3 className="font-semibold text-gray-800 dark:text-white">{room.name}</h3>
             <span className={`text-xs px-2 py-0.5 rounded-full
               ${room.accessType === 'brand'
-                ? 'bg-blue-100 text-blue-700 border border-blue-200'
+                ? 'bg-blue-100 text-blue-700 border border-blue-200 dark:bg-blue-900/40 dark:text-blue-300 dark:border-blue-900'
                 : room.accessType === 'influencer'
-                  ? 'bg-purple-100 text-purple-700 border border-purple-200'
-                  : 'bg-green-100 text-green-700 border border-green-200'
+                  ? 'bg-purple-100 text-purple-700 border border-purple-200 dark:bg-purple-900/40 dark:text-purple-300 dark:border-purple-900'
+                  : 'bg-green-100 text-green-700 border border-green-200 dark:bg-green-900/40 dark:text-green-300 dark:border-green-900'
               }`}>
               {room.accessType === 'brand'
                 ? 'Brands Only'
@@ -362,13 +362,13 @@ const RoomItem = ({ room, onSelect }: { room: ChatRoom; onSelect: () => void }) 
                   : 'All Members'}
             </span>
           </div>
-          <span className="text-xs text-gray-500 font-medium">
+          <span className="text-xs text-gray-500 dark:text-zinc-400 font-medium">
             {new Date(room.createdAt).toLocaleDateString()}
           </span>
         </div>
 
         <div className="flex justify-between items-center mt-1">
-          <p className="text-sm text-gray-600 truncate">
+          <p className="text-sm text-gray-600 dark:text-zinc-300 truncate">
             {room.participants.length} participants
           </p>
         </div>
