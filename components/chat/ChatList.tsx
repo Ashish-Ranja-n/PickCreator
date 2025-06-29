@@ -743,30 +743,30 @@ export const ChatList = () => {
   }, [chatRooms, isLoadingRooms, isAdmin, refetchRooms, handleRoomClick]);
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50 border-r relative overflow-hidden">
+    <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-black border-r border-gray-200 dark:border-zinc-800 relative overflow-hidden">
       {/* Global loading overlay */}
       {loading && (
-        <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-50 flex items-center justify-center">
+        <div className="absolute inset-0 bg-white/80 dark:bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center">
           <div className="flex flex-col items-center">
             <div className="h-10 w-10 relative">
               <div className="absolute inset-0 rounded-full border-t-2 border-purple-600 animate-spin"></div>
               <div className="absolute inset-1 rounded-full border-r-2 border-blue-500 animate-spin animate-reverse"></div>
             </div>
-            <p className="text-sm text-gray-600 mt-4 animate-pulse">Opening chat...</p>
+            <p className="text-sm text-gray-600 dark:text-zinc-300 mt-4 animate-pulse">Opening chat...</p>
           </div>
         </div>
       )}
 
-      <div className="p-3 sm:p-4 sticky top-0 bg-white z-10 rounded-b-xl shadow-md mb-2">
+      <div className="p-3 sm:p-4 sticky top-0 bg-white dark:bg-zinc-900 z-10 rounded-b-xl shadow-md mb-2">
         {/* Redesigned tabbed interface */}
         <div className="flex justify-between items-center">
-          <div className="bg-gray-100 p-1.5 rounded-xl flex w-full sm:w-[260px]">
+          <div className="bg-gray-100 dark:bg-zinc-800 p-1.5 rounded-xl flex w-full sm:w-[260px]">
             <button
               onClick={() => handleTabChange("chats")}
               className={`flex-1 py-2 px-6 rounded-lg text-sm font-medium transition-all duration-200 ${
                 activeTab === "chats"
-                  ? "bg-white text-purple-700 shadow-sm"
-                  : "text-gray-600 hover:text-gray-800 hover:bg-gray-200/50"
+                  ? "bg-white dark:bg-black text-purple-700 dark:text-purple-400 shadow-sm"
+                  : "text-gray-600 dark:text-zinc-400 hover:text-gray-800 dark:hover:text-white hover:bg-gray-200/50 dark:hover:bg-zinc-800/50"
               }`}
             >
               Chats
@@ -775,8 +775,8 @@ export const ChatList = () => {
               onClick={() => handleTabChange("rooms")}
               className={`flex-1 py-2 px-6 rounded-lg text-sm font-medium transition-all duration-200 ${
                 activeTab === "rooms"
-                  ? "bg-white text-blue-700 shadow-sm"
-                  : "text-gray-600 hover:text-gray-800 hover:bg-gray-200/50"
+                  ? "bg-white dark:bg-black text-blue-700 dark:text-blue-400 shadow-sm"
+                  : "text-gray-600 dark:text-zinc-400 hover:text-gray-800 dark:hover:text-white hover:bg-gray-200/50 dark:hover:bg-zinc-800/50"
               }`}
             >
               Rooms
@@ -794,7 +794,7 @@ export const ChatList = () => {
               }
             }}
             disabled={activeTab === "chats" ? isLoadingConversations : (activeTab === "rooms" ? isLoadingRooms : false)}
-            className="h-8 w-8 rounded-full hover:bg-gray-100"
+            className="h-8 w-8 rounded-full hover:bg-gray-100 dark:hover:bg-zinc-800"
           >
             <RefreshCw size={16} className={cn(
               "transition-all",
@@ -809,18 +809,18 @@ export const ChatList = () => {
         {isAdmin && (
           <div className="relative mt-3">
             <div className="relative group">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 group-hover:text-purple-500 transition-colors duration-200" size={18} />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-zinc-500 group-hover:text-purple-500 transition-colors duration-200" size={18} />
               <Input
                 type="text"
                 placeholder="Search users..."
                 value={query}
                 onChange={handleSearch}
-                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500 transition-all duration-200 bg-gray-50 hover:bg-white"
+                className="w-full pl-10 pr-4 py-2 border border-gray-200 dark:border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500 transition-all duration-200 bg-gray-50 dark:bg-zinc-800 hover:bg-white dark:hover:bg-zinc-900 text-gray-900 dark:text-white"
               />
             </div>
 
             {query && isAdmin && (
-              <div className="absolute w-full mt-2 bg-white shadow-lg rounded-xl max-h-60 overflow-y-auto border z-50">
+              <div className="absolute w-full mt-2 bg-white dark:bg-zinc-900 shadow-lg rounded-xl max-h-60 overflow-y-auto border border-gray-200 dark:border-zinc-700 z-50">
                 <SearchResults
                   results={searchResults}
                   loading={isLoadingSearch}
@@ -865,47 +865,47 @@ export const ChatList = () => {
 
       {/* Create Room Dialog with enhanced styling */}
       <Dialog open={createRoomDialogOpen} onOpenChange={setCreateRoomDialogOpen}>
-        <DialogContent className="sm:max-w-[425px] rounded-xl">
+        <DialogContent className="sm:max-w-[425px] rounded-xl dark:bg-zinc-900">
           <DialogHeader>
-            <DialogTitle className="text-xl text-gray-800">Create a Chat Room</DialogTitle>
-            <DialogDescription className="text-gray-500">
+            <DialogTitle className="text-xl text-gray-800 dark:text-white">Create a Chat Room</DialogTitle>
+            <DialogDescription className="text-gray-500 dark:text-zinc-400">
               Create a chat room for users to join and communicate with each other.
             </DialogDescription>
           </DialogHeader>
 
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="roomName" className="text-gray-700">Room Name</Label>
+              <Label htmlFor="roomName" className="text-gray-700 dark:text-zinc-200">Room Name</Label>
               <Input
                 id="roomName"
                 placeholder="Enter room name"
                 value={roomName}
                 onChange={(e) => setRoomName(e.target.value)}
-                className="rounded-lg focus:border-blue-500 focus:ring focus:ring-blue-500/20"
+                className="rounded-lg focus:border-blue-500 focus:ring focus:ring-blue-500/20 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white border border-gray-200 dark:border-zinc-700"
               />
             </div>
 
             <div className="grid gap-2">
-              <Label className="text-gray-700">Who can access this room?</Label>
+              <Label className="text-gray-700 dark:text-zinc-200">Who can access this room?</Label>
               <RadioGroup value={roomAccessType} onValueChange={(value) => setRoomAccessType(value as AccessType)}>
-                <div className="flex items-center space-x-2 rounded-lg border p-3 cursor-pointer hover:bg-gray-50 transition-all">
-                  <RadioGroupItem value="all" id="r1" className="text-green-600" />
-                  <Label htmlFor="r1" className="flex gap-2 items-center font-normal cursor-pointer text-gray-700">
-                    <UsersIcon className="h-4 w-4 text-green-600" />
+                <div className="flex items-center space-x-2 rounded-lg border p-3 cursor-pointer hover:bg-gray-50 dark:border-zinc-700 dark:hover:bg-zinc-800 transition-all">
+                  <RadioGroupItem value="all" id="r1" className="text-green-600 dark:text-green-400" />
+                  <Label htmlFor="r1" className="flex gap-2 items-center font-normal cursor-pointer text-gray-700 dark:text-zinc-200">
+                    <UsersIcon className="h-4 w-4 text-green-600 dark:text-green-400" />
                     <span>All Members</span>
                   </Label>
                 </div>
-                <div className="flex items-center space-x-2 rounded-lg border p-3 cursor-pointer hover:bg-gray-50 transition-all">
-                  <RadioGroupItem value="brand" id="r2" className="text-blue-600" />
-                  <Label htmlFor="r2" className="flex gap-2 items-center font-normal cursor-pointer text-gray-700">
-                    <UserIcon className="h-4 w-4 text-blue-600" />
+                <div className="flex items-center space-x-2 rounded-lg border p-3 cursor-pointer hover:bg-gray-50 dark:border-zinc-700 dark:hover:bg-zinc-800 transition-all">
+                  <RadioGroupItem value="brand" id="r2" className="text-blue-600 dark:text-blue-400" />
+                  <Label htmlFor="r2" className="flex gap-2 items-center font-normal cursor-pointer text-gray-700 dark:text-zinc-200">
+                    <UserIcon className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                     <span>Brands Only</span>
                   </Label>
                 </div>
-                <div className="flex items-center space-x-2 rounded-lg border p-3 cursor-pointer hover:bg-gray-50 transition-all">
-                  <RadioGroupItem value="influencer" id="r3" className="text-purple-600" />
-                  <Label htmlFor="r3" className="flex gap-2 items-center font-normal cursor-pointer text-gray-700">
-                    <UserIcon className="h-4 w-4 text-purple-600" />
+                <div className="flex items-center space-x-2 rounded-lg border p-3 cursor-pointer hover:bg-gray-50 dark:border-zinc-700 dark:hover:bg-zinc-800 transition-all">
+                  <RadioGroupItem value="influencer" id="r3" className="text-purple-600 dark:text-purple-400" />
+                  <Label htmlFor="r3" className="flex gap-2 items-center font-normal cursor-pointer text-gray-700 dark:text-zinc-200">
+                    <UserIcon className="h-4 w-4 text-purple-600 dark:text-purple-400" />
                     <span>Influencers Only</span>
                   </Label>
                 </div>
@@ -914,11 +914,11 @@ export const ChatList = () => {
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setCreateRoomDialogOpen(false)} className="rounded-lg">Cancel</Button>
+            <Button variant="outline" onClick={() => setCreateRoomDialogOpen(false)} className="rounded-lg dark:text-white dark:border-zinc-700">Cancel</Button>
             <Button
               onClick={createChatRoom}
               disabled={createRoomMutation.isPending || !roomName.trim()}
-              className="rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+              className="rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 dark:from-blue-800 dark:to-purple-800 dark:hover:from-blue-900 dark:hover:to-purple-900 text-white"
             >
               {createRoomMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Create Room
@@ -930,7 +930,7 @@ export const ChatList = () => {
       {/* Floating Action Button with enhanced styling */}
       {isAdmin && activeTab === "rooms" && (
         <Button
-          className="fixed bottom-16 right-6 rounded-full w-14 h-14 shadow-lg flex items-center justify-center bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all duration-200 hover:scale-105 z-10"
+          className="fixed bottom-16 right-6 rounded-full w-14 h-14 shadow-lg flex items-center justify-center bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 dark:from-blue-800 dark:to-purple-800 dark:hover:from-blue-900 dark:hover:to-purple-900 text-white transition-all duration-200 hover:scale-105 z-10"
           onClick={() => setCreateRoomDialogOpen(true)}
         >
           <Plus size={24} />

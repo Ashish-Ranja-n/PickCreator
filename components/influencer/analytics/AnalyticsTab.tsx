@@ -285,12 +285,31 @@ export default function AnalyticsTab() {
     fetchInfluencers();
   }, []);
 
+  // Shuffle influencers for random order per user session
+  function shuffleArray(array: any[]) {
+    // Fisher-Yates shuffle
+    const arr = array.slice();
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  // Memoize the shuffled influencers for the session
+  const [shuffledInfluencers, setShuffledInfluencers] = useState<any[]>([]);
+  useEffect(() => {
+    if (verifiedInfluencers.length > 0) {
+      setShuffledInfluencers(shuffleArray(verifiedInfluencers));
+    }
+  }, [verifiedInfluencers]);
+
   return (
-    <div className="py-6 px-2 sm:px-6 min-h-screen transition-colors bg-gradient-to-br from-[#f5f6fa] to-[#e9eafc] dark:from-black dark:to-zinc-900">
-      {/* Notice Board Section - Professional & Mobile First */}
-  <section className="mb-6 w-full max-w-2xl mx-auto">
+    <div className="min-h-screen px-2 sm:px-6 py-10 bg-white dark:bg-black transition-colors">
+      {/* Notice Board Section */}
+      <section className="mb-8 w-full max-w-2xl mx-auto">
         <div className="flex items-center justify-between mb-2 px-1">
-          <h2 className="text-lg sm:text-xl font-bold text-[#2d3a4a] dark:text-white tracking-tight">Notice Board</h2>
+          <h2 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-fuchsia-400 to-violet-400 bg-clip-text text-transparent tracking-tight">Notice Board</h2>
           {isAdmin && (
             <Button
               onClick={() => setOpen(true)}
@@ -302,33 +321,33 @@ export default function AnalyticsTab() {
         </div>
         <div className="relative w-full flex flex-col items-center">
           {loading ? (
-            <div className="flex justify-center items-center h-16 bg-white/80 dark:bg-zinc-900 rounded-xl shadow-md w-full">
-              <Loader2 className="h-7 w-7 animate-spin text-[#3a4250] dark:text-white" />
+            <div className="flex justify-center items-center h-16 bg-white dark:bg-zinc-900 rounded-xl shadow-md w-full">
+              <Loader2 className="h-7 w-7 animate-spin text-fuchsia-500 dark:text-white" />
             </div>
           ) : notices.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-16 bg-white/80 dark:bg-zinc-900 rounded-xl shadow-md w-full">
-              <AlertCircle className="h-8 w-8 text-[#b0b8c1] dark:text-zinc-500 mb-1" />
-              <p className="text-sm text-[#6b7a8f] dark:text-zinc-400">No updates yet</p>
+            <div className="flex flex-col items-center justify-center h-16 bg-white dark:bg-zinc-900 rounded-xl shadow-md w-full">
+              <AlertCircle className="h-8 w-8 text-blue-400 dark:text-zinc-500 mb-1" />
+              <p className="text-sm text-gray-500 dark:text-zinc-400">No updates yet</p>
             </div>
           ) : (
-            <div className="relative w-full flex items-center bg-white dark:bg-zinc-900 rounded-xl shadow-lg border border-slate-200 dark:border-zinc-800 h-16 px-2 sm:px-4 overflow-hidden">
+            <div className="relative w-full flex items-center bg-white dark:bg-zinc-900 rounded-xl shadow-lg border border-gray-200 dark:border-zinc-800 h-16 px-2 sm:px-4 overflow-hidden">
               {/* Prev Button */}
               {notices.length > 1 && (
                 <button
-                  className="absolute left-1 sm:left-2 z-10 p-1 rounded-full bg-white/80 dark:bg-zinc-800 hover:bg-[#e3e6ea] dark:hover:bg-zinc-700 transition"
+                  className="absolute left-1 sm:left-2 z-10 p-1 rounded-full bg-white dark:bg-zinc-800 hover:bg-gray-100 dark:hover:bg-zinc-700 transition"
                   onClick={() => { handlePrevSlide(); resetInterval(); }}
                   aria-label="Previous notice"
                   style={{ top: '50%', transform: 'translateY(-50%)' }}
                 >
-                  <ChevronLeft className="h-4 w-4 text-[#3a4250] dark:text-white" />
+                  <ChevronLeft className="h-4 w-4 text-gray-700 dark:text-white" />
                 </button>
               )}
               {/* Notice Marquee */}
               <div className="flex-1 flex flex-col items-center justify-center h-full select-none min-w-0">
                 <div className="flex items-center gap-2 mb-0.5 w-full min-w-0">
-                  <span className="font-semibold text-sm sm:text-base text-[#2d3a4a] dark:text-white truncate max-w-[120px] sm:max-w-[180px]">{notices[currentSlide]?.title}</span>
+                  <span className="font-semibold text-sm sm:text-base text-gray-900 dark:text-white truncate max-w-[120px] sm:max-w-[180px]">{notices[currentSlide]?.title}</span>
                   {notices[currentSlide]?.isPinned && (
-                    <Pin className="h-3.5 w-3.5 text-[#3a4250] dark:text-zinc-400" />
+                    <Pin className="h-3.5 w-3.5 text-gray-700 dark:text-zinc-400" />
                   )}
                 </div>
                 <MarqueeText text={notices[currentSlide]?.content || ''} speed={40} />
@@ -338,7 +357,7 @@ export default function AnalyticsTab() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="absolute right-2 top-2 text-[#3a4250] dark:text-white hover:text-red-500"
+                  className="absolute right-2 top-2 text-gray-700 dark:text-white hover:text-red-500"
                   onClick={() => deleteNotice(notices[currentSlide]._id)}
                   aria-label="Delete notice"
                 >
@@ -348,12 +367,12 @@ export default function AnalyticsTab() {
               {/* Next Button */}
               {notices.length > 1 && (
                 <button
-                  className="absolute right-1 sm:right-2 z-10 p-1 rounded-full bg-white/80 dark:bg-zinc-800 hover:bg-[#e3e6ea] dark:hover:bg-zinc-700 transition"
+                  className="absolute right-1 sm:right-2 z-10 p-1 rounded-full bg-white dark:bg-zinc-800 hover:bg-gray-100 dark:hover:bg-zinc-700 transition"
                   onClick={() => { handleNextSlide(); resetInterval(); }}
                   aria-label="Next notice"
                   style={{ top: '50%', transform: 'translateY(-50%)' }}
                 >
-                  <ChevronRight className="h-4 w-4 text-[#3a4250] dark:text-white" />
+                  <ChevronRight className="h-4 w-4 text-gray-700 dark:text-white" />
                 </button>
               )}
             </div>
@@ -362,9 +381,9 @@ export default function AnalyticsTab() {
       </section>
       {/* Dialog for creating new notice */}
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-md bg-white/90 dark:bg-zinc-900 rounded-2xl shadow-xl">
+        <DialogContent className="sm:max-w-md bg-white dark:bg-zinc-900 rounded-2xl shadow-xl">
           <DialogHeader>
-            <DialogTitle className="text-[#2d3a4a] dark:text-white">Create Notice</DialogTitle>
+            <DialogTitle className="text-gray-900 dark:text-white">Create Notice</DialogTitle>
           </DialogHeader>
           <form onSubmit={createNotice} className="space-y-4">
             <div className="space-y-2">
@@ -372,14 +391,14 @@ export default function AnalyticsTab() {
                 ref={titleRef}
                 placeholder="Title"
                 required
-                className="h-10 border-[#b0b8c1] dark:border-zinc-700 focus:ring-[#3a4250] dark:focus:ring-white bg-white dark:bg-zinc-800 text-[#2d3a4a] dark:text-white"
+                className="h-10 border-gray-300 dark:border-zinc-700 focus:ring-violet-500 dark:focus:ring-fuchsia-500 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white"
               />
               <Textarea
                 ref={contentRef}
                 placeholder="Write your announcement..."
                 rows={6}
                 required
-                className="resize-none border-[#b0b8c1] dark:border-zinc-700 focus:ring-[#3a4250] dark:focus:ring-white bg-white dark:bg-zinc-800 text-[#2d3a4a] dark:text-white"
+                className="resize-none border-gray-300 dark:border-zinc-700 focus:ring-violet-500 dark:focus:ring-fuchsia-500 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white"
               />
             </div>
             <div className="flex items-center gap-2">
@@ -387,14 +406,14 @@ export default function AnalyticsTab() {
                 id="isPinned"
                 checked={isPinned}
                 onCheckedChange={(checked) => setIsPinned(checked as boolean)}
-                className="accent-[#3a4250] dark:accent-white"
+                className="accent-violet-500 dark:accent-fuchsia-500"
               />
-              <label htmlFor="isPinned" className="text-sm text-[#2d3a4a] dark:text-zinc-400">
+              <label htmlFor="isPinned" className="text-sm text-gray-700 dark:text-zinc-400">
                 Pin this notice
               </label>
             </div>
             <DialogFooter>
-              <Button type="submit" disabled={isSubmitting} className="bg-gray-100 hover:bg-gray-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-gray-800 dark:text-white">
+              <Button type="submit" disabled={isSubmitting} className="bg-gradient-to-r from-violet-500 to-fuchsia-500 dark:from-violet-600 dark:to-fuchsia-600 text-white">
                 {isSubmitting ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -409,24 +428,24 @@ export default function AnalyticsTab() {
         </DialogContent>
       </Dialog>
       {/* Influencer section below notice board */}
-  <section className="mt-16 px-2 sm:px-8 py-6 max-w-6xl mx-auto">
-    <h3 className="text-xl sm:text-3xl font-extrabold mb-2 tracking-tight text-center text-[#3a4250] dark:text-white">
-      Influencer on our Platform
-    </h3>
-   {loadingInfluencers ? (
-      <div className="flex justify-center items-center h-24">
-        <Loader2 className="h-7 w-7 animate-spin text-[#3a4250] dark:text-white" />
-      </div>
-    ) : verifiedInfluencers.length === 0 ? (
-      <div className="text-center text-[#3a4250] dark:text-zinc-400 text-base">No verified influencers found.</div>
-    ) : (
-      <div className="flex flex-row gap-7 w-full max-w-5xl mx-auto overflow-x-auto pb-4 hide-scrollbar">
-        {verifiedInfluencers.map((influencer, idx) => (
-          <InfluencerFlatBlock key={influencer._id} influencer={influencer} index={idx} />
-        ))}
-      </div>
-    )}
-  </section>
+      <section className="mt-16 px-2 sm:px-8 py-6 max-w-6xl mx-auto">
+        <h3 className="text-2xl sm:text-3xl font-extrabold mb-2 tracking-tight text-center bg-gradient-to-r from-fuchsia-400 to-violet-400 bg-clip-text text-transparent">
+          Influencers on our Platform
+        </h3>
+        {loadingInfluencers ? (
+          <div className="flex justify-center items-center h-24">
+            <Loader2 className="h-7 w-7 animate-spin text-fuchsia-500 dark:text-white" />
+          </div>
+        ) : shuffledInfluencers.length === 0 ? (
+          <div className="text-center text-gray-700 dark:text-zinc-400 text-base">No verified influencers found.</div>
+        ) : (
+          <div className="flex flex-row gap-7 w-full max-w-5xl mx-auto overflow-x-auto pb-4 hide-scrollbar">
+            {shuffledInfluencers.map((influencer, idx) => (
+              <InfluencerFlatBlock key={influencer._id} influencer={influencer} index={idx} />
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   );
 }
@@ -453,7 +472,7 @@ function InfluencerFlatBlock({ influencer, index }: { influencer: any, index: nu
   return (
     <div
       className="flex flex-col items-center justify-start min-w-[180px] max-w-[200px] w-[180px] mx-1 transition-transform duration-200 hover:scale-105 group"
-      style={{ background: bg, borderRadius: 18, padding: 0 }}
+      style={{ borderRadius: 18, padding: 0 }}
     >
       <div className="w-full flex flex-col items-center">
         {influencer.profilePictureUrl ? (
