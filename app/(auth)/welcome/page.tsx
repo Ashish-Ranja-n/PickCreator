@@ -133,7 +133,7 @@ export default function WelcomeAuthPage() {
         const data = await loginRes.json();
         // ...existing code...
         if (data.isNew) {
-          router.push("/(auth)/pickRole");
+          router.push("/pickRole");
         } else {
           if (data.user?.role === "Brand") {
             router.push("/brand");
@@ -160,7 +160,7 @@ export default function WelcomeAuthPage() {
         const data = await res.json();
         // ...existing code...
         if (data.isNew) {
-          router.push("/(auth)/pickRole");
+          router.push("/pickRole");
         } else {
           if (data.user?.role === "Brand") {
             router.push("/brand");

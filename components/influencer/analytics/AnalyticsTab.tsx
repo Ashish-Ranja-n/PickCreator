@@ -286,58 +286,59 @@ export default function AnalyticsTab() {
   }, []);
 
   return (
-    <div className="py-6 px-2 md:px-8 bg-gradient-to-br from-indigo-50 to-sky-100 dark:from-black dark:to-neutral-900 min-h-screen transition-colors">
-      {/* Notice Board Section - Compact Marquee Style */}
-      <div className="mb-6">
-        {isAdmin && (
-          <div className="flex justify-end mb-2">
+    <div className="py-4 px-1 sm:px-4 bg-gradient-to-br from-indigo-50 to-sky-100 dark:from-black dark:to-neutral-900 min-h-screen transition-colors">
+      {/* Notice Board Section - Professional & Mobile First */}
+      <section className="mb-6 w-full max-w-2xl mx-auto">
+        <div className="flex items-center justify-between mb-2 px-1">
+          <h2 className="text-lg sm:text-xl font-bold text-indigo-700 dark:text-yellow-200 tracking-tight">Notice Board</h2>
+          {isAdmin && (
             <Button
               onClick={() => setOpen(true)}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-5 py-2 rounded-xl shadow-md transition"
+              className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-1.5 rounded-lg shadow-md text-sm sm:text-base"
             >
-              <Plus className="mr-2 h-5 w-5" /> Add Notice
+              <Plus className="mr-1 h-4 w-4" /> Add Notice
             </Button>
-          </div>
-        )}
+          )}
+        </div>
         <div className="relative w-full flex flex-col items-center">
           {loading ? (
-            <div className="flex justify-center items-center h-[80px] bg-white/80 dark:bg-neutral-900/90 rounded-2xl shadow-md w-full">
-              <Loader2 className="h-8 w-8 animate-spin text-indigo-400 dark:text-yellow-200" />
+            <div className="flex justify-center items-center h-16 bg-white/80 dark:bg-neutral-900/90 rounded-xl shadow-md w-full">
+              <Loader2 className="h-7 w-7 animate-spin text-indigo-400 dark:text-yellow-200" />
             </div>
           ) : notices.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-[80px] bg-white/80 dark:bg-neutral-900/90 rounded-2xl shadow-md w-full">
-              <AlertCircle className="h-10 w-10 text-slate-400 dark:text-yellow-200 mb-1" />
-              <p className="text-base text-slate-500 dark:text-yellow-200">No updates yet</p>
+            <div className="flex flex-col items-center justify-center h-16 bg-white/80 dark:bg-neutral-900/90 rounded-xl shadow-md w-full">
+              <AlertCircle className="h-8 w-8 text-slate-400 dark:text-yellow-200 mb-1" />
+              <p className="text-sm text-slate-500 dark:text-yellow-200">No updates yet</p>
             </div>
           ) : (
-            <div className="relative w-full max-w-3xl flex items-center bg-yellow-100 dark:bg-neutral-900 rounded-2xl shadow-lg border-2 border-yellow-200 dark:border-yellow-800 h-[70px] px-4 overflow-hidden">
+            <div className="relative w-full flex items-center bg-white dark:bg-neutral-900 rounded-xl shadow-lg border border-slate-200 dark:border-yellow-800 h-16 px-2 sm:px-4 overflow-hidden">
               {/* Prev Button */}
               {notices.length > 1 && (
                 <button
-                  className="absolute left-2 z-10 p-1 rounded-full bg-white/70 dark:bg-black/40 hover:bg-indigo-100 dark:hover:bg-indigo-900 transition"
+                  className="absolute left-1 sm:left-2 z-10 p-1 rounded-full bg-white/80 dark:bg-black/40 hover:bg-indigo-100 dark:hover:bg-indigo-900 transition"
                   onClick={() => { handlePrevSlide(); resetInterval(); }}
                   aria-label="Previous notice"
                   style={{ top: '50%', transform: 'translateY(-50%)' }}
                 >
-                  <ChevronLeft className="h-5 w-5 text-yellow-700 dark:text-yellow-200" />
+                  <ChevronLeft className="h-4 w-4 text-indigo-400 dark:text-yellow-200" />
                 </button>
               )}
               {/* Notice Marquee */}
-              <div className="flex-1 flex flex-col items-center justify-center h-full select-none">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="font-bold text-base text-yellow-900 dark:text-yellow-200 truncate max-w-[180px]">{notices[currentSlide]?.title}</span>
+              <div className="flex-1 flex flex-col items-center justify-center h-full select-none min-w-0">
+                <div className="flex items-center gap-2 mb-0.5 w-full min-w-0">
+                  <span className="font-semibold text-sm sm:text-base text-indigo-700 dark:text-yellow-200 truncate max-w-[120px] sm:max-w-[180px]">{notices[currentSlide]?.title}</span>
                   {notices[currentSlide]?.isPinned && (
-                    <Pin className="h-4 w-4 text-yellow-500" />
+                    <Pin className="h-3.5 w-3.5 text-yellow-500" />
                   )}
                 </div>
-                <MarqueeText text={notices[currentSlide]?.content || ''} />
+                <MarqueeText text={notices[currentSlide]?.content || ''} speed={40} />
               </div>
               {/* Delete button for admin */}
               {isAdmin && (
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="absolute right-2 top-2 text-yellow-400 dark:text-yellow-200 hover:text-red-500"
+                  className="absolute right-2 top-2 text-indigo-400 dark:text-yellow-200 hover:text-red-500"
                   onClick={() => deleteNotice(notices[currentSlide]._id)}
                   aria-label="Delete notice"
                 >
@@ -347,18 +348,18 @@ export default function AnalyticsTab() {
               {/* Next Button */}
               {notices.length > 1 && (
                 <button
-                  className="absolute right-2 z-10 p-1 rounded-full bg-white/70 dark:bg-black/40 hover:bg-indigo-100 dark:hover:bg-indigo-900 transition"
+                  className="absolute right-1 sm:right-2 z-10 p-1 rounded-full bg-white/80 dark:bg-black/40 hover:bg-indigo-100 dark:hover:bg-indigo-900 transition"
                   onClick={() => { handleNextSlide(); resetInterval(); }}
                   aria-label="Next notice"
                   style={{ top: '50%', transform: 'translateY(-50%)' }}
                 >
-                  <ChevronRight className="h-5 w-5 text-yellow-700 dark:text-yellow-200" />
+                  <ChevronRight className="h-4 w-4 text-indigo-400 dark:text-yellow-200" />
                 </button>
               )}
             </div>
           )}
         </div>
-      </div>
+      </section>
       {/* Dialog for creating new notice */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-md bg-white/90 dark:bg-neutral-900/95 rounded-2xl shadow-xl">
@@ -448,35 +449,31 @@ export default function AnalyticsTab() {
 // InfluencerCard component for verified influencers
 function InfluencerShowcaseCard({ influencer, index }: { influencer: any, index: number }) {
   const instaUrl = influencer.instagramUsername ? `https://instagram.com/${influencer.instagramUsername}` : undefined;
-  // Fun gradient ring and floating effect
   return (
     <div
-      className="snap-center flex flex-col items-center bg-gradient-to-br from-yellow-50 via-pink-50 to-indigo-50 dark:from-neutral-900 dark:via-slate-900 dark:to-indigo-950 rounded-3xl p-4 pt-6 min-w-[170px] max-w-[210px] shadow-xl border-0 relative transition-transform hover:scale-105 hover:-translate-y-2 duration-300 group"
+      className="snap-center flex flex-col items-center bg-white dark:bg-neutral-900 rounded-2xl p-6 min-w-[230px] max-w-[270px] shadow-xl border border-slate-200 dark:border-slate-800 transition-transform hover:scale-105 hover:shadow-2xl duration-300 group"
       style={{ zIndex: 1 + (10 - (index % 10)) }}
     >
-      <div className="relative mb-3">
-        <span className="absolute -inset-1 rounded-full bg-gradient-to-tr from-yellow-400 via-pink-400 to-indigo-400 blur-sm opacity-60 group-hover:opacity-90 transition" />
-        <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden border-4 border-white dark:border-slate-800 relative z-10 shadow-lg flex items-center justify-center bg-gradient-to-br from-yellow-100 via-pink-100 to-indigo-100 dark:from-neutral-800 dark:via-slate-800 dark:to-indigo-900">
-          {influencer.profilePictureUrl ? (
-            <img
-              src={influencer.profilePictureUrl}
-              alt={influencer.name}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <span className="text-3xl font-extrabold text-indigo-400 dark:text-indigo-200">
-              {influencer.name ? influencer.name.charAt(0).toUpperCase() : '?'}
-            </span>
-          )}
-        </div>
+      <div className="w-32 h-32 rounded-xl overflow-hidden mb-4 bg-gradient-to-br from-slate-100 via-yellow-50 to-pink-50 dark:from-neutral-800 dark:via-slate-900 dark:to-indigo-950 flex items-center justify-center border-2 border-slate-300 dark:border-slate-700 shadow-md">
+        {influencer.profilePictureUrl ? (
+          <img
+            src={influencer.profilePictureUrl}
+            alt={influencer.name}
+            className="w-full h-full object-cover rounded-xl"
+          />
+        ) : (
+          <span className="text-4xl font-extrabold text-indigo-400 dark:text-indigo-200">
+            {influencer.name ? influencer.name.charAt(0).toUpperCase() : '?'}
+          </span>
+        )}
       </div>
-      <div className="text-base font-bold text-slate-800 mb-1 dark:text-yellow-100 text-center">
+      <div className="text-lg font-bold text-slate-800 mb-1 dark:text-yellow-100 text-center">
         {instaUrl ? (
           <a
             href={instaUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:underline bg-gradient-to-r from-pink-500 via-yellow-400 to-indigo-500 bg-clip-text text-transparent"
+            className="hover:underline text-indigo-500 dark:text-yellow-200"
           >
             @{influencer.instagramUsername}
           </a>
@@ -484,11 +481,10 @@ function InfluencerShowcaseCard({ influencer, index }: { influencer: any, index:
           `@${influencer.name}`
         )}
       </div>
-      <div className="text-xs font-semibold text-pink-500 dark:text-yellow-200 mb-1 tracking-wide">{formatFollowers(influencer.followers || 0)} followers</div>
+      <div className="text-base font-semibold text-pink-500 dark:text-yellow-200 mb-1 tracking-wide text-center">{formatFollowers(influencer.followers || 0)} followers</div>
       {influencer.bio && (
         <div className="text-xs text-slate-500 dark:text-indigo-200 text-center line-clamp-2 mt-1">{influencer.bio}</div>
       )}
-      <span className="absolute top-2 right-3 text-yellow-400 text-lg animate-bounce">✨</span>
     </div>
   );
 }
