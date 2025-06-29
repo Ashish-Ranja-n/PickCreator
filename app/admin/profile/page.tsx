@@ -109,6 +109,12 @@ const AdminProfilePage = () => {
     bio: currentUser?.bio || '',
   });
 
+
+  // Analytics state
+  const [analytics, setAnalytics] = useState<any>(null);
+  const [analyticsLoading, setAnalyticsLoading] = useState(true);
+  const [analyticsError, setAnalyticsError] = useState<string | null>(null);
+
   // Add state for Instagram connection loading
   const [isConnecting, setIsConnecting] = useState(false);
 
@@ -117,6 +123,20 @@ const AdminProfilePage = () => {
 
   // Add state for logout dialog
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+  // Fetch analytics data
+  useEffect(() => {
+    setAnalyticsLoading(true);
+    axios.get('/api/analytics')
+      .then(res => {
+        setAnalytics(res.data);
+        setAnalyticsError(null);
+      })
+      .catch(() => {
+        setAnalyticsError('Failed to fetch analytics');
+        setAnalytics(null);
+      })
+      .finally(() => setAnalyticsLoading(false));
+  }, []);
 
   // Update logout handler
   const handleLogoutClick = () => {
@@ -514,15 +534,23 @@ const AdminProfilePage = () => {
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between items-center">
                         <span>Total Users</span>
-                        <span className="font-semibold">-</span>
+                        <span className="font-semibold">{analyticsLoading ? '...' : analytics?.totalUsers ?? '-'}</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span>Influencers</span>
-                        <span className="font-semibold">-</span>
+                        <span className="font-semibold">{analyticsLoading ? '...' : analytics?.totalInfluencers ?? '-'}</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span>Brands</span>
-                        <span className="font-semibold">-</span>
+                        <span className="font-semibold">{analyticsLoading ? '...' : analytics?.totalBrands ?? '-'}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span>Verified Influencers</span>
+                        <span className="font-semibold">{analyticsLoading ? '...' : analytics?.verifiedInfluencers ?? '-'}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span>Verified Brands</span>
+                        <span className="font-semibold">{analyticsLoading ? '...' : analytics?.verifiedBrands ?? '-'}</span>
                       </div>
                     </div>
                   </div>
@@ -532,15 +560,23 @@ const AdminProfilePage = () => {
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between items-center">
                         <span>Posts</span>
-                        <span className="font-semibold">-</span>
+                        <span className="font-semibold">{analyticsLoading ? '...' : analytics?.totalPosts ?? '-'}</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span>Deals</span>
-                        <span className="font-semibold">-</span>
+                        <span className="font-semibold">{analyticsLoading ? '...' : analytics?.totalDeals ?? '-'}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span>Active Deals</span>
+                        <span className="font-semibold">{analyticsLoading ? '...' : analytics?.activeDeals ?? '-'}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span>Completed Deals</span>
+                        <span className="font-semibold">{analyticsLoading ? '...' : analytics?.completedDeals ?? '-'}</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span>Active Conversations</span>
-                        <span className="font-semibold">-</span>
+                        <span className="font-semibold">{analyticsLoading ? '...' : analytics?.activeConversations ?? '-'}</span>
                       </div>
                     </div>
                   </div>
