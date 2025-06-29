@@ -504,27 +504,27 @@ function InfluencerFlatBlock({ influencer, index }: { influencer: any, index: nu
   const bg = typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches
     ? darkPastelColors[index % darkPastelColors.length]
     : pastelColors[index % pastelColors.length];
+  // Use a larger image size, similar to the original vertical card (full width, aspect-square)
   return (
-    <div
-      className="flex flex-col items-center justify-start min-w-[180px] max-w-[200px] w-[180px] mx-1 transition-transform duration-200 hover:scale-105 group"
-      style={{ borderRadius: 18, padding: 0 }}
-    >
-      <div className="w-full flex flex-col items-center">
+    <div className="flex flex-row items-start min-w-[340px] max-w-[500px] w-full mx-1 transition-transform duration-200 hover:scale-105 group" style={{ borderRadius: 18, padding: 0 }}>
+      {/* Profile Picture: cover half the horizontal space, always square */}
+      <div className="flex-shrink-0 flex items-center justify-center" style={{ width: '50%', aspectRatio: '1 / 1' }}>
         {influencer.profilePictureUrl ? (
           <img
             src={influencer.profilePictureUrl}
             alt={influencer.name}
-            className="w-full aspect-square object-cover rounded-[18px] border-2 border-[#b0b8c1] dark:border-zinc-700 group-hover:border-[#3a4250] group-hover:shadow-xl"
-            style={{ borderRadius: 18, marginBottom: 0 }}
+            className="w-full h-full object-cover rounded-[18px] border-2 border-[#b0b8c1] dark:border-zinc-700 group-hover:border-[#3a4250] group-hover:shadow-xl"
+            style={{ borderRadius: 18, marginBottom: 0, width: '100%', height: '100%', aspectRatio: '1 / 1' }}
           />
         ) : (
-          <div className="w-full aspect-square flex items-center justify-center bg-[#e3e6ea] dark:bg-zinc-800 rounded-[18px] text-5xl font-extrabold text-[#3a4250] dark:text-white">
+          <div className="w-full h-full flex items-center justify-center bg-[#e3e6ea] dark:bg-zinc-800 rounded-[18px] text-5xl font-extrabold text-[#3a4250] dark:text-white" style={{ aspectRatio: '1 / 1' }}>
             {influencer.name ? influencer.name.charAt(0).toUpperCase() : '?'}
           </div>
         )}
       </div>
-      <div className="w-full flex flex-col items-center mt-3">
-        <div className="text-base font-bold text-[#2d3a4a] dark:text-white mb-0.5 text-center w-full truncate">
+      {/* Info to the right of the picture */}
+      <div className="flex flex-col justify-center flex-1 pl-4 min-w-0">
+        <div className="text-base font-bold text-[#2d3a4a] dark:text-white mb-0.5 truncate">
           {instaUrl ? (
             <a
               href={instaUrl}
@@ -538,9 +538,14 @@ function InfluencerFlatBlock({ influencer, index }: { influencer: any, index: nu
             `@${influencer.name}`
           )}
         </div>
-        <div className="text-sm font-medium text-[#353c47] dark:text-zinc-400 text-center w-full tracking-wide">
+        <div className="text-sm font-medium text-[#353c47] dark:text-zinc-400 tracking-wide">
           {formatFollowers(influencer.followers || 0)} followers
         </div>
+        {influencer.bio && (
+          <div className="text-sm text-gray-700 dark:text-zinc-300 mt-2 break-words line-clamp-3 max-w-full">
+            {influencer.bio}
+          </div>
+        )}
       </div>
     </div>
   );
