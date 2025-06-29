@@ -29,16 +29,31 @@ export default function VerifyInstagram() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading) return; // Prevent double submit
     setLoading(true);
     setError('');
     setSuccess(false);
+
+    // Validate follower count
+    if (!instagramId.trim() || !followerCount.trim() || isNaN(Number(followerCount)) || Number(followerCount) <= 0) {
+      setError('Please enter a valid Instagram ID and follower count.');
+      setLoading(false);
+      return;
+    }
+    if (!profilePic) {
+      setError('Please upload a profile picture.');
+      setLoading(false);
+      return;
+    }
+
     const formData = new FormData();
-    if (profilePic) formData.append('profilePic', profilePic);
-    formData.append('instagramId', instagramId);
-    formData.append('followerCount', followerCount);
+    formData.append('profilePic', profilePic);
+    formData.append('instagramId', instagramId.trim());
+    formData.append('followerCount', followerCount.trim());
     if (user && user._id) {
       formData.append('userId', user._id);
     }
+
     try {
       const res = await fetch('/api/verify-instagram', {
         method: 'POST',
@@ -46,15 +61,23 @@ export default function VerifyInstagram() {
       });
       if (res.ok) {
         setSuccess(true);
+        setError('');
+        // Optionally reset form fields here if you want
         router.push('/influencer/profile');
       } else {
-        const data = await res.json();
+        let data;
+        try {
+          data = await res.json();
+        } catch {
+          data = {};
+        }
         setError(data.message || 'Failed to send request');
       }
     } catch (err) {
-      setError('Failed to send request');
+      setError('Failed to send request. Please check your connection.');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
@@ -86,14 +109,18 @@ export default function VerifyInstagram() {
           <div className="text-sm text-[#A07BA6] mb-2">Tap to upload your profile picture</div>
         </div>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full flex-1 px-1">
-          <input
-            type="text"
-            placeholder="Instagram ID"
-            className="rounded-xl px-4 py-3 bg-[#F8E6F4] text-[#A07BA6] placeholder-[#A07BA6] focus:outline-none border-none text-base font-medium"
-            value={instagramId}
-            onChange={e => setInstagramId(e.target.value)}
-            required
-          />
+          <div className="flex items-center bg-[#F8E6F4] rounded-xl px-4 py-3">
+            <span className="text-[#A07BA6] text-base font-medium mr-1 select-none">@</span>
+            <input
+              type="text"
+              placeholder="Instagram ID"
+              className="flex-1 bg-transparent text-[#A07BA6] placeholder-[#A07BA6] focus:outline-none border-none text-base font-medium"
+              value={instagramId}
+              onChange={e => setInstagramId(e.target.value.replace(/^@+/, ''))}
+              required
+              style={{ minWidth: 0 }}
+            />
+          </div>
           <input
             type="number"
             placeholder="Follower Count"

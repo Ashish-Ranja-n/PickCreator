@@ -3,8 +3,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
-import { Loader2, Plus, Pin, Trash2, AlertCircle, ChevronLeft, ChevronRight, Pause, Play } from 'lucide-react';
+import { Loader2, Plus, Pin, Trash2, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns/formatDistanceToNow';
+import { MarqueeText } from './MarqueeText';
 import { useCurrentUser } from '@/hook/useCurrentUser';
 import {
   Dialog,
@@ -285,11 +286,11 @@ export default function AnalyticsTab() {
   }, []);
 
   return (
-    <div className="py-8 px-2 md:px-8 bg-gradient-to-br from-indigo-50 to-sky-100 dark:from-black dark:to-neutral-900 min-h-screen transition-colors">
-      {/* Notice Board Section */}
-      <div className="mb-10">
+    <div className="py-6 px-2 md:px-8 bg-gradient-to-br from-indigo-50 to-sky-100 dark:from-black dark:to-neutral-900 min-h-screen transition-colors">
+      {/* Notice Board Section - Compact Marquee Style */}
+      <div className="mb-6">
         {isAdmin && (
-          <div className="flex justify-end mb-4">
+          <div className="flex justify-end mb-2">
             <Button
               onClick={() => setOpen(true)}
               className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-5 py-2 rounded-xl shadow-md transition"
@@ -298,50 +299,62 @@ export default function AnalyticsTab() {
             </Button>
           </div>
         )}
-        <div className="relative">
+        <div className="relative w-full flex flex-col items-center">
           {loading ? (
-            <div className="flex justify-center items-center h-[340px] bg-white/80 dark:bg-neutral-900/90 rounded-2xl shadow-md">
+            <div className="flex justify-center items-center h-[80px] bg-white/80 dark:bg-neutral-900/90 rounded-2xl shadow-md w-full">
               <Loader2 className="h-8 w-8 animate-spin text-indigo-400 dark:text-yellow-200" />
             </div>
           ) : notices.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-[340px] bg-white/80 dark:bg-neutral-900/90 rounded-2xl shadow-md">
-              <AlertCircle className="h-10 w-10 text-slate-400 dark:text-yellow-200 mb-3" />
+            <div className="flex flex-col items-center justify-center h-[80px] bg-white/80 dark:bg-neutral-900/90 rounded-2xl shadow-md w-full">
+              <AlertCircle className="h-10 w-10 text-slate-400 dark:text-yellow-200 mb-1" />
               <p className="text-base text-slate-500 dark:text-yellow-200">No updates yet</p>
             </div>
           ) : (
-            <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {notices.map((notice, idx) => (
-                <div
-                  key={notice._id}
-                  className={`relative bg-yellow-100 dark:bg-neutral-900 shadow-lg rounded-lg p-5 min-h-[180px] flex flex-col justify-between border-2 border-yellow-200 dark:border-yellow-800 transition-transform hover:scale-[1.03] rotate-[${(idx % 2 === 0) ? '-2' : '2'}deg]`}
-                  style={{ boxShadow: '0 4px 16px 0 rgba(0,0,0,0.10), 0 1.5px 0 #f6e58d', transform: `rotate(${idx % 2 === 0 ? -2 : 2}deg)`, background: idx % 2 === 0 ? undefined : undefined }}
+            <div className="relative w-full max-w-3xl flex items-center bg-yellow-100 dark:bg-neutral-900 rounded-2xl shadow-lg border-2 border-yellow-200 dark:border-yellow-800 h-[70px] px-4 overflow-hidden">
+              {/* Prev Button */}
+              {notices.length > 1 && (
+                <button
+                  className="absolute left-2 z-10 p-1 rounded-full bg-white/70 dark:bg-black/40 hover:bg-indigo-100 dark:hover:bg-indigo-900 transition"
+                  onClick={() => { handlePrevSlide(); resetInterval(); }}
+                  aria-label="Previous notice"
+                  style={{ top: '50%', transform: 'translateY(-50%)' }}
                 >
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-bold text-lg text-yellow-900 dark:text-yellow-200 truncate">{notice.title}</h3>
-                      {notice.isPinned && (
-                        <Pin className="h-4 w-4 text-yellow-500" />
-                      )}
-                    </div>
-                  <NoticeContentPreview content={notice.content} />
-                  </div>
-                  <div className="flex items-center justify-between mt-2 text-xs text-yellow-700 dark:text-yellow-200/80">
-                    <span>{notice.createdBy.name}</span>
-                    <span>{formatDistanceToNow(new Date(notice.createdAt), { addSuffix: true })}</span>
-                    {isAdmin && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-yellow-400 dark:text-yellow-200 hover:text-red-500"
-                        onClick={() => deleteNotice(notice._id)}
-                        aria-label="Delete notice"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    )}
-                  </div>
+                  <ChevronLeft className="h-5 w-5 text-yellow-700 dark:text-yellow-200" />
+                </button>
+              )}
+              {/* Notice Marquee */}
+              <div className="flex-1 flex flex-col items-center justify-center h-full select-none">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="font-bold text-base text-yellow-900 dark:text-yellow-200 truncate max-w-[180px]">{notices[currentSlide]?.title}</span>
+                  {notices[currentSlide]?.isPinned && (
+                    <Pin className="h-4 w-4 text-yellow-500" />
+                  )}
                 </div>
-              ))}
+                <MarqueeText text={notices[currentSlide]?.content || ''} />
+              </div>
+              {/* Delete button for admin */}
+              {isAdmin && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-2 top-2 text-yellow-400 dark:text-yellow-200 hover:text-red-500"
+                  onClick={() => deleteNotice(notices[currentSlide]._id)}
+                  aria-label="Delete notice"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              )}
+              {/* Next Button */}
+              {notices.length > 1 && (
+                <button
+                  className="absolute right-2 z-10 p-1 rounded-full bg-white/70 dark:bg-black/40 hover:bg-indigo-100 dark:hover:bg-indigo-900 transition"
+                  onClick={() => { handleNextSlide(); resetInterval(); }}
+                  aria-label="Next notice"
+                  style={{ top: '50%', transform: 'translateY(-50%)' }}
+                >
+                  <ChevronRight className="h-5 w-5 text-yellow-700 dark:text-yellow-200" />
+                </button>
+              )}
             </div>
           )}
         </div>
@@ -415,29 +428,7 @@ export default function AnalyticsTab() {
   );
 }
 
-// Add this helper component above the return statement:
-
-function NoticeContentPreview({ content }: { content: string }) {
-  const [expanded, setExpanded] = useState(false);
-  const maxChars = 90;
-  const isLong = content.length > maxChars;
-  return (
-    <div
-      className="text-base leading-relaxed whitespace-pre-wrap mt-3 mb-2 font-sans tracking-wide text-slate-700 dark:text-indigo-100 dark:font-medium"
-      style={{ lineHeight: 1.7, letterSpacing: '0.01em' }}
-    >
-      {expanded || !isLong ? content : content.slice(0, maxChars) + '...'}
-      {isLong && (
-        <button
-          className="ml-2 text-indigo-600 hover:underline text-base font-semibold dark:text-indigo-300 dark:hover:text-indigo-100"
-          onClick={() => setExpanded((e) => !e)}
-        >
-          {expanded ? 'Show less' : 'Read more'}
-        </button>
-      )}
-    </div>
-  );
-}
+// ...existing code...
 
 // InfluencerCard component for verified influencers
 function InfluencerCard({ influencer }: { influencer: any }) {
