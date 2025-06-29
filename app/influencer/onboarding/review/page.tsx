@@ -106,12 +106,12 @@ export default function ReviewPage() {
       };
       console.log("Completing onboarding with full data:", JSON.stringify(formData));
       await saveAndCompleteOnboarding(formData);
-      router.push('/verify-instagram');
       toast({
         title: "Complete! 🎉",
         description: "Your profile is now live",
         duration: 1000
       });
+      router.push('/verify-instagram?success=true');
     } catch (error) {
       console.error('Error completing onboarding:', error);
       toast({

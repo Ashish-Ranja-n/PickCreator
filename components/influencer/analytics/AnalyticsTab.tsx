@@ -286,7 +286,7 @@ export default function AnalyticsTab() {
   }, []);
 
   return (
-    <div className="py-4 px-1 sm:px-4 bg-gradient-to-br from-indigo-50 to-sky-100 dark:from-black dark:to-neutral-900 min-h-screen transition-colors">
+    <div className="py-6 px-2 sm:px-6 min-h-screen transition-colors bg-gradient-to-br from-[#f5f6fa] to-[#e9eafc] dark:from-[#181825] dark:to-[#232946]">
       {/* Notice Board Section - Professional & Mobile First */}
       <section className="mb-6 w-full max-w-2xl mx-auto">
         <div className="flex items-center justify-between mb-2 px-1">
@@ -409,82 +409,85 @@ export default function AnalyticsTab() {
         </DialogContent>
       </Dialog>
       {/* Influencer section below notice board */}
-      <div className="mt-14">
-        <h3 className="text-3xl sm:text-4xl font-extrabold mb-6 tracking-tight text-center bg-gradient-to-r from-pink-500 via-yellow-400 to-indigo-500 bg-clip-text text-transparent drop-shadow-lg animate-gradient-move">
-          <span className="inline-block align-middle mr-2">🌟</span>
-          Meet Our Top Influencers
-          <span className="inline-block align-middle ml-2">🌟</span>
-        </h3>
-        {loadingInfluencers ? (
-          <div className="flex justify-center items-center h-24">
-            <Loader2 className="h-7 w-7 animate-spin text-yellow-200" />
-          </div>
-        ) : verifiedInfluencers.length === 0 ? (
-          <div className="text-center text-yellow-200 text-base">No verified influencers found.</div>
-        ) : (
-          <div className="flex gap-4 sm:gap-6 overflow-x-auto pb-2 hide-scrollbar snap-x snap-mandatory">
-            {verifiedInfluencers.map((influencer, idx) => (
-              <InfluencerShowcaseCard key={influencer._id} influencer={influencer} index={idx} />
-            ))}
-          </div>
-        )}
-        <style>{`
-          .animate-gradient-move {
-            background-size: 200% 200%;
-            animation: gradient-move 3.5s linear infinite;
-          }
-          @keyframes gradient-move {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-          }
-        `}</style>
+  <section className="mt-16 rounded-3xl shadow-xl bg-gradient-to-br from-white/80 to-indigo-50/60 dark:from-[#191a23]/80 dark:to-[#232946]/90 px-2 sm:px-8 py-10 max-w-6xl mx-auto border border-indigo-100 dark:border-[#3b3c4a]">
+    <h3 className="text-4xl sm:text-5xl font-extrabold mb-2 tracking-tight text-center text-indigo-700 dark:text-[#ffe066] drop-shadow-lg">
+      Meet the Creators & Brands
+    </h3>
+    <p className="text-center text-lg sm:text-xl font-medium text-indigo-400 dark:text-[#ffe066] mb-8">Discover top influencers and brands on PickCreator</p>
+    {loadingInfluencers ? (
+      <div className="flex justify-center items-center h-24">
+        <Loader2 className="h-7 w-7 animate-spin text-indigo-400 dark:text-[#f6c177]" />
       </div>
+    ) : verifiedInfluencers.length === 0 ? (
+      <div className="text-center text-indigo-400 dark:text-[#f6c177] text-base">No verified influencers found.</div>
+    ) : (
+      <div className="flex flex-row gap-7 w-full max-w-5xl mx-auto overflow-x-auto pb-4 hide-scrollbar">
+        {verifiedInfluencers.map((influencer, idx) => (
+          <InfluencerFlatBlock key={influencer._id} influencer={influencer} index={idx} />
+        ))}
+      </div>
+    )}
+  </section>
     </div>
   );
 }
 
 // ...existing code...
 
-// InfluencerCard component for verified influencers
-function InfluencerShowcaseCard({ influencer, index }: { influencer: any, index: number }) {
+// Flat, minimal influencer block with improved design and dark mode
+function InfluencerFlatBlock({ influencer, index }: { influencer: any, index: number }) {
   const instaUrl = influencer.instagramUsername ? `https://instagram.com/${influencer.instagramUsername}` : undefined;
+  // Subtle outline, no big card, and no background for text below
+  const pastelColors = [
+    '#f8f6fa', '#fdf6f0', '#f5f7fa', '#f9f6f3', '#f6f8f5', '#f6f7fa', '#f8f7f3', '#f7f6fa',
+    '#e9eafc', '#f6eaff', '#eafaf6', '#f6faff', '#f9f6fa', '#f6f9fa', '#f8f6f9', '#f6f8fa'
+  ];
+  // New dark mode colors for outline and text
+  const darkPastelColors = [
+    '#191a23', '#1a1b2e', '#181825', '#20212b', '#232946', '#23283b', '#23283a', '#23293a',
+    '#23293b', '#23294a', '#23294b', '#23294c', '#23294d', '#23294e', '#23294f', '#232950'
+  ];
+  const bg = typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches
+    ? darkPastelColors[index % darkPastelColors.length]
+    : pastelColors[index % pastelColors.length];
   return (
     <div
-      className="snap-center flex flex-col items-center bg-white dark:bg-neutral-900 rounded-2xl p-6 min-w-[230px] max-w-[270px] shadow-xl border border-slate-200 dark:border-slate-800 transition-transform hover:scale-105 hover:shadow-2xl duration-300 group"
-      style={{ zIndex: 1 + (10 - (index % 10)) }}
+      className="flex flex-col items-center justify-start min-w-[180px] max-w-[200px] w-[180px] mx-1 border border-indigo-200 dark:border-[#3b3c4a] transition-transform duration-200 hover:scale-105 group bg-transparent"
+      style={{ background: 'transparent', borderRadius: 18, padding: 0 }}
     >
-      <div className="w-32 h-32 rounded-xl overflow-hidden mb-4 bg-gradient-to-br from-slate-100 via-yellow-50 to-pink-50 dark:from-neutral-800 dark:via-slate-900 dark:to-indigo-950 flex items-center justify-center border-2 border-slate-300 dark:border-slate-700 shadow-md">
+      <div className="w-full flex flex-col items-center">
         {influencer.profilePictureUrl ? (
           <img
             src={influencer.profilePictureUrl}
             alt={influencer.name}
-            className="w-full h-full object-cover rounded-xl"
+            className="w-full aspect-square object-cover rounded-[18px] border-2 border-indigo-100 dark:border-[#ffe066] group-hover:border-indigo-400 group-hover:shadow-xl"
+            style={{ borderRadius: 18, marginBottom: 0 }}
           />
         ) : (
-          <span className="text-4xl font-extrabold text-indigo-400 dark:text-indigo-200">
+          <div className="w-full aspect-square flex items-center justify-center bg-[#e7e3e0] dark:bg-[#232946] rounded-[18px] text-5xl font-extrabold text-indigo-400 dark:text-[#ffe066]">
             {influencer.name ? influencer.name.charAt(0).toUpperCase() : '?'}
-          </span>
+          </div>
         )}
       </div>
-      <div className="text-lg font-bold text-slate-800 mb-1 dark:text-yellow-100 text-center">
-        {instaUrl ? (
-          <a
-            href={instaUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:underline text-indigo-500 dark:text-yellow-200"
-          >
-            @{influencer.instagramUsername}
-          </a>
-        ) : (
-          `@${influencer.name}`
-        )}
+      <div className="w-full flex flex-col items-center mt-3">
+        <div className="text-base font-bold text-indigo-700 dark:text-[#ffe066] mb-0.5 text-center w-full truncate">
+          {instaUrl ? (
+            <a
+              href={instaUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:underline hover:text-indigo-500 dark:hover:text-[#ffe066] transition-colors"
+            >
+              @{influencer.instagramUsername}
+            </a>
+          ) : (
+            `@${influencer.name}`
+          )}
+        </div>
+        <div className="text-sm font-medium text-[#7c3aed] dark:text-[#b8c1ec] text-center w-full tracking-wide">
+          {formatFollowers(influencer.followers || 0)} followers
+        </div>
       </div>
-      <div className="text-base font-semibold text-pink-500 dark:text-yellow-200 mb-1 tracking-wide text-center">{formatFollowers(influencer.followers || 0)} followers</div>
-      {influencer.bio && (
-        <div className="text-xs text-slate-500 dark:text-indigo-200 text-center line-clamp-2 mt-1">{influencer.bio}</div>
-      )}
     </div>
   );
 }

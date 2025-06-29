@@ -1,6 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import axios from 'axios';
 import { convertAndCompressImage } from './imageUtils';
 
 export default function VerifyInstagram() {
@@ -51,30 +52,23 @@ export default function VerifyInstagram() {
     // No need to send userId; backend gets it from token
 
     try {
-      const res = await fetch('/api/verify-instagram', {
-        method: 'POST',
-        body: formData,
+      const res = await axios.post('/api/verify-instagram', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
-      let data = null;
-      let isJson = false;
-      try {
-        data = await res.json();
-        isJson = true;
-      } catch {
-        // Not JSON, fallback to text
-        data = await res.text();
-      }
-      // Expect backend to return { success: true } on success
-      if (res.ok && isJson && data && data.success) {
+      const data = res.data;
+      if (data && data.success) {
         setSuccess(true);
         setError('');
-        // Optionally reset form fields here if you want
         router.push('/influencer/profile');
       } else {
-        setError((isJson && data && data.message) ? data.message : (typeof data === 'string' ? data : 'Failed to send request'));
+        setError(data && data.message ? data.message : 'Failed to send request');
       }
-    } catch (err) {
-      setError('Failed to send request. Please check your connection.');
+    } catch (err: any) {
+      setError(
+        err?.response?.data?.message ||
+        err?.message ||
+        'Failed to send request. Please check your connection.'
+      );
     } finally {
       setLoading(false);
     }
