@@ -409,7 +409,11 @@ export default function AnalyticsTab() {
       </Dialog>
       {/* Influencer section below notice board */}
       <div className="mt-14">
-        <h3 className="text-2xl font-bold text-slate-800 dark:text-yellow-100 mb-6 tracking-tight">Influencers on Our platform</h3>
+        <h3 className="text-3xl sm:text-4xl font-extrabold mb-6 tracking-tight text-center bg-gradient-to-r from-pink-500 via-yellow-400 to-indigo-500 bg-clip-text text-transparent drop-shadow-lg animate-gradient-move">
+          <span className="inline-block align-middle mr-2">🌟</span>
+          Meet Our Top Influencers
+          <span className="inline-block align-middle ml-2">🌟</span>
+        </h3>
         {loadingInfluencers ? (
           <div className="flex justify-center items-center h-24">
             <Loader2 className="h-7 w-7 animate-spin text-yellow-200" />
@@ -417,12 +421,23 @@ export default function AnalyticsTab() {
         ) : verifiedInfluencers.length === 0 ? (
           <div className="text-center text-yellow-200 text-base">No verified influencers found.</div>
         ) : (
-          <div className="flex gap-8 overflow-x-auto pb-2 hide-scrollbar">
-            {verifiedInfluencers.map((influencer) => (
-              <InfluencerCard key={influencer._id} influencer={influencer} />
+          <div className="flex gap-4 sm:gap-6 overflow-x-auto pb-2 hide-scrollbar snap-x snap-mandatory">
+            {verifiedInfluencers.map((influencer, idx) => (
+              <InfluencerShowcaseCard key={influencer._id} influencer={influencer} index={idx} />
             ))}
           </div>
         )}
+        <style>{`
+          .animate-gradient-move {
+            background-size: 200% 200%;
+            animation: gradient-move 3.5s linear infinite;
+          }
+          @keyframes gradient-move {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+          }
+        `}</style>
       </div>
     </div>
   );
@@ -431,31 +446,37 @@ export default function AnalyticsTab() {
 // ...existing code...
 
 // InfluencerCard component for verified influencers
-function InfluencerCard({ influencer }: { influencer: any }) {
-  // Use profilePictureUrl for avatar, name for display, followers for count
+function InfluencerShowcaseCard({ influencer, index }: { influencer: any, index: number }) {
   const instaUrl = influencer.instagramUsername ? `https://instagram.com/${influencer.instagramUsername}` : undefined;
+  // Fun gradient ring and floating effect
   return (
-    <div className="flex flex-col items-center bg-white/80 dark:bg-slate-800/80 rounded-2xl p-6 min-w-[210px] max-w-[240px] shadow-lg border border-indigo-100 dark:border-slate-700 transition-transform hover:scale-105 cursor-pointer scrollbar-hide">
-      <div className="w-24 h-24 rounded-full overflow-hidden mb-3 bg-indigo-100 flex items-center justify-center dark:bg-slate-700">
-        {influencer.profilePictureUrl ? (
-          <img
-            src={influencer.profilePictureUrl}
-            alt={influencer.name}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <span className="text-3xl font-bold text-indigo-400 dark:text-indigo-200">
-            {influencer.name ? influencer.name.charAt(0).toUpperCase() : '?'}
-          </span>
-        )}
+    <div
+      className="snap-center flex flex-col items-center bg-gradient-to-br from-yellow-50 via-pink-50 to-indigo-50 dark:from-neutral-900 dark:via-slate-900 dark:to-indigo-950 rounded-3xl p-4 pt-6 min-w-[170px] max-w-[210px] shadow-xl border-0 relative transition-transform hover:scale-105 hover:-translate-y-2 duration-300 group"
+      style={{ zIndex: 1 + (10 - (index % 10)) }}
+    >
+      <div className="relative mb-3">
+        <span className="absolute -inset-1 rounded-full bg-gradient-to-tr from-yellow-400 via-pink-400 to-indigo-400 blur-sm opacity-60 group-hover:opacity-90 transition" />
+        <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden border-4 border-white dark:border-slate-800 relative z-10 shadow-lg flex items-center justify-center bg-gradient-to-br from-yellow-100 via-pink-100 to-indigo-100 dark:from-neutral-800 dark:via-slate-800 dark:to-indigo-900">
+          {influencer.profilePictureUrl ? (
+            <img
+              src={influencer.profilePictureUrl}
+              alt={influencer.name}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <span className="text-3xl font-extrabold text-indigo-400 dark:text-indigo-200">
+              {influencer.name ? influencer.name.charAt(0).toUpperCase() : '?'}
+            </span>
+          )}
+        </div>
       </div>
-      <div className="text-base font-semibold text-slate-800 mb-1 dark:text-indigo-100">
+      <div className="text-base font-bold text-slate-800 mb-1 dark:text-yellow-100 text-center">
         {instaUrl ? (
           <a
             href={instaUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:underline text-indigo-500 dark:text-indigo-300"
+            className="hover:underline bg-gradient-to-r from-pink-500 via-yellow-400 to-indigo-500 bg-clip-text text-transparent"
           >
             @{influencer.instagramUsername}
           </a>
@@ -463,7 +484,11 @@ function InfluencerCard({ influencer }: { influencer: any }) {
           `@${influencer.name}`
         )}
       </div>
-      <div className="text-sm text-indigo-400 dark:text-indigo-200">{formatFollowers(influencer.followers || 0)} followers</div>
+      <div className="text-xs font-semibold text-pink-500 dark:text-yellow-200 mb-1 tracking-wide">{formatFollowers(influencer.followers || 0)} followers</div>
+      {influencer.bio && (
+        <div className="text-xs text-slate-500 dark:text-indigo-200 text-center line-clamp-2 mt-1">{influencer.bio}</div>
+      )}
+      <span className="absolute top-2 right-3 text-yellow-400 text-lg animate-bounce">✨</span>
     </div>
   );
 }
