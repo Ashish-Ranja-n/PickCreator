@@ -757,9 +757,9 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ redirectPath }) => {
   const latestParticipant = participants.length > 1 ? participants.filter(p => p._id !== createdBy._id)[0] : null;
 
   return (
-    <div className="fixed inset-0 flex flex-col overflow-hidden z-20">
+    <div className="fixed inset-0 flex flex-col overflow-hidden z-20 bg-white dark:bg-[#18181b]">
       <header
-        className="z-30 h-[60px] bg-white border-b shadow-sm flex items-center justify-between px-4"
+        className="z-30 h-[60px] bg-white dark:bg-[#18181b] border-b border-slate-200 dark:border-zinc-800 shadow-sm flex items-center justify-between px-4"
         style={{
           position: 'fixed',
           top: `${virtualKeyboardHeight - 5}px`,
@@ -928,7 +928,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ redirectPath }) => {
 
       <main
         ref={messageContainerRef}
-        className="flex-1 overflow-y-auto overscroll-contain px-4 py-4 scrollbar-hide bg-gradient-to-b from-slate-50 to-white"
+        className="flex-1 overflow-y-auto overscroll-contain px-4 py-4 scrollbar-hide bg-gradient-to-b from-slate-50 to-white dark:from-zinc-900 dark:to-[#18181b]"
         style={{
           overscrollBehavior: 'contain',
           paddingTop: `${virtualKeyboardHeight + 60}px`,
@@ -1061,7 +1061,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ redirectPath }) => {
       </main>
 
       <footer
-        className="fixed bottom-0 left-0 right-0 z-30 p-3 bg-white border-t shadow-lg"
+        className="fixed bottom-0 left-0 right-0 z-30 p-3 bg-white dark:bg-[#18181b] border-t border-slate-200 dark:border-zinc-800 shadow-lg"
         style={{
           paddingBottom: isIOS && !isKeyboardOpen ? `max(env(safe-area-inset-bottom), 12px)` : '12px',
         }}

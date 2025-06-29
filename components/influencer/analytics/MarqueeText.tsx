@@ -18,8 +18,8 @@ export const MarqueeText: React.FC<MarqueeTextProps> = ({ text, speed = 40 }) =>
     const textWidth = textRef.current.scrollWidth;
     if (textWidth > containerWidth) {
       setShouldAnimate(true);
-      // Duration: (textWidth + containerWidth) / speed for full scroll
-      setDuration((textWidth + containerWidth) / speed);
+      // Duration: textWidth / speed for a smooth, continuous scroll
+      setDuration(textWidth / speed);
     } else {
       setShouldAnimate(false);
     }
@@ -56,7 +56,7 @@ export const MarqueeText: React.FC<MarqueeTextProps> = ({ text, speed = 40 }) =>
       </div>
       <style>{`
         @keyframes marquee {
-          0% { transform: translateX(100%); }
+          0% { transform: translateX(0%); }
           100% { transform: translateX(-100%); }
         }
       `}</style>

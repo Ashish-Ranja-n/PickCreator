@@ -789,9 +789,9 @@ export const ChatWindow = () => {
   if (!currentUser) return null;
 
   return (
-<div className="fixed inset-0 flex flex-col overflow-hidden z-20">
+<div className="fixed inset-0 flex flex-col overflow-hidden z-20 bg-white dark:bg-[#18181b]">
       {/* Fixed Header */}
-      <header className=" z-30 h-[60px] bg-white border-b shadow-sm"
+      <header className="z-30 h-[60px] bg-white dark:bg-[#18181b] border-b border-slate-200 dark:border-zinc-800 shadow-sm"
       style={{
         position: 'fixed',
         top: `${virtualKeyboardHeight - 5}px`,
@@ -906,8 +906,8 @@ export const ChatWindow = () => {
       </header>
 
       {/* Scrollable Messages */}
-<main
-  className="flex-1 overflow-y-auto overscroll-contain px-4 py-4 scrollbar-hide bg-gradient-to-b from-slate-50 to-white"
+      <main
+  className="flex-1 overflow-y-auto overscroll-contain px-4 py-4 scrollbar-hide bg-gradient-to-b from-slate-50 to-white dark:from-zinc-900 dark:to-[#18181b]"
   ref={messageContainerRef}
   style={{
     overscrollBehavior: 'contain', // Prevent overscroll on iOS
@@ -1014,7 +1014,7 @@ export const ChatWindow = () => {
 
       {/* File preview - shows above input when active */}
       {selectedFile && (
-        <div className="bg-white border-t z-40 shadow-lg p-3">
+        <div className="bg-white dark:bg-zinc-900 border-t border-slate-200 dark:border-zinc-800 z-40 shadow-lg p-3">
           <div className="bg-slate-50 p-4 rounded-lg">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center">
@@ -1077,7 +1077,7 @@ export const ChatWindow = () => {
       )}
 
       {/* Fixed Footer */}
-      <footer className="fixed bottom-0 left-0 right-0 z-30 h-[88px] bg-white border-t shadow-lg">
+      <footer className="fixed bottom-0 left-0 right-0 z-30 h-[88px] bg-white dark:bg-[#18181b] border-t border-slate-200 dark:border-zinc-800 shadow-lg">
         {/* Audio recorder when active */}
         {showAudioRecorder ? (
           <div className="p-3" style={{
