@@ -474,7 +474,7 @@ export default function AnalyticsTab() {
         ) : shuffledInfluencers.length === 0 ? (
           <div className="text-center text-gray-700 dark:text-zinc-400 text-base">No verified influencers found.</div>
         ) : (
-          <div className="flex flex-row gap-7 w-full max-w-5xl mx-auto overflow-x-auto pb-4 hide-scrollbar">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 w-full max-w-3xl mx-auto">
             {shuffledInfluencers.map((influencer, idx) => (
               <InfluencerFlatBlock key={influencer._id} influencer={influencer} index={idx} />
             ))}

@@ -32,14 +32,14 @@ export const MarqueeText: React.FC<MarqueeTextProps> = ({ text, speed = 40 }) =>
   return (
     <div
       ref={containerRef}
-      className="w-full overflow-hidden h-7 flex items-center relative rounded-md border border-slate-200 dark:border-yellow-800 bg-white dark:bg-neutral-900"
-      style={{ minHeight: 28, position: 'relative', overflow: 'hidden' }}
+      className="w-full overflow-hidden h-14 sm:h-16 flex items-center relative rounded border border-slate-200 dark:border-yellow-800 bg-white dark:bg-neutral-900"
+      style={{ minHeight: 56, position: 'relative', overflow: 'hidden' }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       <div
         ref={textRef}
-        className="inline-block text-[0.98rem] sm:text-base font-medium px-1 tracking-wide text-slate-700 dark:text-yellow-100"
+        className="inline-block text-2xl sm:text-3xl font-bold px-2 tracking-wide text-slate-700 dark:text-yellow-100"
         style={shouldAnimate ? {
           animation: `marquee ${duration}s linear infinite`,
           animationPlayState: paused ? 'paused' : 'running',
