@@ -1,7 +1,6 @@
 'use client';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useCurrentUser } from '@/hook/useCurrentUser';
 import { convertAndCompressImage } from './imageUtils';
 
 export default function VerifyInstagram() {
@@ -12,7 +11,6 @@ export default function VerifyInstagram() {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
-  const user = useCurrentUser();
 
   const handleProfilePicChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -50,28 +48,30 @@ export default function VerifyInstagram() {
     formData.append('profilePic', profilePic);
     formData.append('instagramId', instagramId.trim());
     formData.append('followerCount', followerCount.trim());
-    if (user && user._id) {
-      formData.append('userId', user._id);
-    }
+    // No need to send userId; backend gets it from token
 
     try {
       const res = await fetch('/api/verify-instagram', {
         method: 'POST',
         body: formData,
       });
-      if (res.ok) {
+      let data = null;
+      let isJson = false;
+      try {
+        data = await res.json();
+        isJson = true;
+      } catch {
+        // Not JSON, fallback to text
+        data = await res.text();
+      }
+      // Expect backend to return { success: true } on success
+      if (res.ok && isJson && data && data.success) {
         setSuccess(true);
         setError('');
         // Optionally reset form fields here if you want
         router.push('/influencer/profile');
       } else {
-        let data;
-        try {
-          data = await res.json();
-        } catch {
-          data = {};
-        }
-        setError(data.message || 'Failed to send request');
+        setError((isJson && data && data.message) ? data.message : (typeof data === 'string' ? data : 'Failed to send request'));
       }
     } catch (err) {
       setError('Failed to send request. Please check your connection.');
