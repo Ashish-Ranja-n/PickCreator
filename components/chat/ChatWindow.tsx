@@ -789,9 +789,9 @@ export const ChatWindow = () => {
   if (!currentUser) return null;
 
   return (
-<div className="fixed inset-0 flex flex-col overflow-hidden z-20 bg-white dark:bg-[#18181b]">
+<div className="fixed inset-0 flex flex-col overflow-hidden z-20 bg-white dark:bg-black">
       {/* Fixed Header */}
-      <header className="z-30 h-[60px] bg-white dark:bg-[#18181b] border-b border-slate-200 dark:border-zinc-800 shadow-sm"
+      <header className="z-30 h-[60px] bg-white dark:bg-black border-b border-slate-200 dark:border-zinc-800 shadow-sm"
       style={{
         position: 'fixed',
         top: `${virtualKeyboardHeight - 5}px`,
@@ -810,7 +810,7 @@ export const ChatWindow = () => {
               <ArrowLeft size={22} className="text-slate-700" />
             </Button>
             <div className="relative">
-              <Avatar className="h-10 w-10 border-2 border-slate-100 shadow-sm">
+              <Avatar className="h-10 w-10 border-2 border-slate-100 dark:border-zinc-800 shadow-sm bg-white dark:bg-zinc-900">
                 {otherUser && (
                   <div className="h-full w-full absolute inset-0">
                     <Image
@@ -825,7 +825,7 @@ export const ChatWindow = () => {
                     />
                   </div>
                 )}
-                <div className="h-10 w-10 rounded-full flex items-center justify-center bg-slate-200 text-slate-600">
+                <div className="h-10 w-10 rounded-full flex items-center justify-center bg-slate-200 dark:bg-zinc-800 text-slate-600 dark:text-zinc-300">
                   {otherUser?.name ? otherUser.name.charAt(0).toUpperCase() : 'U'}
                 </div>
               </Avatar>
@@ -838,14 +838,14 @@ export const ChatWindow = () => {
               )}
             </div>
             <div className="ml-3">
-              <h2 className="font-semibold text-slate-800 text-base">{otherUser?.name}</h2>
+              <h2 className="font-semibold text-slate-800 dark:text-white text-base">{otherUser?.name}</h2>
               <div className="flex items-center mt-0.5 text-xs">
                 {otherUser?._id && (
                   <div className="flex items-center">
                     <span
                       className={otherUser?._id && isUserOnline(otherUser._id)
                         ? 'text-emerald-600 font-medium'
-                        : 'text-slate-500 font-medium'
+                        : 'text-slate-500 dark:text-zinc-400 font-medium'
                       }
                     >
                       {otherUser?._id && isUserOnline(otherUser._id) ? 'online' : 'offline'}
@@ -854,8 +854,8 @@ export const ChatWindow = () => {
                 )}
                 {typingUser === otherUser?._id && (
                   <div className="flex items-center ml-2">
-                    <span className="text-emerald-600">typing</span>
-                    <span className="text-emerald-600 ml-0.5">
+                    <span className="text-emerald-600 dark:text-emerald-400">typing</span>
+                    <span className="text-emerald-600 dark:text-emerald-400 ml-0.5">
                       <span className="inline-block animate-bounce">.</span>
                       <span className="inline-block animate-bounce delay-100">.</span>
                       <span className="inline-block animate-bounce delay-200">.</span>
@@ -877,10 +877,10 @@ export const ChatWindow = () => {
             </Button>
 
             {showOptions && (
-              <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border z-50 animate-in fade-in slide-in-from-top-5 duration-200">
+              <div className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-zinc-900 rounded-lg shadow-lg border border-slate-200 dark:border-zinc-800 z-50 animate-in fade-in slide-in-from-top-5 duration-200">
                 <div className="p-1">
                   <button
-                    className="flex items-center w-full px-4 py-2 text-sm text-left text-slate-700 hover:bg-slate-50 rounded-md transition-colors"
+                    className="flex items-center w-full px-4 py-2 text-sm text-left text-slate-700 dark:text-zinc-200 hover:bg-slate-50 dark:hover:bg-zinc-800 rounded-md transition-colors"
                     onClick={() => {
                       setShowOptions(false);
                     }}
@@ -889,7 +889,7 @@ export const ChatWindow = () => {
                     Visit Profile
                   </button>
                   <button
-                    className="flex items-center w-full px-4 py-2 text-sm text-left text-rose-600 hover:bg-rose-50 rounded-md transition-colors"
+                    className="flex items-center w-full px-4 py-2 text-sm text-left text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900 rounded-md transition-colors"
                     onClick={() => {
                       setShowDeleteConfirm(true);
                       setShowOptions(false);
@@ -907,7 +907,7 @@ export const ChatWindow = () => {
 
       {/* Scrollable Messages */}
       <main
-  className="flex-1 overflow-y-auto overscroll-contain px-4 py-4 scrollbar-hide bg-gradient-to-b from-slate-50 to-white dark:from-zinc-900 dark:to-[#18181b]"
+  className="flex-1 overflow-y-auto overscroll-contain px-4 py-4 scrollbar-hide bg-gradient-to-b from-slate-50 to-white dark:from-zinc-900 dark:to-black"
   ref={messageContainerRef}
   style={{
     overscrollBehavior: 'contain', // Prevent overscroll on iOS
@@ -955,7 +955,7 @@ export const ChatWindow = () => {
             {Object.entries(messageGroups).map(([date, msgs]) => (
               <div key={date} className="space-y-3">
                 <div className="flex justify-center">
-                  <div className="bg-white text-slate-600 text-xs font-medium px-3 py-1 rounded-full shadow-sm border border-slate-200">
+                  <div className="bg-white dark:bg-zinc-900 text-slate-600 dark:text-zinc-300 text-xs font-medium px-3 py-1 rounded-full shadow-sm border border-slate-200 dark:border-zinc-800">
                     {date}
                   </div>
                 </div>
@@ -972,8 +972,8 @@ export const ChatWindow = () => {
                         message.sender === currentUserId
                           ? message.media && message.media.length > 0 && !message.text
                             ? "bg-transparent text-white p-0 shadow-none"
-                            : "bg-indigo-600 text-white"
-                          : "bg-slate-100 border border-slate-200 text-slate-800"
+                            : "bg-indigo-600 text-white dark:bg-indigo-700 dark:text-white"
+                          : "bg-slate-100 border border-slate-200 text-slate-800 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-200"
                       }`}
                     >
                       {message.text && <p className="break-words leading-relaxed">{message.text}</p>}
@@ -996,8 +996,8 @@ export const ChatWindow = () => {
                           message.sender === currentUserId
                             ? message.media && message.media.length > 0 && !message.text
                               ? "text-indigo-200 text-right pr-1"
-                              : "text-indigo-200"
-                            : "text-slate-500"
+                              : "text-indigo-200 dark:text-indigo-100"
+                            : "text-slate-500 dark:text-zinc-400"
                         } block mt-1 opacity-75`}
                       >
                         {message.timestamp}
@@ -1015,10 +1015,10 @@ export const ChatWindow = () => {
       {/* File preview - shows above input when active */}
       {selectedFile && (
         <div className="bg-white dark:bg-zinc-900 border-t border-slate-200 dark:border-zinc-800 z-40 shadow-lg p-3">
-          <div className="bg-slate-50 p-4 rounded-lg">
+          <div className="bg-slate-50 dark:bg-zinc-800 p-4 rounded-lg">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center">
-                <div className="bg-white p-2 rounded-md mr-3 border border-slate-200">
+                <div className="bg-white dark:bg-zinc-900 p-2 rounded-md mr-3 border border-slate-200 dark:border-zinc-800">
                   {isImageFile(selectedFile) ? (
                     <ImageIcon size={20} className="text-slate-700" />
                   ) : isVideoFile(selectedFile) ? (
@@ -1030,16 +1030,16 @@ export const ChatWindow = () => {
                   )}
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-slate-800 truncate max-w-[200px]">
+                  <p className="text-sm font-medium text-slate-800 dark:text-white truncate max-w-[200px]">
                     {selectedFile.name}
                   </p>
-                  <p className="text-xs text-slate-500">{getFileSize(selectedFile.size)}</p>
+                  <p className="text-xs text-slate-500 dark:text-zinc-400">{getFileSize(selectedFile.size)}</p>
                 </div>
               </div>
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 hover:bg-slate-200 rounded-full"
+                className="h-8 w-8 hover:bg-slate-200 dark:hover:bg-zinc-800 rounded-full"
                 onClick={() => setSelectedFile(null)}
               >
                 <X size={16} className="text-slate-500" />
@@ -1058,7 +1058,7 @@ export const ChatWindow = () => {
             <Button
               onClick={handleUploadAndSend}
               disabled={isUploading}
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
+            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white dark:bg-indigo-700 dark:hover:bg-indigo-800"
             >
               {isUploading ? (
                 <span className="flex items-center">
@@ -1077,7 +1077,7 @@ export const ChatWindow = () => {
       )}
 
       {/* Fixed Footer */}
-      <footer className="fixed bottom-0 left-0 right-0 z-30 h-[88px] bg-white dark:bg-[#18181b] border-t border-slate-200 dark:border-zinc-800 shadow-lg">
+      <footer className="fixed bottom-0 left-0 right-0 z-30 h-[88px] bg-white dark:bg-black border-t border-slate-200 dark:border-zinc-800 shadow-lg">
         {/* Audio recorder when active */}
         {showAudioRecorder ? (
           <div className="p-3" style={{
@@ -1093,12 +1093,12 @@ export const ChatWindow = () => {
           <div className="p-3" style={{
             paddingBottom: isIOS && !isKeyboardOpen ? `max(env(safe-area-inset-bottom), 12px)` : '12px',
           }}>
-            <div className="flex items-end gap-2 bg-slate-50 rounded-xl p-2 shadow-sm transition-shadow focus-within:shadow-md">
+            <div className="flex items-end gap-2 bg-slate-50 dark:bg-zinc-900 rounded-xl p-2 shadow-sm transition-shadow focus-within:shadow-md">
               <div className="relative">
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-slate-500 hover:text-slate-700 hover:bg-white rounded-full transition-colors"
+                  className="text-slate-500 dark:text-zinc-400 hover:text-slate-700 dark:hover:text-zinc-200 hover:bg-white dark:hover:bg-zinc-800 rounded-full transition-colors"
                   onClick={() => fileInputRef.current?.click()}
                 >
                   <Paperclip size={20} />
@@ -1123,7 +1123,7 @@ export const ChatWindow = () => {
                   }}
                   onChange={handleTextareaChange}
                   placeholder="Type a message..."
-                  className="w-full px-3 py-2 resize-none border-none rounded-lg focus:outline-none focus:ring-0 bg-white scrollbar-hide placeholder:text-slate-400"
+                  className="w-full px-3 py-2 resize-none border-none rounded-lg focus:outline-none focus:ring-0 bg-white dark:bg-zinc-800 dark:text-white scrollbar-hide placeholder:text-slate-400 dark:placeholder:text-zinc-400"
                   style={{
                     height: textareaHeight,
                     maxHeight: "120px",
@@ -1152,8 +1152,8 @@ export const ChatWindow = () => {
                   disabled={((!newMessage.trim() && !selectedFile) || isSending || isUploading)}
                   className={`rounded-full h-10 w-10 p-0 flex items-center justify-center transition-all transform hover:scale-105 ${
                     (newMessage.trim() || selectedFile) && !isSending && !isUploading
-                      ? 'bg-indigo-600 hover:bg-indigo-700 shadow-md hover:shadow-lg'
-                      : 'bg-slate-300'
+                      ? 'bg-indigo-600 hover:bg-indigo-700 shadow-md hover:shadow-lg dark:bg-indigo-700 dark:hover:bg-indigo-800'
+                      : 'bg-slate-300 dark:bg-zinc-700'
                   }`}
                   title="Send message"
                 >
@@ -1171,16 +1171,16 @@ export const ChatWindow = () => {
 
       {/* Delete Confirmation Dialog */}
       {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6 animate-in fade-in zoom-in duration-200">
+        <div className="fixed inset-0 bg-slate-900/50 dark:bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-xl max-w-md w-full p-6 animate-in fade-in zoom-in duration-200">
             <div className="flex items-center gap-3 mb-4">
-              <div className="bg-rose-100 p-2 rounded-full">
-                <AlertTriangle className="h-6 w-6 text-rose-600" />
+              <div className="bg-rose-100 dark:bg-rose-900 p-2 rounded-full">
+                <AlertTriangle className="h-6 w-6 text-rose-600 dark:text-rose-400" />
               </div>
-              <h3 className="text-lg font-semibold text-slate-700">Delete Conversation</h3>
+              <h3 className="text-lg font-semibold text-slate-700 dark:text-white">Delete Conversation</h3>
             </div>
 
-            <p className="text-slate-600 mb-6">
+            <p className="text-slate-600 dark:text-zinc-300 mb-6">
               Are you sure you want to delete this conversation? This action cannot be undone and all messages will be permanently removed.
             </p>
 
@@ -1189,7 +1189,7 @@ export const ChatWindow = () => {
                 variant="outline"
                 onClick={() => setShowDeleteConfirm(false)}
                 disabled={isDeleting}
-                className="hover:bg-slate-50 transition-colors text-slate-700"
+                className="hover:bg-slate-50 dark:hover:bg-zinc-800 transition-colors text-slate-700 dark:text-white"
               >
                 Cancel
               </Button>
@@ -1197,7 +1197,7 @@ export const ChatWindow = () => {
                 variant="destructive"
                 onClick={handleDeleteConversation}
                 disabled={isDeleting}
-                className="bg-rose-600 hover:bg-rose-700 text-white transition-colors"
+                className="bg-rose-600 hover:bg-rose-700 dark:bg-rose-700 dark:hover:bg-rose-800 text-white transition-colors"
               >
                 {isDeleting ? (
                   <>

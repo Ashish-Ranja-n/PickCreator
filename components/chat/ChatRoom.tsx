@@ -757,9 +757,9 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ redirectPath }) => {
   const latestParticipant = participants.length > 1 ? participants.filter(p => p._id !== createdBy._id)[0] : null;
 
   return (
-    <div className="fixed inset-0 flex flex-col overflow-hidden z-20 bg-white dark:bg-[#18181b]">
+    <div className="fixed inset-0 flex flex-col overflow-hidden z-20 bg-white dark:bg-black">
       <header
-        className="z-30 h-[60px] bg-white dark:bg-[#18181b] border-b border-slate-200 dark:border-zinc-800 shadow-sm flex items-center justify-between px-4"
+        className="z-30 h-[60px] bg-white dark:bg-black border-b border-slate-200 dark:border-zinc-800 shadow-sm flex items-center justify-between px-4"
         style={{
           position: 'fixed',
           top: `${virtualKeyboardHeight - 5}px`,
@@ -926,9 +926,9 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ redirectPath }) => {
         </div>
       </header>
 
-      <main
+    <main
         ref={messageContainerRef}
-        className="flex-1 overflow-y-auto overscroll-contain px-4 py-4 scrollbar-hide bg-gradient-to-b from-slate-50 to-white dark:from-zinc-900 dark:to-[#18181b]"
+        className="flex-1 overflow-y-auto overscroll-contain px-4 py-4 scrollbar-hide bg-gradient-to-b from-slate-50 to-white dark:from-zinc-900 dark:to-black"
         style={{
           overscrollBehavior: 'contain',
           paddingTop: `${virtualKeyboardHeight + 60}px`,
@@ -987,7 +987,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ redirectPath }) => {
                 {Object.entries(messageGroups).map(([date, msgs]) => (
                   <div key={date} className="space-y-3 mb-6">
                     <div className="flex justify-center">
-                      <div className="bg-white text-slate-600 text-xs font-medium px-3 py-1 rounded-full shadow-sm border border-slate-200">
+                    <div className="bg-white dark:bg-zinc-900 text-slate-600 dark:text-zinc-300 text-xs font-medium px-3 py-1 rounded-full shadow-sm border border-slate-200 dark:border-zinc-800">
                         {date}
                       </div>
                     </div>
@@ -1017,7 +1017,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ redirectPath }) => {
                             {!isCurrentUser && (
                               <p className="text-xs text-muted-foreground mb-1">{msg.sender.name}</p>
                             )}
-                            <div className={`px-4 py-2 rounded-lg break-words ${isCurrentUser ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
+                            <div className={`px-4 py-2 rounded-lg break-words ${isCurrentUser ? 'bg-primary text-primary-foreground dark:bg-indigo-700 dark:text-white' : 'bg-muted dark:bg-zinc-800 dark:text-zinc-200'}`}> 
                               <p className="inline">{msg.content}</p>
                               <span className="text-xs ml-2 opacity-70 whitespace-nowrap">
                                 {new Date(msg.createdAt).toString() !== "Invalid Date"
@@ -1060,8 +1060,8 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ redirectPath }) => {
         )}
       </main>
 
-      <footer
-        className="fixed bottom-0 left-0 right-0 z-30 p-3 bg-white dark:bg-[#18181b] border-t border-slate-200 dark:border-zinc-800 shadow-lg"
+        <footer
+        className="fixed bottom-0 left-0 right-0 z-30 p-3 bg-white dark:bg-black border-t border-slate-200 dark:border-zinc-800 shadow-lg"
         style={{
           paddingBottom: isIOS && !isKeyboardOpen ? `max(env(safe-area-inset-bottom), 12px)` : '12px',
         }}
@@ -1076,7 +1076,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ redirectPath }) => {
             }
             return false;
           }}
-          className="flex items-end gap-2 bg-slate-50 rounded-xl p-2 shadow-sm transition-shadow focus-within:shadow-md"
+          className="flex items-end gap-2 bg-slate-50 dark:bg-zinc-900 rounded-xl p-2 shadow-sm transition-shadow focus-within:shadow-md"
         >
           <div className="flex-1 relative">
             <textarea
@@ -1090,10 +1090,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ redirectPath }) => {
               }}
               onChange={handleTextareaChange}
               onBlur={() => {
-                // If this is a legitimate blur (not from sending a message), don't refocus
                 if (!needsRefocus.current) return;
-
-                // Otherwise, refocus the textarea
                 setTimeout(() => {
                   if (textareaRef.current) {
                     textareaRef.current.focus();
@@ -1101,7 +1098,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ redirectPath }) => {
                 }, 10);
               }}
               placeholder={isUserInRoom ? "Type your message..." : "Join the room to chat"}
-              className="w-full px-3 py-2 resize-none border-none rounded-lg focus:outline-none focus:ring-0 bg-white scrollbar-hide placeholder:text-slate-400"
+              className="w-full px-3 py-2 resize-none border-none rounded-lg focus:outline-none focus:ring-0 bg-white dark:bg-zinc-800 dark:text-white scrollbar-hide placeholder:text-slate-400 dark:placeholder:text-zinc-400"
               style={{
                 height: textareaHeight,
                 maxHeight: "120px",
@@ -1118,8 +1115,8 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ redirectPath }) => {
             disabled={!isUserInRoom || !message.trim() || sendingMessage}
             className={`rounded-full h-10 w-10 p-0 flex items-center justify-center transition-all transform hover:scale-105 ${
               (message.trim()) && !sendingMessage && isUserInRoom
-                ? 'bg-indigo-600 hover:bg-indigo-700 shadow-md hover:shadow-lg'
-                : 'bg-slate-300'
+                ? 'bg-indigo-600 hover:bg-indigo-700 shadow-md hover:shadow-lg dark:bg-indigo-700 dark:hover:bg-indigo-800'
+                : 'bg-slate-300 dark:bg-zinc-700'
             }`}
             title="Send message"
             onClick={(e) => {
