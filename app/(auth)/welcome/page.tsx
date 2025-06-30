@@ -242,8 +242,8 @@ export default function WelcomeAuthPage() {
               type="text"
               autoComplete="on"
               inputMode="email"
-              placeholder="Email or Phone"
-              aria-label="Email or Phone"
+              placeholder="Email"
+              aria-label="Email"
               className="w-full rounded-xl bg-white border-2 border-[#e94e8a] px-4 py-3 text-[#e94e8a] placeholder-[#e94e8a]/60 focus:outline-none focus:ring-2 focus:ring-[#e94e8a] text-base shadow font-semibold transition"
               value={input}
               onChange={e => setInput(e.target.value)}
