@@ -27,9 +27,9 @@ export default function PickRolePage() {
       });
       if (!refreshRes.ok) throw new Error("Failed to refresh token");
       if (role === "Brand") {
-        router.replace("/brand/onboarding");
+        router.replace("/brand/onboarding?success=true");
       } else {
-        router.replace("/influencer/onboarding/basic-info");
+        router.replace("/influencer/onboarding/basic-info?success=true");
       }
     } catch (err) {
       // Use a more user-friendly error display
