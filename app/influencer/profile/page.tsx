@@ -139,7 +139,7 @@ const ProfilePage = () => {
 
   // Add a clear loading state component
   const LoadingState = () => (
-    <div className="container py-8 h-screen bg-white dark:bg-black">
+    <div className="container py-10 h-screen bg-white dark:bg-black">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="flex items-center gap-3">
           <div className="h-9 bg-gray-200 dark:bg-zinc-800 rounded-md w-32 animate-pulse"></div>
@@ -545,9 +545,7 @@ const ProfilePage = () => {
                         <Button
                           variant="ghost"
                           onClick={() => {
-                            console.log('Current theme:', theme);
                             const newTheme = theme === 'dark' ? 'light' : 'dark';
-                            console.log('Setting theme to:', newTheme);
                             setTheme(newTheme);
                           }}
                           className="flex justify-start items-center w-full text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-800 hover:text-gray-900 dark:hover:text-white"
