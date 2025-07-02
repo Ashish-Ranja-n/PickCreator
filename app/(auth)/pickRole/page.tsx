@@ -27,10 +27,10 @@ export default function PickRolePage() {
       });
       if (!refreshRes.ok) throw new Error("Failed to refresh token");
       if (role === "Brand") {
-        router.replace("/brand/onboarding?success=true");
-      } else {
-        router.replace("/influencer/onboarding/basic-info?success=true");
-      }
+            window.location.href = "/brand/onboarding?success=true";
+          } else {
+            window.location.href = "/influencer/onboarding/basic-info?success=true";
+          }
     } catch (err) {
       // Use a more user-friendly error display
       window.alert("There was a problem setting your role. Please try again.");

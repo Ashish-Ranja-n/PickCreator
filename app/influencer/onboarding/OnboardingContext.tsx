@@ -124,7 +124,12 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
 
   // Fetch existing onboarding data when component mounts
   useEffect(() => {
-    if (!currentUser) return;
+    if (currentUser === undefined) return; // still loading user
+    if (!currentUser) {
+      setIsInitialLoadComplete(true);
+      setIsLoading(false);
+      return;
+    }
 
     const fetchOnboardingData = async () => {
       try {
@@ -191,7 +196,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     fetchOnboardingData();
   }, [currentUser]);
 
-  // Initial loading screen
+  // Initial loading screen or user not found
   if (!isInitialLoadComplete && isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[70vh]">
@@ -199,6 +204,22 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
           <div className="h-12 w-12 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
           <p className="text-primary font-medium">Loading your profile data...</p>
         </div>
+      </div>
+    );
+  }
+
+  // If user is not found after initial load, show refresh option
+  if (isInitialLoadComplete && !currentUser) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[70vh] gap-4">
+        <div className="h-12 w-12 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
+        <p className="text-primary font-medium">We couldn't load your profile. Please refresh the page.</p>
+        <button
+          className="px-4 py-2 bg-primary text-white rounded hover:bg-primary/90 transition"
+          onClick={() => window.location.reload()}
+        >
+          Refresh
+        </button>
       </div>
     );
   }
