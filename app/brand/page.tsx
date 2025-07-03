@@ -137,6 +137,9 @@ const Brand: NextPage = () => {
   const [citySearchInput, setCitySearchInput] = useState('');
   const [availableCities, setAvailableCities] = useState<string[]>([]);
 
+  // New: Description for the deal (connect popup)
+  const [connectDescription, setConnectDescription] = useState('');
+
   // Campaign creation states
   const isCampaignMode = false;
   // const [campaignName, setCampaignName] = useState('');
@@ -432,7 +435,7 @@ const Brand: NextPage = () => {
       const dealData = {
         dealType: "single", // Single influencer deal
         dealName: `Deal with ${connectInfluencer?.name || "Influencer"}`,
-        description: `Single influencer collaboration with ${connectInfluencer?.name || "Influencer"}`,
+        description: connectDescription.trim() || `Single influencer collaboration with ${connectInfluencer?.name || "Influencer"}`,
         influencers: [{
           id: connectInfluencer?.id,
           name: connectInfluencer?.name,
@@ -483,6 +486,7 @@ const Brand: NextPage = () => {
         setProductName('');
         setProductPrice(0);
         setConnectErrors({});
+        setConnectDescription('');
 
         // Redirect to deals page
         router.push('/brand/deals?tab=requested');
@@ -1129,6 +1133,17 @@ const Brand: NextPage = () => {
 
               {/* Main content */}
               <div className="p-6 space-y-5">
+                {/* Description Field */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Tell me more about your promotion <span className="text-gray-400">(optional)</span></label>
+                  <textarea
+                    className="w-full min-h-[48px] max-h-40 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white resize-y text-base transition-all"
+                    rows={2}
+                    placeholder="What and how do you want me to promote, in brief..."
+                    value={connectDescription}
+                    onChange={e => setConnectDescription(e.target.value)}
+                  />
+                </div>
                 {/* Package Deals Toggle */}
                 {connectInfluencer.pricingModels?.packageDeals?.enabled &&
                   connectInfluencer.pricingModels.packageDeals.packages &&

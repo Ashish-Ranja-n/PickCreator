@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
       location,
       dealType: dealData.dealType,
       dealName: dealData.dealName,
-      description: dealData.description || '',
+      description: dealData.description || '', // Accepts new description field from frontend
       budget: dealData.budget || totalAmount,
       payPerInfluencer: dealData.payPerInfluencer || totalAmount,
       influencers: dealData.influencers.map((inf: any) => ({

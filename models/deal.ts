@@ -45,7 +45,7 @@ interface IDeal {
   location?: string;
   dealType: 'single' | 'multiple';
   dealName: string;
-  description: string;
+  description: string; // Promotion/campaign description from brand
   budget: number;
   influencers: IDealInfluencer[];
   contentRequirements: IContentRequirements;
@@ -74,7 +74,7 @@ const DealSchema = new Schema<IDeal>({
   location: { type: String },
   dealType: { type: String, enum: ['single', 'multiple'], required: true },
   dealName: { type: String, required: true },
-  description: { type: String, required: true },
+  description: { type: String, required: false },
   budget: { type: Number, required: true },
   influencers: [{
     id: { type: String, required: true },
