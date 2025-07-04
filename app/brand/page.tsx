@@ -282,6 +282,7 @@ const Brand: NextPage = () => {
         size="sm"
         onClick={() => goToPage(1)}
         disabled={page === 1}
+        className={page === 1 ? "" : "dark:border-zinc-600 dark:text-white dark:hover:bg-zinc-800"}
       >
         1
       </Button>
@@ -301,6 +302,7 @@ const Brand: NextPage = () => {
           variant={page === i ? "default" : "outline"}
           size="sm"
           onClick={() => goToPage(i)}
+          className={page === i ? "" : "dark:border-zinc-600 dark:text-white dark:hover:bg-zinc-800"}
         >
           {i}
         </Button>
@@ -321,6 +323,7 @@ const Brand: NextPage = () => {
           size="sm"
           onClick={() => goToPage(totalPages)}
           disabled={page === totalPages}
+          className={page === totalPages ? "" : "dark:border-zinc-600 dark:text-white dark:hover:bg-zinc-800"}
         >
           {totalPages}
         </Button>
@@ -683,20 +686,20 @@ const Brand: NextPage = () => {
   }, [influencers]);
 
   return (
-    <div className="container mx-auto px-4 py-6 pb-16 max-w-7xl flex flex-col min-h-screen overflow-y-auto bg-gradient-to-br from-white via-blue-50 to-purple-50 scrollbar-hide">
+    <div className="container mx-auto px-4 py-6 pb-16 max-w-7xl flex flex-col min-h-screen overflow-y-auto bg-gradient-to-br from-white via-blue-50 to-purple-50 dark:bg-black scrollbar-hide">
       {/* Header */}
 
 
       {/* Filters Section - Visible in both modes */}
         {!isCampaignMode && <div>
-        <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-2 text-gray-900 kanit">
+        <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-2 text-gray-900 dark:text-white kanit">
           Search Influencers
         </h1>
-        <p className="text-lg text-muted-foreground">
+        <p className="text-lg text-muted-foreground dark:text-zinc-300">
           Find influencers and make a deal.
         </p>
         </div> }
-      <div className="flex flex-wrap gap-4 mb-8 items-center p-4 bg-white/70 rounded-lg shadow-sm">
+      <div className="flex flex-wrap gap-4 mb-8 items-center p-4 bg-white/70 dark:bg-zinc-900/70 rounded-lg shadow-sm">
         {/* City Filter */}
         <div className="flex-1 min-w-[200px]">
           <Popover open={openCityPopover} onOpenChange={setOpenCityPopover}>
@@ -708,15 +711,15 @@ const Brand: NextPage = () => {
                 aria-expanded={openCityPopover}
                 className="w-full justify-between h-10"
               >
-                {selectedCity || "Select a city"}
+                <span className="text-gray-900 dark:text-white">{selectedCity || "Select a city"}</span>
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-full p-0 shadow-lg" align="start">
-              <div className="sticky top-0 bg-white p-2 rounded-t-md">
+            <PopoverContent className="w-full p-0 shadow-lg dark:bg-zinc-900 dark:border-zinc-700" align="start">
+              <div className="sticky top-0 bg-white dark:bg-zinc-900 p-2 rounded-t-md">
                 <div className="relative">
                   <input
-                    className="flex h-10 w-full rounded-xl border-2 border-input bg-background pl-4 pr-10 text-base focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                    className="flex h-10 w-full rounded-xl border-2 border-input bg-background dark:bg-zinc-800 dark:border-zinc-600 dark:text-white pl-4 pr-10 text-base focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                     placeholder="Type to search cities..."
                     onChange={(e) => {
                       const list = document.querySelector('.cities-list');
@@ -732,13 +735,13 @@ const Brand: NextPage = () => {
               </div>
               <div className="cities-list max-h-[400px] overflow-auto">
                 {availableCities.length === 0 ? (
-                  <div className="text-base text-center py-8 text-muted-foreground">
+                  <div className="text-base text-center py-8 text-muted-foreground dark:text-zinc-400">
                     No cities found
                   </div>
                 ) : (
                   <>
                     <div
-                      className="city-item relative flex cursor-pointer select-none items-center px-4 py-3 text-base hover:bg-accent/5 border-b border-input/10"
+                      className="city-item relative flex cursor-pointer select-none items-center px-4 py-3 text-base hover:bg-accent/5 dark:hover:bg-zinc-700 border-b border-input/10 dark:border-zinc-700 text-gray-900 dark:text-white"
                       onClick={() => {
                         setSelectedCity(null);
                         setOpenCityPopover(false);
@@ -750,10 +753,10 @@ const Brand: NextPage = () => {
                       <div
                         key={city}
                         className={cn(
-                          "city-item relative flex cursor-pointer select-none items-center px-4 py-3 text-base",
-                          "hover:bg-accent/5",
-                          "border-b border-input/10",
-                          selectedCity === city && "bg-accent/5 font-medium"
+                          "city-item relative flex cursor-pointer select-none items-center px-4 py-3 text-base text-gray-900 dark:text-white",
+                          "hover:bg-accent/5 dark:hover:bg-zinc-700",
+                          "border-b border-input/10 dark:border-zinc-700",
+                          selectedCity === city && "bg-accent/5 dark:bg-zinc-700 font-medium"
                         )}
                         onClick={() => {
                           setSelectedCity(city);
@@ -779,7 +782,7 @@ const Brand: NextPage = () => {
             variant={sortBy === 'followers' ? "default" : "outline"}
             size="sm"
             onClick={() => toggleSort('followers')}
-            className={`flex items-center gap-1 ${sortBy === 'followers' ? 'bg-blue-600 hover:bg-blue-700' : 'border-blue-200 hover:bg-blue-50'}`}
+            className={`flex items-center gap-1 ${sortBy === 'followers' ? 'bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800' : 'border-blue-200 dark:border-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/30 dark:text-white'}`}
           >
             <Users className="h-4 w-4 mr-1" />
             Followers
@@ -790,7 +793,7 @@ const Brand: NextPage = () => {
             variant={sortBy === 'instagramAnalytics.avgReelViews' ? "default" : "outline"}
             size="sm"
             onClick={() => toggleSort('instagramAnalytics.avgReelViews')}
-            className={`flex items-center gap-1 ${sortBy === 'instagramAnalytics.avgReelViews' ? 'bg-purple-600 hover:bg-purple-700' : 'border-purple-200 hover:bg-purple-50'}`}
+            className={`flex items-center gap-1 ${sortBy === 'instagramAnalytics.avgReelViews' ? 'bg-purple-600 hover:bg-purple-700 dark:bg-purple-700 dark:hover:bg-purple-800' : 'border-purple-200 dark:border-purple-700 hover:bg-purple-50 dark:hover:bg-purple-900/30 dark:text-white'}`}
           >
             <Zap className="h-4 w-4 mr-1" />
             Avg. Reel Views
@@ -802,7 +805,7 @@ const Brand: NextPage = () => {
               variant="outline"
               size="sm"
               onClick={() => setSelectedCity(null)}
-              className="flex items-center gap-1"
+              className="flex items-center gap-1 dark:border-zinc-600 dark:text-white dark:hover:bg-zinc-800"
             >
               <MapPin className="h-4 w-4 mr-1" />
               {selectedCity}
@@ -837,23 +840,23 @@ const Brand: NextPage = () => {
           </div>
         ) : error ? (
           // Error state
-          <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-            <p className="text-red-500 mb-2">
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6 text-center">
+            <p className="text-red-500 dark:text-red-400 mb-2">
               {error}
             </p>
-            <Button onClick={() => fetchInfluencers(1)}>
+            <Button onClick={() => fetchInfluencers(1)} className="dark:bg-red-600 dark:hover:bg-red-700">
               Try Again
             </Button>
           </div>
         ) : influencers.length === 0 ? (
           // Empty state
-          <div className="border-dashed border-2 rounded-lg p-10 text-center">
-            <h3 className="text-xl font-medium mb-2">No influencers found</h3>
-            <p className="text-muted-foreground mb-4">
+          <div className="border-dashed border-2 border-gray-300 dark:border-zinc-600 rounded-lg p-10 text-center">
+            <h3 className="text-xl font-medium mb-2 text-gray-900 dark:text-white">No influencers found</h3>
+            <p className="text-muted-foreground dark:text-zinc-400 mb-4">
               Try adjusting your filters or select a different city
             </p>
             {selectedCity && (
-              <Button onClick={() => setSelectedCity(null)}>
+              <Button onClick={() => setSelectedCity(null)} className="dark:bg-blue-600 dark:hover:bg-blue-700">
                 Clear Filters
               </Button>
             )}
@@ -865,8 +868,8 @@ const Brand: NextPage = () => {
               <Card
                 key={influencer.id}
                 className={cn(
-                  "overflow-hidden transition-all hover:shadow-md border-gray-200 bg-white/90 hover:bg-white",
-                  isCampaignMode && selectedInfluencers.some(inf => inf.id === influencer.id) && "border-2 border-blue-400"
+                  "overflow-hidden transition-all hover:shadow-md border-gray-200 dark:border-zinc-700 bg-white/90 dark:bg-zinc-900/90 hover:bg-white dark:hover:bg-zinc-900",
+                  isCampaignMode && selectedInfluencers.some(inf => inf.id === influencer.id) && "border-2 border-blue-400 dark:border-blue-500"
                 )}
               >
                 <CardHeader className="p-4 pb-2">
@@ -908,7 +911,7 @@ const Brand: NextPage = () => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <CardTitle className="text-xl font-semibold truncate">
+                        <CardTitle className="text-xl font-semibold truncate text-gray-900 dark:text-white">
                           {influencer.name}
                         </CardTitle>
                         {/* Always show Instagram verified badge - improved SVG */}
@@ -922,14 +925,14 @@ const Brand: NextPage = () => {
                       </div>
                       {/* Gender below name */}
                       {influencer.gender && (
-                        <div className="text-xs font-medium text-blue-700 mb-1 capitalize">
+                        <div className="text-xs font-medium text-blue-700 dark:text-blue-400 mb-1 capitalize">
                           {influencer.gender === 'male' && 'Male'}
                           {influencer.gender === 'female' && 'Female'}
                           {influencer.gender === 'other' && 'Other'}
                         </div>
                       )}
-                      <div className="flex items-center text-muted-foreground gap-1">
-                        <MapPinCheck className="w-4 h-4 flex-shrink-0 text-blue-500" />
+                      <div className="flex items-center text-muted-foreground dark:text-zinc-400 gap-1">
+                        <MapPinCheck className="w-4 h-4 flex-shrink-0 text-blue-500 dark:text-blue-400" />
                         <span className="text-sm truncate font-medium">{influencer.city} <span className="ml-1">🇮🇳</span></span>
                       </div>
                     </div>
@@ -938,15 +941,15 @@ const Brand: NextPage = () => {
 
                 <CardContent className="p-4 pt-2">
                   <div className="flex items-center gap-2 my-3">
-                    <div className="flex items-center gap-1 bg-blue-50 rounded-md border border-blue-100 px-3 py-1">
-                      <Users className="w-4 h-4 text-blue-500 mr-1" />
-                      <span className="font-semibold text-blue-700 text-base">{formatCompactNumber(influencer.followers || 0)}</span>
-                      <span className="text-xs text-muted-foreground ml-1">Followers</span>
+                    <div className="flex items-center gap-1 bg-blue-50 dark:bg-blue-900/30 rounded-md border border-blue-100 dark:border-blue-800 px-3 py-1">
+                      <Users className="w-4 h-4 text-blue-500 dark:text-blue-400 mr-1" />
+                      <span className="font-semibold text-blue-700 dark:text-blue-300 text-base">{formatCompactNumber(influencer.followers || 0)}</span>
+                      <span className="text-xs text-muted-foreground dark:text-zinc-400 ml-1">Followers</span>
                     </div>
                   </div>
 
                   <div className="mb-3">
-                    <p className="text-sm text-gray-700 whitespace-pre-line">
+                    <p className="text-sm text-gray-700 dark:text-zinc-300 whitespace-pre-line">
                       {influencer.bio || "No bio available"}
                     </p>
                   </div>
@@ -954,13 +957,13 @@ const Brand: NextPage = () => {
                   {/* Brand Preferences (Preferred Industries) */}
                   {influencer.brandPreferences?.preferredBrandTypes && influencer.brandPreferences.preferredBrandTypes.length > 0 && (
                     <div className="flex flex-wrap gap-2 mb-2">
-                      {influencer.brandPreferences.preferredBrandTypes.slice(0, 3).map((brandType, idx) => (
-                        <span key={brandType} className="px-2 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-medium">
+                      {influencer.brandPreferences.preferredBrandTypes.slice(0, 3).map((brandType) => (
+                        <span key={brandType} className="px-2 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-medium">
                           {brandType}
                         </span>
                       ))}
                       {influencer.brandPreferences.preferredBrandTypes.length > 3 && (
-                        <span className="px-2 py-1 rounded-full bg-gray-100 text-gray-600 text-xs font-medium">
+                        <span className="px-2 py-1 rounded-full bg-gray-100 dark:bg-zinc-700 text-gray-600 dark:text-zinc-300 text-xs font-medium">
                           +{influencer.brandPreferences.preferredBrandTypes.length - 3} more
                         </span>
                       )}
@@ -976,7 +979,7 @@ const Brand: NextPage = () => {
                         { label: 'Story', price: influencer.pricingModels.fixedPricing.storyPrice },
                         { label: 'Live', price: influencer.pricingModels.fixedPricing.livePrice },
                       ].filter(item => item.price).map(item => (
-                        <div key={item.label} className="flex items-center border border-gray-200 rounded-md px-3 py-1 bg-white text-gray-800 text-xs font-medium shadow-sm">
+                        <div key={item.label} className="flex items-center border border-gray-200 dark:border-zinc-600 rounded-md px-3 py-1 bg-white dark:bg-zinc-800 text-gray-800 dark:text-zinc-200 text-xs font-medium shadow-sm">
                           <span className="font-semibold mr-1">{item.label}:</span>
                           <span>₹{item.price?.toLocaleString()}</span>
                         </div>
@@ -986,7 +989,7 @@ const Brand: NextPage = () => {
                 </CardContent>
 
                 <CardFooter className="p-4 pt-0 flex justify-between items-center">
-                  <div className="text-xs text-muted-foreground">
+                  <div className="text-xs text-muted-foreground dark:text-zinc-400">
                     {influencer.lastUpdated ?
                       `Last seen: ${format(new Date(influencer.lastUpdated), 'MMM d, yyyy')}` :
                       'Last seen: Recently'}
@@ -1058,6 +1061,7 @@ const Brand: NextPage = () => {
               size="sm"
               onClick={() => goToPage(pagination.page - 1)}
               disabled={pagination.page === 1}
+              className="dark:border-zinc-600 dark:text-white dark:hover:bg-zinc-800"
             >
               Previous
             </Button>
@@ -1069,6 +1073,7 @@ const Brand: NextPage = () => {
               size="sm"
               onClick={() => goToPage(pagination.page + 1)}
               disabled={pagination.page === pagination.totalPages}
+              className="dark:border-zinc-600 dark:text-white dark:hover:bg-zinc-800"
             >
               Next
             </Button>
@@ -1097,11 +1102,11 @@ const Brand: NextPage = () => {
                 damping: 30,
                 mass: 0.8
               }}
-              className="bg-white rounded-3xl shadow-lg max-w-md w-full max-h-[90vh] overflow-y-auto"
+              className="bg-white dark:bg-zinc-900 rounded-3xl shadow-lg max-w-md w-full max-h-[90vh] overflow-y-auto"
               onClick={e => e.stopPropagation()}
             >
               {/* Header */}
-              <div className="sticky top-0 bg-white/30 z-10 px-6 py-4 border-b flex justify-between items-center backdrop-blur-lg">
+              <div className="sticky top-0 bg-white/30 dark:bg-zinc-900/30 z-10 px-6 py-4 border-b dark:border-zinc-700 flex justify-between items-center backdrop-blur-lg">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full overflow-hidden">
                     {connectInfluencer.profilePictureUrl ? (
@@ -1119,13 +1124,13 @@ const Brand: NextPage = () => {
                       </div>
                     )}
                   </div>
-                  <h2 className="text-xl font-semibold text-gray-800">Connect with {connectInfluencer.name}</h2>
+                  <h2 className="text-xl font-semibold text-gray-800 dark:text-white">Connect with {connectInfluencer.name}</h2>
                 </div>
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => setShowConnectPopup(false)}
-                  className="h-8 w-8 rounded-full hover:bg-gray-100"
+                  className="h-8 w-8 rounded-full hover:bg-gray-100 dark:hover:bg-zinc-700"
                 >
                   <XIcon className="h-5 w-5" />
                 </Button>
@@ -1135,9 +1140,9 @@ const Brand: NextPage = () => {
               <div className="p-6 space-y-5">
                 {/* Description Field */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Tell me more about your promotion <span className="text-gray-400">(optional)</span></label>
+                  <label className="text-sm font-medium text-gray-700 dark:text-zinc-300">Tell me more about your promotion <span className="text-gray-400 dark:text-zinc-500">(optional)</span></label>
                   <textarea
-                    className="w-full min-h-[48px] max-h-40 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white resize-y text-base transition-all"
+                    className="w-full min-h-[48px] max-h-40 px-3 py-2 border border-gray-300 dark:border-zinc-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-zinc-800 dark:text-white resize-y text-base transition-all"
                     rows={2}
                     placeholder="What and how do you want me to promote, in brief..."
                     value={connectDescription}
@@ -1150,7 +1155,7 @@ const Brand: NextPage = () => {
                   connectInfluencer.pricingModels.packageDeals.packages.length > 0 && (
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <label className="text-sm font-medium text-gray-700">Use Package Deals</label>
+                      <label className="text-sm font-medium text-gray-700 dark:text-zinc-300">Use Package Deals</label>
                       <div className="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input"
                         data-state={usePackageDeals ? "checked" : "unchecked"}
                         onClick={() => setUsePackageDeals(!usePackageDeals)}
@@ -1161,30 +1166,30 @@ const Brand: NextPage = () => {
 
                     {usePackageDeals && (
                       <div className="space-y-3">
-                        <p className="text-sm text-gray-500">Select a package from below:</p>
+                        <p className="text-sm text-gray-500 dark:text-zinc-400">Select a package from below:</p>
                         <div className="space-y-2">
                           {connectInfluencer.pricingModels.packageDeals.packages.map((pkg, index) => (
                             <div
                               key={index}
                               className={`p-3 rounded-lg border cursor-pointer transition-colors ${
                                 selectedPackage === pkg
-                                  ? "bg-blue-50 border-blue-300"
-                                  : "bg-white border-gray-200 hover:bg-blue-50/50"
+                                  ? "bg-blue-50 dark:bg-blue-900/30 border-blue-300 dark:border-blue-600"
+                                  : "bg-white dark:bg-zinc-800 border-gray-200 dark:border-zinc-600 hover:bg-blue-50/50 dark:hover:bg-blue-900/20"
                               }`}
                               onClick={() => setSelectedPackage(pkg)}
                             >
                               <div className="flex justify-between items-start">
                                 <div>
-                                  <div className="font-medium text-gray-900">{pkg.name}</div>
-                                  <div className="text-sm text-gray-600">{pkg.includedServices}</div>
+                                  <div className="font-medium text-gray-900 dark:text-white">{pkg.name}</div>
+                                  <div className="text-sm text-gray-600 dark:text-zinc-400">{pkg.includedServices}</div>
                                 </div>
-                                <div className="font-bold text-blue-600">₹{pkg.totalPrice}</div>
+                                <div className="font-bold text-blue-600 dark:text-blue-400">₹{pkg.totalPrice}</div>
                               </div>
                             </div>
                           ))}
                         </div>
                         {connectErrors.package && (
-                          <p className="text-sm text-red-500">{connectErrors.package}</p>
+                          <p className="text-sm text-red-500 dark:text-red-400">{connectErrors.package}</p>
                         )}
                       </div>
                     )}
@@ -1194,10 +1199,10 @@ const Brand: NextPage = () => {
                 {/* Content Requirements */}
                 {(!usePackageDeals || !connectInfluencer.pricingModels?.packageDeals?.enabled) && (
                   <div className="space-y-3">
-                    <label className="text-sm font-medium text-gray-700">Content Requirements</label>
+                    <label className="text-sm font-medium text-gray-700 dark:text-zinc-300">Content Requirements</label>
                     <div className="grid grid-cols-4 gap-2">
                       <div>
-                        <label className="block text-xs text-gray-500 mb-1 text-center">Reels</label>
+                        <label className="block text-xs text-gray-500 dark:text-zinc-400 mb-1 text-center">Reels</label>
                         <input
                           type="number"
                           min="0"
@@ -1212,11 +1217,11 @@ const Brand: NextPage = () => {
                               e.target.value = "";
                             }
                           }}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-center bg-white"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-zinc-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-center bg-white dark:bg-zinc-800 dark:text-white"
                         />
                       </div>
                       <div>
-                        <label className="block text-xs text-gray-500 mb-1 text-center">Posts</label>
+                        <label className="block text-xs text-gray-500 dark:text-zinc-400 mb-1 text-center">Posts</label>
                         <input
                           type="number"
                           min="0"
@@ -1231,11 +1236,11 @@ const Brand: NextPage = () => {
                               e.target.value = "";
                             }
                           }}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-center bg-white"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-zinc-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-center bg-white dark:bg-zinc-800 dark:text-white"
                         />
                       </div>
                       <div>
-                        <label className="block text-xs text-gray-500 mb-1 text-center">Stories</label>
+                        <label className="block text-xs text-gray-500 dark:text-zinc-400 mb-1 text-center">Stories</label>
                         <input
                           type="number"
                           min="0"
@@ -1250,11 +1255,11 @@ const Brand: NextPage = () => {
                               e.target.value = "";
                             }
                           }}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-center bg-white"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-zinc-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-center bg-white dark:bg-zinc-800 dark:text-white"
                         />
                       </div>
                       <div>
-                        <label className="block text-xs text-gray-500 mb-1 text-center">Lives</label>
+                        <label className="block text-xs text-gray-500 dark:text-zinc-400 mb-1 text-center">Lives</label>
                         <input
                           type="number"
                           min="0"
@@ -1269,14 +1274,14 @@ const Brand: NextPage = () => {
                               e.target.value = "";
                             }
                           }}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-center bg-white"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-zinc-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-center bg-white dark:bg-zinc-800 dark:text-white"
                         />
                       </div>
                     </div>
                     {connectErrors.content && (
-                      <p className="text-sm text-red-500">{connectErrors.content}</p>
+                      <p className="text-sm text-red-500 dark:text-red-400">{connectErrors.content}</p>
                     )}
-                    <p className="text-xs text-gray-500 text-center">
+                    <p className="text-xs text-gray-500 dark:text-zinc-400 text-center">
                       Maximum 9 for each content type
                     </p>
                   </div>
@@ -1284,7 +1289,7 @@ const Brand: NextPage = () => {
 
                 {/* Visit Required */}
                 <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium text-gray-700">Visit Required?</label>
+                  <label className="text-sm font-medium text-gray-700 dark:text-zinc-300">Visit Required?</label>
                   <div className="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input"
                     data-state={visitRequired ? "checked" : "unchecked"}
                     onClick={() => setVisitRequired(!visitRequired)}
@@ -1297,7 +1302,7 @@ const Brand: NextPage = () => {
                 {connectInfluencer.pricingModels?.negotiablePricing && (
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <label className="text-sm font-medium text-gray-700">Negotiate Price</label>
+                      <label className="text-sm font-medium text-gray-700 dark:text-zinc-300">Negotiate Price</label>
                       <div className="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input"
                         data-state={isNegotiating ? "checked" : "unchecked"}
                         onClick={() => setIsNegotiating(!isNegotiating)}
@@ -1308,7 +1313,7 @@ const Brand: NextPage = () => {
 
                     {isNegotiating && (
                       <div className="space-y-2">
-                        <label className="block text-xs text-gray-500">Your Offer (₹)</label>
+                        <label className="block text-xs text-gray-500 dark:text-zinc-400">Your Offer (₹)</label>
                         <input
                           type="number"
                           min="1"
@@ -1323,13 +1328,13 @@ const Brand: NextPage = () => {
                               e.target.value = "";
                             }
                           }}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-zinc-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-zinc-800 dark:text-white"
                           placeholder="Enter your offer amount"
                         />
                         {connectErrors.offer && (
-                          <p className="text-sm text-red-500">{connectErrors.offer}</p>
+                          <p className="text-sm text-red-500 dark:text-red-400">{connectErrors.offer}</p>
                         )}
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-gray-500 dark:text-zinc-400">
                           Enter the amount you'd like to offer
                         </p>
                       </div>
@@ -1341,7 +1346,7 @@ const Brand: NextPage = () => {
                 {connectInfluencer.pricingModels?.barterDeals?.enabled && (
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <label className="text-sm font-medium text-gray-700">Product Exchange</label>
+                      <label className="text-sm font-medium text-gray-700 dark:text-zinc-300">Product Exchange</label>
                       <div className="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input"
                         data-state={isProductExchange ? "checked" : "unchecked"}
                         onClick={() => setIsProductExchange(!isProductExchange)}
@@ -1353,22 +1358,22 @@ const Brand: NextPage = () => {
                     {isProductExchange && (
                       <div className="space-y-3">
                         <div>
-                          <label className="block text-xs text-gray-500 mb-1">Product Name</label>
+                          <label className="block text-xs text-gray-500 dark:text-zinc-400 mb-1">Product Name</label>
                           <input
                             type="text"
                             value={productName}
                             onChange={(e) => setProductName(e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-zinc-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-zinc-800 dark:text-white"
                             placeholder="Enter product name"
                             maxLength={50}
                           />
                           {connectErrors.productName && (
-                            <p className="text-sm text-red-500">{connectErrors.productName}</p>
+                            <p className="text-sm text-red-500 dark:text-red-400">{connectErrors.productName}</p>
                           )}
                         </div>
 
                         <div>
-                          <label className="block text-xs text-gray-500 mb-1">Product Value (₹)</label>
+                          <label className="block text-xs text-gray-500 dark:text-zinc-400 mb-1">Product Value (₹)</label>
                           <input
                             type="number"
                             min="1"
@@ -1383,11 +1388,11 @@ const Brand: NextPage = () => {
                                 e.target.value = "";
                               }
                             }}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-zinc-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-zinc-800 dark:text-white"
                             placeholder="Enter product value"
                           />
                           {connectErrors.productPrice && (
-                            <p className="text-sm text-red-500">{connectErrors.productPrice}</p>
+                            <p className="text-sm text-red-500 dark:text-red-400">{connectErrors.productPrice}</p>
                           )}
                         </div>
                       </div>
@@ -1396,24 +1401,24 @@ const Brand: NextPage = () => {
                 )}
 
                 {connectErrors.submit && (
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-red-600">
+                  <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3 text-red-600 dark:text-red-400">
                     {connectErrors.submit}
                   </div>
                 )}
               </div>
 
               {/* Footer */}
-              <div className="px-6 py-4 border-t">
+              <div className="px-6 py-4 border-t dark:border-zinc-700">
                 {/* Total Amount Display */}
                 {totalAmount > 0 && (
-                  <div className="mb-4 bg-blue-50 border border-blue-100 rounded-lg p-4">
+                  <div className="mb-4 bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 rounded-lg p-4">
                     <div className="flex justify-between items-center mb-2">
-                      <h4 className="font-medium text-blue-800">Estimated Total</h4>
-                      <div className="text-xl font-bold text-blue-700">₹{formatNumber(totalAmount)}</div>
+                      <h4 className="font-medium text-blue-800 dark:text-blue-300">Estimated Total</h4>
+                      <div className="text-xl font-bold text-blue-700 dark:text-blue-300">₹{formatNumber(totalAmount)}</div>
                     </div>
 
                     {/* Show breakdown based on what's selected */}
-                    <div className="text-sm text-blue-600">
+                    <div className="text-sm text-blue-600 dark:text-blue-400">
                       {usePackageDeals && selectedPackage ? (
                         <p>Package: {selectedPackage.name}</p>
                       ) : isNegotiating ? (
@@ -1453,7 +1458,7 @@ const Brand: NextPage = () => {
                 )}
 
                 <Button
-                  className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white h-12 rounded-xl shadow-md flex items-center justify-center gap-2 transition-all"
+                  className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 dark:from-blue-600 dark:to-blue-700 dark:hover:from-blue-700 dark:hover:to-blue-800 text-white h-12 rounded-xl shadow-md flex items-center justify-center gap-2 transition-all"
                   onClick={handleConnectRequest}
                   disabled={connectLoading}
                 >

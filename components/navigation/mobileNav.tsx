@@ -12,13 +12,13 @@ const MobileNav = () => {
   const { isDarkMode } = useThemeContext();
 
   const navClass = cn(
-    "lg:hidden fixed bottom-4 left-1/2 -translate-x-1/2 w-[95vw] max-w-md z-50 rounded-full px-2 py-1 flex justify-between items-center backdrop-blur-md border",
+    "lg:hidden fixed bottom-4 left-1/2 -translate-x-1/2 w-[95vw] max-w-md z-50 rounded-2xl px-3 py-2 flex justify-between items-center backdrop-blur-xl border transition-all duration-300",
     isDarkMode
-      ? "bg-gray-950/90 border-gray-800 shadow-2xl dark:bg-gray-950/90 dark:border-gray-800"
-      : "bg-white/90 border-slate-200 shadow-2xl dark:bg-gray-950/90 dark:border-gray-800"
+      ? "bg-zinc-900/95 border-zinc-700/50 shadow-2xl shadow-black/20"
+      : "bg-white/95 border-zinc-200/50 shadow-2xl shadow-black/10"
   );
   const navInnerClass = cn(
-    "flex w-full justify-between items-center h-16",
+    "flex w-full justify-between items-center h-14",
     isDarkMode ? "dark" : ""
   );
 
@@ -35,34 +35,34 @@ const MobileNav = () => {
         {tabs.map(({ icon: Icon, label, path }) => {
           const isActive = pathname === path;
           const isDealTab = label === "Deals";
-          const tabClass = "flex-1 flex flex-col items-center justify-center relative";
+          const tabClass = "flex-1 flex flex-col items-center justify-center relative group";
           const iconWrapClass = cn(
-            "relative flex items-center justify-center w-12 h-12 rounded-full shadow-md border transition-all duration-200",
+            "relative flex items-center justify-center w-11 h-11 rounded-xl shadow-lg border transition-all duration-300 ease-out",
             isActive
               ? isDarkMode
-                ? "border-fuchsia-500 bg-fuchsia-950/40 -translate-y-0.8"
-                : "border-fuchsia-500 bg-fuchsia-50 -translate-y-0.8"
+                ? "border-violet-400/50 bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 shadow-violet-500/25 -translate-y-1 scale-105"
+                : "border-violet-400/50 bg-gradient-to-br from-violet-50 to-fuchsia-50 shadow-violet-500/25 -translate-y-1 scale-105"
               : isDarkMode
-                ? "bg-gray-900 border-gray-800"
-                : "bg-white border-slate-200"
+                ? "bg-zinc-800/80 border-zinc-700/50 hover:border-violet-400/30 hover:bg-gradient-to-br hover:from-violet-500/10 hover:to-fuchsia-500/10 hover:shadow-lg hover:shadow-violet-500/10"
+                : "bg-white/80 border-zinc-200/50 hover:border-violet-400/30 hover:bg-gradient-to-br hover:from-violet-50/50 hover:to-fuchsia-50/50 hover:shadow-lg hover:shadow-violet-500/10"
           );
-          const iconSize = 26;
+          const iconSize = 22;
           const iconClass = cn(
-            "transition-all duration-200 z-10",
+            "transition-all duration-300 z-10",
             isActive
               ? isDarkMode
-                ? "text-fuchsia-400"
-                : "text-fuchsia-600"
+                ? "text-violet-300"
+                : "text-violet-600"
               : isDarkMode
-                ? "text-zinc-400 group-hover:text-fuchsia-400"
-                : "text-slate-600 group-hover:text-fuchsia-500"
+                ? "text-zinc-400 group-hover:text-violet-300"
+                : "text-zinc-600 group-hover:text-violet-600"
           );
           const labelClass = cn(
-            "text-xs font-semibold mt-[1px] transition-all duration-200 z-10 tracking-wide",
+            "text-xs font-semibold mt-1 transition-all duration-300 z-10 tracking-wide",
             isActive
               ? isDarkMode
-                ? "text-fuchsia-300 opacity-100 scale-100"
-                : "text-fuchsia-700 opacity-100 scale-100"
+                ? "text-violet-300 opacity-100 scale-100"
+                : "text-violet-700 opacity-100 scale-100"
               : "opacity-0 scale-75 h-0"
           );
           return (
@@ -73,7 +73,7 @@ const MobileNav = () => {
             >
               <div className={iconWrapClass}>
                 {isDealTab && hasActiveDeal && (
-                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-fuchsia-500 border-2 border-white dark:border-gray-950 rounded-full shadow-md" />
+                  <span className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-gradient-to-r from-orange-400 to-red-500 border-2 border-white dark:border-zinc-900 rounded-full shadow-lg animate-pulse" />
                 )}
                 <Icon size={iconSize} className={iconClass} />
               </div>

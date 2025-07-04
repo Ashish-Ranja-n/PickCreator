@@ -7,6 +7,7 @@ import InfluencersSection from '@/components/LandingpageComponents/InfluencersSe
 import PricingSection from '@/components/LandingpageComponents/PricingSection';
 import Footer from '@/components/LandingpageComponents/Footer';
 import Header from '@/components/LandingpageComponents/Header';
+import { Star } from 'lucide-react';
 
 
 
@@ -80,13 +81,15 @@ export default function Home() {
       styleTag.innerHTML = `
         @keyframes liquid-flow {
           0% { background-position: 0% 50% }
-          50% { background-position: 100% 50% }
-          100% { background-position: 0% 50% }
+          25% { background-position: 100% 50% }
+          50% { background-position: 200% 50% }
+          75% { background-position: 300% 50% }
+          100% { background-position: 400% 50% }
         }
 
         .animate-liquid-gradient {
           background-size: 400% 100%;
-          animation: liquid-flow 6s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+          animation: liquid-flow 8s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
           transition: background-position 0.1s;
         }
 
@@ -171,86 +174,107 @@ export default function Home() {
           <Header />
           <main>
             {/* Hero Section */}
-            <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-b from-indigo-50 via-white to-purple-50">
+            <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-slate-50 via-white to-violet-50/30 dark:from-zinc-900 dark:via-zinc-900 dark:to-violet-950/30">
+              {/* Background Effects */}
+              <div className="absolute inset-0 overflow-hidden">
+                <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-violet-400/20 to-fuchsia-400/20 rounded-full blur-3xl animate-pulse-glow" />
+                <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-blue-400/20 to-violet-400/20 rounded-full blur-3xl animate-pulse-glow" style={{ animationDelay: '2s' }} />
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-violet-500/5 to-fuchsia-500/5 rounded-full blur-3xl" />
+              </div>
+
               <div className="container-custom relative z-10">
-                <div className="text-center max-w-5xl mx-auto pt-4 sm:pt-8 md:pt-12">
-                  <motion.span
+                <div className="text-center max-w-6xl mx-auto pt-8 sm:pt-12 md:pt-16">
+                  <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.2 }}
-                    className="inline-block bg-gradient-to-r from-indigo-500/10 to-purple-500/10 text-indigo-600 px-5 py-2 rounded-full text-sm mb-6 sm:mb-8 font-bold tracking-wide"
+                    className="inline-flex items-center space-x-2 bg-gradient-to-r from-violet-500/10 via-fuchsia-500/10 to-violet-500/10 backdrop-blur-sm border border-violet-200/50 dark:border-violet-800/50 text-violet-700 dark:text-violet-300 px-6 py-3 rounded-full text-sm mb-8 sm:mb-10 font-semibold tracking-wide shadow-lg shadow-violet-500/10"
                   >
-                    Elevate Your Influence, Amplify Your Income.
-                  </motion.span>
+                    <Star className="h-4 w-4 text-violet-500" />
+                    <span>Elevate Your Influence, Amplify Your Income</span>
+                    <div className="flex space-x-1">
+                      <div className="w-1 h-1 bg-violet-500 rounded-full animate-pulse" />
+                      <div className="w-1 h-1 bg-fuchsia-500 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }} />
+                      <div className="w-1 h-1 bg-violet-500 rounded-full animate-pulse" style={{ animationDelay: '1s' }} />
+                    </div>
+                  </motion.div>
 
                   <motion.h1
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.3 }}
-                    className="text-5xl md:text-7xl font-extrabold mb-8 flex flex-wrap justify-center items-baseline"
+                    className="text-5xl md:text-7xl lg:text-8xl font-black mb-10 leading-tight"
                   >
-                    {/* "where" in small text */}
-                    <span className="text-indigo-700 text-2xl md:text-3xl mr-2 font-medium">
-                      where
-                    </span>
-
-                    {/* "influencer" with gradient */}
-                    <span className="relative">
-                      <span className="bg-[linear-gradient(to_right,#7c3aed,#ec4899,#8b5cf6,#d946ef)] bg-clip-text text-transparent animate-liquid-gradient absolute font-extrabold">
-                        influencer
+                    <div className="flex flex-wrap justify-center items-center gap-2 md:gap-4">
+                      {/* "where" in elegant text */}
+                      <span className="text-zinc-600 dark:text-zinc-400 text-2xl md:text-4xl lg:text-5xl font-light italic">
+                        where
                       </span>
-                      <span className="opacity-0">influencer&nbsp;</span>
-                    </span>
 
-                    {/* "meets" in purple */}
-                    <span className="text-indigo-900 mx-2">
-                      meets
-                    </span>
+                      {/* "influencer" with animated gradient */}
+                      <span className="relative">
+                        <span className="absolute inset-0 bg-gradient-to-r from-violet-600 via-fuchsia-600 via-violet-600 to-fuchsia-600 bg-clip-text text-transparent animate-liquid-gradient bg-[length:400%_100%] font-black">
+                          influencer
+                        </span>
+                        <span className="opacity-0 font-black">influencer</span>
+                      </span>
+                    </div>
 
-                    {/* "brand" in bold purple */}
-                    <span className="text-purple-700">
-                      brand
-                    </span>
+                    <div className="flex flex-wrap justify-center items-center gap-2 md:gap-4 mt-2">
+                      {/* "meets" with subtle animation */}
+                      <span className="text-zinc-800 dark:text-zinc-200 font-light italic text-2xl md:text-4xl lg:text-5xl">
+                        meets
+                      </span>
+
+                      {/* "brand" with solid gradient */}
+                      <span className="bg-gradient-to-r from-blue-600 to-violet-600 bg-clip-text text-transparent font-black">
+                        brand
+                      </span>
+                    </div>
                   </motion.h1>
 
                   <motion.p
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.4 }}
-                    className="text-xl text-gray-600 font-medium mb-10 max-w-2xl mx-auto px-4"
+                    className="text-xl md:text-2xl text-zinc-600 dark:text-zinc-300 font-medium mb-12 max-w-4xl mx-auto px-4 leading-relaxed"
                   >
-                    Join our community of verified influencers and brands and collaborate with nearby  shops, businesses and global brands. Be seen🛸 and get paid💵.
+                    Join our community of <span className="text-violet-600 dark:text-violet-400 font-semibold">verified influencers</span> and <span className="text-blue-600 dark:text-blue-400 font-semibold">brands</span> to collaborate with nearby shops, businesses and global brands.
+                    <span className="block mt-2 text-lg text-zinc-500 dark:text-zinc-400">Be seen 🛸 and get paid 💵</span>
                   </motion.p>
 
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.45 }}
-                    className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12 w-full max-w-2xl mx-auto px-4"
+                    className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-16 w-full max-w-3xl mx-auto px-4"
                   >
-                    <a href="/welcome" className="w-full sm:w-auto">
+                    <a href="/welcome" className="w-full sm:w-auto group">
                       <motion.button
-                        className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium py-4 px-8 rounded-full shadow-lg transition-all duration-200"
-                        whileHover={{ y: -2, boxShadow: "0 10px 25px -5px rgba(124, 58, 237, 0.5)" }}
-                        whileTap={{ y: 1 }}
+                        className="relative w-full bg-gradient-to-r from-violet-600 via-fuchsia-600 to-violet-600 bg-[length:200%_100%] hover:bg-[position:100%_0] text-white font-semibold py-4 px-10 rounded-2xl shadow-2xl shadow-violet-500/25 transition-all duration-500 overflow-hidden"
+                        whileHover={{ y: -3, scale: 1.02 }}
+                        whileTap={{ y: 1, scale: 0.98 }}
                       >
-                        <span className="flex items-center justify-center">
-                          <span className="mr-2 text-lg">Join as Influencer</span>
-                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <span className="relative z-10 flex items-center justify-center">
+                          <Star className="mr-3 h-5 w-5" />
+                          <span className="text-lg">Join as Influencer</span>
+                          <svg className="ml-3 w-5 h-5 group-hover:translate-x-1 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                           </svg>
                         </span>
+                        <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
                       </motion.button>
                     </a>
-                    <a href="/welcome" className="w-full sm:w-auto">
+                    <a href="/welcome" className="w-full sm:w-auto group">
                       <motion.button
-                        className="w-full bg-white border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-50 font-medium py-4 px-8 rounded-full shadow-md transition-all duration-200"
-                        whileHover={{ y: -2 }}
-                        whileTap={{ y: 1 }}
+                        className="relative w-full bg-white dark:bg-zinc-800 border-2 border-violet-200 dark:border-violet-800 text-violet-700 dark:text-violet-300 hover:bg-violet-50 dark:hover:bg-violet-950/50 font-semibold py-4 px-10 rounded-2xl shadow-xl shadow-violet-500/10 transition-all duration-300 overflow-hidden"
+                        whileHover={{ y: -3, scale: 1.02 }}
+                        whileTap={{ y: 1, scale: 0.98 }}
                       >
-                        <span className="flex items-center justify-center">
-                          <span className="mr-2 text-lg">I'm a Brand</span>
-                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <span className="relative z-10 flex items-center justify-center">
+                          <div className="mr-3 w-5 h-5 bg-gradient-to-r from-blue-500 to-violet-500 rounded-full" />
+                          <span className="text-lg">I'm a Brand</span>
+                          <svg className="ml-3 w-5 h-5 group-hover:translate-x-1 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                           </svg>
                         </span>
