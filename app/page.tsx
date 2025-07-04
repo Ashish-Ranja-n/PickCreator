@@ -183,7 +183,7 @@ export default function Home() {
               </div>
 
               <div className="container-custom relative z-10">
-                <div className="text-center max-w-6xl mx-auto pt-8 sm:pt-12 md:pt-16">
+                <div className="text-center max-w-6xl mx-auto pt-8 sm:pt-14 md:pt-16">
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
