@@ -192,19 +192,55 @@ export async function GET(request: NextRequest) {
     }
     
     let deals;
-    
+
     // Filter deals based on user role
     if (userRole === 'Influencer') {
       // For influencers, find deals where they are included in the influencers array
-      deals = await Deal.find({ 
-        "influencers.id": userId.toString() 
+      deals = await Deal.find({
+        "influencers.id": userId.toString()
       }).sort({ createdAt: -1 });
-      
+
       console.log(`Found ${deals.length} deals for influencer ${userId}`);
     } else {
       // For brands, find deals they created
       deals = await Deal.find({ brandId: userId }).sort({ createdAt: -1 });
       console.log(`Found ${deals.length} deals for brand ${userId}`);
+
+      // Populate influencer location data for brand deals
+      if (deals.length > 0) {
+        // Get all influencer IDs from all deals
+        const influencerIds = new Set<string>();
+        deals.forEach((deal: any) => {
+          deal.influencers?.forEach((inf: any) => {
+            if (inf.id) influencerIds.add(inf.id);
+          });
+        });
+
+        // Fetch influencer data including city
+        const influencers = await User.find({
+          _id: { $in: Array.from(influencerIds) }
+        }).select('_id city').lean();
+
+        // Create a map for quick lookup
+        const influencerLocationMap: Record<string, string> = {};
+        influencers.forEach((inf: any) => {
+          if (inf.city) {
+            influencerLocationMap[inf._id.toString()] = inf.city;
+          }
+        });
+
+        // Add location data to deals
+        deals = deals.map((deal: any) => {
+          const dealObj = deal.toObject ? deal.toObject() : deal;
+          if (dealObj.influencers) {
+            dealObj.influencers = dealObj.influencers.map((inf: any) => ({
+              ...inf,
+              city: influencerLocationMap[inf.id] || null
+            }));
+          }
+          return dealObj;
+        });
+      }
     }
     
     return NextResponse.json({ 

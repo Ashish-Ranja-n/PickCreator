@@ -266,6 +266,19 @@
   .container-custom {
     @apply w-full max-w-[1400px] mx-auto px-6 md:px-8 lg:px-12;
   }
+
+  /* Mobile-friendly toast styling */
+  .mobile-toast {
+    @apply max-w-[90vw] sm:max-w-[420px] text-sm;
+  }
+
+  .mobile-toast .toast-title {
+    @apply text-sm font-medium;
+  }
+
+  .mobile-toast .toast-description {
+    @apply text-xs opacity-90;
+  }
 }
 
 /* Animations and transitions */
@@ -582,3 +595,18 @@
 /* Hide horizontal scrollbar for influencer cards */
 .hide-scrollbar::-webkit-scrollbar { display: none; }
 .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Subtle gradient background for deals pages */
+.subtle-gradient-bg {
+  /* Light mode: very subtle white gradient */
+  background: linear-gradient(135deg,
+    #ffffff 0%, #f8f9fa 50%, #ffffff 100%
+  );
+}
+
+.dark .subtle-gradient-bg {
+  /* Dark mode: very subtle black gradient */
+  background: linear-gradient(135deg,
+    #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%
+  );
+}
