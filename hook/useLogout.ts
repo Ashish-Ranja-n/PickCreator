@@ -133,23 +133,16 @@ export const useLogout = (redirectTo = '/log-in') => {
       
       // 9. Reset the page completely
       console.log("Performing full page reset...");
-      if (typeof window !== 'undefined') {
-        // Force a full page reload to clear any in-memory state
-        window.location.href = redirectTo;
-      } else {
-        router.push(redirectTo);
-      }
+     
+        router.replace(redirectTo);
       
       return { success: true };
     } catch (error) {
       console.error('Error during logout:', error);
       
       // Even if logout fails, still redirect
-      if (typeof window !== 'undefined') {
-        window.location.href = redirectTo;
-      } else {
-        router.push(redirectTo);
-      }
+        router.replace(redirectTo);
+      
       
       return { 
         success: false, 

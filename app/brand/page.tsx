@@ -686,7 +686,7 @@ const Brand: NextPage = () => {
   }, [influencers]);
 
   return (
-    <div className="container mx-auto px-4 py-6 pb-16 max-w-7xl flex flex-col min-h-screen overflow-y-auto bg-gradient-to-br from-white via-blue-50 to-purple-50 dark:bg-black scrollbar-hide">
+    <div className="container mx-auto px-4 py-6 pb-16 max-w-7xl flex flex-col min-h-screen overflow-y-auto bg-gradient-to-br from-white via-blue-50 to-purple-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-violet-950/50 scrollbar-hide">
       {/* Header */}
 
 
@@ -699,7 +699,7 @@ const Brand: NextPage = () => {
           Find influencers and make a deal.
         </p>
         </div> }
-      <div className="flex flex-wrap gap-4 mb-8 items-center p-4 bg-white/70 dark:bg-zinc-900/70 rounded-lg shadow-sm">
+      <div className="flex flex-wrap gap-4 mb-8 items-center p-4 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm rounded-xl shadow-lg border border-white/20 dark:border-zinc-700/50">
         {/* City Filter */}
         <div className="flex-1 min-w-[200px]">
           <Popover open={openCityPopover} onOpenChange={setOpenCityPopover}>

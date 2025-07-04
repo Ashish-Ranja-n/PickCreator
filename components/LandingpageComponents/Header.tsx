@@ -120,12 +120,12 @@ const Header: React.FC = () => {
 
       {/* Mobile Menu */}
       <div className={cn(
-        "fixed inset-0 z-40 lg:hidden transition-all duration-300 ease-out",
+        "fixed inset-0 z-[60] lg:hidden transition-all duration-300 ease-out",
         isMobileMenuOpen ? "opacity-100 visible" : "opacity-0 invisible"
       )}>
-        <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)} />
+        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)} />
         <div className={cn(
-          "absolute top-0 right-0 h-full w-80 max-w-[85vw] bg-white dark:bg-zinc-900 shadow-2xl transition-transform duration-300 ease-out",
+          "absolute top-0 right-0 h-full w-80 max-w-[85vw] bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl shadow-2xl border-l border-zinc-200/50 dark:border-zinc-700/50 transition-transform duration-300 ease-out",
           isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
         )}>
           <div className="flex flex-col h-full">

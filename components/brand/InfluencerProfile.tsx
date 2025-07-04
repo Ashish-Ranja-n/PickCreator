@@ -60,7 +60,7 @@ const InfluencerProfile: React.FC<InfluencerProfileProps> = ({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
-      className="fixed inset-0 z-[120] flex items-end md:items-center justify-center bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-[120] flex items-end md:items-center justify-center bg-black/70 backdrop-blur-sm"
       style={{ pointerEvents: 'auto' }}
     >
       <motion.div
@@ -68,11 +68,11 @@ const InfluencerProfile: React.FC<InfluencerProfileProps> = ({
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 40 }}
         transition={{ type: 'spring', stiffness: 300, damping: 30, mass: 0.8 }}
-        className="w-full h-full bg-white rounded-none md:rounded-2xl shadow-2xl overflow-y-auto flex flex-col"
+        className="w-full h-full bg-white dark:bg-zinc-900 rounded-none md:rounded-2xl shadow-2xl overflow-y-auto flex flex-col border border-zinc-200 dark:border-zinc-700"
         style={{ zIndex: 130 }}
       >
         {/* Header - mobile style, sticky, with avatar */}
-        <div className="sticky top-0 z-20 bg-white/95 backdrop-blur-lg border-b flex items-center px-4 py-3 md:py-4 md:px-6 shadow-sm">
+        <div className="sticky top-0 z-20 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-lg border-b border-zinc-200 dark:border-zinc-700 flex items-center px-4 py-3 md:py-4 md:px-6 shadow-sm">
           <div className="flex items-center gap-3 flex-1 min-w-0">
             <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-blue-200 shadow-md flex-shrink-0">
               {selectedInfluencer.profilePictureUrl ? (
@@ -85,14 +85,14 @@ const InfluencerProfile: React.FC<InfluencerProfileProps> = ({
                   unoptimized={isInstagramUrl(selectedInfluencer.profilePictureUrl)}
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center bg-gray-200 text-2xl font-bold text-blue-600">
+                <div className="w-full h-full flex items-center justify-center bg-gray-200 dark:bg-zinc-700 text-2xl font-bold text-blue-600 dark:text-blue-400">
                   {selectedInfluencer.name.charAt(0)}
                 </div>
               )}
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
-                <span className="text-lg md:text-2xl font-bold text-gray-900 truncate">{selectedInfluencer.name}</span>
+                <span className="text-lg md:text-2xl font-bold text-gray-900 dark:text-white truncate">{selectedInfluencer.name}</span>
                 {selectedInfluencer.instagramUsername && (
                   <a
                     href={`https://instagram.com/${selectedInfluencer.instagramUsername}`}
@@ -104,8 +104,8 @@ const InfluencerProfile: React.FC<InfluencerProfileProps> = ({
                   </a>
                 )}
               </div>
-              <div className="flex items-center gap-1 text-xs text-gray-500 mt-1">
-                <MapPin className="w-4 h-4 text-blue-500" />
+              <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-zinc-400 mt-1">
+                <MapPin className="w-4 h-4 text-blue-500 dark:text-blue-400" />
                 <span className="truncate font-medium">{selectedInfluencer.city}</span>
               </div>
             </div>
@@ -114,33 +114,33 @@ const InfluencerProfile: React.FC<InfluencerProfileProps> = ({
             variant="ghost"
             size="icon"
             onClick={() => setSelectedInfluencer(null)}
-            className="ml-2 h-9 w-9 rounded-full hover:bg-gray-100"
+            className="ml-2 h-9 w-9 rounded-full hover:bg-gray-100 dark:hover:bg-zinc-700 text-gray-600 dark:text-zinc-400"
           >
             <XIcon className="h-5 w-5" />
           </Button>
         </div>
 
         {/* Main content - scrollable */}
-        <div className="flex-1 overflow-y-auto px-4 md:px-8 py-4 md:py-6">
+        <div className="flex-1 overflow-y-auto px-4 md:px-8 py-4 md:py-6 bg-gray-50 dark:bg-zinc-800/30">
           {/* Metrics row */}
           <div className="flex justify-between items-center mb-4 gap-2">
             <div className="flex flex-col items-center flex-1">
-              <span className="text-xs text-gray-500 flex items-center gap-1 mb-1">
-                <Users className="w-3 h-3 text-blue-500" /> Followers
+              <span className="text-xs text-gray-500 dark:text-zinc-400 flex items-center gap-1 mb-1">
+                <Users className="w-3 h-3 text-blue-500 dark:text-blue-400" /> Followers
               </span>
-              <span className="font-semibold text-blue-700 text-lg">{formatCompactNumber(selectedInfluencer.followers || 0)}</span>
+              <span className="font-semibold text-blue-700 dark:text-blue-300 text-lg">{formatCompactNumber(selectedInfluencer.followers || 0)}</span>
             </div>
             <div className="flex flex-col items-center flex-1">
-              <span className="text-xs text-gray-500 flex items-center gap-1 mb-1">
-                <Zap className="w-3 h-3 text-purple-500" /> Avg. Views
+              <span className="text-xs text-gray-500 dark:text-zinc-400 flex items-center gap-1 mb-1">
+                <Zap className="w-3 h-3 text-purple-500 dark:text-purple-400" /> Avg. Views
               </span>
-              <span className="font-semibold text-purple-700 text-lg">{formatCompactNumber(selectedInfluencer.instagramAnalytics?.avgReelViews || 0)}</span>
+              <span className="font-semibold text-purple-700 dark:text-purple-300 text-lg">{formatCompactNumber(selectedInfluencer.instagramAnalytics?.avgReelViews || 0)}</span>
             </div>
             <div className="flex flex-col items-center flex-1">
-              <span className="text-xs text-gray-500 flex items-center gap-1 mb-1">
-                <Heart className="w-3 h-3 text-pink-500" /> Avg. Likes
+              <span className="text-xs text-gray-500 dark:text-zinc-400 flex items-center gap-1 mb-1">
+                <Heart className="w-3 h-3 text-pink-500 dark:text-pink-400" /> Avg. Likes
               </span>
-              <span className="font-semibold text-pink-700 text-lg">{formatCompactNumber(selectedInfluencer.instagramAnalytics?.avgReelLikes || 0)}</span>
+              <span className="font-semibold text-pink-700 dark:text-pink-300 text-lg">{formatCompactNumber(selectedInfluencer.instagramAnalytics?.avgReelLikes || 0)}</span>
             </div>
           </div>
 
@@ -325,7 +325,7 @@ const InfluencerProfile: React.FC<InfluencerProfileProps> = ({
         </div>
 
         {/* Footer with Close button - sticky for mobile */}
-        <div className="sticky bottom-0 bg-white/95 backdrop-blur-lg border-t shadow-md py-3 px-4 flex justify-center gap-2 z-10">
+        <div className="sticky bottom-0 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-lg border-t border-zinc-200 dark:border-zinc-700 shadow-md py-3 px-4 flex justify-center gap-2 z-10">
           {isCampaignMode && (
             <Button
               variant={selectedInfluencers.some((inf) => inf.id === selectedInfluencer.id) ? "default" : "outline"}

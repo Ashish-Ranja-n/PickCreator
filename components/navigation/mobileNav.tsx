@@ -14,8 +14,8 @@ const MobileNav = () => {
   const navClass = cn(
     "lg:hidden fixed bottom-4 left-1/2 -translate-x-1/2 w-[95vw] max-w-md z-50 rounded-2xl px-3 py-2 flex justify-between items-center backdrop-blur-xl border transition-all duration-300",
     isDarkMode
-      ? "bg-zinc-900/95 border-zinc-700/50 shadow-2xl shadow-black/20"
-      : "bg-white/95 border-zinc-200/50 shadow-2xl shadow-black/10"
+      ? "bg-zinc-900/95 border-zinc-700/60 shadow-2xl shadow-black/30 ring-1 ring-zinc-600/20"
+      : "bg-white/95 border-zinc-200/60 shadow-2xl shadow-black/15 ring-1 ring-zinc-200/30"
   );
   const navInnerClass = cn(
     "flex w-full justify-between items-center h-14",
@@ -37,25 +37,25 @@ const MobileNav = () => {
           const isDealTab = label === "Deals";
           const tabClass = "flex-1 flex flex-col items-center justify-center relative group";
           const iconWrapClass = cn(
-            "relative flex items-center justify-center w-11 h-11 rounded-xl shadow-lg border transition-all duration-300 ease-out",
+            "relative flex items-center justify-center w-12 h-12 rounded-full shadow-lg border transition-all duration-300 ease-out",
             isActive
               ? isDarkMode
-                ? "border-violet-400/50 bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 shadow-violet-500/25 -translate-y-1 scale-105"
-                : "border-violet-400/50 bg-gradient-to-br from-violet-50 to-fuchsia-50 shadow-violet-500/25 -translate-y-1 scale-105"
+                ? "border-violet-400/60 bg-gradient-to-br from-violet-500/30 to-fuchsia-500/30 shadow-violet-500/40 -translate-y-1 scale-110 ring-2 ring-violet-400/20"
+                : "border-violet-400/60 bg-gradient-to-br from-violet-100 to-fuchsia-100 shadow-violet-500/40 -translate-y-1 scale-110 ring-2 ring-violet-400/20"
               : isDarkMode
-                ? "bg-zinc-800/80 border-zinc-700/50 hover:border-violet-400/30 hover:bg-gradient-to-br hover:from-violet-500/10 hover:to-fuchsia-500/10 hover:shadow-lg hover:shadow-violet-500/10"
-                : "bg-white/80 border-zinc-200/50 hover:border-violet-400/30 hover:bg-gradient-to-br hover:from-violet-50/50 hover:to-fuchsia-50/50 hover:shadow-lg hover:shadow-violet-500/10"
+                ? "bg-zinc-800/90 border-zinc-600/60 hover:border-violet-400/40 hover:bg-gradient-to-br hover:from-violet-500/15 hover:to-fuchsia-500/15 hover:shadow-xl hover:shadow-violet-500/20 hover:scale-105"
+                : "bg-white/90 border-zinc-300/60 hover:border-violet-400/40 hover:bg-gradient-to-br hover:from-violet-50/70 hover:to-fuchsia-50/70 hover:shadow-xl hover:shadow-violet-500/20 hover:scale-105"
           );
           const iconSize = 22;
           const iconClass = cn(
             "transition-all duration-300 z-10",
             isActive
               ? isDarkMode
-                ? "text-violet-300"
-                : "text-violet-600"
+                ? "text-violet-200 drop-shadow-sm"
+                : "text-violet-700 drop-shadow-sm"
               : isDarkMode
-                ? "text-zinc-400 group-hover:text-violet-300"
-                : "text-zinc-600 group-hover:text-violet-600"
+                ? "text-zinc-300 group-hover:text-violet-200"
+                : "text-zinc-700 group-hover:text-violet-700"
           );
           const labelClass = cn(
             "text-xs font-semibold mt-1 transition-all duration-300 z-10 tracking-wide",
