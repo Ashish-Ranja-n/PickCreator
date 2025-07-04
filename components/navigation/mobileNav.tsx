@@ -17,10 +17,7 @@ const MobileNav = () => {
       ? "bg-zinc-900/95 border-zinc-700/60 shadow-2xl shadow-black/30 ring-1 ring-zinc-600/20"
       : "bg-white/95 border-zinc-200/60 shadow-2xl shadow-black/15 ring-1 ring-zinc-200/30"
   );
-  const navInnerClass = cn(
-    "flex w-full justify-between items-center h-14",
-    isDarkMode ? "dark" : ""
-  );
+  const navInnerClass = "flex w-full justify-between items-center h-14";
 
   const tabs = [
     { icon: Home, label: "Home", path: "/brand" },

@@ -136,9 +136,9 @@ export default function WelcomeAuthPage() {
           router.push("/pickRole");
         } else {
           if (data.user?.role === "Brand") {
-            window.location.href = "/brand?success=true";
+            window.location.replace("/brand");
           } else if (data.user?.role === "Influencer") {
-            window.location.href = "/influencer?success=true";
+            window.location.replace("/influencer");
           } else {
             router.push("/");
           }
@@ -163,9 +163,9 @@ export default function WelcomeAuthPage() {
           router.push("/pickRole");
         } else {
           if (data.user?.role === "Brand") {
-            window.location.href = "/brand?success=true";
+            window.location.replace("/brand");
           } else if (data.user?.role === "Influencer") {
-            window.location.href = "/influencer?success=true";
+            window.location.replace("/influencer");
           } else {
             router.push("/");
           }
