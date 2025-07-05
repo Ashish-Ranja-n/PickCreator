@@ -33,7 +33,7 @@ export const viewport: Viewport = {
   maximumScale: 1,
   minimumScale: 1,
   userScalable: false,
-  themeColor: '#ffffff',
+  themeColor: '#fafafa', // Subtle light shade instead of pure white
 };
 
 export const metadata: Metadata = {
@@ -66,7 +66,7 @@ export const metadata: Metadata = {
     'apple-mobile-web-app-capable': 'yes',
     'application-name': 'PickCreator',
     'apple-mobile-web-app-status-bar-style': 'default',
-    'msapplication-TileColor': '#ffffff',
+    'msapplication-TileColor': '#fafafa', // Subtle light shade
   },
 };
 
@@ -85,9 +85,55 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="PickCreator" />
         <meta name="format-detection" content="telephone=no" />
-        <meta name="msapplication-TileColor" content="#ffffff" />
-        <meta name="theme-color" content="#ffffff" />
+        <meta name="msapplication-TileColor" content="#fafafa" />
+        <meta name="theme-color" content="#fafafa" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        {/* Immediate theme restoration script */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  // Immediate restoration from sessionStorage
+                  const cachedColor = sessionStorage.getItem('current-theme-color');
+                  const cachedStyle = sessionStorage.getItem('current-status-bar-style');
+
+                  if (cachedColor && cachedStyle) {
+                    const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+                    if (themeColorMeta) themeColorMeta.setAttribute('content', cachedColor);
+
+                    const statusBarMeta = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
+                    if (statusBarMeta) statusBarMeta.setAttribute('content', cachedStyle);
+
+                    document.documentElement.style.setProperty('--theme-color', cachedColor);
+                  } else {
+                    // Fallback: detect theme from localStorage or system preference
+                    const theme = localStorage.getItem('theme') || 'light';
+                    const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    const isDark = theme === 'dark' || (theme === 'system' && systemDark);
+                    const themeColor = isDark ? '#0a0a0a' : '#fafafa';
+                    const statusBarStyle = isDark ? 'black-translucent' : 'default';
+
+                    const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+                    if (themeColorMeta) themeColorMeta.setAttribute('content', themeColor);
+
+                    const statusBarMeta = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
+                    if (statusBarMeta) statusBarMeta.setAttribute('content', statusBarStyle);
+
+                    document.documentElement.style.setProperty('--theme-color', themeColor);
+
+                    // Cache for next time
+                    sessionStorage.setItem('current-theme-color', themeColor);
+                    sessionStorage.setItem('current-status-bar-style', statusBarStyle);
+                  }
+                } catch (e) {
+                  // Silently fail if sessionStorage is not available
+                }
+              })();
+            `,
+          }}
+        />
       </head>
 
       <body
