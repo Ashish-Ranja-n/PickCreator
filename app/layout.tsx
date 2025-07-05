@@ -66,6 +66,7 @@ export const metadata: Metadata = {
     'apple-mobile-web-app-capable': 'yes',
     'application-name': 'PickCreator',
     'apple-mobile-web-app-status-bar-style': 'default',
+    'msapplication-TileColor': '#ffffff',
   },
 };
 

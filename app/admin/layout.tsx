@@ -1,6 +1,6 @@
 'use client';
 
-import React from "react";
+import React, { useMemo } from "react";
 import NotificationPermissionPrompt from "@/components/NotificationPermissionPrompt";
 import { isPWAInstalled } from "@/utils/registerServiceWorker";
 import { usePathname } from "next/navigation";
@@ -9,16 +9,18 @@ import { AuthGuard } from "@/components/AuthGuard";
 import AdminDesktopNav from "@/components/elements/adminElements/desktopNavAdmin";
 import AdminMobileNav from "@/components/elements/adminElements/mobileNavAdmin";
 import Navbar from "@/components/navbar(inside)/navbar";
+import { ThemeContextProvider, useThemeContext } from "@/context/ThemeContext";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
 }
 
-
-const AdminLayout: React.FC<AdminLayoutProps> = React.memo((props) => {
+// Inner component that uses the theme context
+const AdminLayoutInner: React.FC<AdminLayoutProps> = React.memo((props) => {
   const pathname = usePathname();
-  const hideNavbar = pathname?.startsWith("/admin/chat/") || false;
+  const hideNavbar = useMemo(() => pathname?.startsWith("/admin/chat/") || false, [pathname]);
   const isMobile = UseIsMobile();
+  const { isDarkMode } = useThemeContext();
   const [showPrompt, setShowPrompt] = React.useState(false);
 
   React.useEffect(() => {
@@ -29,7 +31,8 @@ const AdminLayout: React.FC<AdminLayoutProps> = React.memo((props) => {
     }
   }, []);
 
-  const layoutContent = React.useMemo(() => (
+  // Memoize the layout based on hideNavbar, isMobile, and theme
+  const layoutContent = useMemo(() => (
     <AuthGuard requiredRole="Admin">
       {isMobile && !hideNavbar && <Navbar />}
       <div className="bg-background">
@@ -41,10 +44,21 @@ const AdminLayout: React.FC<AdminLayoutProps> = React.memo((props) => {
       </div>
       {!hideNavbar && <AdminMobileNav />}
     </AuthGuard>
-  ), [hideNavbar, isMobile, props.children, showPrompt]);
+  ), [hideNavbar, isMobile, props.children, isDarkMode, showPrompt]);
 
   return layoutContent;
 });
+
+AdminLayoutInner.displayName = 'AdminLayoutInner';
+
+// Wrapper component that provides the theme context
+const AdminLayout: React.FC<AdminLayoutProps> = (props) => {
+  return (
+    <ThemeContextProvider>
+      <AdminLayoutInner {...props} />
+    </ThemeContextProvider>
+  );
+};
 
 AdminLayout.displayName = 'AdminLayout';
 
