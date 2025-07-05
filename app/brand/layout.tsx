@@ -5,19 +5,21 @@ import Navbar from "@/components/navbar(inside)/navbar";
 import NotificationPermissionPrompt from "@/components/NotificationPermissionPrompt";
 import { isPWAInstalled } from "@/utils/registerServiceWorker";
 import { UseIsMobile } from "@/utils/detectors";
-import React from "react";
+import React, { useMemo } from "react";
 import { usePathname } from "next/navigation";
 import { AuthGuard } from "@/components/AuthGuard";
+import { ThemeContextProvider, useThemeContext } from "@/context/ThemeContext";
   
 interface BrandLayoutProps {
   children: React.ReactNode;
 }
 
-
-const BrandLayout: React.FC<BrandLayoutProps> = (props) => {
-  const isMobile = UseIsMobile();
+// Inner component that uses the theme context
+const BrandLayoutInner: React.FC<BrandLayoutProps> = React.memo((props) => {
   const pathname = usePathname();
-  const hideNavbar = pathname?.startsWith("/brand/chat/") || pathname?.startsWith("/brand/edit-profile") || pathname?.startsWith("/brand/onboarding") || false;
+  const hideNavbar = useMemo(() => pathname?.startsWith("/brand/chat/") || pathname?.startsWith("/brand/edit-profile") || pathname?.startsWith("/brand/onboarding") || false, [pathname]);
+  const isMobile = UseIsMobile();
+  const { isDarkMode } = useThemeContext();
   const [showPrompt, setShowPrompt] = React.useState(false);
 
   React.useEffect(() => {
@@ -28,7 +30,8 @@ const BrandLayout: React.FC<BrandLayoutProps> = (props) => {
     }
   }, []);
 
-  return (
+  // Memoize the layout based on hideNavbar, isMobile, and theme
+  const layoutContent = useMemo(() => (
     <AuthGuard requiredRole="Brand">
       {isMobile && !hideNavbar && <Navbar />}
       <div className="bg-background">
@@ -40,7 +43,22 @@ const BrandLayout: React.FC<BrandLayoutProps> = (props) => {
       </div>
       {!hideNavbar && <MobileNav />}
     </AuthGuard>
-  );
-}
+  ), [hideNavbar, isMobile, props.children, isDarkMode, showPrompt]);
 
-export default BrandLayout
+  return layoutContent;
+});
+
+BrandLayoutInner.displayName = 'BrandLayoutInner';
+
+// Wrapper component that provides the theme context
+const BrandLayout: React.FC<BrandLayoutProps> = (props) => {
+  return (
+    <ThemeContextProvider>
+      <BrandLayoutInner {...props} />
+    </ThemeContextProvider>
+  );
+};
+
+BrandLayout.displayName = 'BrandLayout';
+
+export default BrandLayout;

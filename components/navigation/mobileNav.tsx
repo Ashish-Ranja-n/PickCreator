@@ -4,7 +4,6 @@ import { Home, ShoppingBag, MessageCircle, User2 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useMemo } from "react";
-import { motion } from "framer-motion";
 import { useDealStatusDot } from "@/hook/useDealStatusDot";
 import { useThemeContext } from "@/context/ThemeContext";
 

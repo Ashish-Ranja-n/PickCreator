@@ -1,24 +1,21 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
-import { Loader2, Plus, Pin, Trash2, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Loader2, Plus, Pin, Trash2, AlertCircle } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns/formatDistanceToNow';
-import { MarqueeText } from './MarqueeText';
 import { useCurrentUser } from '@/hook/useCurrentUser';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
-  DialogTrigger
+  DialogFooter
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface Notice {
   _id: string;
@@ -40,18 +37,8 @@ export default function AnalyticsTab() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [open, setOpen] = useState(false);
   const [isPinned, setIsPinned] = useState(false);
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  // New: controls whether to show heading or content in marquee area
-  const [showHeading, setShowHeading] = useState(true);
-  const headingTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [verifiedInfluencers, setVerifiedInfluencers] = useState<any[]>([]);
   const [loadingInfluencers, setLoadingInfluencers] = useState(true);
-  const slideInterval = useRef<ReturnType<typeof setInterval> | null>(null);
-  const slideContainer = useRef<HTMLDivElement>(null);
-  const touchStart = useRef<number>(0);
-  const touchEnd = useRef<number>(0);
   const { toast } = useToast();
   const currentUser = useCurrentUser();
   const isAdmin = currentUser?.role === 'Admin';
@@ -172,118 +159,7 @@ export default function AnalyticsTab() {
     }
   };
 
-  const handleSlideTransition = useCallback(() => {
-    setIsTransitioning(true);
-    setTimeout(() => setIsTransitioning(false), 500);
-  }, []);
 
-  const handlePrevSlide = useCallback(() => {
-    if (!isTransitioning) {
-      setCurrentSlide((prev) => (prev - 1 + notices.length) % notices.length);
-      handleSlideTransition();
-    }
-  }, [notices.length, isTransitioning, handleSlideTransition]);
-
-  const handleNextSlide = useCallback(() => {
-    if (!isTransitioning) {
-      setCurrentSlide((prev) => (prev + 1) % notices.length);
-      handleSlideTransition();
-    }
-  }, [notices.length, isTransitioning, handleSlideTransition]);
-
-  // Touch event handlers
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    touchStart.current = e.touches[0].clientX;
-  }, []);
-
-  const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    touchEnd.current = e.touches[0].clientX;
-  }, []);
-
-  const handleTouchEnd = useCallback(() => {
-    const swipeDistance = touchStart.current - touchEnd.current;
-    if (Math.abs(swipeDistance) > 100) { // Minimum swipe distance
-      if (swipeDistance > 0) {
-        handleNextSlide();
-      } else {
-        handlePrevSlide();
-      }
-    }
-    // Reset touch values
-    touchStart.current = 0;
-    touchEnd.current = 0;
-  }, [handleNextSlide, handlePrevSlide]);
-
-  // Keyboard navigation
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowLeft') {
-        handlePrevSlide();
-      } else if (e.key === 'ArrowRight') {
-        handleNextSlide();
-      } else if (e.key === 'Space') {
-        e.preventDefault(); // Prevent page scroll
-        setIsPaused(prev => !prev);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handlePrevSlide, handleNextSlide]);
-
-  // Auto-slide setup with pause functionality and heading/content toggle
-  useEffect(() => {
-    // Clear any previous intervals/timeouts
-    if (slideInterval.current) {
-      clearInterval(slideInterval.current);
-      slideInterval.current = null;
-    }
-    if (headingTimeout.current) {
-      clearTimeout(headingTimeout.current);
-      headingTimeout.current = null;
-    }
-
-    if (notices.length > 0 && !isPaused) {
-      // Show heading first
-      setShowHeading(true);
-      // After 2.5s, show content
-      headingTimeout.current = setTimeout(() => {
-        setShowHeading(false);
-        // Start auto-slide interval only when content is showing
-        if (notices.length > 1) {
-          slideInterval.current = setInterval(() => {
-            setShowHeading(true); // Show heading for next slide
-            setCurrentSlide((prev) => (prev + 1) % notices.length);
-          }, 5000);
-        }
-      }, 2500);
-    }
-
-    return () => {
-      if (slideInterval.current) {
-        clearInterval(slideInterval.current);
-        slideInterval.current = null;
-      }
-      if (headingTimeout.current) {
-        clearTimeout(headingTimeout.current);
-        headingTimeout.current = null;
-      }
-    };
-  }, [notices.length, isPaused, currentSlide]);
-
-  // Reset interval on manual navigation
-  const resetInterval = () => {
-    if (slideInterval.current) {
-      clearInterval(slideInterval.current);
-      slideInterval.current = null;
-    }
-    if (headingTimeout.current) {
-      clearTimeout(headingTimeout.current);
-      headingTimeout.current = null;
-    }
-    // When manually navigating, always show heading first
-    setShowHeading(true);
-  };
 
   // Initial fetch
   useEffect(() => {
@@ -329,90 +205,68 @@ export default function AnalyticsTab() {
 
   return (
     <div className="min-h-screen px-2 sm:px-6 py-10 bg-white dark:bg-black transition-colors">
-      {/* Notice Board Section */}
-      <section className="mb-8 w-full max-w-2xl mx-auto">
+      {/* Notice Board Section - Mobile-First Compact Design */}
+      <section className="mb-6 w-full max-w-2xl mx-auto">
         <div className="flex items-center justify-between mb-2 px-1">
-          <h2 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-fuchsia-400 to-violet-400 bg-clip-text text-transparent tracking-tight">Notice Board</h2>
+          <h2 className="text-base sm:text-lg font-bold bg-gradient-to-r from-fuchsia-400 to-violet-400 bg-clip-text text-transparent tracking-tight">Notice Board</h2>
           {isAdmin && (
             <Button
               onClick={() => setOpen(true)}
-              className="bg-gray-100 hover:bg-gray-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-gray-800 dark:text-white font-semibold px-4 py-1.5 rounded-lg shadow-md text-sm sm:text-base border border-gray-200 dark:border-zinc-700"
+              className="bg-gray-100 hover:bg-gray-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-gray-800 dark:text-white font-medium px-2 py-1 rounded-lg shadow-sm text-xs border border-gray-200 dark:border-zinc-700"
             >
-              <Plus className="mr-1 h-4 w-4" /> Add Notice
+              <Plus className="mr-1 h-3 w-3" /> Add
             </Button>
           )}
         </div>
-        <div className="relative w-full flex flex-col items-center">
-          {loading ? (
-            <div className="flex justify-center items-center h-16 bg-white dark:bg-zinc-900 rounded-xl shadow-md w-full">
-              <Loader2 className="h-7 w-7 animate-spin text-fuchsia-500 dark:text-white" />
+
+        {loading ? (
+          <div className="flex justify-center items-center h-16 bg-white dark:bg-zinc-900 rounded-xl shadow-sm w-full">
+            <Loader2 className="h-5 w-5 animate-spin text-fuchsia-500 dark:text-white" />
+          </div>
+        ) : notices.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-16 bg-white dark:bg-zinc-900 rounded-xl shadow-sm w-full">
+            <AlertCircle className="h-5 w-5 text-blue-400 dark:text-zinc-500 mb-1" />
+            <p className="text-xs text-gray-500 dark:text-zinc-400">No updates yet</p>
+          </div>
+        ) : (
+          <div className="relative">
+            {/* Horizontal Scrollable Notice Cards */}
+            <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2 snap-x snap-mandatory">
+              {/* Pinned Notices First */}
+              {notices
+                .filter(notice => notice.isPinned)
+                .map((notice) => (
+                  <CompactNoticeCard key={notice._id} notice={notice} isPinned={true} isAdmin={isAdmin} onDelete={deleteNotice} />
+                ))}
+
+              {/* Regular Notices */}
+              {notices
+                .filter(notice => !notice.isPinned)
+                .map((notice) => (
+                  <CompactNoticeCard key={notice._id} notice={notice} isPinned={false} isAdmin={isAdmin} onDelete={deleteNotice} />
+                ))}
             </div>
-          ) : notices.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-16 bg-white dark:bg-zinc-900 rounded-xl shadow-md w-full">
-              <AlertCircle className="h-8 w-8 text-blue-400 dark:text-zinc-500 mb-1" />
-              <p className="text-sm text-gray-500 dark:text-zinc-400">No updates yet</p>
-            </div>
-          ) : (
-            <div className="relative w-full flex items-center bg-white dark:bg-zinc-900 rounded-xl shadow-lg border border-gray-200 dark:border-zinc-800 h-24 sm:h-28 px-2 sm:px-6 overflow-hidden">
-              {/* Prev Button */}
-              {notices.length > 1 && (
-                <button
-                  className="absolute left-1 sm:left-2 z-10 p-1 rounded-full bg-white dark:bg-zinc-800 hover:bg-gray-100 dark:hover:bg-zinc-700 transition"
-                  onClick={() => { handlePrevSlide(); resetInterval(); }}
-                  aria-label="Previous notice"
-                  style={{ top: '50%', transform: 'translateY(-50%)' }}
-                >
-                  <ChevronLeft className="h-4 w-4 text-gray-700 dark:text-white" />
-                </button>
-              )}
-              {/* Notice Marquee - now alternates heading and content */}
-              <div className="flex-1 flex flex-col items-center justify-center h-full select-none min-w-0">
-                {showHeading ? (
-                  <div className="flex items-center gap-3 w-full min-w-0 justify-center">
-                    <span className="font-extrabold text-xl sm:text-2xl text-gray-900 dark:text-white truncate max-w-[320px] sm:max-w-[480px]">
-                      {notices[currentSlide]?.title}
-                    </span>
-                    {notices[currentSlide]?.isPinned && (
-                      <Pin className="h-5 w-5 text-gray-700 dark:text-zinc-400" />
+
+            {/* Notice Count Indicator */}
+            {notices.length > 1 && (
+              <div className="flex justify-center mt-2">
+                <div className="flex items-center gap-1 bg-gray-100 dark:bg-zinc-800 rounded-full px-2 py-1">
+                  <div className="flex gap-1">
+                    {notices.slice(0, Math.min(notices.length, 5)).map((_, index) => (
+                      <div
+                        key={index}
+                        className="w-1.5 h-1.5 rounded-full bg-gray-400 dark:bg-zinc-600"
+                      />
+                    ))}
+                    {notices.length > 5 && (
+                      <span className="text-xs text-gray-500 dark:text-zinc-400 ml-1">+{notices.length - 5}</span>
                     )}
                   </div>
-                ) : (
-                  <div className="w-full flex items-center justify-center">
-                    <span className="font-semibold text-lg sm:text-xl text-gray-800 dark:text-white max-w-[90%]">
-                      <MarqueeText 
-                        text={notices[currentSlide]?.content || ''} 
-                        speed={40}
-                      />
-                    </span>
-                  </div>
-                )}
+                </div>
               </div>
-              {/* Delete button for admin */}
-              {isAdmin && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-2 top-2 text-gray-700 dark:text-white hover:text-red-500"
-                  onClick={() => deleteNotice(notices[currentSlide]._id)}
-                  aria-label="Delete notice"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              )}
-              {/* Next Button */}
-              {notices.length > 1 && (
-                <button
-                  className="absolute right-1 sm:right-2 z-10 p-1 rounded-full bg-white dark:bg-zinc-800 hover:bg-gray-100 dark:hover:bg-zinc-700 transition"
-                  onClick={() => { handleNextSlide(); resetInterval(); }}
-                  aria-label="Next notice"
-                  style={{ top: '50%', transform: 'translateY(-50%)' }}
-                >
-                  <ChevronRight className="h-4 w-4 text-gray-700 dark:text-white" />
-                </button>
-              )}
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
       </section>
       {/* Dialog for creating new notice */}
       <Dialog open={open} onOpenChange={setOpen}>
@@ -475,8 +329,8 @@ export default function AnalyticsTab() {
           <div className="text-center text-gray-700 dark:text-zinc-400 text-base">No verified influencers found.</div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 w-full max-w-3xl mx-auto">
-            {shuffledInfluencers.map((influencer, idx) => (
-              <InfluencerFlatBlock key={influencer._id} influencer={influencer} index={idx} />
+            {shuffledInfluencers.map((influencer) => (
+              <InfluencerFlatBlock key={influencer._id} influencer={influencer} />
             ))}
           </div>
         )}
@@ -485,25 +339,85 @@ export default function AnalyticsTab() {
   );
 }
 
-// ...existing code...
+// Compact Notice Card Component for Mobile-First Horizontal Scrolling
+interface CompactNoticeCardProps {
+  notice: Notice;
+  isPinned: boolean;
+  isAdmin: boolean;
+  onDelete: (id: string) => void;
+}
+
+function CompactNoticeCard({ notice, isPinned, isAdmin, onDelete }: CompactNoticeCardProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const contentPreview = notice.content.length > 80 ? notice.content.slice(0, 80) + '...' : notice.content;
+  const needsExpansion = notice.content.length > 80;
+
+  return (
+    <div className={`relative group flex-shrink-0 w-72 sm:w-80 bg-white dark:bg-zinc-900 rounded-xl border transition-all duration-200 hover:shadow-lg snap-start ${
+      isPinned
+        ? 'border-amber-300 dark:border-amber-700/50 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 shadow-amber-100 dark:shadow-amber-900/20'
+        : 'border-gray-200 dark:border-zinc-800 hover:border-gray-300 dark:hover:border-zinc-700'
+    }`}>
+      {/* Pin indicator */}
+      {isPinned && (
+        <div className="absolute top-2 right-2 z-10">
+          <Pin className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
+        </div>
+      )}
+
+      {/* Delete button for admin */}
+      {isAdmin && (
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity text-gray-500 hover:text-red-500 h-6 w-6"
+          onClick={() => onDelete(notice._id)}
+          aria-label="Delete notice"
+        >
+          <Trash2 className="h-3 w-3" />
+        </Button>
+      )}
+
+      <div className="p-3">
+        {/* Header */}
+        <div className="mb-2">
+          <h3 className="font-semibold text-sm text-gray-900 dark:text-white line-clamp-1 pr-6">
+            {notice.title}
+          </h3>
+          <div className="flex items-center gap-1 mt-1">
+            <span className="text-xs text-gray-500 dark:text-zinc-400 truncate">
+              {notice.createdBy.name}
+            </span>
+            <span className="text-xs text-gray-400 dark:text-zinc-500">•</span>
+            <span className="text-xs text-gray-500 dark:text-zinc-400">
+              {formatDistanceToNow(new Date(notice.createdAt), { addSuffix: true })}
+            </span>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="text-xs text-gray-700 dark:text-zinc-300 leading-relaxed">
+          <div className={isExpanded ? '' : 'line-clamp-3'}>
+            {isExpanded ? notice.content : contentPreview}
+          </div>
+          {needsExpansion && (
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="mt-1 text-fuchsia-600 dark:text-fuchsia-400 hover:text-fuchsia-700 dark:hover:text-fuchsia-300 font-medium text-xs"
+            >
+              {isExpanded ? 'Less' : 'More'}
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 // Flat, minimal influencer block with improved design and dark mode
-function InfluencerFlatBlock({ influencer, index }: { influencer: any, index: number }) {
+function InfluencerFlatBlock({ influencer }: { influencer: any }) {
   const instaUrl = influencer.instagramUsername ? `https://instagram.com/${influencer.instagramUsername}` : undefined;
-  // Appealing, soft colors for both modes
-  const pastelColors = [
-    '#f7fafc', '#e3e6ea', '#f0f4ef', '#f9f9f9', '#f6f8fa', '#e3e6ea', '#f5f7fa', '#f3f8f2',
-    '#f8f6fa', '#eaf2fb', '#f6faff', '#f9f6fa', '#f6f9fa', '#f8f6f9', '#f6f8fa', '#f3f7fa'
-  ];
-  const darkPastelColors = [
-    '#18181b', '#27272a', '#18181b', '#27272a', '#18181b', '#27272a', '#18181b', '#27272a',
-    '#18181b', '#27272a', '#18181b', '#27272a', '#18181b', '#27272a', '#18181b', '#27272a'
-  ];
-  const borderColor = typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches
-    ? '#27272a' : '#b0b8c1';
-  const bg = typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches
-    ? darkPastelColors[index % darkPastelColors.length]
-    : pastelColors[index % pastelColors.length];
+
   // Use a larger image size, similar to the original vertical card (full width, aspect-square)
   return (
     <div className="flex flex-row items-start min-w-[340px] max-w-[500px] w-full mx-1 transition-transform duration-200 hover:scale-105 group" style={{ borderRadius: 18, padding: 0 }}>
