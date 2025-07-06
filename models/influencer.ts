@@ -99,6 +99,10 @@ interface IInfluencer {
 
   // Earnings tracking
   earnings?: number; // Total accumulated earnings from completed deals
+
+  // UPI payment information
+  upiId?: string; // UPI ID for payments
+  upiUsername?: string; // UPI username for payments
 }
 
 const InfluencerSchema = new Schema<IInfluencer>({
@@ -195,6 +199,10 @@ const InfluencerSchema = new Schema<IInfluencer>({
 
   // Earnings tracking
   earnings: { type: Number, default: 0 },
+
+  // UPI payment information
+  upiId: { type: String },
+  upiUsername: { type: String },
 });
 
 // Create a discriminator - an Influencer IS-A User

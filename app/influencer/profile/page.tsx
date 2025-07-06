@@ -48,6 +48,8 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { useToast } from '@/components/ui/use-toast';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import InstagramDebugInfo from '@/components/instagram/InstagramDebugInfo';
+import UpiInfoDialog from '@/components/earnings/UpiInfoDialog';
+import WithdrawalDialog from '@/components/earnings/WithdrawalDialog';
 import { useLogout } from '@/hook/useLogout';
 import { useTheme } from 'next-themes';
 
@@ -68,6 +70,10 @@ const ProfilePage = () => {
   const [editData, setEditData] = useState({ bio: profileData?.bio || '' });
   const [verifyModalOpen, setVerifyModalOpen] = useState(false);
   const [verificationStatus, setVerificationStatus] = useState<'none'|'pending'|'approved'|'rejected'|null>(null);
+
+  // Earnings and withdrawal state
+  const [showUpiDialog, setShowUpiDialog] = useState(false);
+  const [showWithdrawalDialog, setShowWithdrawalDialog] = useState(false);
   const [verificationCode, setVerificationCode] = useState('');
   const [verificationError, setVerificationError] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
@@ -185,6 +191,28 @@ const ProfilePage = () => {
   //     });
   //   }
   // };
+
+  // Handle earnings card click
+  const handleEarningsClick = () => {
+    // Check if UPI information exists
+    if (!profileData?.upiId || !profileData?.upiUsername) {
+      setShowUpiDialog(true);
+    } else {
+      setShowWithdrawalDialog(true);
+    }
+  };
+
+  // Handle UPI info success
+  const handleUpiSuccess = (upiData: { upiId: string; upiUsername: string }) => {
+    window.location.reload();
+    setShowWithdrawalDialog(true);
+  };
+
+  // Handle withdrawal success
+  const handleWithdrawalSuccess = () => {
+    // Refresh profile data to get updated earnings
+    // Could also show a success message or redirect
+  };
 
   // Handle reconnecting Instagram directly
   const handleReconnectInstagram = async () => {
@@ -702,8 +730,11 @@ const ProfilePage = () => {
                       </div>
                     </div>
 
-                    {/* Earnings Card */}
-                    <div className="bg-white dark:bg-zinc-800 rounded-xl overflow-hidden group hover:shadow-md transition-shadow duration-300 border border-slate-200 dark:border-zinc-700">
+                    {/* Earnings Card - Clickable */}
+                    <div
+                      className="bg-white dark:bg-zinc-800 rounded-xl overflow-hidden group hover:shadow-md transition-all duration-300 border border-slate-200 dark:border-zinc-700 cursor-pointer active:scale-95 hover:border-green-300 dark:hover:border-green-600"
+                      onClick={handleEarningsClick}
+                    >
                       <div className="p-5">
                         <div className="flex items-center justify-between mb-3">
                           <div className="flex items-center">
@@ -715,10 +746,10 @@ const ProfilePage = () => {
                         </div>
                         <div className="flex items-end justify-between">
                           <div className="text-3xl font-bold text-slate-900 dark:text-white">
-                            ₹0
+                            ₹{(profileData?.earnings || 0).toLocaleString()}
                           </div>
                           <div className="text-xs text-green-500 dark:text-green-400 flex items-center">
-                            <span className="font-medium">+0%</span>
+                            <span className="font-medium">Tap to withdraw</span>
                           </div>
                         </div>
                         <div className="mt-2 text-xs text-slate-500 dark:text-slate-400">Total earnings to date</div>
@@ -1252,6 +1283,23 @@ const ProfilePage = () => {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* UPI Information Dialog */}
+      <UpiInfoDialog
+        isOpen={showUpiDialog}
+        onClose={() => setShowUpiDialog(false)}
+        onSuccess={handleUpiSuccess}
+      />
+
+      {/* Withdrawal Request Dialog */}
+      <WithdrawalDialog
+        isOpen={showWithdrawalDialog}
+        onClose={() => setShowWithdrawalDialog(false)}
+        currentEarnings={profileData?.earnings || 0}
+        upiId={profileData?.upiId || ''}
+        upiUsername={profileData?.upiUsername || ''}
+        onSuccess={handleWithdrawalSuccess}
+      />
     </div>
   );
 };

@@ -58,6 +58,9 @@ export async function GET(request: NextRequest) {
       brandPreferences: influencer.brandPreferences || {},
       availability: influencer.availability || [],
       isInstagramVerified: influencer.isInstagramVerified || false,
+      earnings: influencer.earnings || 0,
+      upiId: influencer.upiId || '',
+      upiUsername: influencer.upiUsername || '',
     };
     return NextResponse.json(profile);
   } catch (error) {

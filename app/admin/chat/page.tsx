@@ -10,6 +10,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { AdminChatStats } from '@/components/chat/AdminChatStats';
 import InstagramVerificationRequests from '@/components/admin/InstagramVerificationRequests';
 import BugReportsPanel from '@/components/admin/BugReportsPanel';
+import WithdrawalRequestsPanel from '@/components/admin/WithdrawalRequestsPanel';
 
 interface ContactQuery {
   _id: string;
@@ -334,24 +335,11 @@ export default function AdminChatPage() {
           </TabsContent>
           
           <TabsContent value="dashboard">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Card className="shadow-sm rounded-md col-span-1 md:col-span-2">
-                <CardContent className="p-6">
-                  <AdminChatStats />
-                </CardContent>
-              </Card>
-              <Card className="shadow-sm rounded-md col-span-1">
-                <CardContent className="p-6">
-                  <div className="text-center py-8">
-                    <LayoutGrid size={32} className="mx-auto text-gray-300 mb-4" />
-                    <h3 className="text-lg font-medium text-gray-700 mb-2">Advanced Analytics</h3>
-                    <p className="text-sm text-gray-500">
-                      Detailed analytics and reporting features will be available soon.
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+            <Card className="shadow-sm rounded-md">
+              <CardContent className="p-6">
+                <WithdrawalRequestsPanel />
+              </CardContent>
+            </Card>
           </TabsContent>
           
           <TabsContent value="settings">

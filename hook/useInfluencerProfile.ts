@@ -21,6 +21,9 @@ export interface InfluencerProfile {
   brandPreferences?: any;
   availability?: any;
   isInstagramVerified?: boolean;
+  earnings?: number;
+  upiId?: string;
+  upiUsername?: string;
 }
 
 export function useInfluencerProfile() {
