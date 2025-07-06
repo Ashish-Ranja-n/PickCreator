@@ -188,7 +188,7 @@ export default function Home() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.2 }}
-                    className="inline-flex items-center space-x-2 bg-gradient-to-r from-violet-500/10 via-fuchsia-500/10 to-violet-500/10 backdrop-blur-sm border border-violet-200/50 dark:border-violet-800/50 text-violet-700 dark:text-violet-300 px-6 py-3 rounded-full text-sm mt-8 mb-8 sm:mb-10 font-semibold tracking-wide shadow-lg shadow-violet-500/10"
+                    className="inline-flex items-center space-x-2 bg-gradient-to-r from-violet-500/10 via-fuchsia-500/10 to-violet-500/10 backdrop-blur-sm border border-violet-200/50 dark:border-violet-800/50 text-violet-700 dark:text-violet-300 px-6 py-3 rounded-full text-sm mt-12 mb-8 sm:mb-10 font-semibold tracking-wide shadow-lg shadow-violet-500/10"
                   >
                     <Star className="h-4 w-4 text-violet-500" />
                     <span>Elevate Your Influence, Amplify Your Income</span>
