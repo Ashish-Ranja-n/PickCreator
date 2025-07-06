@@ -55,7 +55,9 @@ export async function middleware(request: NextRequest) {
             '/api/notifications/send',
             '/api/notifications/subscribe',
             '/api/notifications/unsubscribe',
-            '/api/notifications/vapid-public-key'
+            '/api/notifications/vapid-public-key',
+            '/api/auth/google/callback',
+            '/api/auth/google'
         ];
 
         // Check if the current path is a public API route
