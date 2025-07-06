@@ -96,6 +96,9 @@ interface IInfluencer {
 
   // Boolean field for verification status
   isInstagramVerified?: boolean; // Manual verification status
+
+  // Earnings tracking
+  earnings?: number; // Total accumulated earnings from completed deals
 }
 
 const InfluencerSchema = new Schema<IInfluencer>({
@@ -189,6 +192,9 @@ const InfluencerSchema = new Schema<IInfluencer>({
 
   // Boolean field for verification status
   isInstagramVerified: { type: Boolean, default: false },
+
+  // Earnings tracking
+  earnings: { type: Number, default: 0 },
 });
 
 // Create a discriminator - an Influencer IS-A User

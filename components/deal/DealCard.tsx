@@ -28,6 +28,7 @@ import { DealCardProps } from './types';
 import StatusBadge from './StatusBadge';
 import ContentRequirements from './ContentRequirements';
 import DealProgress from './DealProgress';
+import PaymentReleaseDialog from './PaymentReleaseDialog';
 
 export const DealCard: React.FC<DealCardProps> = ({
   deal,
@@ -45,6 +46,8 @@ export const DealCard: React.FC<DealCardProps> = ({
     contentUrl: ''
   });
   const [submittingContent, setSubmittingContent] = useState(false);
+  const [showPaymentReleaseDialog, setShowPaymentReleaseDialog] = useState(false);
+  const [releasingPayment, setReleasingPayment] = useState(false);
 
   // Helper function to safely format amounts for display
   const formatAmount = (amount: number | undefined | null) => {
@@ -80,7 +83,7 @@ export const DealCard: React.FC<DealCardProps> = ({
 
   const handleContentSubmission = async () => {
     if (!contentFormData.contentUrl.trim() || !onContentSubmission) return;
-    
+
     setSubmittingContent(true);
     try {
       onContentSubmission(deal._id, {
@@ -90,6 +93,18 @@ export const DealCard: React.FC<DealCardProps> = ({
       setContentFormData({ contentType: 'reel', contentUrl: '' });
     } finally {
       setSubmittingContent(false);
+    }
+  };
+
+  const handlePaymentRelease = async () => {
+    setReleasingPayment(true);
+    try {
+      await onDealAction?.(deal._id, 'release-payment');
+      setShowPaymentReleaseDialog(false);
+    } catch (error) {
+      console.error('Error releasing payment:', error);
+    } finally {
+      setReleasingPayment(false);
     }
   };
 
@@ -440,6 +455,35 @@ export const DealCard: React.FC<DealCardProps> = ({
                 Make Payment
               </Button>
             )}
+            {/* Ongoing deal actions for brands */}
+            {(deal.status === 'ongoing' || deal.status === 'content_approved') && deal.paymentStatus === 'paid' && (
+              <div className="w-full space-y-3">
+                {/* Chat with Influencer button */}
+                <Button
+                  onClick={() => {
+                    const otherUserId = deal.influencers[0]?.id;
+                    if (otherUserId && onChatAction) {
+                      onChatAction(deal._id, otherUserId);
+                    }
+                  }}
+                  className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white flex items-center justify-center gap-2"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  Chat with Influencer
+                </Button>
+
+                {/* Release Payment button - only show after content is approved */}
+                {deal.status === 'content_approved' && !deal.paymentReleased && (
+                  <Button
+                    onClick={() => setShowPaymentReleaseDialog(true)}
+                    className="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white flex items-center justify-center gap-2"
+                  >
+                    <IndianRupee className="w-4 h-4" />
+                    Release Payment
+                  </Button>
+                )}
+              </div>
+            )}
           </>
         )}
 
@@ -594,31 +638,54 @@ export const DealCard: React.FC<DealCardProps> = ({
                 </div>
               </div>
             )}
-            {/* Chat Button for brands - placed at the end */}
-            {(deal.status === 'ongoing' || deal.status === 'content_approved') && onChatAction && (userType as string) === 'brand' && (
-              <div className="w-full">
+
+            {/* Request Release section for influencers - show after content is approved */}
+            {deal.status === 'content_approved' && deal.paymentStatus === 'paid' && !deal.paymentReleased && (
+              <div className="w-full space-y-3">
+                {/* Chat Button for influencers */}
+                {onChatAction && (
+                  <Button
+                    onClick={() => {
+                      const otherUserId = deal.brandId;
+                      if (otherUserId) {
+                        onChatAction(deal._id, otherUserId);
+                      }
+                    }}
+                    className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white flex items-center justify-center gap-2"
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    Chat with Brand
+                  </Button>
+                )}
+
+                {/* Request Release button (placeholder) */}
                 <Button
                   onClick={() => {
-                    let otherUserId: string | undefined;
-                    if ((userType as string) === 'brand') {
-                      otherUserId = deal.influencers[0]?.id;
-                    } else {
-                      otherUserId = deal.brandId;
-                    }
-                    if (otherUserId) {
-                      onChatAction(deal._id, otherUserId);
-                    }
+                    // Placeholder functionality - just show a message for now
+                    alert('Request sent to brand! They will be notified to release your payment.');
                   }}
-                  className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white flex items-center justify-center gap-2"
+                  className="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white flex items-center justify-center gap-2"
                 >
-                  <MessageCircle className="w-4 h-4" />
-                  Start Chat
+                  <IndianRupee className="w-4 h-4" />
+                  Request Release
                 </Button>
               </div>
             )}
+
           </>
         )}
       </CardFooter>
+
+      {/* Payment Release Dialog */}
+      <PaymentReleaseDialog
+        isOpen={showPaymentReleaseDialog}
+        onClose={() => setShowPaymentReleaseDialog(false)}
+        onConfirm={handlePaymentRelease}
+        dealName={deal.dealName}
+        amount={deal.influencers[0]?.offeredPrice || deal.totalAmount}
+        influencerName={deal.influencers[0]?.name || 'Influencer'}
+        isLoading={releasingPayment}
+      />
     </Card>
   );
 };
