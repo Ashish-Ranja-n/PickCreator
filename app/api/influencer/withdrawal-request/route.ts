@@ -51,10 +51,10 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
     
-    if (amount < 100) {
+    if (amount < 1) {
       return NextResponse.json({ 
         success: false, 
-        error: 'Minimum withdrawal amount is ₹100' 
+        error: 'Minimum withdrawal amount is ₹1' 
       }, { status: 400 });
     }
     

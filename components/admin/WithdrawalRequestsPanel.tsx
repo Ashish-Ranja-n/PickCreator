@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
 import { 
   BadgeIndianRupee, 
@@ -18,6 +17,7 @@ import {
 } from 'lucide-react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
+import { useCurrentUser } from '@/hook/useCurrentUser';
 
 interface WithdrawalRequest {
   _id: string;
@@ -43,6 +43,7 @@ const WithdrawalRequestsPanel: React.FC = () => {
   const [completingIds, setCompletingIds] = useState<Set<string>>(new Set());
   const { toast } = useToast();
   const router = useRouter();
+  const currentUser = useCurrentUser();
 
   const fetchWithdrawalRequests = async (showRefreshLoader = false) => {
     try {
@@ -106,9 +107,42 @@ const WithdrawalRequestsPanel: React.FC = () => {
     }
   };
 
-  const handleChatWithInfluencer = (influencerId: string) => {
-    // Navigate to chat with the influencer
-    router.push(`/admin/chat/${influencerId}`);
+  const handleChatWithInfluencer = async (influencerId: string) => {
+    try {
+      // Check if current user (admin) is available
+      if (!currentUser?._id) {
+        toast({
+          title: "Error",
+          description: "Unable to identify current user",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Create or get conversation
+      const response = await axios.post('/api/conversation', {
+        currentUserId: currentUser._id,
+        otherUserId: influencerId
+      });
+
+      if (response.data.conversationId) {
+        // Navigate to admin chat window with conversation ID
+        router.push(`/admin/chat/${response.data.conversationId}`);
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to create conversation",
+          variant: "destructive",
+        });
+      }
+    } catch (error: any) {
+      console.error('Error creating conversation:', error);
+      toast({
+        title: "Error",
+        description: error.response?.data?.message || "Failed to start chat",
+        variant: "destructive",
+      });
+    }
   };
 
   useEffect(() => {

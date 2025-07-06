@@ -4,10 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { ChatList } from '@/components/chat/ChatList';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { LayoutGrid, MessageSquare, User, Settings, HelpCircle, Clock, Tag, CheckSquare, XCircle, ArrowRight } from "lucide-react";
 import { useParams, useRouter } from 'next/navigation';
-import { AdminChatStats } from '@/components/chat/AdminChatStats';
 import InstagramVerificationRequests from '@/components/admin/InstagramVerificationRequests';
 import BugReportsPanel from '@/components/admin/BugReportsPanel';
 import WithdrawalRequestsPanel from '@/components/admin/WithdrawalRequestsPanel';
@@ -336,7 +334,7 @@ export default function AdminChatPage() {
           
           <TabsContent value="dashboard">
             <Card className="shadow-sm rounded-md">
-              <CardContent className="p-6">
+              <CardContent className="p-6 mb-10">
                 <WithdrawalRequestsPanel />
               </CardContent>
             </Card>

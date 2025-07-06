@@ -7,7 +7,7 @@ import AnalyticsTab from "@/components/influencer/analytics/AnalyticsTab";
 // Page is a server component
 export default function AdminPage() {
   return (
-    <div className="container mx-auto px-1 min-h-screen bg-white dark:bg-black">
+    <div className="container mx-auto px-1 min-h-screen bg-white dark:bg-black mb-20">
       <Tabs defaultValue="analytics" className="w-full flex flex-col h-full">
         {/* Fixed tab bar at the top */}
         <div className="sticky top-[50px] left-0 right-0 z-10 bg-white/95 dark:bg-black/95 backdrop-blur-sm pt-2 pb-1 border-b border-gray-200/50 dark:border-zinc-800/50">
