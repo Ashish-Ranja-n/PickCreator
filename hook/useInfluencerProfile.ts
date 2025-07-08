@@ -33,7 +33,7 @@ export function useInfluencerProfile() {
       const response = await axios.get('/api/influencer/profile/full');
       return response.data;
     },
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
+    staleTime: 2 * 60 * 1000, // 2 minutes - full profile data
+    gcTime: 5 * 60 * 1000, // 5 minutes
   });
 }

@@ -72,9 +72,9 @@ export const useUserStore = create<UserState>((set, get) => ({
         cachedUser = localStorage.getItem('currentUser');
         cacheTimestamp = parseInt(localStorage.getItem('currentUserTimestamp') || '0', 10);
         
-        // Only fetch from API if cache is older than 10 minutes (600000 ms)
+        // Only fetch from API if cache is older than 2 minutes (120000 ms)
         const cacheAge = Date.now() - cacheTimestamp;
-        shouldFetchFromAPI = cacheAge > 600000; 
+        shouldFetchFromAPI = cacheAge > 120000;
         
         if (cachedUser && !shouldFetchFromAPI) {
           console.log('Using cached user data, age:', Math.round(cacheAge/1000), 'seconds');

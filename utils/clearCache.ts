@@ -35,13 +35,31 @@ export const clearAllCacheData = () => {
     localStorage.removeItem('notificationSettings');
     
     // ----- 2. Clear all React Query cache data -----
-    
-    // Find and remove all React Query cache keys
-    Object.keys(localStorage).forEach(key => {
-      if (key.startsWith('rq-') || key.includes('query') || key.includes('instagram')) {
-        console.log(`Removing cache key: ${key}`);
-        localStorage.removeItem(key);
+
+    // More aggressive cache clearing - find and remove all cache-related keys
+    const keysToRemove: string[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && (
+        key.startsWith('rq-') ||
+        key.includes('query') ||
+        key.includes('cache') ||
+        key.includes('tanstack') ||
+        key.includes('react-query') ||
+        key.includes('instagram') ||
+        key.includes('deal') ||
+        key.includes('conversation') ||
+        key.includes('chat') ||
+        key.endsWith('Timestamp')
+      )) {
+        keysToRemove.push(key);
       }
+    }
+
+    // Remove all identified cache keys
+    keysToRemove.forEach(key => {
+      console.log(`Removing cache key: ${key}`);
+      localStorage.removeItem(key);
     });
     
     // Try multiple approaches to clear React Query cache

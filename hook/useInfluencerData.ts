@@ -72,8 +72,8 @@ export function useInfluencerData() {
       return response.data;
     },
     enabled: !!userId,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
+    staleTime: 2 * 60 * 1000, // 2 minutes - profile data doesn't change often
+    gcTime: 5 * 60 * 1000, // 5 minutes
   });
 }
 
@@ -91,8 +91,8 @@ export function useInstagramData() {
       return response.data;
     },
     enabled: !!userId,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
+    staleTime: 1 * 60 * 1000, // 1 minute - Instagram data can change frequently
+    gcTime: 3 * 60 * 1000, // 3 minutes
   });
 
   // Add a refresh function to the query result
@@ -132,7 +132,7 @@ export function useOnboardingData() {
       return response.data;
     },
     enabled: !!userId,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
+    staleTime: 30 * 1000, // 30 seconds - onboarding data changes during setup
+    gcTime: 2 * 60 * 1000, // 2 minutes
   });
 }
