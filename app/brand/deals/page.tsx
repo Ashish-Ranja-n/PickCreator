@@ -186,7 +186,7 @@ function BrandDealsContent() {
 
       if (response.data.conversationId) {
         // Navigate to brand chat window
-        router.push(`/brand/chat?conversationId=${response.data.conversationId}`);
+        router.push(`/brand/chat/${response.data.conversationId}`);
       } else {
         toast({
           title: "Error",
@@ -225,15 +225,17 @@ function BrandDealsContent() {
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Deal Management</h1>
-            <p className="text-gray-600 dark:text-zinc-300 mt-2">
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent dark:from-blue-400 dark:to-purple-400">
+              Deal Management
+            </h1>
+            <p className="text-gray-600 dark:text-zinc-400 mt-2">
               Manage your collaboration deals with influencers
             </p>
           </div>
           <Button
             onClick={fetchDeals}
             disabled={loading}
-            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 dark:from-blue-500 dark:to-purple-500 dark:hover:from-blue-600 dark:hover:to-purple-600 text-white shadow-lg hover:shadow-xl transition-all duration-200"
           >
             <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
             Refresh Deals

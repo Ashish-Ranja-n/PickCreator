@@ -126,7 +126,7 @@ const InfluencerDealsPage = () => {
 
       if (response.data.conversationId) {
         // Navigate to influencer chat window
-        router.push(`/influencer/chat?conversationId=${response.data.conversationId}`);
+        router.push(`/influencer/chat/${response.data.conversationId}`);
       } else {
         toast({
           title: "Error",
@@ -177,17 +177,17 @@ const InfluencerDealsPage = () => {
 
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-violet-600 to-fuchsia-600 bg-clip-text text-transparent">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-violet-600 to-fuchsia-600 dark:from-violet-400 dark:to-fuchsia-400 bg-clip-text text-transparent">
             My Deals
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">
+          <p className="text-gray-600 dark:text-zinc-400 mt-2">
             Manage your brand collaborations and track progress
           </p>
         </div>
         <Button
           onClick={fetchDeals}
           variant="outline"
-          className="bg-gray-100 hover:bg-gray-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-gray-800 dark:text-white border border-gray-200 dark:border-zinc-700"
+          className="bg-gray-100 hover:bg-gray-200 dark:bg-zinc-800/80 dark:hover:bg-zinc-700/80 text-gray-800 dark:text-zinc-200 border border-gray-200 dark:border-zinc-600/50 shadow-lg hover:shadow-xl transition-all duration-200 backdrop-blur-sm"
         >
           <RefreshCw className="h-4 w-4 mr-2" /> Refresh
         </Button>

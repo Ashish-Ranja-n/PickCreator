@@ -21,7 +21,8 @@ import {
   Send,
   User,
   MessageCircle,
-  MessageSquare
+  MessageSquare,
+  Loader2
 } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { DealCardProps } from './types';
@@ -41,6 +42,7 @@ export const DealCard: React.FC<DealCardProps> = ({
 }) => {
   const [isNegotiating, setIsNegotiating] = useState(deal.isNegotiating || false);
   const [counterOffer, setCounterOffer] = useState<number>(0);
+  const [isChatLoading, setIsChatLoading] = useState(false);
   const [contentFormData, setContentFormData] = useState({
     contentType: 'reel' as 'reel' | 'post' | 'story' | 'live',
     contentUrl: ''
@@ -108,16 +110,38 @@ export const DealCard: React.FC<DealCardProps> = ({
     }
   };
 
+  const handleChatAction = async () => {
+    setIsChatLoading(true);
+    try {
+      let otherUserId: string | undefined;
+      if (userType === 'brand') {
+        otherUserId = deal.influencers[0]?.id;
+      } else {
+        otherUserId = deal.brandId;
+      }
+
+      if (otherUserId && onChatAction) {
+        await onChatAction(deal._id, otherUserId);
+      }
+    } catch (error) {
+      console.error('Error starting chat:', error);
+    } finally {
+      setIsChatLoading(false);
+    }
+  };
+
   const progress = getProgressStatus();
 
   return (
-    <Card className={`overflow-hidden hover:shadow-lg transition-all duration-200 bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-800 ${className}`}>
-      <CardHeader className={userType === 'influencer' ? "border-b border-gray-200 dark:border-zinc-800 pb-4" : ""}>
+    <Card className={`group overflow-hidden hover:shadow-2xl hover:shadow-blue-500/10 dark:hover:shadow-purple-500/10 transition-all duration-300 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-sm border border-gray-200/50 dark:border-zinc-700/50 hover:border-blue-300/50 dark:hover:border-purple-500/50 hover:-translate-y-1 ${className}`}>
+      <CardHeader className={`${userType === 'influencer' ? "border-b border-gray-200/50 dark:border-zinc-700/50 pb-6" : "pb-6"} relative`}>
+        {/* Subtle gradient overlay for premium feel */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-purple-50/30 dark:from-blue-950/20 dark:to-purple-950/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         <Collapsible>
-          <div className="flex items-start justify-between w-full gap-4">
+          <div className="flex items-start justify-between w-full gap-4 relative z-10">
             <div className="flex gap-4">
-              {/* Profile Picture */}
-              <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 flex-shrink-0">
+              {/* Enhanced Profile Picture */}
+              <div className="w-14 h-14 rounded-xl overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 dark:from-zinc-800 dark:to-zinc-700 border-2 border-white dark:border-zinc-600 shadow-lg flex-shrink-0 group-hover:scale-105 transition-transform duration-200">
                 {userType === 'brand' ? (
                   // Show influencer profile for brand view
                   deal.dealType === 'single' && deal.influencers[0]?.profilePictureUrl ? (
@@ -125,8 +149,8 @@ export const DealCard: React.FC<DealCardProps> = ({
                       src={deal.influencers[0].profilePictureUrl}
                       alt={deal.influencers[0].name}
                       className="w-full h-full object-cover"
-                      width={48}
-                      height={48}
+                      width={56}
+                      height={56}
                     />
                   ) : (
                     <User className="w-full h-full p-2.5 text-gray-400 dark:text-zinc-500" />
@@ -138,8 +162,8 @@ export const DealCard: React.FC<DealCardProps> = ({
                       src={deal.brandProfilePic}
                       alt={deal.brandName}
                       className="w-full h-full object-cover"
-                      width={48}
-                      height={48}
+                      width={56}
+                      height={56}
                     />
                   ) : (
                     <Building2 className="w-full h-full p-2.5 text-gray-400 dark:text-zinc-500" />
@@ -147,19 +171,19 @@ export const DealCard: React.FC<DealCardProps> = ({
                 )}
               </div>
 
-              {/* Name and Details */}
-              <div className="flex flex-col min-w-0">
+              {/* Enhanced Name and Details */}
+              <div className="flex flex-col min-w-0 space-y-1">
                 {userType === 'brand' ? (
                   // Brand view - show influencer name or deal name
                   deal.dealType === 'single' ? (
                     <div>
-                      <CardTitle className="text-lg text-gray-900 dark:text-white">
+                      <CardTitle className="text-xl font-bold text-gray-900 dark:text-white tracking-tight">
                         {deal.influencers[0]?.name || 'Influencer'}
                       </CardTitle>
                       {deal.influencers[0]?.city && (
-                        <div className="flex items-center gap-1 mt-1">
-                          <MapPin className="h-3 w-3 text-gray-500 dark:text-zinc-400" />
-                          <span className="text-xs text-gray-500 dark:text-zinc-400">
+                        <div className="flex items-center gap-1.5 mt-2">
+                          <MapPin className="h-4 w-4 text-blue-500 dark:text-blue-400" />
+                          <span className="text-sm font-medium text-gray-600 dark:text-zinc-300">
                             {deal.influencers[0].city}
                           </span>
                         </div>
@@ -167,10 +191,10 @@ export const DealCard: React.FC<DealCardProps> = ({
                     </div>
                   ) : (
                     <div>
-                      <CardTitle className="text-lg text-gray-900 dark:text-white">
+                      <CardTitle className="text-xl font-bold text-gray-900 dark:text-white tracking-tight">
                         {deal.dealName}
                       </CardTitle>
-                      <CollapsibleTrigger className="text-xs text-blue-500 mt-1">
+                      <CollapsibleTrigger className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 mt-2 font-medium transition-colors">
                         View list
                       </CollapsibleTrigger>
                     </div>
@@ -179,11 +203,11 @@ export const DealCard: React.FC<DealCardProps> = ({
                   // Influencer view - show brand/company name
                   <>
                     {deal.companyName && (
-                      <h4 className="font-semibold text-lg text-gray-900 dark:text-white truncate">
+                      <h4 className="font-bold text-xl text-gray-900 dark:text-white truncate tracking-tight">
                         {deal.companyName}
                       </h4>
                     )}
-                    <p className="text-sm text-gray-600 dark:text-zinc-300 truncate">{deal.brandName}</p>
+                    <p className="text-sm font-medium text-gray-600 dark:text-zinc-300 truncate">{deal.brandName}</p>
                     <div className="flex flex-wrap items-center gap-2 mt-2">
                       {deal.location && (
                         <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-zinc-300 text-xs">
@@ -245,23 +269,25 @@ export const DealCard: React.FC<DealCardProps> = ({
         </Collapsible>
       </CardHeader>
 
-      <CardContent className="p-6">
+      <CardContent className="p-6 relative">
         <div className="space-y-6">
-          {/* Visit Required Notice for Influencer */}
+          {/* Enhanced Visit Required Notice for Influencer */}
           {userType === 'influencer' && deal.visitRequired && (
-            <div className="flex items-center gap-2 p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/30">
-              <MapPinned className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+            <div className="flex items-center gap-3 p-4 rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border border-amber-200/60 dark:border-amber-700/40 shadow-sm">
+              <div className="p-2 rounded-lg bg-amber-100 dark:bg-amber-800/30">
+                <MapPinned className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+              </div>
               <div>
-                <h4 className="font-medium text-amber-800 dark:text-amber-300">Visit Required</h4>
-                <p className="text-sm text-amber-600 dark:text-amber-400">In-person presence needed for this deal</p>
+                <h4 className="font-semibold text-amber-800 dark:text-amber-200">Visit Required</h4>
+                <p className="text-sm text-amber-700 dark:text-amber-300">In-person presence needed for this deal</p>
               </div>
             </div>
           )}
 
-          {/* Description */}
+          {/* Enhanced Description */}
           {deal.description && (
-            <div className="space-y-2">
-              <p className="text-sm text-gray-500 dark:text-zinc-400">Description</p>
+            <div className="space-y-3">
+              <h3 className="text-sm font-semibold text-gray-700 dark:text-zinc-300 uppercase tracking-wide">Description</h3>
               <p className="text-gray-900 dark:text-white text-sm leading-relaxed bg-gray-50 dark:bg-zinc-800/50 p-3 rounded-lg">
                 {deal.description}
               </p>
@@ -417,21 +443,21 @@ export const DealCard: React.FC<DealCardProps> = ({
         </div>
       </CardContent>
 
-      <CardFooter className="flex justify-between border-t border-gray-200 dark:border-zinc-800 pt-4">
-        {/* Brand Actions */}
+      <CardFooter className="flex justify-between border-t border-gray-200/50 dark:border-zinc-700/50 pt-6 bg-gray-50/30 dark:bg-zinc-800/30">
+        {/* Enhanced Brand Actions */}
         {userType === 'brand' && (
           <>
             {deal.status === 'counter-offered' && (
-              <div className="flex w-full gap-4">
+              <div className="flex w-full gap-3">
                 <Button
                   variant="destructive"
-                  className="flex-1"
+                  className="flex-1 shadow-lg hover:shadow-xl transition-all duration-200 font-medium"
                   onClick={() => handleDealAction('reject')}
                 >
                   Reject
                 </Button>
                 <Button
-                  className="flex-1 bg-green-600 hover:bg-green-700"
+                  className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-lg hover:shadow-xl transition-all duration-200 font-medium"
                   onClick={() => handleDealAction('accept')}
                 >
                   Accept Counter Offer
@@ -441,7 +467,7 @@ export const DealCard: React.FC<DealCardProps> = ({
             {deal.status === 'requested' && (
               <Button
                 variant="destructive"
-                className="w-full"
+                className="w-full shadow-lg hover:shadow-xl transition-all duration-200 font-medium"
                 onClick={() => handleDealAction('cancel')}
               >
                 Cancel Request
@@ -449,7 +475,7 @@ export const DealCard: React.FC<DealCardProps> = ({
             )}
             {deal.status === 'accepted' && (
               <Button
-                className="w-full bg-green-600 hover:bg-green-700"
+                className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-lg hover:shadow-xl transition-all duration-200 font-medium"
                 onClick={() => handleDealAction('pay')}
               >
                 Make Payment
@@ -460,16 +486,21 @@ export const DealCard: React.FC<DealCardProps> = ({
               <div className="w-full space-y-3">
                 {/* Chat with Influencer button */}
                 <Button
-                  onClick={() => {
-                    const otherUserId = deal.influencers[0]?.id;
-                    if (otherUserId && onChatAction) {
-                      onChatAction(deal._id, otherUserId);
-                    }
-                  }}
-                  className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white flex items-center justify-center gap-2"
+                  onClick={handleChatAction}
+                  disabled={isChatLoading}
+                  className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 disabled:opacity-50 disabled:cursor-not-allowed text-white flex items-center justify-center gap-2 transition-all duration-200"
                 >
-                  <MessageCircle className="w-4 h-4" />
-                  Chat with Influencer
+                  {isChatLoading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Starting Chat...
+                    </>
+                  ) : (
+                    <>
+                      <MessageCircle className="w-4 h-4" />
+                      Chat with Influencer
+                    </>
+                  )}
                 </Button>
 
                 {/* Release Payment button - only show after content is approved */}
@@ -537,22 +568,15 @@ export const DealCard: React.FC<DealCardProps> = ({
                   <div className="flex w-full gap-2">
                     <Button
                       variant="outline"
-                      className="flex-1 border-red-500 dark:border-red-600 text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+                      className="flex-1 border-red-500 dark:border-red-400 text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 shadow-md hover:shadow-lg transition-all duration-200 font-medium"
                       onClick={() => handleDealAction('reject')}
                     >
                       <XIcon className="w-4 h-4 mr-2" />
                       Reject
                     </Button>
+                    
                     <Button
-                      variant="outline"
-                      className="flex-1 border-orange-500 dark:border-orange-600 text-orange-500 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20"
-                      onClick={() => setIsNegotiating(true)}
-                    >
-                      <MessageSquare className="w-4 h-4 mr-2" />
-                      Negotiate
-                    </Button>
-                    <Button
-                      className="flex-1 bg-green-500 dark:bg-green-600 hover:bg-green-600 dark:hover:bg-green-700 text-white"
+                      className="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 dark:from-green-600 dark:to-emerald-600 hover:from-green-600 hover:to-emerald-600 dark:hover:from-green-700 dark:hover:to-emerald-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 font-medium"
                       onClick={() => handleDealAction('accept')}
                     >
                       <Check className="w-4 h-4 mr-2" />
@@ -618,21 +642,21 @@ export const DealCard: React.FC<DealCardProps> = ({
                   {/* Chat Button for influencers - placed below submit content */}
                   {userType === 'influencer' && onChatAction && (
                     <Button
-                      onClick={() => {
-                        let otherUserId: string | undefined;
-                        if ((userType as string) === 'brand') {
-                          otherUserId = deal.influencers[0]?.id;
-                        } else {
-                          otherUserId = deal.brandId;
-                        }
-                        if (otherUserId) {
-                          onChatAction(deal._id, otherUserId);
-                        }
-                      }}
-                      className="w-full mt-3 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white flex items-center justify-center gap-2"
+                      onClick={handleChatAction}
+                      disabled={isChatLoading}
+                      className="w-full mt-3 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 disabled:opacity-50 disabled:cursor-not-allowed text-white flex items-center justify-center gap-2 transition-all duration-200 shadow-lg hover:shadow-xl"
                     >
-                      <MessageCircle className="w-4 h-4" />
-                      Start Chat
+                      {isChatLoading ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Starting Chat...
+                        </>
+                      ) : (
+                        <>
+                          <MessageCircle className="w-4 h-4" />
+                          Start Chat
+                        </>
+                      )}
                     </Button>
                   )}
                 </div>
@@ -645,16 +669,21 @@ export const DealCard: React.FC<DealCardProps> = ({
                 {/* Chat Button for influencers */}
                 {onChatAction && (
                   <Button
-                    onClick={() => {
-                      const otherUserId = deal.brandId;
-                      if (otherUserId) {
-                        onChatAction(deal._id, otherUserId);
-                      }
-                    }}
-                    className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white flex items-center justify-center gap-2"
+                    onClick={handleChatAction}
+                    disabled={isChatLoading}
+                    className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 disabled:opacity-50 disabled:cursor-not-allowed text-white flex items-center justify-center gap-2 transition-all duration-200 shadow-lg hover:shadow-xl"
                   >
-                    <MessageCircle className="w-4 h-4" />
-                    Chat with Brand
+                    {isChatLoading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Starting Chat...
+                      </>
+                    ) : (
+                      <>
+                        <MessageCircle className="w-4 h-4" />
+                        Chat with Brand
+                      </>
+                    )}
                   </Button>
                 )}
 

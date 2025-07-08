@@ -621,7 +621,7 @@
   line-clamp: 3;
 }
 
-/* Subtle gradient background for deals pages */
+/* Enhanced gradient background for deals pages */
 .subtle-gradient-bg {
   /* Light mode: very subtle white gradient */
   background: linear-gradient(135deg,
@@ -630,8 +630,10 @@
 }
 
 .dark .subtle-gradient-bg {
-  /* Dark mode: very subtle black gradient */
+  /* Dark mode: very subtle black gradient with minimal difference */
   background: linear-gradient(135deg,
-    #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%
+    #0a0a0a 0%,
+    #0d0d0d 50%,
+    #0a0a0a 100%
   );
 }

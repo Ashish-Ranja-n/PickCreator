@@ -29,17 +29,13 @@ export const DealTabs: React.FC<DealTabsProps> = ({
   };
 
   const getTabTriggerClass = (userType: 'brand' | 'influencer') => {
-    if (userType === 'influencer') {
-      return "relative flex items-center justify-center px-4 py-3 text-sm font-semibold rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-500 data-[state=active]:to-fuchsia-500 dark:data-[state=active]:from-violet-600 dark:data-[state=active]:to-fuchsia-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-violet-500/25 dark:text-zinc-300 text-zinc-600 hover:text-violet-600 dark:hover:text-violet-400 transition-all duration-300";
-    }
-    return "relative flex items-center justify-center px-4 py-3 text-sm font-semibold rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-zinc-800 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 data-[state=active]:shadow-lg data-[state=active]:shadow-blue-500/20 dark:data-[state=active]:shadow-blue-500/10 data-[state=active]:border data-[state=active]:border-blue-200 dark:data-[state=active]:border-blue-800 dark:text-zinc-300 text-zinc-600 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300";
+    // Simplified, professional styling for both user types
+    return "relative flex items-center justify-center px-4 py-3 text-sm font-medium rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-zinc-800 data-[state=active]:text-gray-900 dark:data-[state=active]:text-white data-[state=active]:shadow-md text-gray-600 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white transition-all duration-200";
   };
 
   const getTabsListClass = (userType: 'brand' | 'influencer') => {
-    if (userType === 'influencer') {
-      return "grid w-full grid-cols-4 mb-8 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-zinc-900/80 dark:to-zinc-800/80 rounded-xl p-2 gap-2 relative shadow-inner dark:shadow-zinc-900/50";
-    }
-    return "grid w-full grid-cols-4 mb-8 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-zinc-900/80 dark:to-zinc-800/80 rounded-xl p-2 gap-2 relative shadow-inner dark:shadow-zinc-900/50 border border-gray-200 dark:border-zinc-700";
+    // Clean, minimal styling for both user types
+    return "grid w-full grid-cols-4 mb-8 bg-gray-100 dark:bg-zinc-900 rounded-lg p-1 gap-1 border border-gray-200 dark:border-zinc-800";
   };
 
   const triggerClass = getTabTriggerClass(userType);
@@ -51,7 +47,7 @@ export const DealTabs: React.FC<DealTabsProps> = ({
         <TabsTrigger value="requested" className={triggerClass}>
           <span className="whitespace-nowrap">Requested</span>
           {getTabCount('requested') > 0 && (
-            <span className="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs font-bold rounded-full bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30 border-2 border-white dark:border-zinc-800">
+            <span className="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs font-medium rounded-full bg-blue-500 text-white border-2 border-white dark:border-zinc-900">
               {getTabCount('requested')}
             </span>
           )}
@@ -59,7 +55,7 @@ export const DealTabs: React.FC<DealTabsProps> = ({
         <TabsTrigger value="pending" className={triggerClass}>
           <span className="whitespace-nowrap">Pending</span>
           {getTabCount('pending') > 0 && (
-            <span className="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs font-bold rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg shadow-amber-500/30 border-2 border-white dark:border-zinc-800">
+            <span className="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs font-medium rounded-full bg-amber-500 text-white border-2 border-white dark:border-zinc-900">
               {getTabCount('pending')}
             </span>
           )}
@@ -67,7 +63,7 @@ export const DealTabs: React.FC<DealTabsProps> = ({
         <TabsTrigger value="ongoing" className={triggerClass}>
           <span className="whitespace-nowrap">Ongoing</span>
           {getTabCount('ongoing') > 0 && (
-            <span className="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs font-bold rounded-full bg-gradient-to-r from-emerald-500 to-green-500 text-white shadow-lg shadow-emerald-500/30 border-2 border-white dark:border-zinc-800">
+            <span className="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs font-medium rounded-full bg-green-500 text-white border-2 border-white dark:border-zinc-900">
               {getTabCount('ongoing')}
             </span>
           )}
@@ -75,7 +71,7 @@ export const DealTabs: React.FC<DealTabsProps> = ({
         <TabsTrigger value="history" className={triggerClass}>
           <span className="whitespace-nowrap">History</span>
           {getTabCount('history') > 0 && (
-            <span className="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs font-bold rounded-full bg-gradient-to-r from-slate-500 to-gray-500 text-white shadow-lg shadow-slate-500/30 border-2 border-white dark:border-zinc-800">
+            <span className="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs font-medium rounded-full bg-gray-500 text-white border-2 border-white dark:border-zinc-900">
               {getTabCount('history')}
             </span>
           )}
