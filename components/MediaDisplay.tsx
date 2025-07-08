@@ -115,7 +115,7 @@ export const MediaDisplay = ({ media, allMedia, initialIndex = 0 }: MediaDisplay
     if (media.type === 'image') {
       return (
         <div
-          className="rounded-lg overflow-hidden max-w-full cursor-pointer hover:opacity-90 transition-opacity relative group"
+          className="rounded-xl overflow-hidden max-w-full cursor-pointer hover:scale-[1.02] transition-all duration-300 relative group shadow-md hover:shadow-xl"
           onClick={handleOpenMedia}
         >
           <Image
@@ -127,9 +127,9 @@ export const MediaDisplay = ({ media, allMedia, initialIndex = 0 }: MediaDisplay
             loading="lazy"
             unoptimized
           />
-          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
-            <div className="bg-indigo-600 rounded-full p-2">
-              <Maximize2 className="h-5 w-5 text-white" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
+            <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3 border border-white/30 transform scale-90 group-hover:scale-100 transition-transform duration-300">
+              <Maximize2 className="h-6 w-6 text-white stroke-2" />
             </div>
           </div>
         </div>
@@ -139,7 +139,7 @@ export const MediaDisplay = ({ media, allMedia, initialIndex = 0 }: MediaDisplay
     if (media.type === 'video') {
       return (
         <div
-          className="rounded-lg overflow-hidden max-w-full cursor-pointer hover:opacity-90 transition-opacity relative group"
+          className="rounded-xl overflow-hidden max-w-full cursor-pointer hover:scale-[1.02] transition-all duration-300 relative group shadow-md hover:shadow-xl"
           onClick={handleOpenMedia}
         >
           <video
@@ -147,9 +147,9 @@ export const MediaDisplay = ({ media, allMedia, initialIndex = 0 }: MediaDisplay
             className="max-w-full max-h-[250px]"
             preload="metadata"
           />
-          <div className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity">
-            <div className="w-12 h-12 rounded-full bg-indigo-600 flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
+          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-t from-black/50 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300">
+            <div className="w-16 h-16 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/30 transform scale-90 group-hover:scale-100 transition-transform duration-300">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-white ml-1">
                 <polygon points="5 3 19 12 5 21 5 3"></polygon>
               </svg>
             </div>
@@ -209,7 +209,7 @@ export const MediaDisplay = ({ media, allMedia, initialIndex = 0 }: MediaDisplay
           <Image
             src={currentMedia.url}
             alt="Full size image"
-            className="max-w-full max-h-[80vh] object-contain transition-all duration-200"
+            className="max-w-full max-h-full object-contain transition-all duration-200"
             width={1200}
             height={800}
             style={{
@@ -217,42 +217,6 @@ export const MediaDisplay = ({ media, allMedia, initialIndex = 0 }: MediaDisplay
             }}
             unoptimized
           />
-
-          {/* Image controls */}
-          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex items-center gap-2 bg-black/50 rounded-full p-1">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleZoomIn}
-              className="h-8 w-8 text-white hover:bg-white/20"
-            >
-              <ZoomIn size={18} />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleZoomOut}
-              className="h-8 w-8 text-white hover:bg-white/20"
-            >
-              <ZoomOut size={18} />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleRotate}
-              className="h-8 w-8 text-white hover:bg-white/20"
-            >
-              <RotateCw size={18} />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={resetView}
-              className="h-8 w-8 text-white hover:bg-white/20"
-            >
-              <span className="text-xs">Reset</span>
-            </Button>
-          </div>
         </div>
       );
     }
@@ -264,7 +228,7 @@ export const MediaDisplay = ({ media, allMedia, initialIndex = 0 }: MediaDisplay
             src={currentMedia.url}
             controls
             autoPlay
-            className="max-w-full max-h-[80vh]"
+            className="max-w-full max-h-full object-contain"
           />
         </div>
       );
@@ -312,33 +276,35 @@ export const MediaDisplay = ({ media, allMedia, initialIndex = 0 }: MediaDisplay
     );
   };
 
-  // Render navigation arrows if there are multiple media items
+  // Render modern navigation arrows if there are multiple media items
   const renderNavigation = () => {
     if (mediaItems.length <= 1) return null;
 
     return (
       <>
-        {/* Left arrow */}
+        {/* Modern Left arrow */}
         <button
           onClick={goToPrevious}
-          className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/30 rounded-full p-2 text-white hover:bg-black/50 transition-colors z-20"
+          className="absolute left-6 top-1/2 transform -translate-y-1/2 bg-white/10 backdrop-blur-sm rounded-xl p-4 text-white hover:bg-white/20 transition-all duration-200 hover:scale-110 border border-white/20 z-20 shadow-lg"
           aria-label="Previous media"
         >
-          <ChevronLeft size={24} />
+          <ChevronLeft size={28} className="stroke-2" />
         </button>
 
-        {/* Right arrow */}
+        {/* Modern Right arrow */}
         <button
           onClick={goToNext}
-          className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/30 rounded-full p-2 text-white hover:bg-black/50 transition-colors z-20"
+          className="absolute right-6 top-1/2 transform -translate-y-1/2 bg-white/10 backdrop-blur-sm rounded-xl p-4 text-white hover:bg-white/20 transition-all duration-200 hover:scale-110 border border-white/20 z-20 shadow-lg"
           aria-label="Next media"
         >
-          <ChevronRight size={24} />
+          <ChevronRight size={28} className="stroke-2" />
         </button>
 
-        {/* Media counter */}
-        <div className="absolute bottom-4 right-4 bg-black/50 text-white text-sm px-3 py-1 rounded-full z-20">
-          {currentIndex + 1} / {mediaItems.length}
+        {/* Modern Media counter */}
+        <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-white/10 backdrop-blur-sm text-white text-sm font-medium px-4 py-2 rounded-xl z-20 border border-white/20 shadow-lg">
+          <span className="text-white/80">{currentIndex + 1}</span>
+          <span className="text-white/60 mx-2">of</span>
+          <span className="text-white/80">{mediaItems.length}</span>
         </div>
       </>
     );
@@ -349,17 +315,20 @@ export const MediaDisplay = ({ media, allMedia, initialIndex = 0 }: MediaDisplay
       {renderThumbnail()}
 
       {isOpen && (
-        <div className="fixed inset-0 z-50 bg-black/95 flex flex-col">
-          {/* Header */}
-          <div className="p-4 flex items-center justify-between bg-gradient-to-b from-black/70 to-transparent z-30">
-            <div className="text-white font-medium">{getFileName()}</div>
-            <div className="flex items-center gap-2">
+        <div className="fixed inset-0 z-50 bg-black/98 backdrop-blur-sm flex flex-col animate-in fade-in duration-300">
+          {/* Modern Header with Glassmorphism */}
+          <div className="p-4 flex items-center justify-between bg-gradient-to-b from-black/80 via-black/40 to-transparent backdrop-blur-md z-30 border-b border-white/10">
+            <div className="flex items-center gap-3">
+              <div className="w-2 h-2 rounded-full bg-green-500"></div>
+              <div className="text-white font-medium text-lg truncate max-w-[200px]">{getFileName()}</div>
+            </div>
+            <div className="flex items-center gap-3">
               <a
                 href={currentMedia.url}
                 download={getFileName()}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-full bg-black/20 p-2 text-white hover:bg-black/40 transition-colors"
+                className="rounded-xl bg-white/10 backdrop-blur-sm p-3 text-white hover:bg-white/20 transition-all duration-200 hover:scale-105 border border-white/20"
                 title="Download"
               >
                 <Download className="h-5 w-5" />
@@ -368,14 +337,14 @@ export const MediaDisplay = ({ media, allMedia, initialIndex = 0 }: MediaDisplay
                 href={currentMedia.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-full bg-black/20 p-2 text-white hover:bg-black/40 transition-colors"
+                className="rounded-xl bg-white/10 backdrop-blur-sm p-3 text-white hover:bg-white/20 transition-all duration-200 hover:scale-105 border border-white/20"
                 title="Open in new tab"
               >
                 <ExternalLink className="h-5 w-5" />
               </a>
               <button
                 onClick={() => setIsOpen(false)}
-                className="rounded-full bg-black/20 p-2 text-white hover:bg-black/40 transition-colors"
+                className="rounded-xl bg-red-500/20 backdrop-blur-sm p-3 text-white hover:bg-red-500/30 transition-all duration-200 hover:scale-105 border border-red-500/30"
                 title="Close"
               >
                 <X className="h-5 w-5" />
@@ -383,13 +352,57 @@ export const MediaDisplay = ({ media, allMedia, initialIndex = 0 }: MediaDisplay
             </div>
           </div>
 
-          {/* Navigation controls */}
+          {/* Enhanced Navigation controls */}
           {renderNavigation()}
 
-          {/* Media content */}
-          <div className="h-full w-full flex items-center justify-center">
-            {renderFullMedia()}
+          {/* Media content - full screen */}
+          <div className="flex-1 w-full flex items-center justify-center">
+            <div className="relative w-full h-full">
+              {renderFullMedia()}
+            </div>
           </div>
+
+          {/* Modern Bottom Controls for Images */}
+          {currentMedia.type === 'image' && (
+            <div className="p-4 bg-gradient-to-t from-black/80 via-black/40 to-transparent backdrop-blur-md border-t border-white/10">
+              <div className="flex items-center justify-center gap-4">
+                <button
+                  onClick={handleZoomOut}
+                  disabled={zoom <= 0.5}
+                  className="rounded-xl bg-white/10 backdrop-blur-sm p-3 text-white hover:bg-white/20 transition-all duration-200 hover:scale-105 border border-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Zoom out"
+                >
+                  <ZoomOut className="h-5 w-5" />
+                </button>
+                <div className="px-4 py-2 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 text-white text-sm font-medium min-w-[80px] text-center">
+                  {Math.round(zoom * 100)}%
+                </div>
+                <button
+                  onClick={handleZoomIn}
+                  disabled={zoom >= 3}
+                  className="rounded-xl bg-white/10 backdrop-blur-sm p-3 text-white hover:bg-white/20 transition-all duration-200 hover:scale-105 border border-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Zoom in"
+                >
+                  <ZoomIn className="h-5 w-5" />
+                </button>
+                <div className="w-px h-8 bg-white/20"></div>
+                <button
+                  onClick={handleRotate}
+                  className="rounded-xl bg-white/10 backdrop-blur-sm p-3 text-white hover:bg-white/20 transition-all duration-200 hover:scale-105 border border-white/20"
+                  title="Rotate"
+                >
+                  <RotateCw className="h-5 w-5" />
+                </button>
+                <button
+                  onClick={resetView}
+                  className="rounded-xl bg-white/10 backdrop-blur-sm px-4 py-3 text-white hover:bg-white/20 transition-all duration-200 hover:scale-105 border border-white/20 text-sm font-medium"
+                  title="Reset view"
+                >
+                  Reset
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </>

@@ -125,15 +125,14 @@ export const ChatWindow = () => {
 
   // All state declarations in one place
   const [newMessage, setNewMessage] = useState("");
-  const [messages, setMessages] = useState<Message1[]>([]);
-  const [chatMessages, setChatMessages] = useState<Message[]>([]);
+  const [allMessages, setAllMessages] = useState<Message[]>([]); // Single source of truth for all messages
   const [typingUser, setTypingUser] = useState<string | null>(null);
   const [virtualKeyboardHeight, setVirtualKeyboardHeight] = useState(0);
   const [visualHeight, setVisualHeight] = useState(0);
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   const [otherUser, setOtherUser] = useState<OtherUser | null>(null);
   const [showOptions, setShowOptions] = useState(false);
-  const [textareaHeight, setTextareaHeight] = useState("40px");
+  const [textareaHeight, setTextareaHeight] = useState("24px");
   const [isLoading, setIsLoading] = useState(true);
   const [isSending, setIsSending] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -249,6 +248,11 @@ export const ChatWindow = () => {
 
     const fetchMessages = async () => {
       setIsLoading(true);
+      // Reset states when switching conversations
+      setAllMessages([]);
+      setPaginationInfo({ hasMore: false });
+      setInitialScrollDone(false);
+
       try {
         // Request first batch of messages with limit
         const response = await axios.get(`/api/messages/${conversationId}`, {
@@ -256,7 +260,7 @@ export const ChatWindow = () => {
           params: { limit: 20 } // Request first 20 messages
         });
 
-        setChatMessages(response.data.messages);
+        setAllMessages(response.data.messages);
         setOtherUser(response.data.otherUser);
 
         // Store pagination info for loading more later
@@ -323,6 +327,25 @@ export const ChatWindow = () => {
     }
   }, [otherUser, isUserOnline, onlineUsers, forceUpdate]);
 
+  // Helper function to deduplicate messages by ID
+  const deduplicateMessages = (messages: Message[]): Message[] => {
+    const seen = new Set<string>();
+    return messages.filter(message => {
+      if (seen.has(message._id)) {
+        return false;
+      }
+      seen.add(message._id);
+      return true;
+    });
+  };
+
+  // Helper function to merge and sort messages
+  const mergeMessages = (existingMessages: Message[], newMessages: Message[]): Message[] => {
+    const combined = [...existingMessages, ...newMessages];
+    const deduplicated = deduplicateMessages(combined);
+    return deduplicated.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+  };
+
   // Function to load older messages
   const loadMoreMessages = async () => {
     if (!paginationInfo.hasMore || isLoadingMore || !conversationId || !currentUserId) return;
@@ -343,8 +366,11 @@ export const ChatWindow = () => {
         }
       });
 
-      // Prepend older messages to existing messages
-      setChatMessages(prevMessages => [...response.data.messages, ...prevMessages]);
+      // Merge older messages with existing messages and deduplicate
+      setAllMessages(prevMessages => {
+        const mergedMessages = mergeMessages(response.data.messages, prevMessages);
+        return mergedMessages;
+      });
 
       // Update pagination info for next fetch
       setPaginationInfo({
@@ -407,7 +433,7 @@ export const ChatWindow = () => {
 
   // Scroll to bottom only once after initial messages load
   useEffect(() => {
-    if (!isLoading && chatMessages.length > 0 && !initialScrollDone) {
+    if (!isLoading && allMessages.length > 0 && !initialScrollDone) {
       // Use setTimeout to ensure all messages are rendered before scrolling
       setTimeout(() => scrollToBottom(true), 0);
     }
@@ -474,7 +500,7 @@ export const ChatWindow = () => {
       // Reset states
       setSelectedFile(null);
       setNewMessage("");
-      setTextareaHeight("40px");
+      setTextareaHeight("24px");
       setUploadProgress(0);
 
       // Clear file input
@@ -536,7 +562,7 @@ export const ChatWindow = () => {
       // Send to server
       await axios.post("/api/messages", messageData);
       setNewMessage("");
-      setTextareaHeight("40px");
+      setTextareaHeight("24px");
 
       // Force scroll to bottom after sending a message
       setTimeout(() => scrollToBottom(true), 100);
@@ -558,9 +584,9 @@ export const ChatWindow = () => {
     setNewMessage(value);
 
     // Auto-resize textarea
-    e.target.style.height = "40px";
+    e.target.style.height = "24px";
     const scrollHeight = e.target.scrollHeight;
-    const newHeight = scrollHeight > 120 ? "120px" : `${scrollHeight}px`;
+    const newHeight = scrollHeight > 80 ? "80px" : `${scrollHeight}px`;
     setTextareaHeight(newHeight);
     e.target.style.height = newHeight;
 
@@ -590,25 +616,18 @@ export const ChatWindow = () => {
     }
   };
 
-  // Group messages by date - updated to handle pagination better
+  // Group messages by date - simplified with unified message system
   const groupMessagesByDate = () => {
-    // Combine server loaded messages with real-time socket messages
-    const allMessages = [
-      ...chatMessages.map(msg => ({
-        ...msg,
-        timestamp: new Date(msg.createdAt).toLocaleTimeString("en-US", {
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: true,
-        }),
-        date: new Date(msg.createdAt)
-      })),
-      ...messages.map(msg => ({
-        ...msg,
-        _id: `temp-${Math.random().toString()}`, // Use a temporary ID for socket messages
-        date: new Date()
-      }))
-    ].sort((a, b) => a.date.getTime() - b.date.getTime());
+    // Use the unified allMessages array (already sorted by date)
+    const processedMessages = allMessages.map(msg => ({
+      ...msg,
+      timestamp: new Date(msg.createdAt).toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      }),
+      date: new Date(msg.createdAt)
+    }));
 
     // Define a type for the grouped messages
     type GroupedMessage = {
@@ -618,11 +637,12 @@ export const ChatWindow = () => {
       media?: MediaItem[];
       date: Date;
       timestamp: string;
+      createdAt: Date;
     };
 
     const groups: Record<string, GroupedMessage[]> = {};
 
-    allMessages.forEach(message => {
+    processedMessages.forEach(message => {
       const dateKey = formatMessageDate(message.date);
       if (!groups[dateKey]) {
         groups[dateKey] = [];
@@ -711,8 +731,20 @@ export const ChatWindow = () => {
     const handleNewMessage = (message: Message1) => {
       console.log(`[Socket] Received new message in conversation ${conversationId}:`, message);
 
-      // Add the new message to the messages state
-      setMessages((prev) => [...prev, message]);
+      // Convert socket message to database message format
+      const dbMessage: Message = {
+        _id: `temp-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`, // Temporary unique ID
+        sender: message.sender,
+        text: message.text,
+        media: message.media,
+        createdAt: new Date() // Current timestamp
+      };
+
+      // Add the new message to the unified messages state with deduplication
+      setAllMessages((prevMessages) => {
+        const updatedMessages = mergeMessages(prevMessages, [dbMessage]);
+        return updatedMessages;
+      });
 
       // Clear typing indicator when a message is received from the other user
       if (message.sender !== currentUserId && message.sender === otherUser?._id) {
@@ -1113,7 +1145,7 @@ export const ChatWindow = () => {
 
               {/* Standalone Message Input */}
               <div className="flex-1">
-                <div className="bg-white dark:bg-zinc-800 rounded-3xl shadow-md border border-gray-200 dark:border-zinc-700 px-5 py-3 hover:shadow-lg transition-all duration-200">
+                <div className="bg-white dark:bg-zinc-800 rounded-3xl shadow-md border border-gray-200 dark:border-zinc-700 px-4 py-2 hover:shadow-lg transition-all duration-200">
                   <textarea
                     value={newMessage}
                     onKeyDown={(e) => {
@@ -1123,11 +1155,11 @@ export const ChatWindow = () => {
                     }}
                     onChange={handleTextareaChange}
                     placeholder="Type a message..."
-                    className="w-full resize-none border-none focus:outline-none focus:ring-0 bg-transparent text-gray-900 dark:text-white scrollbar-hide placeholder:text-gray-500 dark:placeholder:text-zinc-400 text-base leading-relaxed"
+                    className="w-full resize-none border-none focus:outline-none focus:ring-0 bg-transparent text-gray-900 dark:text-white scrollbar-hide placeholder:text-gray-500 dark:placeholder:text-zinc-400 text-base leading-snug"
                     style={{
                       height: textareaHeight,
-                      maxHeight: "100px",
-                      minHeight: "44px"
+                      maxHeight: "80px",
+                      minHeight: "24px"
                     }}
                   />
                 </div>
