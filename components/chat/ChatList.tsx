@@ -2,12 +2,11 @@
 
 import { Search, Users, Plus, MessageSquarePlus, Loader2, UserIcon, UsersIcon, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { usePathname, useRouter } from "next/navigation";
 import { Input } from "../ui/input";
-import { useEffect, useState, useCallback, useMemo, Suspense } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import axios from "axios";
-import { Card } from "../ui/card";
 import { useCurrentUser } from "@/hook/useCurrentUser";
 import { useSocket } from "@/lib/useSocket";
 import { motion, AnimatePresence } from "framer-motion";
@@ -16,7 +15,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Image from 'next/image';
@@ -251,12 +249,12 @@ const ConversationItem = ({
 
   return (
     <div
-      className="mx-2 my-1.5 rounded-xl bg-white dark:bg-zinc-900 p-3 cursor-pointer transition-all duration-300 hover:bg-gray-50 dark:hover:bg-zinc-800 hover:shadow-md group"
+      className="mx-2 my-1 rounded-xl bg-white dark:bg-zinc-900 cursor-pointer transition-all duration-200 hover:bg-gray-50 dark:hover:bg-zinc-800 border border-gray-100 dark:border-zinc-800"
       onClick={onSelect}
     >
-      <div className="flex items-center">
-        <div className="relative">
-          <Avatar className="h-12 w-12 border bg-white dark:bg-zinc-900 shadow-sm">
+      <div className="flex items-center p-3 gap-3">
+        <div className="relative flex-shrink-0">
+          <Avatar className="h-12 w-12">
             <div className="h-full w-full absolute inset-0">
               <Image
                 src={getAvatarUrl()}
@@ -265,65 +263,50 @@ const ConversationItem = ({
                 height={48}
                 className="rounded-full object-cover"
                 onError={(e) => {
-                  // Fallback on error - just show the first letter
                   e.currentTarget.style.display = 'none';
                 }}
               />
             </div>
-            <AvatarFallback className="bg-gradient-to-br from-purple-50 to-blue-50 dark:from-zinc-800 dark:to-zinc-900">
+            <AvatarFallback className="bg-gray-100 dark:bg-zinc-700 text-gray-600 dark:text-zinc-300 font-medium">
               {conversation.name ? conversation.name.charAt(0).toUpperCase() : 'U'}
             </AvatarFallback>
           </Avatar>
 
-          <span
-            className={`absolute -bottom-1 -right-1 h-3.5 w-3.5 rounded-full border-2 border-white dark:border-zinc-900 ${
-              isUserOnline(conversation.userId)
-                ? 'bg-emerald-500 ring-2 ring-emerald-100 dark:ring-emerald-900'
-                : 'bg-slate-400'
+          {/* Simple online status indicator */}
+          <div
+            className={`absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-white dark:border-zinc-900 ${
+              isUserOnline(conversation.userId) ? 'bg-green-500' : 'bg-gray-400'
             }`}
           />
         </div>
 
-        <div className="ml-4 flex-1">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-2">
-              <h3 className="font-semibold text-gray-800 dark:text-white">{conversation.name}</h3>
-              <span className={`text-xs px-2 py-0.5 rounded-full ${
-                conversation.role === 'Brand'
-                  ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300'
-                  : conversation.role === 'Admin'
-                    ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300'
-                    : 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300'
-              }`}>
-                {conversation.role}
+        <div className="flex-1 min-w-0">
+          <div className="flex justify-between items-start mb-1">
+            <h3 className="font-semibold text-gray-900 dark:text-white text-sm truncate">
+              {conversation.name}
+            </h3>
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <span className="text-xs text-gray-500 dark:text-zinc-400">
+                {formatLastMessageTime(conversation.lastMessageTime)}
               </span>
-            </div>
-            <span className="text-xs text-gray-500 dark:text-zinc-400 font-medium">
-              {formatLastMessageTime(conversation.lastMessageTime)}
-            </span>
-          </div>
-
-          <div className="flex justify-between items-center mt-1">
-            <div className="flex items-center gap-2 max-w-[70%]">
-              <p className="text-sm text-gray-600 dark:text-zinc-300 truncate w-full overflow-hidden text-ellipsis whitespace-nowrap">
-                {!conversation.lastMessage || conversation.lastMessage.length === 0
-                  ? "No messages yet"
-                  : conversation.lastMessage.length > 30
-                    ? `${conversation.lastMessage.substring(0, 30)}...`
-                    : conversation.lastMessage}
-              </p>
               {typeof conversation.unreadCount === 'number' && conversation.unreadCount > 0 && (
-                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-r from-purple-600 to-pink-600 text-xs text-white shadow-sm">
+                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-500 text-xs text-white font-medium">
                   {conversation.unreadCount > 9 ? '9+' : conversation.unreadCount}
-                </span>
+                </div>
               )}
             </div>
-            <span className={`text-xs px-2 py-0.5 rounded-full ${
-              isUserOnline(conversation.userId)
-                ? 'bg-emerald-50 text-emerald-600 border border-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-900'
-                : 'bg-gray-100 text-gray-600 dark:bg-zinc-800 dark:text-zinc-400'
-            }`}>
-              {isUserOnline(conversation.userId) ? 'online' : 'offline'}
+          </div>
+
+          <div className="flex justify-between items-center">
+            <p className="text-sm text-gray-600 dark:text-zinc-400 truncate flex-1 mr-3">
+              {!conversation.lastMessage || conversation.lastMessage.length === 0
+                ? "No messages yet"
+                : conversation.lastMessage.length > 40
+                  ? `${conversation.lastMessage.substring(0, 40)}...`
+                  : conversation.lastMessage}
+            </p>
+            <span className="text-xs text-gray-500 dark:text-zinc-500">
+              {conversation.role}
             </span>
           </div>
         </div>
@@ -333,28 +316,33 @@ const ConversationItem = ({
 };
 
 const RoomItem = ({ room, onSelect }: { room: ChatRoom; onSelect: () => void }) => (
-  <div
-    className="mx-2 my-1.5 rounded-xl bg-white dark:bg-zinc-900 p-3 cursor-pointer transition-all duration-300 hover:bg-gray-50 dark:hover:bg-zinc-800 hover:shadow-md group"
+  <motion.div
+    initial={{ opacity: 0, y: 10 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.2 }}
+    className="group relative mx-2 my-1 rounded-2xl bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm border border-gray-100/50 dark:border-zinc-800/50 cursor-pointer transition-all duration-300 hover:bg-white dark:hover:bg-zinc-800 hover:shadow-lg hover:shadow-purple-500/10 dark:hover:shadow-purple-500/10 hover:border-purple-200/50 dark:hover:border-purple-500/30 hover:-translate-y-0.5"
     onClick={onSelect}
   >
-    <div className="flex items-center">
-      <div className="relative">
-        <div className="bg-gradient-to-br from-blue-100 to-cyan-100 dark:from-blue-900/40 dark:to-cyan-900/30 rounded-full p-3 shadow-sm">
-          <UsersIcon className="h-5 w-5 text-blue-600 dark:text-blue-300" />
+    <div className="flex items-center p-4 gap-4">
+      <div className="relative flex-shrink-0">
+        <div className="bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-900/50 dark:to-blue-900/50 rounded-2xl p-3 shadow-lg ring-2 ring-purple-100/50 dark:ring-purple-700/50 group-hover:ring-purple-200/50 dark:group-hover:ring-purple-500/30 transition-all duration-300">
+          <UsersIcon className="h-6 w-6 text-purple-600 dark:text-purple-300" />
         </div>
       </div>
 
-      <div className="ml-4 flex-1">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <h3 className="font-semibold text-gray-800 dark:text-white">{room.name}</h3>
-            <span className={`text-xs px-2 py-0.5 rounded-full
-              ${room.accessType === 'brand'
-                ? 'bg-blue-100 text-blue-700 border border-blue-200 dark:bg-blue-900/40 dark:text-blue-300 dark:border-blue-900'
+      <div className="flex-1 min-w-0">
+        <div className="flex justify-between items-start mb-2">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
+            <h3 className="font-semibold text-gray-900 dark:text-white text-base truncate group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+              {room.name}
+            </h3>
+            <span className={`text-xs px-2.5 py-1 rounded-full font-medium border transition-all ${
+              room.accessType === 'brand'
+                ? 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-700/50'
                 : room.accessType === 'influencer'
-                  ? 'bg-purple-100 text-purple-700 border border-purple-200 dark:bg-purple-900/40 dark:text-purple-300 dark:border-purple-900'
-                  : 'bg-green-100 text-green-700 border border-green-200 dark:bg-green-900/40 dark:text-green-300 dark:border-green-900'
-              }`}>
+                  ? 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-700/50'
+                  : 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-700/50'
+            }`}>
               {room.accessType === 'brand'
                 ? 'Brands Only'
                 : room.accessType === 'influencer'
@@ -362,19 +350,27 @@ const RoomItem = ({ room, onSelect }: { room: ChatRoom; onSelect: () => void }) 
                   : 'All Members'}
             </span>
           </div>
-          <span className="text-xs text-gray-500 dark:text-zinc-400 font-medium">
+          <span className="text-xs text-gray-500 dark:text-zinc-400 font-medium flex-shrink-0">
             {new Date(room.createdAt).toLocaleDateString()}
           </span>
         </div>
 
-        <div className="flex justify-between items-center mt-1">
-          <p className="text-sm text-gray-600 dark:text-zinc-300 truncate">
+        <div className="flex justify-between items-center">
+          <p className="text-sm text-gray-600 dark:text-zinc-400 truncate flex-1 mr-3 leading-relaxed">
             {room.participants.length} participants
           </p>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 px-2.5 py-1 bg-gray-100 dark:bg-zinc-800 rounded-full">
+              <Users className="w-3 h-3 text-gray-500 dark:text-zinc-400" />
+              <span className="text-xs font-medium text-gray-600 dark:text-zinc-400">
+                {room.participants.length}
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  </motion.div>
 );
 
 const SearchResults = ({
@@ -388,51 +384,61 @@ const SearchResults = ({
 }) => {
   if (loading) {
     return (
-      <div className="p-4 flex justify-center">
-        <div className="h-6 w-6 border-2 border-t-purple-600 border-l-purple-600 border-b-transparent border-r-transparent rounded-full animate-spin"></div>
+      <div className="p-6 flex justify-center">
+        <div className="flex items-center gap-3">
+          <Loader2 className="h-5 w-5 animate-spin text-purple-600" />
+          <span className="text-sm text-gray-600 dark:text-zinc-400">Searching...</span>
+        </div>
       </div>
     );
   }
 
   if (results.length === 0) {
-    return <p className="p-3 text-gray-500 text-center text-sm">No users found</p>;
+    return (
+      <div className="p-6 text-center">
+        <UserIcon className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+        <p className="text-gray-500 dark:text-zinc-400 text-sm">No users found</p>
+      </div>
+    );
   }
 
   return (
-    <>
+    <div className="p-2">
       {results.map((user) => (
-        <Card
+        <motion.div
           key={user._id}
-          className="flex items-center gap-3 p-3 hover:bg-gray-50 cursor-pointer border-none shadow-sm m-1 hover:shadow-md transition-all duration-200"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-zinc-800 cursor-pointer rounded-xl m-1 transition-all duration-200 hover:shadow-md border border-transparent hover:border-purple-200/50 dark:hover:border-purple-500/30"
           onClick={() => onSelectUser(user._id)}
         >
-          <Avatar className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-50 to-blue-50 shadow-sm">
+          <Avatar className="w-11 h-11 rounded-xl bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-900/50 dark:to-blue-900/50 shadow-md ring-2 ring-purple-100/50 dark:ring-purple-700/50">
             <div className="h-full w-full absolute inset-0">
               <Image
                 src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}`}
                 alt={user.name || "User"}
-                width={40}
-                height={40}
-                className="rounded-full object-cover"
+                width={44}
+                height={44}
+                className="rounded-xl object-cover"
                 onError={(e) => {
                   e.currentTarget.style.display = 'none';
                 }}
               />
             </div>
-            <AvatarFallback>
+            <AvatarFallback className="bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-900/50 dark:to-blue-900/50 text-purple-700 dark:text-purple-300 font-semibold">
               {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
             </AvatarFallback>
           </Avatar>
-          <div className="flex-1">
-            <span className="font-medium text-gray-800">{user.name}</span>
-            <p className="text-xs text-gray-500">{user.role}</p>
+          <div className="flex-1 min-w-0">
+            <h4 className="font-semibold text-gray-900 dark:text-white truncate">{user.name}</h4>
+            <p className="text-xs text-gray-500 dark:text-zinc-400 font-medium">{user.role}</p>
           </div>
-          <Button size="sm" variant="ghost" className="rounded-full text-purple-600 hover:bg-purple-50 hover:text-purple-700">
+          <Button size="sm" variant="ghost" className="rounded-xl text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/30 hover:text-purple-700 dark:hover:text-purple-300 transition-all duration-200">
             <MessageSquarePlus size={16} />
           </Button>
-        </Card>
+        </motion.div>
       ))}
-    </>
+    </div>
   );
 };
 

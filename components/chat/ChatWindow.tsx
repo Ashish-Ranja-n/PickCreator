@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { ArrowLeft, Paperclip, Send, Mic, MoreVertical, X, User, Trash2, Loader2, AlertTriangle, Image as ImageIcon, FileAudio, FileVideo, File } from "lucide-react";
+import { ArrowLeft, Paperclip, Send, Mic, MoreVertical, X, Trash2, Loader2, AlertTriangle, Image as ImageIcon, FileAudio, FileVideo, File } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useParams, usePathname, useRouter } from "next/navigation";
@@ -800,17 +800,18 @@ export const ChatWindow = () => {
       }}
       >
         <div className="flex items-center justify-between h-full px-4">
-          <div className="flex items-center">
+          <div className="flex items-center gap-3">
             <Button
               variant="ghost"
               size="icon"
-              className="mr-2 rounded-full hover:bg-slate-100 transition-colors"
+              className="rounded-full hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors h-9 w-9"
               onClick={() => router.push(`/${basePath}/chat/`)}
             >
-              <ArrowLeft size={22} className="text-slate-700" />
+              <ArrowLeft size={18} className="text-gray-600 dark:text-zinc-400" />
             </Button>
+
             <div className="relative">
-              <Avatar className="h-10 w-10 border-2 border-slate-100 dark:border-zinc-800 shadow-sm bg-white dark:bg-zinc-900">
+              <Avatar className="h-10 w-10">
                 {otherUser && (
                   <div className="h-full w-full absolute inset-0">
                     <Image
@@ -825,42 +826,29 @@ export const ChatWindow = () => {
                     />
                   </div>
                 )}
-                <div className="h-10 w-10 rounded-full flex items-center justify-center bg-slate-200 dark:bg-zinc-800 text-slate-600 dark:text-zinc-300">
+                <div className="h-10 w-10 rounded-full flex items-center justify-center bg-gray-100 dark:bg-zinc-700 text-gray-600 dark:text-zinc-300 font-medium">
                   {otherUser?.name ? otherUser.name.charAt(0).toUpperCase() : 'U'}
                 </div>
               </Avatar>
               {otherUser && otherUser._id && (
-                <span
-                  className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white ${
-                    isUserOnline(otherUser._id) ? 'bg-emerald-500 animate-pulse' : 'bg-gray-400'
+                <div
+                  className={`absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-white dark:border-zinc-900 ${
+                    isUserOnline(otherUser._id) ? 'bg-green-500' : 'bg-gray-400'
                   }`}
                 />
               )}
             </div>
-            <div className="ml-3">
-              <h2 className="font-semibold text-slate-800 dark:text-white text-base">{otherUser?.name}</h2>
-              <div className="flex items-center mt-0.5 text-xs">
+
+            <div className="flex-1 min-w-0">
+              <h2 className="font-semibold text-gray-900 dark:text-white text-base truncate">{otherUser?.name}</h2>
+              <div className="flex items-center gap-2">
                 {otherUser?._id && (
-                  <div className="flex items-center">
-                    <span
-                      className={otherUser?._id && isUserOnline(otherUser._id)
-                        ? 'text-emerald-600 font-medium'
-                        : 'text-slate-500 dark:text-zinc-400 font-medium'
-                      }
-                    >
-                      {otherUser?._id && isUserOnline(otherUser._id) ? 'online' : 'offline'}
-                    </span>
-                  </div>
+                  <span className="text-xs text-gray-500 dark:text-zinc-400">
+                    {isUserOnline(otherUser._id) ? 'online' : 'offline'}
+                  </span>
                 )}
                 {typingUser === otherUser?._id && (
-                  <div className="flex items-center ml-2">
-                    <span className="text-emerald-600 dark:text-emerald-400">typing</span>
-                    <span className="text-emerald-600 dark:text-emerald-400 ml-0.5">
-                      <span className="inline-block animate-bounce">.</span>
-                      <span className="inline-block animate-bounce delay-100">.</span>
-                      <span className="inline-block animate-bounce delay-200">.</span>
-                    </span>
-                  </div>
+                  <span className="text-xs text-green-600 dark:text-green-400">typing...</span>
                 )}
               </div>
             </div>
@@ -871,33 +859,34 @@ export const ChatWindow = () => {
               variant="ghost"
               size="icon"
               onClick={() => setShowOptions(!showOptions)}
-              className="rounded-full hover:bg-slate-100 transition-colors"
+              className="rounded-full hover:bg-gray-100 dark:hover:bg-zinc-800 transition-all duration-200 h-10 w-10"
             >
-              <MoreVertical size={20} className="text-slate-700" />
+              <MoreVertical size={20} className="text-gray-700 dark:text-zinc-300" />
             </Button>
 
             {showOptions && (
               <div className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-zinc-900 rounded-lg shadow-lg border border-slate-200 dark:border-zinc-800 z-50 animate-in fade-in slide-in-from-top-5 duration-200">
                 <div className="p-1">
-                  <button
-                    className="flex items-center w-full px-4 py-2 text-sm text-left text-slate-700 dark:text-zinc-200 hover:bg-slate-50 dark:hover:bg-zinc-800 rounded-md transition-colors"
-                    onClick={() => {
-                      setShowOptions(false);
-                    }}
-                  >
-                    <User size={16} className="mr-2" />
-                    Visit Profile
-                  </button>
-                  <button
-                    className="flex items-center w-full px-4 py-2 text-sm text-left text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900 rounded-md transition-colors"
-                    onClick={() => {
-                      setShowDeleteConfirm(true);
-                      setShowOptions(false);
-                    }}
-                  >
-                    <Trash2 size={16} className="mr-2" />
-                    Delete Chat
-                  </button>
+                  {/* Delete Chat button - only available to admins */}
+                  {currentUser?.role === 'Admin' && (
+                    <button
+                      className="flex items-center w-full px-4 py-2 text-sm text-left text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900 rounded-md transition-colors"
+                      onClick={() => {
+                        setShowDeleteConfirm(true);
+                        setShowOptions(false);
+                      }}
+                    >
+                      <Trash2 size={16} className="mr-2" />
+                      Delete Chat
+                    </button>
+                  )}
+
+                  {/* Show message if no options available */}
+                  {currentUser?.role !== 'Admin' && (
+                    <div className="px-4 py-3 text-sm text-gray-500 dark:text-zinc-400 text-center">
+                      No options available
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -963,20 +952,24 @@ export const ChatWindow = () => {
                 {msgs.map((message) => (
                   <div
                     key={message._id}
-                    className={`flex ${
+                    className={`flex mb-3 ${
                       message.sender === currentUserId ? "justify-end" : "justify-start"
-                    } ${chatMessages.length > 20 ? '' : 'animate-in slide-in-from-bottom-2 duration-200'}`}
+                    }`}
                   >
                     <div
-                      className={`max-w-[70%] rounded-2xl py-2.5 px-3.5 shadow-sm ${
+                      className={`max-w-[80%] sm:max-w-[70%] ${
                         message.sender === currentUserId
                           ? message.media && message.media.length > 0 && !message.text
-                            ? "bg-transparent text-white p-0 shadow-none"
-                            : "bg-indigo-600 text-white dark:bg-indigo-700 dark:text-white"
-                          : "bg-slate-100 border border-slate-200 text-slate-800 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-200"
+                            ? "bg-transparent p-0"
+                            : "bg-blue-500 text-white rounded-2xl rounded-br-md px-3 py-2"
+                          : "bg-gray-100 dark:bg-zinc-800 text-gray-900 dark:text-zinc-100 rounded-2xl rounded-bl-md px-3 py-2"
                       }`}
                     >
-                      {message.text && <p className="break-words leading-relaxed">{message.text}</p>}
+                      {message.text && (
+                        <p className="break-words leading-relaxed text-sm">
+                          {message.text}
+                        </p>
+                      )}
 
                       {message.media && message.media.length > 0 && (
                         <div className={`mt-2 space-y-2 ${message.sender === currentUserId ? "media-sent" : "media-received"}`}>
@@ -991,17 +984,18 @@ export const ChatWindow = () => {
                         </div>
                       )}
 
-                      <span
-                        className={`text-xs ${
+                      {/* Simple timestamp */}
+                      <div className={`mt-1 ${
+                        message.sender === currentUserId ? "text-right" : "text-left"
+                      }`}>
+                        <span className={`text-sm ${
                           message.sender === currentUserId
-                            ? message.media && message.media.length > 0 && !message.text
-                              ? "text-indigo-200 text-right pr-1"
-                              : "text-indigo-200 dark:text-indigo-100"
-                            : "text-slate-500 dark:text-zinc-400"
-                        } block mt-1 opacity-75`}
-                      >
-                        {message.timestamp}
-                      </span>
+                            ? "text-white/80"
+                            : "text-gray-500 dark:text-zinc-400"
+                        }`}>
+                          {message.timestamp}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -1076,44 +1070,46 @@ export const ChatWindow = () => {
         </div>
       )}
 
-      {/* Fixed Footer */}
-      <footer className="fixed bottom-0 left-0 right-0 z-30 h-[88px] bg-white dark:bg-black border-t border-slate-200 dark:border-zinc-800 shadow-lg">
+      {/* Clean Input Footer */}
+      <footer className="fixed bottom-0 left-0 right-0 z-30 bg-white dark:bg-zinc-900 border-t border-gray-200 dark:border-zinc-800">
         {/* Audio recorder when active */}
         {showAudioRecorder ? (
           <div className="p-3" style={{
             paddingBottom: isIOS && !isKeyboardOpen ? `max(env(safe-area-inset-bottom), 12px)` : '12px',
           }}>
-            <AudioRecorder
-              onSend={handleAudioSend}
-              onCancel={handleAudioRecorderCancel}
-            />
+            <div className="bg-gray-50 dark:bg-zinc-800 rounded-xl p-3">
+              <AudioRecorder
+                onSend={handleAudioSend}
+                onCancel={handleAudioRecorderCancel}
+              />
+            </div>
           </div>
         ) : (
-          /* Text input area */
-          <div className="p-3" style={{
-            paddingBottom: isIOS && !isKeyboardOpen ? `max(env(safe-area-inset-bottom), 12px)` : '12px',
+          /* Enhanced Text input area */
+          <div className="p-4" style={{
+            paddingBottom: isIOS && !isKeyboardOpen ? `max(env(safe-area-inset-bottom), 16px)` : '16px',
           }}>
-            <div className="flex items-end gap-2 bg-slate-50 dark:bg-zinc-900 rounded-xl p-2 shadow-sm transition-shadow focus-within:shadow-md">
-              <div className="relative">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-slate-500 dark:text-zinc-400 hover:text-slate-700 dark:hover:text-zinc-200 hover:bg-white dark:hover:bg-zinc-800 rounded-full transition-colors"
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  <Paperclip size={20} />
-                </Button>
+            <div className="flex items-end gap-3 bg-gray-50 dark:bg-zinc-800 rounded-2xl px-4 py-3 shadow-sm border border-gray-200 dark:border-zinc-700">
+              {/* Attach file button with better styling */}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-gray-600 dark:text-zinc-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl h-10 w-10 flex-shrink-0 transition-all duration-200"
+                onClick={() => fileInputRef.current?.click()}
+                title="Attach file"
+              >
+                <Paperclip size={20} />
+              </Button>
 
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  className="hidden"
-                  accept="*/*"
-                  onChange={handleFileSelect}
-                />
-              </div>
+              <input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                accept="*/*"
+                onChange={handleFileSelect}
+              />
 
-              <div className="flex-1 relative">
+              <div className="flex-1">
                 <textarea
                   value={newMessage}
                   onKeyDown={(e) => {
@@ -1123,44 +1119,44 @@ export const ChatWindow = () => {
                   }}
                   onChange={handleTextareaChange}
                   placeholder="Type a message..."
-                  className="w-full px-3 py-2 resize-none border-none rounded-lg focus:outline-none focus:ring-0 bg-white dark:bg-zinc-800 dark:text-white scrollbar-hide placeholder:text-slate-400 dark:placeholder:text-zinc-400"
+                  className="w-full px-3 py-2 resize-none border-none rounded-xl focus:outline-none focus:ring-0 bg-transparent text-gray-900 dark:text-white scrollbar-hide placeholder:text-gray-500 dark:placeholder:text-zinc-400 text-base leading-relaxed"
                   style={{
                     height: textareaHeight,
-                    maxHeight: "120px",
+                    maxHeight: "100px",
                     minHeight: "40px"
                   }}
                 />
               </div>
 
-              {/* Show mic button when no text or file */}
+              {/* Enhanced mic button when no text or file */}
               {!newMessage.trim() && !selectedFile && (
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => setShowAudioRecorder(true)}
-                  className="h-10 w-10 text-slate-500 hover:text-slate-700 hover:bg-white rounded-full transition-colors"
+                  className="h-10 w-10 text-gray-600 dark:text-zinc-300 hover:text-green-600 dark:hover:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-xl flex-shrink-0 transition-all duration-200"
                   title="Record audio message"
                 >
                   <Mic size={20} />
                 </Button>
               )}
 
-              {/* Show send button when has text or file */}
+              {/* Enhanced send button when has text or file */}
               {(newMessage.trim() || selectedFile) && (
                 <Button
                   onClick={handleSend}
                   disabled={((!newMessage.trim() && !selectedFile) || isSending || isUploading)}
-                  className={`rounded-full h-10 w-10 p-0 flex items-center justify-center transition-all transform hover:scale-105 ${
+                  className={`rounded-xl h-10 w-10 p-0 flex items-center justify-center transition-all duration-200 flex-shrink-0 shadow-sm ${
                     (newMessage.trim() || selectedFile) && !isSending && !isUploading
-                      ? 'bg-indigo-600 hover:bg-indigo-700 shadow-md hover:shadow-lg dark:bg-indigo-700 dark:hover:bg-indigo-800'
-                      : 'bg-slate-300 dark:bg-zinc-700'
+                      ? 'bg-blue-500 hover:bg-blue-600 text-white hover:shadow-md transform hover:scale-105'
+                      : 'bg-gray-300 dark:bg-zinc-700 text-gray-500 dark:text-zinc-500 cursor-not-allowed'
                   }`}
                   title="Send message"
                 >
                   {isSending || isUploading ? (
-                    <Loader2 size={18} className="text-white animate-spin" />
+                    <Loader2 size={18} className="animate-spin" />
                   ) : (
-                    <Send size={18} className="text-white" />
+                    <Send size={18} />
                   )}
                 </Button>
               )}
