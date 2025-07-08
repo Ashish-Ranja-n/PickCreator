@@ -1085,21 +1085,23 @@ export const ChatWindow = () => {
             </div>
           </div>
         ) : (
-          /* Enhanced Text input area */
+          /* Separated Input Components Design */
           <div className="p-4" style={{
             paddingBottom: isIOS && !isKeyboardOpen ? `max(env(safe-area-inset-bottom), 16px)` : '16px',
           }}>
-            <div className="flex items-end gap-3 bg-gray-50 dark:bg-zinc-800 rounded-2xl px-4 py-3 shadow-sm border border-gray-200 dark:border-zinc-700">
-              {/* Attach file button with better styling */}
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-gray-600 dark:text-zinc-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl h-10 w-10 flex-shrink-0 transition-all duration-200"
-                onClick={() => fileInputRef.current?.click()}
-                title="Attach file"
-              >
-                <Paperclip size={20} />
-              </Button>
+            <div className="flex items-end gap-3">
+              {/* Standalone Attach File Button */}
+              <div className="flex-shrink-0">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-12 w-12 bg-white dark:bg-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-700 text-gray-600 dark:text-zinc-300 hover:text-blue-600 dark:hover:text-blue-400 rounded-full shadow-md hover:shadow-lg border border-gray-200 dark:border-zinc-700 transition-all duration-200 hover:scale-105"
+                  onClick={() => fileInputRef.current?.click()}
+                  title="Attach file"
+                >
+                  <Paperclip size={22} className="stroke-2" />
+                </Button>
+              </div>
 
               <input
                 type="file"
@@ -1109,56 +1111,63 @@ export const ChatWindow = () => {
                 onChange={handleFileSelect}
               />
 
+              {/* Standalone Message Input */}
               <div className="flex-1">
-                <textarea
-                  value={newMessage}
-                  onKeyDown={(e) => {
-                    if(e.key === "Enter" && !e.shiftKey) {
-                      handleKeyPress(e);
-                    }
-                  }}
-                  onChange={handleTextareaChange}
-                  placeholder="Type a message..."
-                  className="w-full px-3 py-2 resize-none border-none rounded-xl focus:outline-none focus:ring-0 bg-transparent text-gray-900 dark:text-white scrollbar-hide placeholder:text-gray-500 dark:placeholder:text-zinc-400 text-base leading-relaxed"
-                  style={{
-                    height: textareaHeight,
-                    maxHeight: "100px",
-                    minHeight: "40px"
-                  }}
-                />
+                <div className="bg-white dark:bg-zinc-800 rounded-3xl shadow-md border border-gray-200 dark:border-zinc-700 px-5 py-3 hover:shadow-lg transition-all duration-200">
+                  <textarea
+                    value={newMessage}
+                    onKeyDown={(e) => {
+                      if(e.key === "Enter" && !e.shiftKey) {
+                        handleKeyPress(e);
+                      }
+                    }}
+                    onChange={handleTextareaChange}
+                    placeholder="Type a message..."
+                    className="w-full resize-none border-none focus:outline-none focus:ring-0 bg-transparent text-gray-900 dark:text-white scrollbar-hide placeholder:text-gray-500 dark:placeholder:text-zinc-400 text-base leading-relaxed"
+                    style={{
+                      height: textareaHeight,
+                      maxHeight: "100px",
+                      minHeight: "44px"
+                    }}
+                  />
+                </div>
               </div>
 
-              {/* Enhanced mic button when no text or file */}
+              {/* Standalone Mic Button (when no text or file) */}
               {!newMessage.trim() && !selectedFile && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setShowAudioRecorder(true)}
-                  className="h-10 w-10 text-gray-600 dark:text-zinc-300 hover:text-green-600 dark:hover:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-xl flex-shrink-0 transition-all duration-200"
-                  title="Record audio message"
-                >
-                  <Mic size={20} />
-                </Button>
+                <div className="flex-shrink-0">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setShowAudioRecorder(true)}
+                    className="h-12 w-12 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-full shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105"
+                    title="Record audio message"
+                  >
+                    <Mic size={22} className="stroke-2" />
+                  </Button>
+                </div>
               )}
 
-              {/* Enhanced send button when has text or file */}
+              {/* Standalone Send Button (when has text or file) */}
               {(newMessage.trim() || selectedFile) && (
-                <Button
-                  onClick={handleSend}
-                  disabled={((!newMessage.trim() && !selectedFile) || isSending || isUploading)}
-                  className={`rounded-xl h-10 w-10 p-0 flex items-center justify-center transition-all duration-200 flex-shrink-0 shadow-sm ${
-                    (newMessage.trim() || selectedFile) && !isSending && !isUploading
-                      ? 'bg-blue-500 hover:bg-blue-600 text-white hover:shadow-md transform hover:scale-105'
-                      : 'bg-gray-300 dark:bg-zinc-700 text-gray-500 dark:text-zinc-500 cursor-not-allowed'
-                  }`}
-                  title="Send message"
-                >
-                  {isSending || isUploading ? (
-                    <Loader2 size={18} className="animate-spin" />
-                  ) : (
-                    <Send size={18} />
-                  )}
-                </Button>
+                <div className="flex-shrink-0">
+                  <Button
+                    onClick={handleSend}
+                    disabled={((!newMessage.trim() && !selectedFile) || isSending || isUploading)}
+                    className={`h-12 w-12 p-0 flex items-center justify-center rounded-full shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105 ${
+                      (newMessage.trim() || selectedFile) && !isSending && !isUploading
+                        ? 'bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white'
+                        : 'bg-gray-300 dark:bg-zinc-700 text-gray-500 dark:text-zinc-500 cursor-not-allowed'
+                    }`}
+                    title="Send message"
+                  >
+                    {isSending || isUploading ? (
+                      <Loader2 size={22} className="animate-spin stroke-2" />
+                    ) : (
+                      <Send size={22} className="stroke-2" />
+                    )}
+                  </Button>
+                </div>
               )}
             </div>
           </div>
