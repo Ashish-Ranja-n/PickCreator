@@ -18,6 +18,7 @@ const BUSINESS_TYPES = [
 
 export default function BrandOnboarding() {
   const [form, setForm] = useState({
+    fullName: "",
     businessType: "",
     businessName: "",
     location: "",
@@ -42,6 +43,7 @@ export default function BrandOnboarding() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          fullName: form.fullName,
           businessType: form.businessType,
           businessName: form.businessName,
           location: form.location,
@@ -67,6 +69,19 @@ export default function BrandOnboarding() {
         <p className="text-gray-500 text-center mb-4">Complete your brand profile to get started</p>
       </div>
       <form onSubmit={handleSubmit} className="w-full max-w-md space-y-7">
+        <div>
+          <label className="block mb-2 font-medium text-gray-700">Full Name</label>
+          <input
+            type="text"
+            name="fullName"
+            value={form.fullName}
+            onChange={handleChange}
+            required
+            className="w-full h-12 px-4 border-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+            placeholder="Enter your full name"
+          />
+        </div>
+
         <div>
           <label className="block mb-2 font-medium text-gray-700">Type of Business</label>
           <Popover open={openBusinessType} onOpenChange={setOpenBusinessType}>

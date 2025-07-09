@@ -12,8 +12,8 @@ export async function POST(req: NextRequest) {
     if (!userData || !userData._id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    const { businessType, businessName, location } = await req.json();
-    if (!businessType || !businessName || !location) {
+    const { fullName, businessType, businessName, location } = await req.json();
+    if (!fullName || !businessType || !businessName || !location) {
       return NextResponse.json({ error: "All fields are required." }, { status: 400 });
     }
 
@@ -21,6 +21,7 @@ export async function POST(req: NextRequest) {
     const brand = await Brand.findByIdAndUpdate(
       userData._id,
       {
+        name: fullName,
         companyName: businessName,
         businessType,
         location,
