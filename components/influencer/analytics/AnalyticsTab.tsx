@@ -204,10 +204,10 @@ export default function AnalyticsTab() {
   }, [verifiedInfluencers]);
 
   return (
-    <div className="min-h-screen px-2 sm:px-6 py-10 bg-white dark:bg-black transition-colors">
+    <div className="w-full max-w-md mx-auto mb-8 px-3 py-6 bg-white dark:bg-black transition-colors overflow-hidden">
       {/* Notice Board Section - Mobile-First Compact Design */}
-      <section className="mb-6 w-full max-w-2xl mx-auto">
-        <div className="flex items-center justify-between mb-2 px-1">
+      <section className="mb-8 w-full">
+        <div className="flex items-center justify-between mb-3 px-1">
           <h2 className="text-base sm:text-lg font-bold bg-gradient-to-r from-fuchsia-400 to-violet-400 bg-clip-text text-transparent tracking-tight">Notice Board</h2>
           {isAdmin && (
             <Button
@@ -229,9 +229,9 @@ export default function AnalyticsTab() {
             <p className="text-xs text-gray-500 dark:text-zinc-400">No updates yet</p>
           </div>
         ) : (
-          <div className="relative">
+          <div className="relative w-full">
             {/* Horizontal Scrollable Notice Cards */}
-            <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2 snap-x snap-mandatory">
+            <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2 snap-x snap-mandatory -mx-1 px-1">
               {/* Pinned Notices First */}
               {notices
                 .filter(notice => notice.isPinned)
@@ -249,7 +249,7 @@ export default function AnalyticsTab() {
 
             {/* Notice Count Indicator */}
             {notices.length > 1 && (
-              <div className="flex justify-center mt-2">
+              <div className="flex justify-center mt-3">
                 <div className="flex items-center gap-1 bg-gray-100 dark:bg-zinc-800 rounded-full px-2 py-1">
                   <div className="flex gap-1">
                     {notices.slice(0, Math.min(notices.length, 5)).map((_, index) => (
@@ -317,18 +317,18 @@ export default function AnalyticsTab() {
         </DialogContent>
       </Dialog>
       {/* Influencer section below notice board */}
-      <section className="mt-16 px-2 sm:px-8 py-6 max-w-6xl mx-auto">
-        <h3 className="text-2xl sm:text-3xl font-extrabold mb-2 tracking-tight text-center bg-gradient-to-r from-fuchsia-400 to-violet-400 bg-clip-text text-transparent">
+      <section className="mt-12 w-full">
+        <h3 className="text-xl sm:text-2xl font-extrabold mb-4 tracking-tight text-center bg-gradient-to-r from-fuchsia-400 to-violet-400 bg-clip-text text-transparent px-2">
           Influencers on our Platform
         </h3>
         {loadingInfluencers ? (
-          <div className="flex justify-center items-center h-24">
-            <Loader2 className="h-7 w-7 animate-spin text-fuchsia-500 dark:text-white" />
+          <div className="flex justify-center items-center h-20">
+            <Loader2 className="h-6 w-6 animate-spin text-fuchsia-500 dark:text-white" />
           </div>
         ) : shuffledInfluencers.length === 0 ? (
-          <div className="text-center text-gray-700 dark:text-zinc-400 text-base">No verified influencers found.</div>
+          <div className="text-center text-gray-700 dark:text-zinc-400 text-sm px-4">No verified influencers found.</div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 w-full max-w-3xl mx-auto">
+          <div className="space-y-4 w-full">
             {shuffledInfluencers.map((influencer) => (
               <InfluencerFlatBlock key={influencer._id} influencer={influencer} />
             ))}
@@ -353,7 +353,7 @@ function CompactNoticeCard({ notice, isPinned, isAdmin, onDelete }: CompactNotic
   const needsExpansion = notice.content.length > 80;
 
   return (
-    <div className={`relative group flex-shrink-0 w-72 sm:w-80 bg-white dark:bg-zinc-900 rounded-xl border transition-all duration-200 hover:shadow-lg snap-start ${
+    <div className={`relative group flex-shrink-0 w-64 sm:w-72 bg-white dark:bg-zinc-900 rounded-xl border transition-all duration-200 hover:shadow-lg snap-start ${
       isPinned
         ? 'border-amber-300 dark:border-amber-700/50 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 shadow-amber-100 dark:shadow-amber-900/20'
         : 'border-gray-200 dark:border-zinc-800 hover:border-gray-300 dark:hover:border-zinc-700'
@@ -418,33 +418,32 @@ function CompactNoticeCard({ notice, isPinned, isAdmin, onDelete }: CompactNotic
 function InfluencerFlatBlock({ influencer }: { influencer: any }) {
   const instaUrl = influencer.instagramUsername ? `https://instagram.com/${influencer.instagramUsername}` : undefined;
 
-  // Use a larger image size, similar to the original vertical card (full width, aspect-square)
   return (
-    <div className="flex flex-row items-start min-w-[340px] max-w-[500px] w-full mx-1 transition-transform duration-200 hover:scale-105 group" style={{ borderRadius: 18, padding: 0 }}>
-      {/* Profile Picture: cover half the horizontal space, always square */}
-      <div className="flex-shrink-0 flex items-center justify-center" style={{ width: '50%', aspectRatio: '1 / 1' }}>
+    <div className="flex flex-row items-center w-full bg-white dark:bg-zinc-900/50 rounded-2xl p-3 border border-gray-200 dark:border-zinc-800 transition-all duration-200 hover:shadow-md hover:border-gray-300 dark:hover:border-zinc-700">
+      {/* Profile Picture */}
+      <div className="flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20">
         {influencer.profilePictureUrl ? (
           <img
             src={influencer.profilePictureUrl}
             alt={influencer.name}
-            className="w-full h-full object-cover rounded-[18px] border-2 border-[#b0b8c1] dark:border-zinc-700 group-hover:border-[#3a4250] group-hover:shadow-xl"
-            style={{ borderRadius: 18, marginBottom: 0, width: '100%', height: '100%', aspectRatio: '1 / 1' }}
+            className="w-full h-full object-cover rounded-xl border-2 border-gray-200 dark:border-zinc-700"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-[#e3e6ea] dark:bg-zinc-800 rounded-[18px] text-5xl font-extrabold text-[#3a4250] dark:text-white" style={{ aspectRatio: '1 / 1' }}>
+          <div className="w-full h-full flex items-center justify-center bg-gray-100 dark:bg-zinc-800 rounded-xl text-xl font-bold text-gray-600 dark:text-white">
             {influencer.name ? influencer.name.charAt(0).toUpperCase() : '?'}
           </div>
         )}
       </div>
+
       {/* Info to the right of the picture */}
-      <div className="flex flex-col justify-center flex-1 pl-4 min-w-0">
-        <div className="text-base font-bold text-[#2d3a4a] dark:text-white mb-0.5 truncate">
+      <div className="flex flex-col justify-center flex-1 pl-3 min-w-0">
+        <div className="text-sm font-bold text-gray-900 dark:text-white mb-1 truncate">
           {instaUrl ? (
             <a
               href={instaUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:underline hover:text-[#353c47] dark:hover:text-zinc-400 transition-colors"
+              className="hover:underline hover:text-gray-700 dark:hover:text-zinc-300 transition-colors"
             >
               @{influencer.instagramUsername}
             </a>
@@ -452,11 +451,11 @@ function InfluencerFlatBlock({ influencer }: { influencer: any }) {
             `@${influencer.name}`
           )}
         </div>
-        <div className="text-sm font-medium text-[#353c47] dark:text-zinc-400 tracking-wide">
+        <div className="text-xs font-medium text-gray-600 dark:text-zinc-400 mb-1">
           {formatFollowers(influencer.followers || 0)} followers
         </div>
         {influencer.bio && (
-          <div className="text-sm text-gray-700 dark:text-zinc-300 mt-2 break-words line-clamp-3 max-w-full">
+          <div className="text-xs text-gray-600 dark:text-zinc-400 line-clamp-2 leading-relaxed">
             {influencer.bio}
           </div>
         )}

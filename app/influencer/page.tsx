@@ -1,5 +1,5 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import QnAClient from '@/components/influencer/qna/QnAClient';
 import { BarChart, HelpCircle, Trophy } from 'lucide-react';
 import AnalyticsTab from "@/components/influencer/analytics/AnalyticsTab";
@@ -47,7 +47,7 @@ export default function InfluencerPage() {
 
         {/* Scrollable content area with padding to account for fixed header */}
         <div className="flex-1 overflow-y-auto pt-4">
-          <TabsContent value="analytics" className="h-full pt-2">
+          <TabsContent value="analytics" className="h-full pt-2 flex justify-center">
             <AnalyticsTab />
           </TabsContent>
 
