@@ -1,8 +1,7 @@
-// Enhanced service worker with improved error handling and caching strategies
-const CACHE_VERSION = 'v2.1';
-const CACHE_NAME = `pickcreator-cache-${CACHE_VERSION}`;
-const DYNAMIC_CACHE = `pickcreator-dynamic-${CACHE_VERSION}`;
-const USER_DATA_CACHE = `pickcreator-user-data-${CACHE_VERSION}`;
+// This service worker handles push notifications and provides offline functionality
+const CACHE_NAME = 'pickcreator-cache-v1';
+const DYNAMIC_CACHE = 'pickcreator-dynamic-v1';
+const USER_ROLE_KEY = 'pickcreator-user-role';
 let userRole = '';
 
 // Authentication routes that should never be cached
@@ -14,525 +13,328 @@ const AUTH_ROUTES = [
   '/api/auth/currentUser'
 ];
 
-// Routes that should bypass service worker completely
-const BYPASS_ROUTES = [
-  '/api/auth/',
-  '/_next/',
-  '/favicon.ico',
-  '/robots.txt',
-  '/sitemap.xml'
+// Role-specific pages to pre-cache for offline use
+const ROLE_PAGES = [
+  '/brand',
+  '/brand/',
+  '/influencer',
+  '/influencer/',
+  '/admin',
+  '/admin/'
 ];
 
-// Critical assets to pre-cache for offline use
+// Assets to pre-cache for offline use
 const PRECACHE_ASSETS = [
   '/',
-  '/welcome',
-  '/manifest.json',
   '/icon.png',
-  '/web-app-manifest-192x192.png',
-  '/web-app-manifest-512x512.png'
+  '/manifest.json',
+  ...ROLE_PAGES,
+  // Add critical assets here
 ];
-
-// Network timeout for fetch requests (in milliseconds)
-const NETWORK_TIMEOUT = 5000;
-
-// Enhanced utility functions with better error handling
-const shouldBypassServiceWorker = (url) => {
-  return BYPASS_ROUTES.some(route => url.pathname.startsWith(route));
-};
-
-const isAuthRoute = (url) => {
-  return AUTH_ROUTES.some(route => url.pathname.includes(route));
-};
-
-const isNavigationRequest = (request) => {
-  return request.mode === 'navigate' ||
-         (request.method === 'GET' && request.headers.get('accept')?.includes('text/html'));
-};
-
-// Enhanced fetch with timeout and better error handling
-const fetchWithTimeout = async (request, timeout = NETWORK_TIMEOUT) => {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-  try {
-    const response = await fetch(request, {
-      signal: controller.signal
-    });
-    clearTimeout(timeoutId);
-    return response;
-  } catch (error) {
-    clearTimeout(timeoutId);
-    if (error.name === 'AbortError') {
-      console.warn('Request timed out:', request.url);
-      throw new Error('Network timeout');
-    }
-    throw error;
-  }
-};
 
 // Function to get user role from storage
 const getUserRole = async () => {
-  if (userRole) return userRole;
-
+  // First try memory
+  if (userRole) {
+    return userRole;
+  }
+  
   try {
-    const cache = await caches.open(USER_DATA_CACHE);
-    const response = await cache.match('user-role');
-    if (response) {
-      const data = await response.text();
-      if (data) {
-        userRole = data;
-        return data;
+    // Try localStorage
+    if (self.caches) {
+      try {
+        const cache = await caches.open('pickcreator-user-data');
+        const response = await cache.match('user-role');
+        if (response) {
+          const data = await response.text();
+          if (data) return data;
+        }
+      } catch (e) {
+        console.error('Error reading from cache:', e);
       }
     }
+    
+    return '';
   } catch (error) {
-    console.warn('Error getting user role from cache:', error);
+    console.error('Error getting user role:', error);
+    return '';
   }
-
-  return '';
 };
 
 // Store user role in cache for offline access
 const storeUserRole = async (role) => {
   if (!role) return;
-
+  
   try {
-    userRole = role;
-    const cache = await caches.open(USER_DATA_CACHE);
-    await cache.put('user-role', new Response(role));
-  } catch (error) {
-    console.warn('Error storing user role:', error);
+    userRole = role; // Store in memory first
+    
+    if (self.caches) {
+      const cache = await caches.open('pickcreator-user-data');
+      await cache.put('user-role', new Response(role));
+    }
+  } catch (e) {
+    console.error('Error storing user role:', e);
   }
 };
 
-// Install event - pre-cache essential assets with better error handling
-self.addEventListener('install', (event) => {
-  console.log('Service Worker installing...');
-  self.skipWaiting();
+// Check if a URL is an auth route that shouldn't be cached
+const isAuthRoute = (url) => {
+  return AUTH_ROUTES.some(route => url.pathname.includes(route));
+};
 
+// Install event - pre-cache essential assets
+self.addEventListener('install', (event) => {
+  self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => {
-        console.log('Pre-caching assets...');
-        return cache.addAll(PRECACHE_ASSETS);
-      })
-      .then(() => {
-        console.log('Pre-caching completed successfully');
-      })
-      .catch((error) => {
-        console.error('Pre-caching failed:', error);
-        // Don't fail the installation if pre-caching fails
-        return Promise.resolve();
-      })
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(PRECACHE_ASSETS);
+    })
   );
 });
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
-  console.log('Service Worker activating...');
-
   event.waitUntil(
-    Promise.all([
-      // Clean up old caches
-      caches.keys().then((cacheNames) => {
-        return Promise.all(
-          cacheNames.map((cacheName) => {
-            if (cacheName.startsWith('pickcreator-') &&
-                cacheName !== CACHE_NAME &&
-                cacheName !== DYNAMIC_CACHE &&
-                cacheName !== USER_DATA_CACHE) {
-              console.log('Deleting old cache:', cacheName);
-              return caches.delete(cacheName);
-            }
-          })
-        );
-      }),
-      // Take control of all clients
-      self.clients.claim()
-    ]).then(() => {
-      console.log('Service Worker activated successfully');
-    }).catch((error) => {
-      console.error('Service Worker activation failed:', error);
-    })
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          if (cacheName !== CACHE_NAME && 
+              cacheName !== DYNAMIC_CACHE && 
+              cacheName !== 'pickcreator-user-data') {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    }).then(() => self.clients.claim())
   );
 });
 
-// Enhanced fetch event with better error handling and routing
+// Fetch event - implement network-first strategy for API and cache-first for assets
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
-
-  // Skip service worker for certain routes
-  if (shouldBypassServiceWorker(url)) {
-    return;
-  }
-
-  // Never intercept auth routes - let browser handle them directly
+  
+  // Never cache auth endpoints - always use network only
   if (isAuthRoute(url)) {
-    return;
+    return; // Let browser handle auth requests normally without SW interference
   }
-
-  // Handle API requests with network-first approach
+  
+  // Handle API requests with network-first approach (for authentication)
   if (url.pathname.startsWith('/api/')) {
-    event.respondWith(handleApiRequest(event.request));
-    return;
-  }
-
-  // Handle navigation requests
-  if (isNavigationRequest(event.request)) {
-    event.respondWith(handleNavigationRequest(event.request));
-    return;
-  }
-
-  // Handle static assets
-  event.respondWith(handleAssetRequest(event.request));
-});
-
-// Handle API requests with timeout and fallback
-const handleApiRequest = async (request) => {
-  try {
-    const response = await fetchWithTimeout(request);
-
-    // Cache successful responses (except auth routes)
-    if (response.ok && !isAuthRoute(new URL(request.url))) {
-      try {
-        const cache = await caches.open(DYNAMIC_CACHE);
-        await cache.put(request, response.clone());
-      } catch (cacheError) {
-        console.warn('Failed to cache API response:', cacheError);
-      }
-    }
-
-    return response;
-  } catch (error) {
-    console.warn('API request failed, trying cache:', error);
-
-    // Try to get from cache as fallback
-    const cachedResponse = await caches.match(request);
-    if (cachedResponse) {
-      return cachedResponse;
-    }
-
-    // Return a meaningful error response
-    return new Response(
-      JSON.stringify({
-        error: 'Network unavailable',
-        message: 'Please check your connection and try again'
-      }),
-      {
-        status: 503,
-        statusText: 'Service Unavailable',
-        headers: { 'Content-Type': 'application/json' }
-      }
-    );
-  }
-};
-
-// Handle navigation requests with offline fallback
-const handleNavigationRequest = async (request) => {
-  try {
-    const response = await fetchWithTimeout(request);
-
-    // Cache successful navigation responses
-    if (response.ok) {
-      try {
-        const cache = await caches.open(CACHE_NAME);
-        await cache.put(request, response.clone());
-      } catch (cacheError) {
-        console.warn('Failed to cache navigation response:', cacheError);
-      }
-    }
-
-    return response;
-  } catch (error) {
-    console.warn('Navigation request failed, trying offline fallback:', error);
-
-    // Try to get from cache first
-    const cachedResponse = await caches.match(request);
-    if (cachedResponse) {
-      return cachedResponse;
-    }
-
-    // Try role-specific fallback
-    try {
-      const role = await getUserRole();
-      if (role) {
-        const rolePageUrl = `/${role.toLowerCase()}`;
-        const rolePageResponse = await caches.match(rolePageUrl) ||
-                                 await caches.match(`${rolePageUrl}/`);
-        if (rolePageResponse) {
-          return rolePageResponse;
-        }
-      }
-    } catch (roleError) {
-      console.warn('Error getting role for fallback:', roleError);
-    }
-
-    // Final fallback to home page
-    const homeResponse = await caches.match('/') || await caches.match('/welcome');
-    if (homeResponse) {
-      return homeResponse;
-    }
-
-    // Return a basic offline page
-    return new Response(
-      `<!DOCTYPE html>
-      <html>
-        <head>
-          <title>Offline - PickCreator</title>
-          <meta name="viewport" content="width=device-width, initial-scale=1">
-          <style>
-            body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
-            .offline-message { max-width: 400px; margin: 0 auto; }
-          </style>
-        </head>
-        <body>
-          <div class="offline-message">
-            <h1>You're Offline</h1>
-            <p>Please check your internet connection and try again.</p>
-            <button onclick="window.location.reload()">Retry</button>
-          </div>
-        </body>
-      </html>`,
-      {
-        status: 200,
-        headers: { 'Content-Type': 'text/html' }
-      }
-    );
-  }
-};
-
-// Handle static asset requests with cache-first strategy
-const handleAssetRequest = async (request) => {
-  try {
-    // Try cache first
-    const cachedResponse = await caches.match(request);
-    if (cachedResponse) {
-      return cachedResponse;
-    }
-
-    // If not in cache, fetch from network
-    const response = await fetchWithTimeout(request);
-
-    // Cache successful responses
-    if (response.ok && request.method === 'GET') {
-      try {
-        const cache = await caches.open(CACHE_NAME);
-        await cache.put(request, response.clone());
-      } catch (cacheError) {
-        console.warn('Failed to cache asset:', cacheError);
-      }
-    }
-
-    return response;
-  } catch (error) {
-    console.warn('Asset request failed:', error);
-
-    // Try to get from cache as final fallback
-    const cachedResponse = await caches.match(request);
-    if (cachedResponse) {
-      return cachedResponse;
-    }
-
-    // Return a 404 response for missing assets
-    return new Response('Asset not found', {
-      status: 404,
-      statusText: 'Not Found'
-    });
-  }
-};
-
-// Enhanced message event handler
-self.addEventListener('message', (event) => {
-  if (!event.data) return;
-
-  const { type, role } = event.data;
-
-  switch (type) {
-    case 'SKIP_WAITING':
-      self.skipWaiting();
-      break;
-
-    case 'LOGIN':
-      handleLoginMessage(role);
-      break;
-
-    case 'LOGOUT':
-      handleLogoutMessage();
-      break;
-
-    case 'CLEAR_CACHE':
-      handleClearCacheMessage();
-      break;
-
-    default:
-      console.log('Unknown message type:', type);
-  }
-});
-
-// Handle login message
-const handleLoginMessage = async (role) => {
-  if (!role) return;
-
-  try {
-    // Store the role for offline access
-    await storeUserRole(role);
-
-    // Pre-cache the role-specific landing page
-    const roleUrl = `/${role.toLowerCase()}`;
-    const cache = await caches.open(CACHE_NAME);
-
-    try {
-      await cache.add(new Request(roleUrl));
-      await cache.add(new Request(`${roleUrl}/`));
-      console.log('Pre-cached role pages for:', role);
-    } catch (cacheError) {
-      console.warn('Failed to pre-cache role pages:', cacheError);
-    }
-  } catch (error) {
-    console.error('Error handling login message:', error);
-  }
-};
-
-// Handle logout message
-const handleLogoutMessage = async () => {
-  try {
-    // Clear role from memory
-    userRole = '';
-
-    // Clear user data cache
-    const userCache = await caches.open(USER_DATA_CACHE);
-    await userCache.delete('user-role');
-
-    // Clear dynamic cache that may contain user-specific data
-    const dynamicCache = await caches.open(DYNAMIC_CACHE);
-    const keys = await dynamicCache.keys();
-
-    const clearPromises = keys
-      .filter(request => {
-        const url = request.url;
-        return url.includes('/api/') ||
-               url.includes('/admin/') ||
-               url.includes('/brand/') ||
-               url.includes('/influencer/');
-      })
-      .map(request => dynamicCache.delete(request));
-
-    await Promise.all(clearPromises);
-    console.log('Cleared user-specific cache data');
-  } catch (error) {
-    console.error('Error handling logout message:', error);
-  }
-};
-
-// Handle cache clear message
-const handleClearCacheMessage = async () => {
-  try {
-    const cacheNames = await caches.keys();
-    const deletePromises = cacheNames
-      .filter(name => name.startsWith('pickcreator-'))
-      .map(name => caches.delete(name));
-
-    await Promise.all(deletePromises);
-    console.log('Cleared all application caches');
-  } catch (error) {
-    console.error('Error clearing caches:', error);
-  }
-};
-
-// Enhanced push notification event handler
-self.addEventListener('push', (event) => {
-  console.log('Push notification received');
-
-  try {
-    // Default notification data
-    let data = {
-      title: 'PickCreator',
-      body: 'You have a new notification',
-      icon: '/icon.png',
-      badge: '/icon.png'
-    };
-
-    // Parse the data from the push event
-    if (event.data) {
-      try {
-        const pushData = event.data.json();
-        data = { ...data, ...pushData };
-      } catch (parseError) {
-        console.warn('Error parsing push notification data:', parseError);
-      }
-    }
-
-    const options = {
-      body: data.body,
-      icon: data.icon,
-      badge: data.badge,
-      image: data.image,
-      vibrate: [200, 100, 200],
-      silent: false,
-      timestamp: Date.now(),
-      requireInteraction: false,
-      data: data.data || {},
-      actions: data.actions || [],
-      tag: data.tag || 'default'
-    };
-
-    event.waitUntil(
-      self.registration.showNotification(data.title, options)
-        .catch(error => {
-          console.error('Error showing notification:', error);
-        })
-    );
-  } catch (error) {
-    console.error('Error in push event handler:', error);
-  }
-});
-
-// Enhanced notification click handler
-self.addEventListener('notificationclick', (event) => {
-  console.log('Notification clicked');
-  event.notification.close();
-
-  const targetUrl = event.notification.data?.url || '/';
-
-  event.waitUntil(
-    self.clients.matchAll({ type: 'window', includeUncontrolled: true })
-      .then(clients => {
-        // Check if there's already a window open
-        for (const client of clients) {
-          if (client.url.includes(self.location.origin)) {
-            // Focus existing window and navigate to target URL
-            return client.focus().then(() => {
-              if (targetUrl !== '/') {
-                return client.navigate(targetUrl);
-              }
+    event.respondWith(
+      fetch(event.request)
+        .then(response => {
+          // Clone the response
+          const responseToCache = response.clone();
+          
+          // Check if it's a successful response
+          if (response.ok) {
+            // Store in dynamic cache
+            caches.open(DYNAMIC_CACHE).then(cache => {
+              cache.put(event.request, responseToCache);
             });
           }
+          
+          return response;
+        })
+        .catch(() => {
+          // If network fails, try to get from cache
+          return caches.match(event.request);
+        })
+    );
+    return;
+  }
+  
+  // Handle navigation requests
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request)
+        .then(response => {
+          // Cache successful navigation responses
+          if (response.ok) {
+            // For role pages, store them in cache for offline access
+            if (ROLE_PAGES.some(page => url.pathname.startsWith(page))) {
+              const responseToCache = response.clone();
+              caches.open(CACHE_NAME).then(cache => {
+                cache.put(event.request, responseToCache);
+              });
+            }
+          }
+          return response;
+        })
+        .catch(async () => {
+          // If fetch fails (offline), redirect based on user role
+          try {
+            // Try to get role-specific page first
+            const role = await getUserRole();
+            console.log('Offline navigation, user role:', role);
+            
+            if (role && role.length > 0) {
+              // Try role-specific pages from cache
+              const rolePageUrl = `/${role.toLowerCase()}`;
+              console.log('Trying to serve cached role page:', rolePageUrl);
+              
+              // Try exact match first
+              let rolePageResponse = await caches.match(new Request(rolePageUrl));
+              
+              // If not found, try with trailing slash
+              if (!rolePageResponse) {
+                rolePageResponse = await caches.match(new Request(`${rolePageUrl}/`));
+              }
+              
+              if (rolePageResponse) {
+                console.log('Found cached role page');
+                return rolePageResponse;
+              }
+              
+              console.log('No cached role page found');
+            }
+            
+            // Fallback to home page if role page not in cache
+            console.log('Falling back to home page');
+            return caches.match('/');
+          } catch (error) {
+            console.error('Error in offline fallback:', error);
+            return caches.match('/');
+          }
+        })
+    );
+    return;
+  }
+  
+  // Standard assets - cache first strategy
+  event.respondWith(
+    caches.match(event.request)
+      .then(cachedResponse => {
+        if (cachedResponse) {
+          return cachedResponse;
         }
-
-        // Open new window if none exists
-        return self.clients.openWindow(targetUrl);
-      })
-      .catch(error => {
-        console.error('Error handling notification click:', error);
-        // Fallback to opening new window
-        return self.clients.openWindow(targetUrl);
+        
+        // If not in cache, fetch from network
+        return fetch(event.request).then(response => {
+          // Don't cache non-successful responses or non-GET requests
+          if (!response || response.status !== 200 || event.request.method !== 'GET') {
+            return response;
+          }
+          
+          // Clone the response
+          const responseToCache = response.clone();
+          
+          // Store in cache
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, responseToCache);
+          });
+          
+          return response;
+        });
       })
   );
 });
 
-// Handle notification close event
-self.addEventListener('notificationclose', () => {
-  console.log('Notification closed');
-  // You can track notification dismissals here if needed
+// Listen for message events to handle user actions like login/logout
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+  
+  // Handle login - store user role
+  if (event.data && event.data.type === 'LOGIN') {
+    if (event.data.role) {
+      // Store the role for offline access
+      storeUserRole(event.data.role);
+      
+      // Pre-cache the role-specific landing page
+      const roleUrl = `/${event.data.role.toLowerCase()}`;
+      caches.open(CACHE_NAME).then(cache => {
+        cache.add(new Request(roleUrl));
+        cache.add(new Request(`${roleUrl}/`));
+      });
+    }
+  }
+  
+  // Handle logout - clear caches for privacy/security
+  if (event.data && event.data.type === 'LOGOUT') {
+    // Clear role
+    userRole = '';
+    
+    // Remove from cache
+    if (self.caches) {
+      caches.open('pickcreator-user-data').then(cache => {
+        cache.delete('user-role');
+      });
+    }
+    
+    // Clear dynamic cache that may contain user-specific data
+    caches.open(DYNAMIC_CACHE).then(cache => {
+      cache.keys().then(keys => {
+        keys.forEach(request => {
+          // Only clear API responses and user-specific pages
+          if (request.url.includes('/api/') || 
+              request.url.includes('/admin/') ||
+              request.url.includes('/brand/') ||
+              request.url.includes('/influencer/')) {
+            cache.delete(request);
+          }
+        });
+      });
+    });
+  }
 });
 
-// Global error handler for unhandled errors in service worker
-self.addEventListener('error', (event) => {
-  console.error('Service Worker error:', event.error);
+// Push notification event handler - keeping existing functionality
+self.addEventListener('push', function(event) {
+  try {
+    // Parse the data from the push event
+    let data = {
+      title: 'New Notification',
+      body: 'You have a new notification',
+      icon: '/icon.png',
+    };
+    
+    // Try to parse the data if it exists
+    if (event.data) {
+      try {
+        data = event.data.json();
+      } catch (e) {
+        console.error('Error parsing push notification data:', e);
+        // Use default data if parsing fails
+      }
+    }
+    
+    const options = {
+      body: data.body,
+      icon: data.icon || '/icon.png',
+      badge: data.badge || '/icon.png',
+      image: data.image,
+      vibrate: [100, 50, 100],
+      silent: false,
+      timestamp: Date.now(),
+      requireInteraction: true,
+      data: data.data || {},
+      actions: data.actions || []
+    };
+
+    // Show the notification
+    event.waitUntil(
+      self.registration.showNotification(data.title, options)
+    );
+  } catch (error) {
+    console.error('Error showing notification:', error);
+  }
 });
 
-// Global handler for unhandled promise rejections
-self.addEventListener('unhandledrejection', (event) => {
-  console.error('Service Worker unhandled promise rejection:', event.reason);
-  event.preventDefault(); // Prevent the default browser behavior
-});
+// Handle notification click - with Chrome on iOS fix
+self.addEventListener('notificationclick', function(event) {
+  event.notification.close();
+  
+  // Handle notification click
+  if (event.notification.data && event.notification.data.url) {
+    event.waitUntil(
+      self.clients.openWindow(event.notification.data.url)
+    );
+  } else {
+    // Default to opening the main app if no URL is provided
+    event.waitUntil(
+      self.clients.openWindow('/')
+    );
+  }
+}); 

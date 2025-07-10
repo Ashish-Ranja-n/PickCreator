@@ -15,29 +15,23 @@ export const registerServiceWorker = async (): Promise<ServiceWorkerRegistration
     // Register the service worker with the scope set to the root
     const registration = await navigator.serviceWorker.register('/service-worker.js', {
       scope: '/',
-      updateViaCache: 'none' // Always check for updates
     });
-
+    
     console.log('Service Worker registered successfully with scope:', registration.scope);
-
-    // Check for updates immediately
-    registration.update();
-
-    // Enhanced update checking logic
+    
+    // Set up update checking logic
     registration.onupdatefound = () => {
       const installingWorker = registration.installing;
       if (!installingWorker) return;
-
-      console.log('New service worker found, installing...');
-
+      
       installingWorker.onstatechange = () => {
-        console.log('Service worker state changed to:', installingWorker.state);
-
         if (installingWorker.state === 'installed') {
           if (navigator.serviceWorker.controller) {
             // New service worker available
             console.log('New service worker available - update ready');
-            showUpdateNotification(registration);
+            
+            // You could notify the user that an update is available
+            // or automatically refresh the page
           } else {
             // Service worker installed for the first time
             console.log('Service Worker installed for the first time');
@@ -45,35 +39,11 @@ export const registerServiceWorker = async (): Promise<ServiceWorkerRegistration
         }
       };
     };
-
-    // Handle controller change (when a new service worker takes control)
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      console.log('Service worker controller changed, reloading page...');
-      window.location.reload();
-    });
-
-    // Check for updates periodically (every 30 minutes)
-    setInterval(() => {
-      registration.update();
-    }, 30 * 60 * 1000);
     
     return registration;
   } catch (error) {
     console.error('Service Worker registration failed:', error);
     return null;
-  }
-};
-
-/**
- * Show update notification to user
- */
-const showUpdateNotification = (registration: ServiceWorkerRegistration) => {
-  // You can customize this notification based on your UI framework
-  if (confirm('A new version of the app is available. Would you like to update?')) {
-    const newWorker = registration.waiting;
-    if (newWorker) {
-      newWorker.postMessage({ type: 'SKIP_WAITING' });
-    }
   }
 };
 
