@@ -230,17 +230,96 @@
 
   html {
     scroll-behavior: smooth;
-    -webkit-text-size-adjust: 100%;
-    text-size-adjust: 100%;
+    /* COMPLETELY disable text scaling - ignore device font size settings */
+    -webkit-text-size-adjust: none !important;
+    -moz-text-size-adjust: none !important;
+    -ms-text-size-adjust: none !important;
+    text-size-adjust: none !important;
+    /* Force consistent font rendering */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Set fixed font size that ignores system settings */
+    font-size: 16px !important;
   }
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
     overflow-x: hidden;
+    /* COMPLETELY disable text scaling - ignore device font size settings */
+    -webkit-text-size-adjust: none !important;
+    text-size-adjust: none !important;
+    /* Fixed font size that ignores system settings */
+    font-size: 16px !important;
+    /* Consistent line height across devices */
+    line-height: 1.5;
+    /* Prevent font boosting */
+    max-height: 999999px;
   }
 
   h1, h2, h3, h4, h5, h6 {
     @apply font-bold tracking-tight;
+    /* COMPLETELY disable text scaling on headings */
+    -webkit-text-size-adjust: none !important;
+    text-size-adjust: none !important;
+    max-height: 999999px;
+  }
+
+  /* Mobile-specific font consistency - COMPLETELY IGNORE DEVICE FONT SIZE */
+  @media screen and (max-width: 768px) {
+    * {
+      /* COMPLETELY disable automatic font scaling */
+      -webkit-text-size-adjust: none !important;
+      text-size-adjust: none !important;
+      /* Consistent font rendering */
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Force fixed font sizes on form inputs (iOS) */
+    input, textarea, select {
+      font-size: 16px !important;
+      -webkit-text-size-adjust: none !important;
+      text-size-adjust: none !important;
+    }
+  }
+
+  /* High DPI display adjustments */
+  @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    body {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+  }
+
+  /* Force FIXED text sizing - IGNORE device font size settings completely */
+  @supports (-webkit-touch-callout: none) {
+    /* iOS Safari specific - DISABLE text size adjustment */
+    * {
+      -webkit-text-size-adjust: none !important;
+      text-size-adjust: none !important;
+    }
+  }
+
+  /* Android Chrome specific - DISABLE text size adjustment */
+  @media screen and (-webkit-device-pixel-ratio: 1) {
+    * {
+      -webkit-text-size-adjust: none !important;
+      text-size-adjust: none !important;
+    }
+  }
+
+  /* Prevent font boosting and FORCE fixed sizing on all elements */
+  *, *::before, *::after {
+    max-height: 999999px;
+    -webkit-text-size-adjust: none !important;
+    text-size-adjust: none !important;
+  }
+
+  /* Additional override for any remaining text scaling */
+  html, body, div, span, p, a, h1, h2, h3, h4, h5, h6,
+  button, input, textarea, select, label {
+    -webkit-text-size-adjust: none !important;
+    text-size-adjust: none !important;
   }
 
   .glass {

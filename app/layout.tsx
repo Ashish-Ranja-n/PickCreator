@@ -34,6 +34,8 @@ export const viewport: Viewport = {
   minimumScale: 1,
   userScalable: false,
   themeColor: '#fafafa', // Subtle light shade instead of pure white
+  // Prevent text size adjustment on mobile devices
+  viewportFit: 'cover',
 };
 
 export const metadata: Metadata = {
@@ -87,7 +89,7 @@ export default function RootLayout({
         <meta name="format-detection" content="telephone=no" />
         <meta name="msapplication-TileColor" content="#fafafa" />
         <meta name="theme-color" content="#fafafa" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
+
 
         {/* Immediate theme restoration script */}
         <script
