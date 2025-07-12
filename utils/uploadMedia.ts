@@ -14,8 +14,8 @@ import axios from 'axios';
  * @returns The upload result with URL and public ID
  */
 export const uploadFile = async (
-  file: File, 
-  type: 'profile' | 'chat' | 'instagram' = 'chat',
+  file: File,
+  type: 'profile' | 'chat' | 'instagram' | 'video_showcase' = 'chat',
   messageId?: string,
   onProgress?: (progress: number) => void
 ) => {
@@ -70,8 +70,8 @@ export const uploadFile = async (
  * @returns The upload result with URL and public ID
  */
 export const uploadUrl = async (
-  url: string, 
-  type: 'profile' | 'chat' | 'instagram' = 'instagram',
+  url: string,
+  type: 'profile' | 'chat' | 'instagram' | 'video_showcase' = 'instagram',
   instagramId?: string,
   messageId?: string
 ) => {

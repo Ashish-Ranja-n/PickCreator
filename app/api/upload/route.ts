@@ -91,6 +91,9 @@ export async function POST(req: NextRequest) {
       case 'instagram':
         folder = CLOUDINARY_FOLDERS.INSTAGRAM_MEDIA;
         break;
+      case 'video_showcase':
+        folder = CLOUDINARY_FOLDERS.VIDEO_SHOWCASE;
+        break;
       case 'chat':
       default:
         folder = CLOUDINARY_FOLDERS.CHAT_MEDIA;
@@ -186,6 +189,9 @@ export async function PUT(req: NextRequest) {
         break;
       case 'instagram':
         folder = CLOUDINARY_FOLDERS.INSTAGRAM_MEDIA;
+        break;
+      case 'video_showcase':
+        folder = CLOUDINARY_FOLDERS.VIDEO_SHOWCASE;
         break;
       case 'chat':
       default:

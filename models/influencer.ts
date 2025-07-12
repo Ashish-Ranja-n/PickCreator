@@ -103,6 +103,13 @@ interface IInfluencer {
   // UPI payment information
   upiId?: string; // UPI ID for payments
   upiUsername?: string; // UPI username for payments
+
+  // Video showcase for brand promotion (max 2 videos)
+  videos?: Array<{
+    url: string;
+    title: string;
+    uploadedAt: Date;
+  }>; // Array of video objects with URL, title, and upload date
 }
 
 const InfluencerSchema = new Schema<IInfluencer>({
@@ -203,6 +210,22 @@ const InfluencerSchema = new Schema<IInfluencer>({
   // UPI payment information
   upiId: { type: String },
   upiUsername: { type: String },
+
+  // Video showcase for brand promotion (max 2 videos)
+  videos: {
+    type: [{
+      url: { type: String, required: true },
+      title: { type: String, required: true, maxlength: 100 },
+      uploadedAt: { type: Date, default: Date.now }
+    }],
+    default: [],
+    validate: {
+      validator: function(videos: any[]) {
+        return videos.length <= 2;
+      },
+      message: 'Maximum 2 videos allowed for showcase'
+    }
+  },
 });
 
 // Create a discriminator - an Influencer IS-A User

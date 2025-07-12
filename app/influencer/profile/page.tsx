@@ -34,7 +34,8 @@ import {
   KeyRoundIcon,
   Moon,
   Sun,
-  ShieldCheck
+  ShieldCheck,
+  Video
 } from 'lucide-react';
 import { useCurrentUser } from '@/hook/useCurrentUser';
 import { useInfluencerProfile } from '@/hook/useInfluencerProfile';
@@ -50,6 +51,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import InstagramDebugInfo from '@/components/instagram/InstagramDebugInfo';
 import UpiInfoDialog from '@/components/earnings/UpiInfoDialog';
 import WithdrawalDialog from '@/components/earnings/WithdrawalDialog';
+import VideoUpload from '@/components/influencer/VideoUpload';
+import VideoShowcase from '@/components/influencer/VideoShowcase';
 import { useLogout } from '@/hook/useLogout';
 import { useTheme } from 'next-themes';
 
@@ -85,10 +88,46 @@ const ProfilePage = () => {
   const [updateError, setUpdateError] = useState('');
   const [updateSuccess, setUpdateSuccess] = useState('');
 
+  // Video showcase state
+  const [showcaseVideos, setShowcaseVideos] = useState<Array<{
+    url: string;
+    title: string;
+    uploadedAt: Date;
+  }>>([]);
+  const [isLoadingVideos, setIsLoadingVideos] = useState(false);
+
   // Effects
   useEffect(() => {
     console.log('Theme from useTheme:', theme);
   }, [theme]);
+
+  // Load showcase videos
+  useEffect(() => {
+    const loadVideos = async () => {
+      if (!userId) return;
+
+      setIsLoadingVideos(true);
+      try {
+        const response = await axios.get('/api/influencer/videos');
+        console.log('Video API response:', response.data);
+        if (response.data.success) {
+          setShowcaseVideos(response.data.videos || []);
+          console.log('Videos loaded:', response.data.videos);
+        }
+      } catch (error) {
+        console.error('Error loading videos:', error);
+        toast({
+          title: "Error Loading Videos",
+          description: "Failed to load showcase videos. Please refresh the page.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoadingVideos(false);
+      }
+    };
+
+    loadVideos();
+  }, [userId]);
 
   // Define logout handler with useCallback at the top level
   const handleLogout = useCallback(() => {
@@ -418,6 +457,26 @@ const ProfilePage = () => {
       setUpdateError(err.response?.data?.message || 'Failed to send update request');
     }
     setIsUpdateLoading(false);
+  };
+
+  // Handle video upload success
+  const handleVideoUploadSuccess = (video: { url: string; title: string; uploadedAt: Date }) => {
+    console.log('Video upload success, adding video:', video);
+    setShowcaseVideos(prev => {
+      const updated = [...prev, video];
+      console.log('Updated videos array:', updated);
+      return updated;
+    });
+  };
+
+  // Handle video deletion
+  const handleVideoDeleted = (videoUrl: string) => {
+    console.log('Video deleted, removing URL:', videoUrl);
+    setShowcaseVideos(prev => {
+      const updated = prev.filter(video => video.url !== videoUrl);
+      console.log('Updated videos array after deletion:', updated);
+      return updated;
+    });
   };
 
   return (
@@ -860,6 +919,40 @@ const ProfilePage = () => {
                   </div>
                 </div>
               </div>
+            </div>
+
+            {/* Video Showcase Section */}
+            <div className="space-y-6">
+              <div className="text-center">
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                  Brand Promotion Reels
+                </h3>
+                <p className="text-gray-600 dark:text-gray-300">
+                  Showcase your work with up to 2 reel-style videos (9:16 format)
+                </p>
+              </div>
+
+              {/* Video Upload */}
+              <VideoUpload
+                onUploadSuccess={handleVideoUploadSuccess}
+                isVerified={profileData?.isInstagramVerified || false}
+                currentVideoCount={showcaseVideos.length}
+                maxVideos={2}
+              />
+
+              {/* Video Display */}
+              {isLoadingVideos ? (
+                <div className="text-center py-6">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-violet-500 mx-auto"></div>
+                  <p className="text-sm text-gray-500 dark:text-zinc-400 mt-2">Loading videos...</p>
+                </div>
+              ) : (
+                <VideoShowcase
+                  videos={showcaseVideos || []}
+                  onVideoDeleted={handleVideoDeleted}
+                  isVerified={profileData?.isInstagramVerified || false}
+                />
+              )}
             </div>
           </TabsContent>
 
