@@ -6,6 +6,7 @@ import { BellIcon, SunIcon, MoonIcon, BugAntIcon } from '@heroicons/react/24/out
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useTheme } from 'next-themes';
+import { LucideBugPlay } from 'lucide-react';
 
 const Navbar: React.FC = () => {
   const { theme, setTheme } = useTheme();
@@ -137,7 +138,7 @@ const Navbar: React.FC = () => {
             onClick={() => setBugDialogOpen(true)}
             type="button"
           >
-            <BugAntIcon className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+            <LucideBugPlay className="h-5 w-5 text-gray-600 dark:text-gray-300" />
           </motion.button>
           {/* Bug report dialog rendered in a portal to escape navbar stacking context */}
           {bugDialogOpen && typeof window !== 'undefined' && (() => {

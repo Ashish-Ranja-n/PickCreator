@@ -358,9 +358,9 @@ export default function InfluencerFeedClient() {
   };
 
   return (
-    <div className="relative w-full mx-auto min-h-screen bg-white dark:bg-zinc-950">
+    <div className="relative w-full mx-auto min-h-screen bg-gradient-to-br from-white via-blue-50/30 to-white dark:bg-gradient-to-br dark:from-gray-900 dark:to-black">
       {/* Fixed header with buttons - using fixed positioning */}
-      <div className="fixed top-[46px] dark:top-[50px] md:top-[68px] left-0 right-0 z-30 py-3 px-4 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md border-b border-gray-200/50 dark:border-zinc-800/50 flex justify-between items-center">
+      <div className="fixed top-[46px] dark:top-[50px] md:top-[68px] left-0 right-0 z-30 py-3 px-4 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-[#C4B5FD]/30 dark:border-gray-700/50 flex justify-between items-center">
         <div className="w-full mx-auto flex justify-between items-center px-2">
           <div className="flex items-center gap-2">
             <TooltipProvider>
@@ -369,15 +369,15 @@ export default function InfluencerFeedClient() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className={`h-9 w-9 rounded-full transition-all duration-300 ${showMyPosts
-                      ? 'bg-gradient-to-r from-violet-500 to-fuchsia-500 dark:from-violet-600 dark:to-fuchsia-600 text-white shadow-md ring-1 ring-fuchsia-500/30 scale-105'
-                      : 'bg-gray-100 dark:bg-zinc-900 text-gray-700 dark:text-white hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-zinc-800 hover:shadow-[0_0_10px_rgba(192,38,211,0.3)]'}`}
+                    className={`h-9 w-9 rounded-full transition-colors duration-200 touch-manipulation ${showMyPosts
+                      ? 'bg-[#3B82F6] text-white shadow-md ring-1 ring-[#3B82F6]/30'
+                      : 'bg-[#C4B5FD]/20 dark:bg-gray-800 text-gray-700 dark:text-white'}`}
                     onClick={() => setShowMyPosts(!showMyPosts)}
                   >
                     <User size={16} className={`${showMyPosts ? 'scale-110' : ''} transition-transform duration-300`} />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent side="bottom" className="bg-white dark:bg-zinc-900 text-gray-900 dark:text-white border-gray-200 dark:border-zinc-800 shadow-lg">
+                <TooltipContent side="bottom" className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-[#C4B5FD]/30 dark:border-gray-700 shadow-lg">
                   <p>{showMyPosts ? 'Viewing your posts' : 'View your posts'}</p>
                 </TooltipContent>
               </Tooltip>
@@ -390,27 +390,27 @@ export default function InfluencerFeedClient() {
             </div>
           </div>
 
-          <div className="flex items-center space-x-1 bg-gray-100 dark:bg-zinc-900 p-0.5 rounded-full shadow-md border border-gray-200/50 dark:border-zinc-800/50">
+          <div className="flex items-center space-x-1 bg-[#C4B5FD]/20 dark:bg-gray-800 p-0.5 rounded-full shadow-md border border-[#C4B5FD]/30 dark:border-gray-700/50">
             <Button
               variant="ghost"
               size="sm"
-              className={`h-8 rounded-full px-3 text-xs font-medium transition-all duration-300 ${feedType === 'live'
-                ? 'bg-gradient-to-r from-violet-500 to-fuchsia-500 dark:from-violet-600 dark:to-fuchsia-600 text-white shadow-md'
-                : 'text-gray-700 dark:text-white hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-zinc-800'}`}
+              className={`h-8 rounded-full px-3 text-xs font-medium transition-colors duration-200 touch-manipulation ${feedType === 'live'
+                ? 'bg-[#3B82F6] text-white shadow-md'
+                : 'text-gray-700 dark:text-white bg-transparent'}`}
               onClick={() => setFeedType("live")}
             >
-              <Zap size={14} className={`mr-1.5 ${feedType === 'live' ? 'text-white animate-pulse' : 'text-fuchsia-500 dark:text-fuchsia-400'}`} />
+              <Zap size={14} className={`mr-1.5 ${feedType === 'live' ? 'text-white animate-pulse' : 'text-[#C4B5FD] dark:text-[#C4B5FD]'}`} />
               Live
             </Button>
             <Button
               variant="ghost"
               size="sm"
-              className={`h-8 rounded-full px-3 text-xs font-medium transition-all duration-300 ${feedType === 'top'
-                ? 'bg-gradient-to-r from-blue-500 to-cyan-500 dark:from-blue-600 dark:to-cyan-600 text-white shadow-md'
-                : 'text-gray-700 dark:text-white hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-zinc-800'}`}
+              className={`h-8 rounded-full px-3 text-xs font-medium transition-colors duration-200 touch-manipulation ${feedType === 'top'
+                ? 'bg-[#3B82F6] text-white shadow-md'
+                : 'text-gray-700 dark:text-white bg-transparent'}`}
               onClick={() => setFeedType("top")}
             >
-              <TrendingUp size={14} className={`mr-1.5 ${feedType === 'top' ? 'text-white' : 'text-blue-500 dark:text-blue-400'}`} />
+              <TrendingUp size={14} className={`mr-1.5 ${feedType === 'top' ? 'text-white' : 'text-[#3B82F6] dark:text-[#3B82F6]'}`} />
               Top
             </Button>
           </div>
@@ -420,17 +420,17 @@ export default function InfluencerFeedClient() {
 
       {/* Horizontally scrollable hashtag selection bar (YouTube style, only shows when pulled) */}
       {showHashtagBar && (
-        <div className="sticky top-[105px] dark:top-[110px] md:top-[132px] z-20 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md border-b border-gray-200/50 dark:border-zinc-800/50 shadow-sm transition-all duration-300 animate-fadeIn">
+        <div className="sticky top-[105px] dark:top-[110px] md:top-[132px] z-20 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-[#C4B5FD]/30 dark:border-gray-700/50 shadow-sm transition-all duration-300 animate-fadeIn">
           <div
             ref={hashtagScrollRef}
             className="flex items-center gap-2 py-2 px-4 overflow-x-auto scrollbar-hide"
           >
             <Badge
               variant={selectedHashtag === null ? "default" : "outline"}
-              className={`cursor-pointer transition-all duration-200 py-1.5 px-3 text-sm whitespace-nowrap ${
+              className={`cursor-pointer transition-colors duration-200 touch-manipulation py-1.5 px-3 text-sm whitespace-nowrap ${
                 selectedHashtag === null
-                  ? 'bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white shadow-sm'
-                  : 'bg-gray-100 dark:bg-zinc-900 text-gray-700 dark:text-white border-gray-200 dark:border-zinc-800'
+                  ? 'bg-[#3B82F6] text-white shadow-sm'
+                  : 'bg-[#C4B5FD]/20 dark:bg-gray-800 text-gray-700 dark:text-white border-[#C4B5FD]/30 dark:border-gray-700'
               }`}
               onClick={() => setSelectedHashtag(null)}
             >
@@ -441,10 +441,10 @@ export default function InfluencerFeedClient() {
               <Badge
                 key={hashtag}
                 variant={selectedHashtag === hashtag ? "default" : "outline"}
-                className={`cursor-pointer transition-all duration-200 py-1.5 px-3 text-sm whitespace-nowrap ${
+                className={`cursor-pointer transition-colors duration-200 touch-manipulation py-1.5 px-3 text-sm whitespace-nowrap ${
                   selectedHashtag === hashtag
-                    ? 'bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white shadow-sm'
-                    : 'bg-gray-100 dark:bg-zinc-900 text-gray-700 dark:text-white border-gray-200 dark:border-zinc-800'
+                    ? 'bg-[#3B82F6] text-white shadow-sm'
+                    : 'bg-[#C4B5FD]/20 dark:bg-gray-800 text-gray-700 dark:text-white border-[#C4B5FD]/30 dark:border-gray-700'
                 }`}
                 onClick={() => setSelectedHashtag(hashtag)}
               >
@@ -464,15 +464,15 @@ export default function InfluencerFeedClient() {
         {loading && (
           <div className="flex justify-center py-8">
             <div className="flex flex-col items-center">
-              <Loader2 className="h-8 w-8 animate-spin text-fuchsia-500" />
-              <p className="text-sm text-gray-500 dark:text-zinc-400 mt-2">Loading posts...</p>
+              <Loader2 className="h-8 w-8 animate-spin text-[#C4B5FD]" />
+              <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">Loading posts...</p>
             </div>
           </div>
         )}
 
         {/* Error message */}
         {error && !loading && (
-          <div className="py-6 px-4 text-center border-b border-gray-100 dark:border-zinc-800/50">
+          <div className="py-6 px-4 text-center border-b border-[#C4B5FD]/20 dark:border-gray-700/50">
             <p className="text-red-500 dark:text-red-400 mb-3">{error}</p>
             <Button
               variant="ghost"
@@ -493,16 +493,16 @@ export default function InfluencerFeedClient() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3, delay: index * 0.05 }}
-              className="bg-white dark:bg-zinc-950 border-b border-gray-100 dark:border-zinc-800/50 pb-3 mb-1"
+              className="bg-transparent border-b border-gray-200/60 dark:border-gray-700/50 pb-4 transition-colors duration-200"
             >
-              <div className="pt-4 px-3">
+              <div className="pt-3 px-4">
                 <div className="flex">
                   {/* Avatar column */}
                   <div className="mr-3 flex-shrink-0">
-                    <div className="relative group">
-                      <Avatar className="h-10 w-10 ring-1 ring-gray-200 dark:ring-zinc-700">
+                    <div className="relative">
+                      <Avatar className="h-12 w-12 ring-2 ring-[#C4B5FD]/20 dark:ring-gray-600/50">
                         <AvatarImage src={getProfilePicture(post.author)} alt={post.author?.name || "User"} />
-                        <AvatarFallback className="bg-gradient-to-br from-violet-500 to-fuchsia-500 dark:from-violet-600 dark:to-fuchsia-600 text-white">
+                        <AvatarFallback className="bg-gradient-to-br from-[#C4B5FD] to-[#3B82F6] text-white font-medium">
                           {post.author?.name ? post.author.name.charAt(0) : "U"}
                         </AvatarFallback>
                       </Avatar>
@@ -530,40 +530,40 @@ export default function InfluencerFeedClient() {
                   {/* Content column */}
                   <div className="flex-1 min-w-0">
                     {/* Header with name, username and options */}
-                    <div className="flex items-start justify-between mb-0.5">
+                    <div className="flex items-start justify-between mb-1">
                       <div>
-                        <div className="flex items-center gap-1 flex-wrap">
-                          <span className="font-medium text-gray-900 dark:text-white">{post.author?.name || "User"}</span>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className="font-bold text-gray-900 dark:text-white text-base">{post.author?.name || "User"}</span>
                           {post.author?.instagramUsername ? (
                             <Link
                               href={getInstagramProfileUrl(post.author.instagramUsername) || '#'}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-sm text-gray-500 dark:text-zinc-400 hover:text-fuchsia-500 dark:hover:text-fuchsia-400 transition-colors flex items-center group"
+                              className="text-sm text-gray-500 dark:text-gray-400 transition-colors flex items-center"
                             >
                               @{post.author.instagramUsername}
-                              <ExternalLink size={10} className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
+                              <ExternalLink size={10} className="ml-1 opacity-60" />
                             </Link>
                           ) : (
-                            <span className="text-sm text-gray-500 dark:text-zinc-400">@{post.author?.username || "user"}</span>
+                            <span className="text-sm text-gray-500 dark:text-gray-400">@{post.author?.username || "user"}</span>
                           )}
-                          <span className="text-gray-400 dark:text-zinc-500 text-sm">·</span>
-                          <span className="text-sm text-gray-400 dark:text-zinc-500">{formatTimeAgo(post.createdAt)}</span>
+                          <span className="text-gray-400 dark:text-gray-500 text-sm">·</span>
+                          <span className="text-sm text-gray-500 dark:text-gray-500">{formatTimeAgo(post.createdAt)}</span>
                         </div>
                       </div>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-gray-500 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800 hover:text-gray-700 dark:hover:text-white transition-colors">
+                          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-gray-500 dark:text-gray-400 transition-colors">
                             <MoreHorizontal size={16} />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-800 text-gray-900 dark:text-white">
+                        <DropdownMenuContent align="end" className="bg-white dark:bg-gray-800 border-[#C4B5FD]/30 dark:border-gray-700 text-gray-900 dark:text-white">
                           {currentUser && post.author && (
                             // Show delete option if user is the post author OR if user is an admin
                             (post.author._id === currentUser._id || currentUser.role === 'Admin') && (
                               <DropdownMenuItem
                                 onClick={() => openDeleteDialog(post._id)}
-                                className="text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 hover:bg-gray-100 dark:hover:bg-zinc-800 focus:bg-gray-100 dark:focus:bg-zinc-800 cursor-pointer"
+                                className="text-red-500 dark:text-red-400 cursor-pointer"
                               >
                                 <Trash2 className="h-4 w-4 mr-2" />
                                 {currentUser.role === 'Admin' && post.author._id !== currentUser._id ? (
@@ -579,18 +579,18 @@ export default function InfluencerFeedClient() {
                     </div>
 
                     {/* Post content */}
-                    <div className="mt-1">
-                      <p className="text-gray-900 dark:text-white whitespace-pre-wrap leading-relaxed">{post.content}</p>
+                    <div className="mt-2">
+                      <p className="text-gray-900 dark:text-white whitespace-pre-wrap leading-relaxed text-base">{post.content}</p>
                     </div>
 
                     {/* Hashtags */}
                     {post.hashtags && post.hashtags.length > 0 && (
-                      <div className="mt-2 flex flex-wrap gap-1.5">
+                      <div className="mt-3 flex flex-wrap gap-2">
                         {post.hashtags.map((tag: string) => (
                           <Badge
                             key={tag}
                             variant="secondary"
-                            className="bg-fuchsia-50 dark:bg-fuchsia-900/20 text-fuchsia-600 dark:text-fuchsia-300 hover:bg-fuchsia-100 dark:hover:bg-fuchsia-800/30 border-none text-xs"
+                            className="bg-[#C4B5FD]/20 dark:bg-[#C4B5FD]/10 text-[#3B82F6] dark:text-[#C4B5FD] border-none text-xs px-2 py-1 rounded-full"
                           >
                             #{tag}
                           </Badge>
@@ -601,16 +601,16 @@ export default function InfluencerFeedClient() {
                     {/* Post media if available */}
                     {post.media && post.media.length > 0 && (
                       <div className="mt-3">
-                        <div className={`${post.media.length > 1 ? 'grid grid-cols-2 gap-1' : ''}`}>
+                        <div className={`${post.media.length > 1 ? 'grid grid-cols-2 gap-2' : ''}`}>
                           {post.media.map((mediaUrl, idx) => {
                             const isSingleImage = post.media && post.media.length === 1;
                             return (
                               <div
                                 key={idx}
-                                className={`relative overflow-hidden rounded-md ${isSingleImage ? 'w-full' : ''}`}
+                                className={`relative overflow-hidden rounded-xl border border-gray-200/60 dark:border-gray-700/50 ${isSingleImage ? 'w-full' : ''}`}
                               >
                                 <div
-                                  className="cursor-pointer"
+                                  className="cursor-pointer transition-transform duration-200 active:scale-95"
                                   onClick={() => {
                                     setCurrentImage(mediaUrl);
                                     setImageViewerOpen(true);
@@ -634,37 +634,37 @@ export default function InfluencerFeedClient() {
                     )}
 
                     {/* Post actions */}
-                    <div className="mt-3 flex justify-between items-center">
+                    <div className="mt-4 flex justify-between items-center pt-2">
                       <div className="flex space-x-6">
                         <Button
                           variant="ghost"
                           size="sm"
-                          className={`text-gray-500 dark:text-zinc-400 hover:text-pink-500 dark:hover:text-pink-400 p-0 h-auto bg-transparent ${likedPosts[post._id] ? 'text-pink-500 dark:text-pink-400' : ''}`}
+                          className={`text-gray-500 dark:text-gray-400 p-0 h-auto bg-transparent transition-colors duration-200 ${likedPosts[post._id] ? 'text-pink-500 dark:text-pink-400' : ''}`}
                           onClick={() => handleLike(post._id)}
                         >
-                          <Heart size={18} className={`mr-1.5 transition-transform hover:scale-110 ${likedPosts[post._id] ? 'fill-current animate-heartBeat' : ''}`} />
-                          <span className="text-xs">{post.likes.length > 0 ? post.likes.length : ''}</span>
+                          <Heart size={20} className={`mr-2 ${likedPosts[post._id] ? 'fill-current' : ''}`} />
+                          <span className="text-sm font-medium">{post.likes.length > 0 ? post.likes.length : ''}</span>
                         </Button>
                         <Button
                           variant="ghost"
                           size="sm"
-                          className={`text-gray-500 dark:text-zinc-400 hover:text-fuchsia-500 dark:hover:text-fuchsia-400 p-0 h-auto bg-transparent ${activeCommentPostId === post._id && commentSheetOpen ? 'text-fuchsia-500 dark:text-fuchsia-400' : ''}`}
+                          className={`text-gray-500 dark:text-gray-400 p-0 h-auto bg-transparent transition-colors duration-200 ${activeCommentPostId === post._id && commentSheetOpen ? 'text-[#3B82F6] dark:text-[#3B82F6]' : ''}`}
                           onClick={() => toggleComments(post._id)}
                         >
-                          <MessageCircle size={18} className="mr-1.5 transition-transform hover:scale-110" />
-                          <span className="text-xs">{post.commentCount > 0 ? post.commentCount : ''}</span>
+                          <MessageCircle size={20} className="mr-2" />
+                          <span className="text-sm font-medium">{post.commentCount > 0 ? post.commentCount : ''}</span>
                         </Button>
-                        <div className="flex items-center text-gray-500 dark:text-zinc-400 text-xs">
-                          <Eye size={16} className="mr-1.5" />
-                          <span>{post.views > 0 ? post.views : ''}</span>
+                        <div className="flex items-center text-gray-500 dark:text-gray-400 text-sm">
+                          <Eye size={18} className="mr-2" />
+                          <span className="font-medium">{post.views > 0 ? post.views : ''}</span>
                         </div>
                       </div>
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="text-gray-500 dark:text-zinc-400 hover:text-blue-500 dark:hover:text-blue-400 p-0 h-auto bg-transparent"
+                        className="text-gray-500 dark:text-gray-400 p-0 h-auto bg-transparent transition-colors duration-200"
                       >
-                        <Bookmark size={16} className="transition-transform hover:scale-110" />
+                        <Bookmark size={18} />
                       </Button>
                     </div>
                   </div>
@@ -675,29 +675,29 @@ export default function InfluencerFeedClient() {
         </AnimatePresence>
 
         {!loading && posts.length === 0 && !error && (
-          <div className="flex flex-col items-center justify-center py-12 text-center bg-white dark:bg-zinc-950 p-8 mt-4 border-t border-b border-gray-100 dark:border-zinc-800/50">
-            <div className="w-14 h-14 bg-gradient-to-br from-violet-500 to-fuchsia-500 dark:from-violet-600 dark:to-fuchsia-600 rounded-full flex items-center justify-center mb-4">
-              <PlusCircle size={22} className="text-white animate-pulse" />
+          <div className="flex flex-col items-center justify-center py-16 text-center px-8 mt-8">
+            <div className="w-16 h-16 bg-gradient-to-br from-[#C4B5FD] to-[#3B82F6] rounded-full flex items-center justify-center mb-6 shadow-lg">
+              <PlusCircle size={24} className="text-white" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-              {showMyPosts ? "You haven't created any posts yet" : "No posts found"}
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+              {showMyPosts ? "No posts yet" : "No posts found"}
             </h3>
-            <p className="text-gray-500 dark:text-zinc-400 max-w-md">
+            <p className="text-gray-600 dark:text-gray-300 max-w-sm text-base leading-relaxed">
               {showMyPosts
-                ? "Start your journey by creating your first post"
-                : "Be the first to start a conversation in this community"}
+                ? "Share your first thought with the community"
+                : "Be the first to start a conversation"}
             </p>
           </div>
         )}
 
         {/* Load more button */}
         {!loading && hasMore && posts.length > 0 && (
-          <div className="flex justify-center py-4 border-b border-gray-100 dark:border-zinc-800/50">
+          <div className="flex justify-center py-6 border-b border-gray-200/60 dark:border-gray-700/50">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => fetchPosts(page + 1, true)}
-              className="text-sm text-fuchsia-500 dark:text-fuchsia-400 hover:text-fuchsia-600 dark:hover:text-fuchsia-300 hover:bg-fuchsia-50 dark:hover:bg-fuchsia-900/20"
+              className="text-sm text-[#3B82F6] dark:text-[#3B82F6] bg-transparent px-6 py-2 rounded-full border border-[#C4B5FD]/30 dark:border-gray-700"
             >
               Show more posts
             </Button>
@@ -712,7 +712,7 @@ export default function InfluencerFeedClient() {
       <div className="fixed bottom-24 right-6 md:bottom-24 md:right-10 z-40">
         <Button
           onClick={() => setIsCreatePostOpen(true)}
-          className="w-14 h-14 rounded-full bg-gradient-to-tr from-violet-500 to-fuchsia-500 dark:from-violet-600 dark:to-fuchsia-600 text-white shadow-md hover:scale-105 transition-all duration-300"
+          className="w-14 h-14 rounded-full bg-[#3B82F6] text-white shadow-lg active:scale-95 transition-transform duration-150 touch-manipulation"
           aria-label="Create Post"
         >
           <PlusCircle size={22} />
@@ -728,7 +728,7 @@ export default function InfluencerFeedClient() {
 
       {/* Full-screen image viewer */}
       <Dialog open={imageViewerOpen} onOpenChange={setImageViewerOpen}>
-        <DialogContent className="max-w-full w-full h-[100dvh] p-0 m-0 border-none bg-gray-50/98 dark:bg-zinc-950/98 rounded-none">
+        <DialogContent className="max-w-full w-full h-[100dvh] p-0 m-0 border-none bg-white/98 dark:bg-gray-900/98 rounded-none [&>button]:hidden">
           <div className="relative w-full h-full flex flex-col">
             {/* Header with close button */}
             <div className="absolute top-4 right-4 z-50">
@@ -736,7 +736,7 @@ export default function InfluencerFeedClient() {
                 variant="ghost"
                 size="icon"
                 onClick={() => setImageViewerOpen(false)}
-                className="rounded-full bg-white/70 dark:bg-zinc-900/70 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-800 hover:text-gray-900 dark:hover:text-white hover:shadow-sm dark:hover:shadow-[0_0_10px_rgba(192,38,211,0.3)]"
+                className="rounded-full bg-white/80 dark:bg-gray-800/80 text-gray-700 dark:text-white shadow-lg transition-colors duration-200"
               >
                 <X className="h-6 w-6" />
               </Button>
@@ -745,14 +745,13 @@ export default function InfluencerFeedClient() {
             {/* Image container */}
             <div className="flex-1 flex items-center justify-center p-4">
               {currentImage && (
-                <div className="relative max-h-full max-w-full group">
-                  <div className="absolute inset-0 bg-fuchsia-300/5 dark:bg-fuchsia-500/5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="relative max-h-full max-w-full">
                   <Image
                     src={currentImage}
                     alt="Full-screen image"
                     width={1200}
                     height={1200}
-                    className="max-h-[90vh] w-auto object-contain rounded-lg shadow-md dark:shadow-[0_0_30px_rgba(192,38,211,0.15)]"
+                    className="max-h-[90vh] w-auto object-contain rounded-lg shadow-md dark:shadow-[0_0_30px_rgba(196,181,253,0.15)]"
                     unoptimized
                   />
                 </div>
@@ -764,7 +763,7 @@ export default function InfluencerFeedClient() {
 
       {/* Delete Post Confirmation Dialog */}
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent className="bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-800 text-gray-900 dark:text-white">
+        <DialogContent className="bg-white dark:bg-gray-800 border-[#C4B5FD]/30 dark:border-gray-700 text-gray-900 dark:text-white">
           <DialogHeader>
             <DialogTitle className="text-gray-900 dark:text-white">
               {currentUser?.role === 'Admin' && postToDelete && posts.find(p => p._id === postToDelete)?.author._id !== currentUser._id
@@ -783,7 +782,7 @@ export default function InfluencerFeedClient() {
             <Button
               variant="outline"
               onClick={() => setDeleteDialogOpen(false)}
-              className="bg-white dark:bg-zinc-800 border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-700 hover:border-gray-300 dark:hover:border-zinc-600"
+              className="bg-white dark:bg-gray-700 border-[#C4B5FD]/30 dark:border-gray-600 text-gray-700 dark:text-white hover:bg-[#C4B5FD]/10 dark:hover:bg-gray-600 hover:border-[#C4B5FD]/50 dark:hover:border-gray-500"
             >
               Cancel
             </Button>

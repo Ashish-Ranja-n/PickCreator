@@ -164,18 +164,18 @@ export default function CommentSheet({ postId, isOpen, onOpenChange, onCommentAd
     <Sheet open={isOpen} onOpenChange={onOpenChange}>
       <SheetContent
         side="bottom"
-        className="bg-white dark:bg-zinc-950 border-t border-gray-200 dark:border-zinc-800 rounded-t-xl p-0 max-h-[80vh] overflow-hidden flex flex-col"
+        className="bg-gradient-to-br from-white via-blue-50/20 to-white dark:bg-gray-900 border-t border-[#C4B5FD]/30 dark:border-gray-700 rounded-t-xl p-0 max-h-[80vh] overflow-hidden flex flex-col [&>button]:hidden"
       >
-        <SheetHeader className="px-4 py-3 border-b border-gray-200/50 dark:border-zinc-800/50 flex-shrink-0">
+        <SheetHeader className="px-4 py-3 border-b border-[#C4B5FD]/30 dark:border-gray-700/50 flex-shrink-0">
           <div className="flex items-center justify-between">
             <SheetTitle className="text-gray-900 dark:text-white text-lg">Comments</SheetTitle>
             <Button
               variant="ghost"
               size="icon"
               onClick={() => onOpenChange(false)}
-              className="h-8 w-8 rounded-full hover:bg-gray-100 dark:hover:bg-zinc-800"
+              className="h-8 w-8 rounded-full transition-colors duration-200"
             >
-              <X className="h-4 w-4 text-gray-500 dark:text-zinc-400" />
+              <X className="h-4 w-4 text-gray-600 dark:text-gray-400" />
             </Button>
           </div>
         </SheetHeader>
@@ -186,14 +186,14 @@ export default function CommentSheet({ postId, isOpen, onOpenChange, onCommentAd
             {comments.map((comment) => (
               <div
                 key={comment._id}
-                className="bg-gray-50 dark:bg-zinc-900 p-2 rounded-lg border border-gray-200/70 dark:border-zinc-800/70"
+                className="bg-white dark:bg-gray-800 p-2 rounded-lg border border-[#C4B5FD]/30 dark:border-gray-700/70"
               >
                 <div className="flex items-start space-x-2">
                   {/* Avatar with Instagram link */}
                   <div className="relative">
-                    <Avatar className="h-7 w-7 ring-1 ring-fuchsia-300/50 dark:ring-fuchsia-500/30">
+                    <Avatar className="h-7 w-7 ring-1 ring-[#C4B5FD]/50 dark:ring-[#C4B5FD]/30">
                       <AvatarImage src={comment.author.profilePictureUrl} alt={comment.author.name} />
-                      <AvatarFallback className="bg-gradient-to-br from-violet-500 to-fuchsia-500 dark:from-violet-600 dark:to-fuchsia-600 text-white text-xs">
+                      <AvatarFallback className="bg-gradient-to-br from-[#C4B5FD] to-[#3B82F6] text-white text-xs">
                         {comment.author.name.charAt(0)}
                       </AvatarFallback>
                     </Avatar>
@@ -215,12 +215,12 @@ export default function CommentSheet({ postId, isOpen, onOpenChange, onCommentAd
                           {comment.author.name}
                         </span>
                         {comment.author.instagramUsername && (
-                          <span className="text-xs text-gray-500 dark:text-zinc-400 truncate">
+                          <span className="text-xs text-gray-600 dark:text-gray-400 truncate">
                             @{comment.author.instagramUsername}
                           </span>
                         )}
                       </div>
-                      <span className="text-xs text-gray-400 dark:text-zinc-500 flex-shrink-0 ml-1">
+                      <span className="text-xs text-gray-500 dark:text-gray-500 flex-shrink-0 ml-1">
                         {formatTimeAgo(comment.createdAt)}
                       </span>
                     </div>
@@ -233,7 +233,7 @@ export default function CommentSheet({ postId, isOpen, onOpenChange, onCommentAd
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-6 px-1.5 text-gray-500 dark:text-zinc-400 hover:text-pink-500 dark:hover:text-pink-400 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-full transition-colors"
+                        className="h-6 px-1.5 text-gray-600 dark:text-gray-400 hover:text-[#3B82F6] dark:hover:text-[#3B82F6] hover:bg-[#C4B5FD]/20 dark:hover:bg-gray-700 rounded-full transition-colors"
                       >
                         <Heart size={12} className="mr-1" />
                         <span className="text-xs">{comment.likes.length}</span>
@@ -248,7 +248,7 @@ export default function CommentSheet({ postId, isOpen, onOpenChange, onCommentAd
           {/* Loading indicator */}
           {loading && (
             <div className="flex justify-center py-2">
-              <Loader2 className="h-5 w-5 animate-spin text-fuchsia-500" />
+              <Loader2 className="h-5 w-5 animate-spin text-[#C4B5FD]" />
             </div>
           )}
 
@@ -259,7 +259,7 @@ export default function CommentSheet({ postId, isOpen, onOpenChange, onCommentAd
                 variant="outline"
                 size="sm"
                 onClick={loadMoreComments}
-                className="text-xs h-7 bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-800 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-800"
+                className="text-xs h-7 bg-white dark:bg-gray-800 border-[#C4B5FD]/30 dark:border-gray-700 text-gray-700 dark:text-white hover:bg-[#C4B5FD]/20 dark:hover:bg-gray-700"
               >
                 Load more
               </Button>
@@ -276,25 +276,25 @@ export default function CommentSheet({ postId, isOpen, onOpenChange, onCommentAd
           {/* No comments message */}
           {!loading && comments.length === 0 && !error && (
             <div className="text-center py-4">
-              <p className="text-gray-500 dark:text-zinc-400 text-xs">No comments yet. Be the first to comment!</p>
+              <p className="text-gray-600 dark:text-gray-400 text-xs">No comments yet. Be the first to comment!</p>
             </div>
           )}
         </div>
 
         {/* Comment form - fixed at the bottom */}
-        <div className="border-t border-gray-200/50 dark:border-zinc-800/50 p-3 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md flex-shrink-0">
+        <div className="border-t border-[#C4B5FD]/30 dark:border-gray-700/50 p-3 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md flex-shrink-0">
           <form onSubmit={handleSubmit} className="flex items-center gap-2">
             <Textarea
               placeholder="Add a comment..."
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              className="min-h-[40px] max-h-[80px] py-2 px-3 bg-gray-50 dark:bg-zinc-900 border-gray-200 dark:border-zinc-800 rounded-xl text-xs text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-zinc-500 focus-visible:ring-fuchsia-400 dark:focus-visible:ring-fuchsia-500 focus-visible:border-fuchsia-300/50 dark:focus-visible:border-fuchsia-500/50 resize-none"
+              className="min-h-[40px] max-h-[80px] py-2 px-3 bg-white dark:bg-gray-800 border-[#C4B5FD]/30 dark:border-gray-700 rounded-xl text-xs text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 focus-visible:ring-[#3B82F6] dark:focus-visible:ring-[#3B82F6] focus-visible:border-[#3B82F6]/50 dark:focus-visible:border-[#3B82F6]/50 resize-none"
               disabled={isSubmitting || !currentUser}
             />
             <Button
               type="submit"
               disabled={isSubmitting || !content.trim() || !currentUser}
-              className="bg-gradient-to-r from-violet-500 to-fuchsia-500 dark:from-violet-600 dark:to-fuchsia-600 text-white h-9 w-9 p-0 rounded-full flex-shrink-0"
+              className="bg-[#3B82F6] hover:bg-blue-600 text-white h-9 w-9 p-0 rounded-full flex-shrink-0"
             >
               {isSubmitting ? (
                 <Loader2 className="w-4 h-4 animate-spin" />

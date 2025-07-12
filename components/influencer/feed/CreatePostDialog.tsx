@@ -281,46 +281,46 @@ export default function CreatePostDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-black text-white border-zinc-800 max-w-full w-full h-[100dvh] p-0 m-0 rounded-none shadow-none flex flex-col">
+      <DialogContent className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white border-[#C4B5FD]/30 dark:border-gray-700 max-w-full w-full h-[100dvh] p-0 m-0 rounded-none shadow-none flex flex-col">
         {/* Fixed Header */}
-        <DialogHeader className="px-4 py-3 border-b border-zinc-800/70 sticky top-0 bg-black/95 z-10 backdrop-blur-sm">
+        <DialogHeader className="px-4 py-3 border-b border-[#C4B5FD]/30 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-900 z-10">
           <div className="flex items-center justify-between">
-            <DialogTitle className="text-xl font-medium bg-gradient-to-r from-violet-400 to-fuchsia-500 bg-clip-text text-transparent">Create a Post</DialogTitle>
-            <Button variant="ghost" size="icon" onClick={onClose} className="rounded-full text-zinc-400 hover:text-white hover:bg-zinc-900">
+            <DialogTitle className="text-xl font-medium bg-gradient-to-r from-[#C4B5FD] to-[#3B82F6] bg-clip-text text-transparent">Create a Post</DialogTitle>
+            <Button variant="ghost" size="icon" onClick={onClose} className="rounded-full text-gray-600 dark:text-gray-400 transition-colors duration-200">
               <X className="h-5 w-5" />
             </Button>
           </div>
         </DialogHeader>
 
         {/* Scrollable Content Area */}
-        <div className="flex-1 overflow-y-auto p-4 pb-24 bg-black" style={{ height: "calc(100dvh - 130px)" }}>
+        <div className="flex-1 overflow-y-auto p-4 pb-24 bg-white dark:bg-gray-900" style={{ height: "calc(100dvh - 130px)" }}>
           <form id="post-form" onSubmit={handleSubmit} className="space-y-6 max-w-3xl mx-auto">
           {/* Character counter and progress bar */}
           <div className="mb-4 mt-1">
             <div className="flex items-center justify-between text-sm mb-2">
-              <span className="text-zinc-400 font-medium flex items-center">
+              <span className="text-gray-600 dark:text-gray-400 font-medium flex items-center">
                 <span className={`inline-block w-2 h-2 rounded-full mr-1.5 ${
                   charCount > 450 ? 'bg-red-400' :
                   charCount > 300 ? 'bg-amber-400' :
-                  'bg-fuchsia-400'
+                  'bg-[#C4B5FD]'
                 }`}></span>
                 {charCount}/500 characters
               </span>
               <span className={`font-medium ${
                 charCount > 450 ? 'text-red-400' :
                 charCount > 300 ? 'text-amber-400' :
-                'text-fuchsia-400'
+                'text-[#3B82F6]'
               }`}>
                 {500 - charCount} remaining
               </span>
             </div>
 
-            <div className="h-1 w-full bg-zinc-900 rounded-full overflow-hidden shadow-inner">
+            <div className="h-1 w-full bg-[#C4B5FD]/20 dark:bg-gray-800 rounded-full overflow-hidden shadow-inner">
               <motion.div
                 className={`h-full ${
                   charCount > 450 ? 'bg-gradient-to-r from-red-500 to-red-400' :
                   charCount > 300 ? 'bg-gradient-to-r from-amber-500 to-amber-400' :
-                  'bg-gradient-to-r from-violet-500 to-fuchsia-500'
+                  'bg-gradient-to-r from-[#C4B5FD] to-[#3B82F6]'
                 } shadow-sm`}
                 initial={{ width: 0 }}
                 animate={{ width: `${progressPercentage}%` }}
@@ -338,23 +338,23 @@ export default function CreatePostDialog({
                 setContent(e.target.value);
                 if (e.target.value.trim()) setContentError(false);
               }}
-              className={`min-h-[180px] bg-zinc-900
-                border-zinc-800 rounded-xl text-lg text-white
-                placeholder:text-zinc-500
-                focus-visible:ring-fuchsia-500 leading-relaxed resize-none
+              className={`min-h-[180px] bg-white dark:bg-gray-800
+                border-[#C4B5FD]/30 dark:border-gray-700 rounded-xl text-lg text-gray-900 dark:text-white
+                placeholder:text-gray-500 dark:placeholder:text-gray-400
+                focus-visible:ring-[#3B82F6] leading-relaxed resize-none
                 transition-all duration-200 p-4
-                ${contentError ? 'border-red-500 border-2 bg-red-900/10' : 'border-zinc-800/50'}`}
+                ${contentError ? 'border-red-500 border-2 bg-red-50 dark:bg-red-900/10' : 'border-[#C4B5FD]/30 dark:border-gray-700/50'}`}
               maxLength={500}
             />
             {contentError && (
-              <div className="px-4 py-2 bg-red-900/20 text-red-400 text-sm font-medium border-t border-red-800/30">
+              <div className="px-4 py-2 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm font-medium border-t border-red-200 dark:border-red-800/30">
                 Please enter some text or add an image
               </div>
             )}
           </div>
 
           {/* Image upload section */}
-          <div className="space-y-3 bg-zinc-900/80 rounded-xl p-4 border border-zinc-800 shadow-md">
+          <div className="space-y-3 bg-white dark:bg-gray-800/80 rounded-xl p-4 border border-[#C4B5FD]/30 dark:border-gray-700 shadow-md">
             {/* Image previews */}
             {imageUrls.length > 0 && (
               <div className={`${imageUrls.length > 1 ? 'flex gap-1' : 'flex justify-center'} mb-3`}>
@@ -402,13 +402,13 @@ export default function CreatePostDialog({
                   type="button"
                   variant="outline"
                   size="sm"
-                  className="text-xs flex items-center gap-1.5 bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700"
+                  className="text-xs flex items-center gap-1.5 bg-[#C4B5FD]/20 dark:bg-gray-700 border-[#C4B5FD]/30 dark:border-gray-600 text-gray-700 dark:text-white hover:bg-[#C4B5FD]/30 dark:hover:bg-gray-600"
                   onClick={() => fileInputRef.current?.click()}
                 >
-                  <ImageIcon size={14} className="text-fuchsia-400" />
+                  <ImageIcon size={14} className="text-[#3B82F6]" />
                   {images.length === 0 ? "Add images (max 2)" : "Add another image"}
                 </Button>
-                <span className="text-xs text-zinc-400 ml-3 bg-zinc-800 px-2 py-1 rounded-full">
+                <span className="text-xs text-gray-600 dark:text-gray-400 ml-3 bg-[#C4B5FD]/20 dark:bg-gray-700 px-2 py-1 rounded-full">
                   {images.length}/2 images
                 </span>
               </div>
@@ -416,19 +416,19 @@ export default function CreatePostDialog({
           </div>
 
           {/* Hashtag selection */}
-          <div className={`p-4 rounded-xl transition-colors bg-zinc-900/80 border border-zinc-800 shadow-md
-            ${hashtagError ? 'border-red-500 bg-red-900/10' : ''}`}>
+          <div className={`p-4 rounded-xl transition-colors bg-white dark:bg-gray-800/80 border border-[#C4B5FD]/30 dark:border-gray-700 shadow-md
+            ${hashtagError ? 'border-red-500 bg-red-50 dark:bg-red-900/10' : ''}`}>
             <div className="flex items-center justify-between mb-3">
-              <h3 className={`text-sm font-medium flex items-center ${hashtagError ? 'text-red-400' : 'text-white'}`}>
-                <Hash size={18} className={`mr-2 ${hashtagError ? 'text-red-400' : 'text-fuchsia-400'}`} />
-                Select hashtags (1-4) <span className="text-red-400 ml-1">{hashtagError ? ' - Required' : ''}</span>
+              <h3 className={`text-sm font-medium flex items-center ${hashtagError ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white'}`}>
+                <Hash size={18} className={`mr-2 ${hashtagError ? 'text-red-600 dark:text-red-400' : 'text-[#3B82F6]'}`} />
+                Select hashtags (1-4) <span className="text-red-600 dark:text-red-400 ml-1">{hashtagError ? ' - Required' : ''}</span>
               </h3>
               <span className={`text-xs px-2 py-1 rounded-full ${
                 hashtagError
-                  ? 'bg-red-900/30 text-red-400 font-medium'
+                  ? 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 font-medium'
                   : selectedHashtags.length > 0
-                    ? 'bg-fuchsia-900/30 text-fuchsia-400'
-                    : 'bg-zinc-800 text-zinc-400'
+                    ? 'bg-[#3B82F6]/10 dark:bg-[#3B82F6]/20 text-[#3B82F6]'
+                    : 'bg-[#C4B5FD]/20 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
               }`}>
                 {selectedHashtags.length}/4 selected
               </span>
@@ -443,10 +443,10 @@ export default function CreatePostDialog({
                     variant={isSelected ? "default" : "outline"}
                     className={`cursor-pointer transition-all duration-200 py-1.5 px-3 text-sm ${
                       isSelected
-                        ? 'bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white shadow-sm'
+                        ? 'bg-[#3B82F6] text-white shadow-sm'
                         : hashtagError
-                          ? 'bg-transparent text-red-400 border-red-700/50'
-                          : 'bg-zinc-800 text-white border-zinc-700'
+                          ? 'bg-transparent text-red-600 dark:text-red-400 border-red-300 dark:border-red-700/50'
+                          : 'bg-[#C4B5FD]/20 dark:bg-gray-700 text-gray-700 dark:text-white border-[#C4B5FD]/30 dark:border-gray-600'
                     }`}
                     onClick={() => {
                       toggleHashtag(hashtag);
@@ -462,19 +462,19 @@ export default function CreatePostDialog({
 
           {/* Upload progress indicator */}
           {isUploading && (
-            <div className="bg-zinc-900/80 rounded-xl p-4 border border-zinc-800 shadow-md">
+            <div className="bg-white dark:bg-gray-800/80 rounded-xl p-4 border border-[#C4B5FD]/30 dark:border-gray-700 shadow-md">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center">
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin text-fuchsia-400" />
-                  <span className="text-sm font-medium text-white">Uploading images...</span>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin text-[#C4B5FD]" />
+                  <span className="text-sm font-medium text-gray-900 dark:text-white">Uploading images...</span>
                 </div>
-                <span className="text-sm font-bold bg-fuchsia-900/30 text-fuchsia-400 px-2 py-0.5 rounded-full">
+                <span className="text-sm font-bold bg-[#3B82F6]/10 dark:bg-[#3B82F6]/20 text-[#3B82F6] px-2 py-0.5 rounded-full">
                   {uploadProgress}%
                 </span>
               </div>
-              <div className="h-2 w-full bg-zinc-800 rounded-full overflow-hidden">
+              <div className="h-2 w-full bg-[#C4B5FD]/20 dark:bg-gray-700 rounded-full overflow-hidden">
                 <motion.div
-                  className="h-full bg-gradient-to-r from-violet-500 to-fuchsia-500"
+                  className="h-full bg-gradient-to-r from-[#C4B5FD] to-[#3B82F6]"
                   initial={{ width: 0 }}
                   animate={{ width: `${uploadProgress}%` }}
                   transition={{ duration: 0.3 }}
@@ -486,13 +486,13 @@ export default function CreatePostDialog({
         </div>
 
         {/* Fixed Footer with Publish Button */}
-        <div className="fixed bottom-0 left-0 right-0 bg-black/95 border-t border-zinc-800/70 p-4 z-20 backdrop-blur-sm">
+        <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-[#C4B5FD]/30 dark:border-gray-700 p-4 z-20">
           <div className="max-w-3xl mx-auto flex justify-end">
             <Button
               type="submit"
               form="post-form"
               disabled={isSubmitting || isUploading || (!content.trim() && images.length === 0) || selectedHashtags.length === 0}
-              className="bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700 text-white px-6 py-2.5 rounded-xl text-base font-medium transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50 disabled:bg-zinc-800 disabled:text-zinc-400"
+              className="bg-[#3B82F6] hover:bg-blue-600 text-white px-6 py-2.5 rounded-xl text-base font-medium transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50 disabled:bg-[#C4B5FD]/30 dark:disabled:bg-gray-700 disabled:text-gray-500 dark:disabled:text-gray-400"
             >
               {isSubmitting ? (
                 <>

@@ -184,7 +184,7 @@ const ProfilePage = () => {
 
   // Add a clear loading state component
   const LoadingState = () => (
-    <div className="container py-8 mt-4 h-screen bg-white dark:bg-black">
+    <div className="container py-8 mt-4 h-screen bg-gradient-to-br from-white via-blue-50/30 to-white dark:bg-gradient-to-br dark:from-gray-900 dark:to-black">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="flex items-center gap-3">
           <div className="h-9 bg-gray-200 dark:bg-zinc-800 rounded-md w-32 animate-pulse"></div>
@@ -480,7 +480,7 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="container py-16 bg-white dark:bg-black min-h-screen overflow-x-hidden">
+    <div className="container py-16 bg-gradient-to-br from-white via-blue-50/30 to-white dark:bg-gradient-to-br dark:from-gray-900 dark:to-black min-h-screen overflow-x-hidden">
       <div className="space-y-8">
         {/* Fresh Mobile-Optimized Profile Header */}
         <div className="mb-8 px-1">
@@ -713,10 +713,10 @@ const ProfilePage = () => {
 
 
         <Tabs defaultValue="profile">
-          <TabsList className="grid w-full md:w-auto grid-cols-3 bg-gray-100 dark:bg-zinc-900 p-1 rounded-lg border border-gray-200 dark:border-zinc-800">
-            <TabsTrigger value="profile" className="text-gray-700 dark:text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-500 data-[state=active]:to-fuchsia-500 dark:data-[state=active]:from-violet-600 dark:data-[state=active]:to-fuchsia-600 data-[state=active]:text-white data-[state=active]:shadow-md">Profile</TabsTrigger>
-            <TabsTrigger value="instagram" className="text-gray-700 dark:text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-500 data-[state=active]:to-fuchsia-500 dark:data-[state=active]:from-violet-600 dark:data-[state=active]:to-fuchsia-600 data-[state=active]:text-white data-[state=active]:shadow-md">Instagram</TabsTrigger>
-            <TabsTrigger value="onboarding" className="text-gray-700 dark:text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-500 data-[state=active]:to-fuchsia-500 dark:data-[state=active]:from-violet-600 dark:data-[state=active]:to-fuchsia-600 data-[state=active]:text-white data-[state=active]:shadow-md">Onboarding</TabsTrigger>
+          <TabsList className="grid w-full md:w-auto grid-cols-3 bg-[#C4B5FD]/20 dark:bg-gray-800 p-1 rounded-lg border border-[#C4B5FD]/30 dark:border-gray-700">
+            <TabsTrigger value="profile" className="text-gray-700 dark:text-white data-[state=active]:bg-[#3B82F6] data-[state=active]:text-white data-[state=active]:shadow-md">Profile</TabsTrigger>
+            <TabsTrigger value="instagram" className="text-gray-700 dark:text-white data-[state=active]:bg-[#3B82F6] data-[state=active]:text-white data-[state=active]:shadow-md">Instagram</TabsTrigger>
+            <TabsTrigger value="onboarding" className="text-gray-700 dark:text-white data-[state=active]:bg-[#3B82F6] data-[state=active]:text-white data-[state=active]:shadow-md">Onboarding</TabsTrigger>
           </TabsList>
 
           <TabsContent value="profile" className="space-y-0 pt-8 pb-16">
@@ -744,93 +744,93 @@ const ProfilePage = () => {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
                     {/* Rating Card */}
-                    <div className="bg-white dark:bg-zinc-800 rounded-xl overflow-hidden group hover:shadow-md transition-shadow duration-300 border border-slate-200 dark:border-zinc-700">
+                    <div className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden group hover:shadow-md transition-shadow duration-300 border border-[#C4B5FD]/30 dark:border-gray-700">
                       <div className="p-5">
                         <div className="flex items-center justify-between mb-3">
                           <div className="flex items-center">
-                            <div className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center mr-3">
-                              <Star className="h-4 w-4 text-amber-500 dark:text-amber-400" />
+                            <div className="w-8 h-8 rounded-lg bg-[#C4B5FD]/20 dark:bg-[#C4B5FD]/10 flex items-center justify-center mr-3">
+                              <Star className="h-4 w-4 text-[#C4B5FD] dark:text-[#C4B5FD]" />
                             </div>
-                            <h3 className="text-sm font-medium text-slate-900 dark:text-white">Rating</h3>
+                            <h3 className="text-sm font-medium text-gray-900 dark:text-white">Rating</h3>
                           </div>
                         </div>
                         <div className="flex items-end justify-between">
-                          <div className="text-3xl font-bold text-slate-900 dark:text-white">
+                          <div className="text-3xl font-bold text-gray-900 dark:text-white">
                             {profileData?.rating || 0}
                           </div>
-                          <div className="text-xs text-green-500 dark:text-green-400 flex items-center">
+                          <div className="text-xs text-[#3B82F6] dark:text-[#3B82F6] flex items-center">
                             <span className="font-medium">+0%</span>
                           </div>
                         </div>
-                        <div className="mt-2 text-xs text-slate-500 dark:text-slate-400">Based on client reviews</div>
+                        <div className="mt-2 text-xs text-gray-600 dark:text-gray-300">Based on client reviews</div>
                       </div>
                     </div>
 
                     {/* Completed Deals Card */}
-                    <div className="bg-white dark:bg-zinc-800 rounded-xl overflow-hidden group hover:shadow-md transition-shadow duration-300 border border-slate-200 dark:border-zinc-700">
+                    <div className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden group hover:shadow-md transition-shadow duration-300 border border-[#C4B5FD]/30 dark:border-gray-700">
                       <div className="p-5">
                         <div className="flex items-center justify-between mb-3">
                           <div className="flex items-center">
-                            <div className="w-8 h-8 rounded-lg bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center mr-3">
-                              <Briefcase className="h-4 w-4 text-violet-500 dark:text-violet-400" />
+                            <div className="w-8 h-8 rounded-lg bg-[#C4B5FD]/20 dark:bg-[#C4B5FD]/10 flex items-center justify-center mr-3">
+                              <Briefcase className="h-4 w-4 text-[#C4B5FD] dark:text-[#C4B5FD]" />
                             </div>
-                            <h3 className="text-sm font-medium text-slate-900 dark:text-white">Completed Deals</h3>
+                            <h3 className="text-sm font-medium text-gray-900 dark:text-white">Completed Deals</h3>
                           </div>
                         </div>
                         <div className="flex items-end justify-between">
-                          <div className="text-3xl font-bold text-slate-900 dark:text-white">
+                          <div className="text-3xl font-bold text-gray-900 dark:text-white">
                             {profileData?.completedDeals || 0}
                           </div>
-                          <div className="text-xs text-green-500 dark:text-green-400 flex items-center">
+                          <div className="text-xs text-[#3B82F6] dark:text-[#3B82F6] flex items-center">
                             <span className="font-medium">+0%</span>
                           </div>
                         </div>
-                        <div className="mt-2 text-xs text-slate-500 dark:text-slate-400">Total successful collaborations</div>
+                        <div className="mt-2 text-xs text-gray-600 dark:text-gray-300">Total successful collaborations</div>
                       </div>
                     </div>
 
                     {/* Earnings Card - Clickable */}
                     <div
-                      className="bg-white dark:bg-zinc-800 rounded-xl overflow-hidden group hover:shadow-md transition-all duration-300 border border-slate-200 dark:border-zinc-700 cursor-pointer active:scale-95 hover:border-green-300 dark:hover:border-green-600"
+                      className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden group hover:shadow-md transition-all duration-300 border border-[#C4B5FD]/30 dark:border-gray-700 cursor-pointer active:scale-95 hover:border-[#3B82F6] dark:hover:border-[#3B82F6]"
                       onClick={handleEarningsClick}
                     >
                       <div className="p-5">
                         <div className="flex items-center justify-between mb-3">
                           <div className="flex items-center">
-                            <div className="w-8 h-8 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center mr-3">
-                              <BadgeIndianRupee className="h-4 w-4 text-green-500 dark:text-green-400" />
+                            <div className="w-8 h-8 rounded-lg bg-[#3B82F6]/20 dark:bg-[#3B82F6]/10 flex items-center justify-center mr-3">
+                              <BadgeIndianRupee className="h-4 w-4 text-[#3B82F6] dark:text-[#3B82F6]" />
                             </div>
-                            <h3 className="text-sm font-medium text-slate-900 dark:text-white">Earnings</h3>
+                            <h3 className="text-sm font-medium text-gray-900 dark:text-white">Earnings</h3>
                           </div>
                         </div>
                         <div className="flex items-end justify-between">
-                          <div className="text-3xl font-bold text-slate-900 dark:text-white">
+                          <div className="text-3xl font-bold text-gray-900 dark:text-white">
                             ₹{(profileData?.earnings || 0).toLocaleString()}
                           </div>
-                          <div className="text-xs text-green-500 dark:text-green-400 flex items-center">
+                          <div className="text-xs text-[#3B82F6] dark:text-[#3B82F6] flex items-center">
                             <span className="font-medium">Tap to withdraw</span>
                           </div>
                         </div>
-                        <div className="mt-2 text-xs text-slate-500 dark:text-slate-400">Total earnings to date</div>
+                        <div className="mt-2 text-xs text-gray-600 dark:text-gray-300">Total earnings to date</div>
                       </div>
                     </div>
 
                     {/* Account Age Card */}
-                    <div className="bg-white dark:bg-zinc-800 rounded-xl overflow-hidden group hover:shadow-md transition-shadow duration-300 border border-slate-200 dark:border-zinc-700">
+                    <div className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden group hover:shadow-md transition-shadow duration-300 border border-[#C4B5FD]/30 dark:border-gray-700">
                       <div className="p-5">
                         <div className="flex items-center justify-between mb-3">
                           <div className="flex items-center">
-                            <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mr-3">
-                              <Calendar className="h-4 w-4 text-blue-500 dark:text-blue-400" />
+                            <div className="w-8 h-8 rounded-lg bg-[#C4B5FD]/20 dark:bg-[#C4B5FD]/10 flex items-center justify-center mr-3">
+                              <Calendar className="h-4 w-4 text-[#C4B5FD] dark:text-[#C4B5FD]" />
                             </div>
-                            <h3 className="text-sm font-medium text-slate-900 dark:text-white">Account Age</h3>
+                            <h3 className="text-sm font-medium text-gray-900 dark:text-white">Account Age</h3>
                           </div>
                         </div>
                         <div className="flex items-end justify-between">
-                          <div className="text-3xl font-bold text-slate-900 dark:text-white">
+                          <div className="text-3xl font-bold text-gray-900 dark:text-white">
                             {calculateAccountAge()}
                           </div>
-                          <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center">
+                          <div className="text-xs text-gray-600 dark:text-gray-300 flex items-center">
                             <span className="font-medium">days</span>
                           </div>
                         </div>
@@ -872,20 +872,20 @@ const ProfilePage = () => {
           <TabsContent value="instagram" className="space-y-8 pt-6 pb-16">
             {/* Instagram Overview Container */}
             <div className="relative">
-              <div className="relative mb-10 overflow-hidden rounded-3xl shadow-xl bg-gradient-to-br from-slate-100 via-white to-slate-100 dark:from-zinc-900 dark:via-black dark:to-zinc-900 border border-slate-200 dark:border-zinc-800">
+              <div className="relative mb-10 overflow-hidden rounded-3xl shadow-xl bg-gradient-to-br from-white via-blue-50/20 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 border border-[#C4B5FD]/30 dark:border-gray-700">
                 <div className="relative p-8 md:p-10">
                   <div className="flex-1 text-center">
-                    <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-2 bg-gradient-to-r from-fuchsia-500 to-violet-500 dark:from-fuchsia-400 dark:to-violet-400 bg-clip-text text-transparent">
+                    <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-2 bg-gradient-to-r from-[#C4B5FD] to-[#3B82F6] bg-clip-text text-transparent">
                       @{instagramUsername || 'username'}
                     </h2>
                     <div className="flex flex-col items-center justify-center mt-4">
                       <span className="text-lg font-semibold text-gray-900 dark:text-white">Followers</span>
-                      <span className="text-2xl font-bold text-fuchsia-500 dark:text-fuchsia-400">{instagramFollowerCount?.toLocaleString() || '0'}</span>
+                      <span className="text-2xl font-bold text-[#3B82F6] dark:text-[#3B82F6]">{instagramFollowerCount?.toLocaleString() || '0'}</span>
                     </div>
                     {/* Instagram Action Button - Instagram Tab */}
                     {!profileData?.isInstagramVerified ? (
                       <button
-                        className="mt-6 bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white rounded-full px-5 py-2 flex items-center gap-2 shadow-lg hover:scale-105 transition-all mx-auto"
+                        className="mt-6 bg-[#3B82F6] hover:bg-blue-600 text-white rounded-full px-5 py-2 flex items-center gap-2 shadow-lg hover:scale-105 transition-all mx-auto"
                         style={{ fontSize: 16 }}
                         onClick={checkVerificationStatus}
                         title="Verify Account"
@@ -895,7 +895,7 @@ const ProfilePage = () => {
                       </button>
                     ) : (
                       <button
-                        className="mt-6 bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white rounded-full px-5 py-2 flex items-center gap-2 shadow-lg hover:scale-105 transition-all mx-auto"
+                        className="mt-6 bg-[#3B82F6] hover:bg-blue-600 text-white rounded-full px-5 py-2 flex items-center gap-2 shadow-lg hover:scale-105 transition-all mx-auto"
                         style={{ fontSize: 16 }}
                         onClick={() => setVerifyModalOpen(true)}
                         title="Update Instagram Info"
@@ -959,8 +959,8 @@ const ProfilePage = () => {
           <TabsContent value="onboarding" className="space-y-6 pt-4">
             <div className="space-y-6">
             {/* Edit Onboarding Button */}
-              <div className="flex justify-center border-gray-200 dark:border-zinc-800">
-                <Button asChild size="lg" className="bg-gradient-to-r from-violet-500 to-fuchsia-500 dark:from-violet-600 dark:to-fuchsia-600 hover:from-violet-600 hover:to-fuchsia-600 dark:hover:from-violet-700 dark:hover:to-fuchsia-700 text-white">
+              <div className="flex justify-center border-[#C4B5FD]/30 dark:border-gray-700">
+                <Button asChild size="lg" className="bg-[#3B82F6] hover:bg-blue-600 text-white">
                   <Link href="/influencer/onboarding/basic-info">
                     <Edit className="h-5 w-5 mr-2" />
                     Edit Onboarding Information
@@ -970,25 +970,25 @@ const ProfilePage = () => {
               
 
               {/* Onboarding Status Card */}
-              <Card className="shadow-md border border-gray-200 dark:border-zinc-800 bg-white dark:bg-black">
-                <CardHeader className="bg-gray-50 dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-800">
+              <Card className="shadow-md border border-[#C4B5FD]/30 dark:border-gray-700 bg-white dark:bg-gray-800">
+                <CardHeader className="bg-gradient-to-r from-white via-blue-50/20 to-white dark:bg-gray-900 border-b border-[#C4B5FD]/30 dark:border-gray-700">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                      <Clipboard className="h-6 w-6 text-fuchsia-500 dark:text-fuchsia-400" />
+                      <Clipboard className="h-6 w-6 text-[#3B82F6] dark:text-[#3B82F6]" />
                       <CardTitle className="text-xl font-semibold text-gray-900 dark:text-white">Onboarding Status</CardTitle>
                     </div>
                      {profileData?.onboardingCompleted ? (
-                        <div className="bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-300 px-4 py-1 rounded-full text-sm font-medium flex items-center shadow-sm border border-green-200 dark:border-green-700/50">
+                        <div className="bg-[#3B82F6]/10 dark:bg-[#3B82F6]/20 text-[#3B82F6] dark:text-[#3B82F6] px-4 py-1 rounded-full text-sm font-medium flex items-center shadow-sm border border-[#3B82F6]/30 dark:border-[#3B82F6]/50">
                           <Check className="h-4 w-4 mr-1.5" />
                           Completed
                         </div>
                       ) : (
-                        <div className="bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-300 px-4 py-1 rounded-full text-sm font-medium shadow-sm border border-amber-200 dark:border-amber-700/50">
+                        <div className="bg-[#C4B5FD]/20 dark:bg-[#C4B5FD]/20 text-[#C4B5FD] dark:text-[#C4B5FD] px-4 py-1 rounded-full text-sm font-medium shadow-sm border border-[#C4B5FD]/50 dark:border-[#C4B5FD]/50">
                           In Progress
                         </div>
                       )}
                   </div>
-                  <CardDescription className="text-gray-500 dark:text-zinc-400">
+                  <CardDescription className="text-gray-600 dark:text-gray-300">
                     Your onboarding progress and submitted information
                   </CardDescription>
                 </CardHeader>
