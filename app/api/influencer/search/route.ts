@@ -112,7 +112,10 @@ export async function GET(request: NextRequest) {
         // Include onboarding data
         pricingModels: influencer.pricingModels || null,
         brandPreferences: influencer.brandPreferences || null,
-        availability: influencer.availability || []
+        availability: influencer.availability || [],
+
+        // Include videos for showcase
+        videos: influencer.videos || []
       };
     });
 

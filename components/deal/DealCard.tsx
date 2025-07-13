@@ -50,6 +50,14 @@ export const DealCard: React.FC<DealCardProps> = ({
   const [submittingContent, setSubmittingContent] = useState(false);
   const [showPaymentReleaseDialog, setShowPaymentReleaseDialog] = useState(false);
   const [releasingPayment, setReleasingPayment] = useState(false);
+  const [localPaymentReleased, setLocalPaymentReleased] = useState(false);
+
+  // Reset local payment released state when deal data changes
+  React.useEffect(() => {
+    if (deal.paymentReleased) {
+      setLocalPaymentReleased(true);
+    }
+  }, [deal.paymentReleased]);
 
   // Helper function to safely format amounts for display
   const formatAmount = (amount: number | undefined | null) => {
@@ -102,9 +110,13 @@ export const DealCard: React.FC<DealCardProps> = ({
     setReleasingPayment(true);
     try {
       await onDealAction?.(deal._id, 'release-payment');
+      // Only close dialog and mark as released on successful payment release
+      setLocalPaymentReleased(true);
       setShowPaymentReleaseDialog(false);
+      console.log('Payment released successfully for deal:', deal._id);
     } catch (error) {
       console.error('Error releasing payment:', error);
+      // Don't close dialog on error - let user try again or cancel manually
     } finally {
       setReleasingPayment(false);
     }
@@ -503,15 +515,25 @@ export const DealCard: React.FC<DealCardProps> = ({
                   )}
                 </Button>
 
-                {/* Release Payment button - only show after content is approved */}
-                {deal.status === 'content_approved' && !deal.paymentReleased && (
+                {/* Release Payment button - only show after content is approved and payment not released */}
+                {deal.status === 'content_approved' && !deal.paymentReleased && !localPaymentReleased && (
                   <Button
-                    onClick={() => setShowPaymentReleaseDialog(true)}
+                    onClick={() => {
+                      console.log('Release Payment clicked - Deal status:', deal.status, 'Payment released:', deal.paymentReleased, 'Local released:', localPaymentReleased);
+                      setShowPaymentReleaseDialog(true);
+                    }}
                     className="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white flex items-center justify-center gap-2"
                   >
                     <IndianRupee className="w-4 h-4" />
                     Release Payment
                   </Button>
+                )}
+
+                {/* Debug info - remove this later */}
+                {process.env.NODE_ENV === 'development' && (
+                  <div className="text-xs text-gray-500 mt-2">
+                    Debug: Status: {deal.status}, PaymentReleased: {deal.paymentReleased ? 'true' : 'false'}, LocalReleased: {localPaymentReleased ? 'true' : 'false'}
+                  </div>
                 )}
               </div>
             )}
@@ -708,7 +730,10 @@ export const DealCard: React.FC<DealCardProps> = ({
       {/* Payment Release Dialog */}
       <PaymentReleaseDialog
         isOpen={showPaymentReleaseDialog}
-        onClose={() => setShowPaymentReleaseDialog(false)}
+        onClose={() => {
+          console.log('Payment Release Dialog closed - Deal status:', deal.status, 'Payment released:', deal.paymentReleased);
+          setShowPaymentReleaseDialog(false);
+        }}
         onConfirm={handlePaymentRelease}
         dealName={deal.dealName}
         amount={deal.influencers[0]?.offeredPrice || deal.totalAmount}

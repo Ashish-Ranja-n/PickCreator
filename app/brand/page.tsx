@@ -36,6 +36,9 @@ import {
   Instagram,
   ChevronsUpDown,
   MapPinCheck,
+  Phone,
+  MessageCircle,
+  Headphones,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { INDIAN_CITIES } from '../influencer/onboarding/data/indianCities';
@@ -65,6 +68,12 @@ interface Influencer {
     avgReelLikes: number;
     lastUpdated: Date;
   };
+  // Videos for showcase
+  videos?: Array<{
+    url: string;
+    title: string;
+    uploadedAt: Date;
+  }>;
   lastUpdated?: Date;
   // Onboarding data
   pricingModels?: {
@@ -139,6 +148,9 @@ const Brand: NextPage = () => {
 
   // New: Description for the deal (connect popup)
   const [connectDescription, setConnectDescription] = useState('');
+
+  // Contact button state
+  const [showContactOptions, setShowContactOptions] = useState(false);
 
   // Campaign creation states
   const isCampaignMode = false;
@@ -686,6 +698,7 @@ const Brand: NextPage = () => {
   }, [influencers]);
 
   return (
+    <>
     <div className="container mx-auto px-4 py-6 pb-16 max-w-7xl flex flex-col min-h-screen overflow-y-auto bg-gradient-to-br from-white via-blue-50 to-purple-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-violet-950/50 scrollbar-hide">
       {/* Header */}
 
@@ -1499,6 +1512,68 @@ const Brand: NextPage = () => {
 
       {/* Chat Confirmation Popup removed - using Connect functionality instead */}
     </div>
+
+    {/* Floating Contact Button - Always Visible - Above nav bar */}
+    <div className="fixed bottom-26 right-6 z-50">
+      <div className="relative">
+        {/* Contact Options */}
+        <AnimatePresence>
+          {showContactOptions && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.8, y: 20 }}
+              className="absolute bottom-16 right-0 bg-white dark:bg-zinc-900 rounded-xl shadow-2xl border border-gray-200 dark:border-zinc-700 p-2 min-w-[200px]"
+            >
+              {/* WhatsApp Option */}
+              <a
+                href="https://wa.me/917301677612"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 p-3 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors group"
+                onClick={() => setShowContactOptions(false)}
+              >
+                <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+                  <MessageCircle className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <p className="font-medium text-gray-900 dark:text-white">WhatsApp</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Chat with us</p>
+                </div>
+              </a>
+
+              {/* Call Option */}
+              <a
+                href="tel:+917301677612"
+                className="flex items-center gap-3 p-3 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors group"
+                onClick={() => setShowContactOptions(false)}
+              >
+                <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                  <Phone className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <p className="font-medium text-gray-900 dark:text-white">Call</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">+91 7301677612</p>
+                </div>
+              </a>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Main Contact Button */}
+        <Button
+          onClick={() => setShowContactOptions(!showContactOptions)}
+          className="w-16 h-16 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-110 border-4 border-white dark:border-zinc-800"
+        >
+          {showContactOptions ? (
+            <XIcon className="w-7 h-7" />
+          ) : (
+            <Headphones className="w-7 h-7" />
+          )}
+        </Button>
+      </div>
+    </div>
+    </>
   );
 };
 

@@ -59,51 +59,69 @@ export function PaymentSummaryDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md p-0 overflow-hidden">
-        {/* Header with gradient background */}
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-6 text-white">
-          <h2 className="text-xl font-bold mb-1">Payment Summary</h2>
-          <p className="text-blue-100 text-sm">
-            Review the payment details before proceeding
-          </p>
+      <DialogContent className="sm:max-w-lg p-0 overflow-hidden border border-gray-200 dark:border-zinc-800 shadow-2xl">
+        {/* Header with gradient background and icon */}
+        <div className="bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-500 dark:to-blue-600 p-6 text-white">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
+              <IndianRupee className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold">Payment Summary</h2>
+              <p className="text-blue-100 text-sm mt-1">
+                Review the payment details before proceeding
+              </p>
+            </div>
+          </div>
         </div>
 
-        <div className="p-6 space-y-5">
+        <div className="p-6 space-y-6">
           {/* Deal Details Card */}
-          <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
-            <h3 className="font-medium text-gray-900 mb-3 flex items-center">
-              <CheckCircle className="h-4 w-4 mr-2 text-green-600" />
+          <div className="bg-gray-50 dark:bg-zinc-800/50 p-5 rounded-xl border border-gray-200 dark:border-zinc-700">
+            <h3 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+              <CheckCircle className="h-5 w-5 mr-2 text-green-600 dark:text-green-400" />
               Deal Details
             </h3>
-            <p className="text-sm text-gray-700 mb-2 font-medium">
-              {deal.dealName}
-            </p>
-
-            {deal.influencers.length > 1 ? (
-              <div className="mt-3 border-t border-gray-200 pt-3">
-                <p className="text-sm font-medium text-gray-900 mb-2">Influencers:</p>
-                <ul className="space-y-2">
-                  {deal.influencers.map((influencer, index) => (
-                    <li key={index} className="text-sm text-gray-700 flex justify-between">
-                      <span>{influencer.name}</span>
-                      <span className="font-medium flex items-center">
-                        <IndianRupee className="h-3 w-3 mr-1" />
-                        {formatCurrency(influencer.offeredPrice)}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
+            <div className="space-y-3">
+              <div>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Deal Name</p>
+                <p className="font-medium text-gray-900 dark:text-white">
+                  {deal.dealName}
+                </p>
               </div>
-            ) : null}
+
+              {deal.influencers.length > 1 ? (
+                <div className="mt-3 border-t border-gray-200 dark:border-zinc-600 pt-3">
+                  <p className="text-sm font-medium text-gray-900 dark:text-white mb-2">Influencers:</p>
+                  <ul className="space-y-2">
+                    {deal.influencers.map((influencer, index) => (
+                      <li key={index} className="text-sm text-gray-700 dark:text-gray-300 flex justify-between">
+                        <span>{influencer.name}</span>
+                        <span className="font-medium flex items-center">
+                          <IndianRupee className="h-3 w-3 mr-1" />
+                          {formatCurrency(influencer.offeredPrice)}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+            </div>
           </div>
 
           {/* Payment Amount Card */}
-          <div className="bg-blue-50 p-5 rounded-lg border border-blue-100">
-            <div className="flex justify-between items-center mb-3">
-              <span className="font-medium text-blue-900">Total Amount</span>
-              <div className="text-2xl font-bold text-blue-900 flex items-center">
-                <IndianRupee className="h-5 w-5 mr-1" />
-                {formatCurrency(deal.totalAmount)}
+          <div className="bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 p-6 rounded-xl border border-blue-200 dark:border-blue-700">
+            <div className="flex justify-between items-center">
+              <div>
+                <p className="text-sm text-blue-700 dark:text-blue-300 mb-1">Total Payment</p>
+                <span className="font-medium text-blue-900 dark:text-blue-100">Amount to be paid</span>
+              </div>
+              <div className="text-right">
+                <div className="text-3xl font-bold text-blue-900 dark:text-blue-100 flex items-center">
+                  <IndianRupee className="h-6 w-6 mr-1" />
+                  {formatCurrency(deal.totalAmount)}
+                </div>
+                <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">Inclusive of all charges</p>
               </div>
             </div>
 
@@ -134,28 +152,31 @@ export function PaymentSummaryDialog({
         </div>
 
         {/* Footer with buttons */}
-        <div className="border-t border-gray-200 p-4 flex flex-col sm:flex-row sm:justify-end gap-3 bg-gray-50">
+        <div className="border-t border-gray-200 dark:border-zinc-700 p-6 flex flex-col sm:flex-row gap-4 bg-gray-50 dark:bg-zinc-800/50">
           <Button
             variant="outline"
             onClick={onClose}
             disabled={isLoading}
-            className="sm:order-1 order-2"
+            className="flex-1 sm:flex-none bg-white dark:bg-zinc-800 border border-gray-300 dark:border-zinc-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-700 px-6 py-3 rounded-lg font-medium"
           >
             Cancel
           </Button>
           <Button
             onClick={handleProceedToPayment}
             disabled={isLoading}
-            className="bg-green-600 hover:bg-green-700 sm:order-2 order-1"
+            className="flex-1 sm:flex-none bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-8 py-3 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
             size="lg"
           >
             {isLoading ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                 Processing...
               </>
             ) : (
-              'Proceed to Payment'
+              <>
+                <Shield className="mr-2 h-5 w-5" />
+                Proceed to Payment
+              </>
             )}
           </Button>
         </div>

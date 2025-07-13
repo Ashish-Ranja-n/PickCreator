@@ -16,7 +16,7 @@ const MobileNav = React.memo(() => {
     "lg:hidden fixed bottom-4 left-1/2 -translate-x-1/2 w-[95vw] max-w-md z-50 rounded-full px-2 py-1 flex justify-between items-center backdrop-blur-md border",
     isDarkMode
       ? "bg-gray-950/90 border-gray-800 shadow-2xl"
-      : "bg-white/90 border-slate-200 shadow-2xl"
+      : "bg-white/90 border-[#C4B5FD]/30 shadow-2xl"
   );
   const navInnerClass = "flex w-full justify-between items-center h-16";
 
@@ -40,29 +40,29 @@ const MobileNav = React.memo(() => {
             "relative flex items-center justify-center w-12 h-12 rounded-full shadow-md border transition-all duration-200",
             isActive
               ? isDarkMode
-                ? "border-fuchsia-700 bg-fuchsia-900/80 -translate-y-0.8"
-                : "border-fuchsia-500 bg-fuchsia-50 -translate-y-0.8"
+                ? "border-blue-600 bg-[#3B82F6]/80 -translate-y-0.8"
+                : "border-[#3B82F6] bg-[#3B82F6] -translate-y-0.8"
               : isDarkMode
                 ? "bg-gray-900 border-gray-800"
-                : "bg-white border-slate-200"
+                : "bg-white border-[#C4B5FD]/30"
           );
           const iconSize = 26;
           const iconClass = cn(
             "transition-all duration-200 z-10",
             isActive
               ? isDarkMode
-                ? "text-fuchsia-400"
-                : "text-fuchsia-600"
+                ? "text-white"
+                : "text-white"
               : isDarkMode
-                ? "text-zinc-400 group-hover:text-fuchsia-400"
-                : "text-slate-600 group-hover:text-fuchsia-500"
+                ? "text-zinc-400"
+                : "text-gray-600"
           );
           const labelClass = cn(
             "text-xs font-semibold mt-[1px] transition-all duration-200 z-10 tracking-wide",
             isActive
               ? isDarkMode
-                ? "text-fuchsia-300 opacity-100 scale-100"
-                : "text-fuchsia-700 opacity-100 scale-100"
+                ? "text-[#3B82F6] opacity-100 scale-100"
+                : "text-[#3B82F6] opacity-100 scale-100"
               : "opacity-0 scale-75 h-0"
           );
           return (
@@ -75,7 +75,7 @@ const MobileNav = React.memo(() => {
               <div className={iconWrapClass}>
                 {/* Notification styles */}
                 {isDealTab && hasActiveDeal && (
-                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-fuchsia-500 border-2 border-white dark:border-gray-950 rounded-full shadow-md" />
+                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-[#3B82F6] border-2 border-white dark:border-gray-950 rounded-full shadow-md" />
                 )}
                 <Icon size={iconSize} className={iconClass} />
               </div>
