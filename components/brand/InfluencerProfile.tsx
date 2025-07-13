@@ -1,9 +1,9 @@
 'use client';
 import React from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { MapPin, Users, Send, XIcon } from "lucide-react";
+import { MapPin, Users, Zap, Heart, Instagram, Send, XIcon } from "lucide-react";
 
 
 // Utility functions
@@ -74,7 +74,7 @@ const InfluencerProfile: React.FC<InfluencerProfileProps> = ({
         {/* Header - mobile style, sticky, with avatar */}
         <div className="sticky top-0 z-20 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-lg border-b border-zinc-200 dark:border-zinc-700 flex items-center px-4 py-3 md:py-4 md:px-6 shadow-sm">
           <div className="flex items-center gap-3 flex-1 min-w-0">
-            <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-[#D4A91C]/30 shadow-md flex-shrink-0">
+            <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-blue-200 shadow-md flex-shrink-0">
               {selectedInfluencer.profilePictureUrl ? (
                 <Image
                   src={selectedInfluencer.profilePictureUrl}
@@ -85,7 +85,7 @@ const InfluencerProfile: React.FC<InfluencerProfileProps> = ({
                   unoptimized={isInstagramUrl(selectedInfluencer.profilePictureUrl)}
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center bg-[#F9FAF9] dark:bg-zinc-700 text-2xl font-bold text-[#D4A91C] dark:text-[#D4A91C]">
+                <div className="w-full h-full flex items-center justify-center bg-gray-200 dark:bg-zinc-700 text-2xl font-bold text-blue-600 dark:text-blue-400">
                   {selectedInfluencer.name.charAt(0)}
                 </div>
               )}
@@ -93,9 +93,19 @@ const InfluencerProfile: React.FC<InfluencerProfileProps> = ({
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
                 <span className="text-lg md:text-2xl font-bold text-gray-900 dark:text-white truncate">{selectedInfluencer.name}</span>
+                {selectedInfluencer.instagramUsername && (
+                  <a
+                    href={`https://instagram.com/${selectedInfluencer.instagramUsername}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="ml-1"
+                  >
+                    <Instagram className="w-5 h-5 text-pink-500" />
+                  </a>
+                )}
               </div>
               <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-zinc-400 mt-1">
-                <MapPin className="w-4 h-4 text-[#D4A91C] dark:text-[#D4A91C]" />
+                <MapPin className="w-4 h-4 text-blue-500 dark:text-blue-400" />
                 <span className="truncate font-medium">{selectedInfluencer.city}</span>
               </div>
             </div>
@@ -111,38 +121,44 @@ const InfluencerProfile: React.FC<InfluencerProfileProps> = ({
         </div>
 
         {/* Main content - scrollable */}
-        <div className="flex-1 overflow-y-auto px-4 md:px-8 py-4 md:py-6 bg-[#F9FAF9] dark:bg-zinc-800/30">
-          {/* Metrics row - simplified to show only followers */}
-          <div className="flex justify-center mb-6">
-            <div className="flex flex-col items-center bg-[#D4A91C]/10 dark:bg-[#D4A91C]/20 rounded-lg px-6 py-4 border border-[#D4A91C]/20 dark:border-[#D4A91C]/30">
-              <span className="text-sm text-gray-600 dark:text-zinc-400 flex items-center gap-2 mb-2">
-                <Users className="w-4 h-4 text-[#D4A91C] dark:text-[#D4A91C]" />
-                <span className="font-medium">Followers</span>
+        <div className="flex-1 overflow-y-auto px-4 md:px-8 py-4 md:py-6 bg-gray-50 dark:bg-zinc-800/30">
+          {/* Metrics row */}
+          <div className="flex justify-between items-center mb-4 gap-2">
+            <div className="flex flex-col items-center flex-1">
+              <span className="text-xs text-gray-500 dark:text-zinc-400 flex items-center gap-1 mb-1">
+                <Users className="w-3 h-3 text-blue-500 dark:text-blue-400" /> Followers
               </span>
-              <span className="font-bold text-[#D4A91C] dark:text-[#D4A91C] text-2xl">{formatCompactNumber(selectedInfluencer.followers || 0)}</span>
+              <span className="font-semibold text-blue-700 dark:text-blue-300 text-lg">{formatCompactNumber(selectedInfluencer.followers || 0)}</span>
+            </div>
+            <div className="flex flex-col items-center flex-1">
+              <span className="text-xs text-gray-500 dark:text-zinc-400 flex items-center gap-1 mb-1">
+                <Zap className="w-3 h-3 text-purple-500 dark:text-purple-400" /> Avg. Views
+              </span>
+              <span className="font-semibold text-purple-700 dark:text-purple-300 text-lg">{formatCompactNumber(selectedInfluencer.instagramAnalytics?.avgReelViews || 0)}</span>
+            </div>
+            <div className="flex flex-col items-center flex-1">
+              <span className="text-xs text-gray-500 dark:text-zinc-400 flex items-center gap-1 mb-1">
+                <Heart className="w-3 h-3 text-pink-500 dark:text-pink-400" /> Avg. Likes
+              </span>
+              <span className="font-semibold text-pink-700 dark:text-pink-300 text-lg">{formatCompactNumber(selectedInfluencer.instagramAnalytics?.avgReelLikes || 0)}</span>
             </div>
           </div>
 
           {/* Bio */}
           {selectedInfluencer.bio && (
-            <div className="mb-6">
-              <div className="bg-white dark:bg-zinc-800 rounded-lg p-4 border border-gray-200 dark:border-zinc-700">
-                <h4 className="text-base font-semibold mb-3 text-gray-800 dark:text-white flex items-center gap-2">
-                  <span className="w-1.5 h-5 bg-[#D4A91C] rounded-full"></span>
-                  About
-                </h4>
-                <p className="text-gray-700 dark:text-zinc-300 text-sm leading-relaxed whitespace-pre-line">
-                  {selectedInfluencer.bio}
-                </p>
-              </div>
+            <div className="mb-4">
+              <h4 className="text-base font-semibold mb-1 text-gray-800">Bio</h4>
+              <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-line">
+                {selectedInfluencer.bio}
+              </p>
             </div>
           )}
 
-          {/* Connect button - centered and prominent */}
+          {/* Connect buttons - mobile first, sticky on bottom for mobile */}
           {!isCampaignMode && (
-            <div className="flex justify-center mb-6">
+            <div className="flex gap-3 mb-4">
               <Button
-                className="px-8 py-3 bg-[#3B82F6] hover:bg-[#3B82F6]/90 text-white rounded-lg flex items-center justify-center gap-2 text-base font-semibold shadow-lg transition-all"
+                className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg flex items-center justify-center gap-2 text-base shadow"
                 onClick={() => {
                   if (!user?._id) {
                     toast({
@@ -158,7 +174,16 @@ const InfluencerProfile: React.FC<InfluencerProfileProps> = ({
                 }}
               >
                 <Send className="h-4 w-4" />
-                <span>Connect with {selectedInfluencer.name}</span>
+                <span>Connect</span>
+              </Button>
+              <Button
+                className="flex-1 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white rounded-lg flex items-center justify-center gap-2 text-base shadow"
+                asChild
+              >
+                <a href={`https://instagram.com/${selectedInfluencer.instagramUsername}`} target="_blank" rel="noopener noreferrer">
+                  <Instagram className="h-4 w-4" />
+                  <span>Instagram</span>
+                </a>
               </Button>
             </div>
           )}
@@ -166,37 +191,37 @@ const InfluencerProfile: React.FC<InfluencerProfileProps> = ({
           {/* Pricing Section */}
           {selectedInfluencer.pricingModels && (
             <div className="mb-6 mt-2">
-              <div className="font-bold mb-3 text-[#D4A91C] text-lg flex items-center gap-2">
-                <span className="w-1.5 h-5 bg-[#D4A91C] rounded-full"></span>
+              <div className="font-bold mb-3 text-blue-800 text-lg flex items-center gap-2">
+                <span className="w-1.5 h-5 bg-blue-500 rounded-full"></span>
                 Pricing Information
               </div>
               {/* Fixed Pricing */}
               {selectedInfluencer.pricingModels.fixedPricing?.enabled && (
-                <div className="mb-4 bg-[#D4A91C]/10 p-3 rounded-lg">
-                  <div className="font-semibold mb-2 text-[#D4A91C]">Content Rates</div>
+                <div className="mb-4 bg-blue-50 p-3 rounded-lg">
+                  <div className="font-semibold mb-2 text-blue-700">Content Rates</div>
                   <div className="grid grid-cols-2 gap-3">
                     {selectedInfluencer.pricingModels.fixedPricing.reelPrice && (
                       <div className="flex justify-between items-center p-2 bg-white rounded-md text-sm">
                         <span>Reel</span>
-                        <span className="font-bold text-[#D4A91C]">₹{selectedInfluencer.pricingModels.fixedPricing.reelPrice.toLocaleString()}</span>
+                        <span className="font-bold text-blue-700">₹{selectedInfluencer.pricingModels.fixedPricing.reelPrice.toLocaleString()}</span>
                       </div>
                     )}
                     {selectedInfluencer.pricingModels.fixedPricing.postPrice && (
                       <div className="flex justify-between items-center p-2 bg-white rounded-md text-sm">
                         <span>Post</span>
-                        <span className="font-bold text-[#D4A91C]">₹{selectedInfluencer.pricingModels.fixedPricing.postPrice.toLocaleString()}</span>
+                        <span className="font-bold text-blue-700">₹{selectedInfluencer.pricingModels.fixedPricing.postPrice.toLocaleString()}</span>
                       </div>
                     )}
                     {selectedInfluencer.pricingModels.fixedPricing.storyPrice && (
                       <div className="flex justify-between items-center p-2 bg-white rounded-md text-sm">
                         <span>Story</span>
-                        <span className="font-bold text-[#D4A91C]">₹{selectedInfluencer.pricingModels.fixedPricing.storyPrice.toLocaleString()}</span>
+                        <span className="font-bold text-blue-700">₹{selectedInfluencer.pricingModels.fixedPricing.storyPrice.toLocaleString()}</span>
                       </div>
                     )}
                     {selectedInfluencer.pricingModels.fixedPricing.livePrice && (
                       <div className="flex justify-between items-center p-2 bg-white rounded-md text-sm">
                         <span>Live</span>
-                        <span className="font-bold text-[#D4A91C]">₹{selectedInfluencer.pricingModels.fixedPricing.livePrice.toLocaleString()}</span>
+                        <span className="font-bold text-blue-700">₹{selectedInfluencer.pricingModels.fixedPricing.livePrice.toLocaleString()}</span>
                       </div>
                     )}
                   </div>
@@ -207,8 +232,8 @@ const InfluencerProfile: React.FC<InfluencerProfileProps> = ({
               {selectedInfluencer.pricingModels.packageDeals?.enabled &&
                 selectedInfluencer.pricingModels.packageDeals.packages &&
                 selectedInfluencer.pricingModels.packageDeals.packages.length > 0 && (
-                <div className="mb-4 bg-[#D4A91C]/10 p-3 rounded-lg">
-                  <div className="font-semibold mb-2 text-[#D4A91C]">Package Deals</div>
+                <div className="mb-4 bg-purple-50 p-3 rounded-lg">
+                  <div className="font-semibold mb-2 text-purple-700">Package Deals</div>
                   <div className="space-y-2">
                     {selectedInfluencer.pricingModels.packageDeals.packages.map((pkg: any, idx: number) => (
                       <div key={idx} className="flex justify-between items-center p-2 bg-white rounded-md text-sm">
@@ -216,7 +241,7 @@ const InfluencerProfile: React.FC<InfluencerProfileProps> = ({
                           <div className="font-medium text-gray-900">{pkg.name}</div>
                           <div className="text-xs text-gray-600">{pkg.includedServices}</div>
                         </div>
-                        <div className="font-bold text-[#D4A91C]">₹{pkg.totalPrice}</div>
+                        <div className="font-bold text-purple-700">₹{pkg.totalPrice}</div>
                       </div>
                     ))}
                   </div>
@@ -226,7 +251,7 @@ const InfluencerProfile: React.FC<InfluencerProfileProps> = ({
               {/* Other pricing options */}
               <div className="flex flex-wrap gap-2 mb-2">
                 {selectedInfluencer.pricingModels.negotiablePricing && (
-                  <div className="px-4 py-2 rounded-full bg-[#D4A91C]/15 text-sm text-[#D4A91C] font-medium">
+                  <div className="px-4 py-2 rounded-full bg-blue-100 text-sm text-blue-800 font-medium">
                     Negotiable Pricing Available
                   </div>
                 )}
@@ -259,15 +284,15 @@ const InfluencerProfile: React.FC<InfluencerProfileProps> = ({
           {/* Brand Preferences */}
           {selectedInfluencer.brandPreferences && (
             <div className="mb-6">
-              <div className="font-bold mb-3 text-[#D4A91C] text-lg flex items-center gap-2">
-                <span className="w-1.5 h-5 bg-[#D4A91C] rounded-full"></span>
+              <div className="font-bold mb-3 text-purple-800 text-lg flex items-center gap-2">
+                <span className="w-1.5 h-5 bg-purple-500 rounded-full"></span>
                 Brand Preferences
               </div>
               {selectedInfluencer.brandPreferences.preferredBrandTypes &&
                 selectedInfluencer.brandPreferences.preferredBrandTypes.length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-2">
                   {selectedInfluencer.brandPreferences.preferredBrandTypes.map((type: string, idx: number) => (
-                    <span key={idx} className="px-2 py-1 rounded-full bg-[#D4A91C]/15 text-[#D4A91C] text-xs font-medium">{type}</span>
+                    <span key={idx} className="px-2 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-medium">{type}</span>
                   ))}
                 </div>
               )}
@@ -306,8 +331,8 @@ const InfluencerProfile: React.FC<InfluencerProfileProps> = ({
               variant={selectedInfluencers.some((inf) => inf.id === selectedInfluencer.id) ? "default" : "outline"}
               className={`flex-1 mr-2 ${
                 selectedInfluencers.some((inf) => inf.id === selectedInfluencer.id)
-                  ? "bg-[#3B82F6] hover:bg-[#3B82F6]/90 text-white"
-                  : "border-[#D4A91C]/30 text-[#D4A91C] hover:bg-[#D4A91C]/10 hover:text-[#D4A91C]"
+                  ? "bg-blue-600 hover:bg-blue-700 text-white"
+                  : "border-blue-200 text-blue-700 hover:bg-blue-50 hover:text-blue-800"
               }`}
               onClick={() => {
                 setSelectedInfluencers((prev) => {
@@ -327,7 +352,7 @@ const InfluencerProfile: React.FC<InfluencerProfileProps> = ({
           )}
           <Button
             variant="default"
-            className="flex-1 px-8 py-2 rounded-lg bg-[#3B82F6] hover:bg-[#3B82F6]/90 text-white transition-colors"
+            className="flex-1 px-8 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors"
             onClick={() => setSelectedInfluencer(null)}
           >
             Close
