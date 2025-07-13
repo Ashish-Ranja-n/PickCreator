@@ -86,12 +86,13 @@ function BrandDealsContent() {
       });
 
       if (response.data.success) {
-        console.log(`Deal action ${action} successful for deal: ${dealId}`);
+        console.log(`Deal action ${action} successful for deal: ${dealId}`, response.data);
         toast({
           title: "Success",
-          description: `Deal ${action}ed successfully`,
+          description: action === 'release-payment' ? 'Payment released successfully' : `Deal ${action}ed successfully`,
         });
         // Only refetch deals on actual success
+        console.log('Refetching deals after successful action...');
         fetchDeals();
       } else {
         console.error(`Deal action ${action} failed:`, response.data.error);

@@ -515,11 +515,11 @@ export const DealCard: React.FC<DealCardProps> = ({
                   )}
                 </Button>
 
-                {/* Release Payment button - only show after content is approved and payment not released */}
+                {/* Release Payment button - only show after content is approved */}
                 {deal.status === 'content_approved' && !deal.paymentReleased && !localPaymentReleased && (
                   <Button
                     onClick={() => {
-                      console.log('Release Payment clicked - Deal status:', deal.status, 'Payment released:', deal.paymentReleased, 'Local released:', localPaymentReleased);
+                      console.log('Release Payment clicked - Deal status:', deal.status, 'Payment released:', deal.paymentReleased, 'Local released:', localPaymentReleased, 'Deal ID:', deal._id);
                       setShowPaymentReleaseDialog(true);
                     }}
                     className="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white flex items-center justify-center gap-2"

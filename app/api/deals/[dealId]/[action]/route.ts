@@ -549,34 +549,69 @@ export async function POST(
           }, { status: 403 });
         }
 
-        // Update payment released status
-        await Deal.updateOne(
+        // Check if payment has already been released
+        if (deal.paymentReleased) {
+          return NextResponse.json({
+            success: false,
+            error: 'Payment has already been released for this deal',
+          }, { status: 400 });
+        }
+
+        // Check if deal is in the correct state for payment release (ongoing or content_approved)
+        if (deal.status !== 'ongoing' && deal.status !== 'content_approved') {
+          return NextResponse.json({
+            success: false,
+            error: `Payment can only be released for ongoing deals. Current status: ${deal.status}`,
+          }, { status: 400 });
+        }
+
+        console.log(`Releasing payment for deal ${dealId} - Current status: ${deal.status}`);
+
+        // Update payment released status and deal status to completed
+        const updateResult = await Deal.updateOne(
           { _id: dealId },
           {
             $set: {
               'paymentReleased': true,
-              'status': 'completed' // Still mark as completed when payment is released
+              'status': 'completed'
             }
           }
         );
 
-        // Notify influencers about payment release
-        if (deal.influencers && deal.influencers.length > 0) {
-          for (const influencer of deal.influencers) {
-            sendBackgroundNotification(
-              influencer.id,
-              'Payment Released',
-              `${userName} has released payment for deal ${deal.dealName}`,
-              {
-                url: `/influencer/deals?tab=completed&id=${dealId}`,
-                type: 'payment_released',
-                dealName: deal.dealName,
-                dealId: dealId,
-                amount: deal.totalAmount
-              }
-            );
-          }
+        console.log(`Deal update result:`, updateResult);
+
+        if (updateResult.modifiedCount === 0) {
+          console.error(`Failed to update deal ${dealId} - no documents modified`);
+          return NextResponse.json({
+            success: false,
+            error: 'Failed to update deal status',
+          }, { status: 500 });
         }
+
+        // Notify influencers about payment release (don't let notification errors affect the main operation)
+        try {
+          if (deal.influencers && deal.influencers.length > 0) {
+            for (const influencer of deal.influencers) {
+              sendBackgroundNotification(
+                influencer.id,
+                'Payment Released',
+                `${userName} has released payment for deal ${deal.dealName}`,
+                {
+                  url: `/influencer/deals?tab=completed&id=${dealId}`,
+                  type: 'payment_released',
+                  dealName: deal.dealName,
+                  dealId: dealId,
+                  amount: deal.totalAmount
+                }
+              );
+            }
+          }
+        } catch (notificationError) {
+          console.error('Error sending payment release notifications:', notificationError);
+          // Don't fail the main operation if notifications fail
+        }
+
+        console.log(`Payment released successfully for deal ${dealId} - Status updated to completed`);
         break;
 
       default:
