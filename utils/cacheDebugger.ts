@@ -56,23 +56,11 @@ export function setupCacheDebugging() {
       console.groupEnd();
     },
     
-    // Show cache growth over time
-    startMonitoring: () => {
-      let previousSize = 0;
-      const interval = setInterval(() => {
-        const info = getLocalStorageDebugInfo();
-        const currentSize = info.totalSizeBytes;
-        const growth = currentSize - previousSize;
-        
-        console.log(`📈 Cache Growth: ${(growth / 1024).toFixed(2)}KB (Total: ${info.totalSizeMB.toFixed(2)}MB)`);
-        previousSize = currentSize;
-      }, 10000); // Every 10 seconds
-      
-      console.log('Started cache monitoring. Run cacheDebug.stopMonitoring() to stop.');
-      (window as any).cacheDebug.stopMonitoring = () => {
-        clearInterval(interval);
-        console.log('Stopped cache monitoring.');
-      };
+    // Manual cache monitoring (no automatic intervals)
+    checkGrowth: () => {
+      const info = getLocalStorageDebugInfo();
+      console.log(`📈 Current Cache Size: ${info.totalSizeMB.toFixed(2)}MB (${info.itemCount} items)`);
+      return info;
     },
     
     // Clean up cache manually
@@ -150,7 +138,7 @@ export function setupCacheDebugging() {
   console.log('• cacheDebug.showAll() - Complete cache overview');
   console.log('• cacheDebug.showLarge() - Show large cache items');
   console.log('• cacheDebug.cleanup() - Manual cache cleanup');
-  console.log('• cacheDebug.startMonitoring() - Monitor cache growth');
+  console.log('• cacheDebug.checkGrowth() - Check current cache size');
   console.log('• cacheDebug.find("search") - Find specific cache items');
   console.log('• cacheDebug.performance() - Cache performance analysis');
 }

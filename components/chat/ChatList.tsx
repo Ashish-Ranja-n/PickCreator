@@ -471,7 +471,6 @@ export const ChatList = () => {
     queryKey: ['conversations', currentUserId],
     queryFn: () => currentUserId ? api.fetchConversations(currentUserId) : [],
     enabled: !!currentUserId,
-    staleTime: 60 * 1000, // 1 minute
     refetchOnWindowFocus: false,
     retry: 2
   });
@@ -484,7 +483,6 @@ export const ChatList = () => {
     queryKey: ['chatRooms', currentUserId],
     queryFn: () => currentUserId ? api.fetchChatRooms(currentUserId) : [],
     enabled: !!currentUserId && activeTab === 'rooms',
-    staleTime: 60 * 1000, // 1 minute
     refetchOnWindowFocus: false
   });
 

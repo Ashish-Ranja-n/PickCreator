@@ -19,7 +19,6 @@ interface UserState {
   error: Error | null;
   fetchUser: () => Promise<User | null>;
   clearUser: () => void;
-  backgroundFetchInProgress: boolean; // Add this to track background fetches
 }
 
 // Helper function for retry logic
@@ -54,92 +53,43 @@ export const useUserStore = create<UserState>((set, get) => ({
   user: null,
   isLoading: false,
   error: null,
-  backgroundFetchInProgress: false,
   
   fetchUser: async () => {
-    // If we're already loading or a background fetch is in progress, don't trigger another fetch
-    if (get().isLoading || get().backgroundFetchInProgress) {
+    // If we're already loading, don't trigger another fetch
+    if (get().isLoading) {
       return get().user;
     }
-    
-    // Check if we have cached user data and if it's not too old
+
+    // Check if we have cached user data
     let cachedUser = null;
-    let shouldFetchFromAPI = true;
-    let cacheTimestamp = 0;
-    
+
     if (typeof window !== 'undefined' && window.localStorage) {
       try {
         cachedUser = localStorage.getItem('currentUser');
-        cacheTimestamp = parseInt(localStorage.getItem('currentUserTimestamp') || '0', 10);
-        
-        // Only fetch from API if cache is older than 2 minutes (120000 ms)
-        const cacheAge = Date.now() - cacheTimestamp;
-        shouldFetchFromAPI = cacheAge > 120000;
-        
-        if (cachedUser && !shouldFetchFromAPI) {
-          console.log('Using cached user data, age:', Math.round(cacheAge/1000), 'seconds');
-        }
-      } catch (e) {
-        console.warn('Error accessing localStorage:', e);
-      }
-    }
-    
-    set({ isLoading: true });
-    
-    // Try to use cached data first
-    if (cachedUser && cachedUser !== 'undefined' && cachedUser !== 'null') {
-      try {
-        const parsedUser = JSON.parse(cachedUser);
-        // Validate that the parsed data has the expected structure
-        if (parsedUser && typeof parsedUser === 'object' && parsedUser._id) {
-          set({ user: parsedUser, isLoading: false });
-          
-          // If cache is fresh enough, return early without fetching from API
-          if (!shouldFetchFromAPI) {
+
+        if (cachedUser && cachedUser !== 'undefined' && cachedUser !== 'null') {
+          const parsedUser = JSON.parse(cachedUser);
+          // Validate that the parsed data has the expected structure
+          if (parsedUser && typeof parsedUser === 'object' && parsedUser._id) {
+            console.log('Using cached user data');
+            set({ user: parsedUser, isLoading: false, error: null });
             return parsedUser;
-          }
-          
-          // Return early but still fetch in background if cache needs refresh
-          if (!get().backgroundFetchInProgress) {
-            set({ backgroundFetchInProgress: true });
-            setTimeout(function() {
-              const backgroundFetch = async () => {
-                try {
-                  await fetchFromAPI();
-                } finally {
-                  set({ backgroundFetchInProgress: false });
-                }
-              };
-              backgroundFetch();
-            }, 100);
-            return parsedUser;
-          }
-        } else {
-          // Invalid user data structure
-          console.warn('Cached user data has invalid structure:', parsedUser);
-          if (typeof window !== 'undefined' && window.localStorage) {
-            try {
-              localStorage.removeItem('currentUser');
-              localStorage.removeItem('currentUserTimestamp');
-            } catch (e) {
-              console.warn('Error removing from localStorage:', e);
-            }
+          } else {
+            // Invalid user data structure - clear cache
+            console.warn('Cached user data has invalid structure:', parsedUser);
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('currentUserTimestamp');
           }
         }
       } catch (parseError) {
         // If parsing fails, clear the invalid cache
         console.error('Failed to parse cached user data:', parseError);
-        if (typeof window !== 'undefined' && window.localStorage) {
-          try {
-            localStorage.removeItem('currentUser');
-            localStorage.removeItem('currentUserTimestamp');
-          } catch (e) {
-            console.warn('Error removing from localStorage:', e);
-          }
-        }
+        localStorage.removeItem('currentUser');
+        localStorage.removeItem('currentUserTimestamp');
       }
     }
-    
+
+    // No valid cache found, fetch from API
     return await fetchFromAPI();
   },
   
@@ -178,11 +128,10 @@ export const useUserStore = create<UserState>((set, get) => ({
     }
     
     // Reset all state in the store
-    set({ 
-      user: null, 
-      isLoading: false, 
-      error: null,
-      backgroundFetchInProgress: false
+    set({
+      user: null,
+      isLoading: false,
+      error: null
     });
     
     // Force a state update to trigger component re-renders

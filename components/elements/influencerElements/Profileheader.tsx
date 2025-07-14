@@ -25,42 +25,26 @@ export const ProfileHeader = () => {
     followerCount: 0
   });
   const [isLoading, setIsLoading] = useState(true);
-  const [lastFetchTime, setLastFetchTime] = useState<number>(0);
-  
-  // Cache duration in milliseconds (5 minutes)
-  const CACHE_DURATION = 5 * 60 * 1000;
 
   // Memoized fetch function to prevent recreation on every render
-  const fetchProfileData = useCallback(async (forceRefresh = false) => {
-    // Check if we need to fetch new data or can use cached state
-    const now = Date.now();
-    if (!forceRefresh && lastFetchTime > 0 && now - lastFetchTime < CACHE_DURATION) {
-      console.log('Using in-memory cached profile data, age:', Math.round((now - lastFetchTime)/1000), 'seconds');
-      return;
-    }
-    
+  const fetchProfileData = useCallback(async () => {
     try {
       setIsLoading(true);
-      
+
       if (currentUser?._id) {
         // Check if we have cached data in localStorage first
         let cachedData: ProfileData | null = null;
-        
+
         try {
           const cachedString = localStorage.getItem('profileData');
           if (cachedString) {
             cachedData = JSON.parse(cachedString);
-            const cacheAge = now - new Date(cachedData?.lastUpdated || 0).getTime();
-            
-            // If cache is fresh enough (less than 5 minutes old), use it immediately
-            if (cachedData && cacheAge < CACHE_DURATION) {
-              console.log('Using localStorage cached profile data, age:', Math.round(cacheAge/1000), 'seconds');
+
+            // Use cached data if available
+            if (cachedData) {
+              console.log('Using cached profile data');
               setProfileData(cachedData);
               setIsLoading(false);
-              setLastFetchTime(now);
-              
-              // We'll still fetch in the background after a delay
-              setTimeout(() => fetchProfileData(true), 5000);
               return;
             }
           }
@@ -126,9 +110,8 @@ export const ProfileHeader = () => {
       });
     } finally {
       setIsLoading(false);
-      setLastFetchTime(Date.now());
     }
-  }, [currentUser, lastFetchTime, CACHE_DURATION]);
+  }, [currentUser]);
 
   // Effect to load data when component mounts or user changes
   useEffect(() => {

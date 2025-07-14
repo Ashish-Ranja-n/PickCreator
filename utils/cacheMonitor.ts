@@ -149,32 +149,15 @@ export function cleanupLocalStorageBySize(maxSizeMB: number = 5): number {
 }
 
 /**
- * Monitor and automatically clean cache
+ * Initialize cache monitoring (no automatic intervals)
  */
 export function startCacheMonitoring() {
-  // Initial cleanup
+  // Initial cleanup only
   cleanupOldLocalStorage();
   cleanupLocalStorageBySize();
 
-  // Set up periodic monitoring
-  const monitorInterval = setInterval(() => {
-    const stats = getLocalStorageStats();
-    
-    console.log('Cache monitoring:', {
-      localStorage: `${stats.totalSizeMB.toFixed(2)}MB (${stats.itemCount} items)`,
-      quotaUsed: `${stats.quotaUsed.toFixed(1)}%`
-    });
-
-    // Clean up if needed
-    if (stats.quotaUsed > 80) {
-      console.warn('localStorage quota usage high, cleaning up...');
-      cleanupOldLocalStorage();
-      cleanupLocalStorageBySize();
-    }
-  }, 5 * 60 * 1000); // Every 5 minutes
-
-  // Return cleanup function
-  return () => clearInterval(monitorInterval);
+  // Return empty cleanup function for compatibility
+  return () => {};
 }
 
 /**
