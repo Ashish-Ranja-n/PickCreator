@@ -70,31 +70,55 @@ export async function POST(request: NextRequest) {
       // Update payment status
       await updatePaymentStatus(merchantOrderId, paymentStatus, payload);
       
-      // If payment is successful, update the deal
+      // If payment is successful, update the deal with idempotency check
       if (paymentStatus === PaymentStatus.SUCCESS) {
         const deal = await Deal.findById(payment.dealId);
         if (deal) {
-          // Update deal status
-          deal.paymentStatus = 'paid';
-          deal.status = 'ongoing';
-          await deal.save();
-          
-          // Notify influencers about payment
-          if (deal.influencers && deal.influencers.length > 0) {
-            for (const influencer of deal.influencers) {
-              sendBackgroundNotification(
-                influencer.id,
-                'Payment Received',
-                `Payment has been received for deal ${deal.dealName}`,
-                {
-                  url: `/influencer/deals?tab=ongoing&id=${deal._id}`,
-                  type: 'payment_received',
-                  dealName: deal.dealName,
-                  dealId: deal._id.toString(),
-                  amount: deal.totalAmount
+          // Idempotency check - only update if not already paid
+          if (deal.paymentStatus !== 'paid' || deal.status !== 'ongoing') {
+            console.log(`[Callback] Updating deal ${deal._id} status to ongoing (payment successful)`);
+
+            // Use atomic update to prevent race conditions
+            const updateResult = await Deal.updateOne(
+              {
+                _id: payment.dealId,
+                paymentStatus: { $ne: 'paid' } // Only update if not already paid
+              },
+              {
+                $set: {
+                  paymentStatus: 'paid',
+                  status: 'ongoing',
+                  updatedAt: new Date()
                 }
-              );
+              }
+            );
+
+            // Only send notifications if the update was successful
+            if (updateResult.modifiedCount > 0) {
+              console.log(`[Callback] Deal ${deal._id} successfully updated to ongoing status`);
+
+              // Notify influencers about payment
+              if (deal.influencers && deal.influencers.length > 0) {
+                for (const influencer of deal.influencers) {
+                  sendBackgroundNotification(
+                    influencer.id,
+                    'Payment Received',
+                    `Payment has been received for deal ${deal.dealName}`,
+                    {
+                      url: `/influencer/deals?tab=ongoing&id=${deal._id}`,
+                      type: 'payment_received',
+                      dealName: deal.dealName,
+                      dealId: deal._id.toString(),
+                      amount: deal.totalAmount
+                    }
+                  );
+                }
+              }
+            } else {
+              console.log(`[Callback] Deal ${deal._id} was already updated to paid status`);
             }
+          } else {
+            console.log(`[Callback] Deal ${deal._id} is already in paid/ongoing status`);
           }
         }
       }
