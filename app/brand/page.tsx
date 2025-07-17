@@ -48,6 +48,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import Image from 'next/image';
 import { useToast } from '@/components/ui/use-toast';
 import { useCurrentUser } from '@/hook/useCurrentUser';
+import { useBrandProfile } from '@/hook/useBrandProfile';
 import InfluencerProfile from "@/components/brand/InfluencerProfile";
 
 // Define the influencer interface based on our API data
@@ -131,6 +132,7 @@ const Brand: NextPage = () => {
   const router = useRouter();
   const { toast } = useToast();
   const user = useCurrentUser();
+  const { profileData: brandProfile } = useBrandProfile();
 
   // State variables
   const [influencers, setInfluencers] = useState<Influencer[]>([]);
@@ -215,6 +217,34 @@ const Brand: NextPage = () => {
     // Set available cities from the imported INDIAN_CITIES array (always new reference)
     setAvailableCities([...(INDIAN_CITIES || [])]);
   }, []);
+
+  // Preselect city based on brand's location
+  useEffect(() => {
+    if (brandProfile?.location && !selectedCity && availableCities.length > 0) {
+      // Check if the brand's location exists in the available cities list
+      const userLocation = brandProfile.location.trim();
+
+      // First try exact match (case-insensitive)
+      let matchingCity = availableCities.find(city =>
+        city.toLowerCase() === userLocation.toLowerCase()
+      );
+
+      // If no exact match, try partial match (in case user location contains extra info)
+      if (!matchingCity) {
+        matchingCity = availableCities.find(city =>
+          userLocation.toLowerCase().includes(city.toLowerCase()) ||
+          city.toLowerCase().includes(userLocation.toLowerCase())
+        );
+      }
+
+      if (matchingCity) {
+        console.log(`Preselecting city: ${matchingCity} based on brand location: ${userLocation}`);
+        setSelectedCity(matchingCity);
+      } else {
+        console.log(`Brand location "${userLocation}" not found in available cities list`);
+      }
+    }
+  }, [brandProfile?.location, selectedCity, availableCities]);
 
   // No useMemo, filter inline in render (like onboarding page)
 
@@ -712,7 +742,7 @@ const Brand: NextPage = () => {
           Find influencers and make a deal.
         </p>
         </div> }
-      <div className="flex flex-wrap gap-4 mb-8 items-center p-4 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm rounded-xl shadow-lg border border-white/20 dark:border-zinc-700/50">
+      <div className="flex flex-wrap gap-4 mb-8 items-center p-4 bg-gradient-to-br from-amber-50/95 via-yellow-50/90 to-orange-50/95 dark:from-amber-900/20 dark:via-yellow-900/15 dark:to-orange-900/20 backdrop-blur-sm rounded-xl shadow-lg border border-amber-200/60 dark:border-amber-700/30">
         {/* City Filter */}
         <div className="flex-1 min-w-[200px]">
           <Popover open={openCityPopover} onOpenChange={setOpenCityPopover}>
