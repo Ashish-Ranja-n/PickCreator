@@ -106,6 +106,7 @@ interface Influencer {
     collabStyles?: string[];
   };
   availability?: string[];
+  isInstagramVerified?: boolean;
 }
 
 // Pagination interface
@@ -911,8 +912,8 @@ const Brand: NextPage = () => {
               <Card
                 key={influencer.id}
                 className={cn(
-                  "overflow-hidden transition-all hover:shadow-md border-gray-200 dark:border-zinc-700 bg-white/90 dark:bg-zinc-900/90 hover:bg-white dark:hover:bg-zinc-900",
-                  isCampaignMode && selectedInfluencers.some(inf => inf.id === influencer.id) && "border-2 border-blue-400 dark:border-blue-500"
+                  "overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-blue-200/30 dark:hover:shadow-blue-900/30 border-2 border-blue-200/70 dark:border-zinc-600 bg-gradient-to-br from-blue-100/80 via-white to-indigo-50/70 dark:from-zinc-800/95 dark:via-zinc-700/90 dark:to-zinc-800/95 hover:from-blue-200/90 hover:via-blue-50/80 hover:to-indigo-100/80 dark:hover:from-zinc-700/95 dark:hover:via-zinc-600/90 dark:hover:to-zinc-700/95 hover:scale-[1.02] hover:-translate-y-1",
+                  isCampaignMode && selectedInfluencers.some(inf => inf.id === influencer.id) && "border-2 border-blue-500 dark:border-blue-400 from-blue-200/90 via-blue-100/80 to-indigo-200/70 shadow-lg shadow-blue-300/40"
                 )}
               >
                 <CardHeader className="p-4 pb-2">
@@ -957,14 +958,16 @@ const Brand: NextPage = () => {
                         <CardTitle className="text-xl font-semibold truncate text-gray-900 dark:text-white">
                           {influencer.name}
                         </CardTitle>
-                        {/* Always show Instagram verified badge - improved SVG */}
-                        <span title="Instagram Verified" className="inline-flex items-center ml-1">
-                          <Instagram className="w-6 h-6 text-pink-600" />
-                          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" className="ml-1">
-                            <circle cx="10" cy="10" r="9" fill="#22c55e" />
-                            <path d="M6.5 10.5l2.2 2 4-4" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                          </svg>
-                        </span>
+                        {/* Show Instagram verified badge only if verified */}
+                        {influencer.isInstagramVerified && (
+                          <span title="Instagram Verified" className="inline-flex items-center ml-1">
+                            <Instagram className="w-6 h-6 text-pink-600" />
+                            <svg width="18" height="18" viewBox="0 0 20 20" fill="none" className="ml-1">
+                              <circle cx="10" cy="10" r="9" fill="#22c55e" />
+                              <path d="M6.5 10.5l2.2 2 4-4" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                          </span>
+                        )}
                       </div>
                       {/* Gender below name */}
                       {influencer.gender && (

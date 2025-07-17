@@ -2,6 +2,7 @@
 
 import InfluencerFeedClient from "@/components/influencer/feed/InfluencerFeedClient";
 import { useCurrentUser } from "@/hook/useCurrentUser";
+import { useInfluencerProfile } from "@/hook/useInfluencerProfile";
 import { ShieldCheck, Users, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -9,10 +10,11 @@ import { useRouter } from "next/navigation";
 
 export default function CommunityPage() {
   const currentUser = useCurrentUser();
+  const { data: profileData, isLoading: isLoadingProfile } = useInfluencerProfile();
   const router = useRouter();
 
   // Show loading state while user data is being fetched
-  if (!currentUser) {
+  if (!currentUser || isLoadingProfile) {
     return (
       <div className="container mx-auto px-1 min-h-screen bg-gradient-to-br from-white via-blue-50/30 to-white dark:bg-gradient-to-br dark:from-gray-900 dark:to-black">
         <div className="pt-[108px] md:pt-8 flex items-center justify-center">
@@ -22,8 +24,8 @@ export default function CommunityPage() {
     );
   }
 
-  // Check if user is Instagram verified
-  const isInstagramVerified = currentUser.isInstagramVerified;
+  // Check if user is Instagram verified - use profileData which has fresh data from database
+  const isInstagramVerified = profileData?.isInstagramVerified || false;
 
   // If not verified, show the blurred/restricted access page
   if (!isInstagramVerified) {

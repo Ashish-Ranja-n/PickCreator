@@ -115,7 +115,10 @@ export async function GET(request: NextRequest) {
         availability: influencer.availability || [],
 
         // Include videos for showcase
-        videos: influencer.videos || []
+        videos: influencer.videos || [],
+
+        // Include Instagram verification status
+        isInstagramVerified: influencer.isInstagramVerified || false
       };
     });
 
