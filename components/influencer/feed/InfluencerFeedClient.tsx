@@ -369,11 +369,10 @@ export default function InfluencerFeedClient() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className={`h-9 w-9 rounded-full transition-colors duration-200 touch-manipulation select-none active:scale-95 ${showMyPosts
-                      ? 'bg-[#3B82F6] text-white shadow-md ring-1 ring-[#3B82F6]/30'
-                      : 'bg-[#C4B5FD]/20 dark:bg-gray-800 text-gray-700 dark:text-white hover:bg-[#C4B5FD]/30 dark:hover:bg-gray-700 active:bg-[#C4B5FD]/40 dark:active:bg-gray-600'}`}
+                    className={`h-9 w-9 rounded-full transition-colors duration-200 ${showMyPosts
+                      ? 'bg-[#3B82F6] text-white shadow-md ring-1 ring-[#3B82F6]/30 hover:bg-[#3B82F6] hover:text-white'
+                      : 'bg-[#C4B5FD]/20 dark:bg-gray-800 text-gray-700 dark:text-white hover:bg-[#C4B5FD]/20 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-white'}`}
                     onClick={() => setShowMyPosts(!showMyPosts)}
-                    onTouchStart={(e) => e.preventDefault()}
                   >
                     <User size={16} className={`${showMyPosts ? 'scale-110' : ''} transition-transform duration-300`} />
                   </Button>
@@ -395,11 +394,10 @@ export default function InfluencerFeedClient() {
             <Button
               variant="ghost"
               size="sm"
-              className={`h-8 rounded-full px-3 text-xs font-medium transition-all duration-200 touch-manipulation select-none active:scale-95 ${feedType === 'live'
-                ? 'bg-[#3B82F6] text-white shadow-md'
-                : 'text-gray-700 dark:text-white bg-transparent hover:bg-white/50 dark:hover:bg-gray-700/50 active:bg-white/70 dark:active:bg-gray-600/50'}`}
+              className={`h-8 rounded-full px-3 text-xs font-medium transition-colors duration-200 ${feedType === 'live'
+                ? 'bg-[#3B82F6] text-white shadow-md hover:bg-[#3B82F6] hover:text-white'
+                : 'text-gray-700 dark:text-white bg-transparent hover:bg-transparent hover:text-gray-700 dark:hover:text-white'}`}
               onClick={() => setFeedType("live")}
-              onTouchStart={(e) => e.preventDefault()}
             >
               <Zap size={14} className={`mr-1.5 ${feedType === 'live' ? 'text-white animate-pulse' : 'text-[#C4B5FD] dark:text-[#C4B5FD]'}`} />
               Live
@@ -407,11 +405,10 @@ export default function InfluencerFeedClient() {
             <Button
               variant="ghost"
               size="sm"
-              className={`h-8 rounded-full px-3 text-xs font-medium transition-all duration-200 touch-manipulation select-none active:scale-95 ${feedType === 'top'
-                ? 'bg-[#3B82F6] text-white shadow-md'
-                : 'text-gray-700 dark:text-white bg-transparent hover:bg-white/50 dark:hover:bg-gray-700/50 active:bg-white/70 dark:active:bg-gray-600/50'}`}
+              className={`h-8 rounded-full px-3 text-xs font-medium transition-colors duration-200 ${feedType === 'top'
+                ? 'bg-[#3B82F6] text-white shadow-md hover:bg-[#3B82F6] hover:text-white'
+                : 'text-gray-700 dark:text-white bg-transparent hover:bg-transparent hover:text-gray-700 dark:hover:text-white'}`}
               onClick={() => setFeedType("top")}
-              onTouchStart={(e) => e.preventDefault()}
             >
               <TrendingUp size={14} className={`mr-1.5 ${feedType === 'top' ? 'text-white' : 'text-[#3B82F6] dark:text-[#3B82F6]'}`} />
               Top
