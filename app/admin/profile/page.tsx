@@ -15,7 +15,8 @@ import {
   Settings,
   Check,
   BellIcon,
-  KeyRoundIcon
+  KeyRoundIcon,
+  Users
 } from 'lucide-react';
 import { useCurrentUser } from '@/hook/useCurrentUser';
 import { useNotifications } from '@/hook/useNotifications';
@@ -313,6 +314,13 @@ const AdminProfilePage = () => {
                     Enable Push Notifications
                   </DropdownMenuItem>
                 )}
+
+                <DropdownMenuItem asChild>
+                  <Link href="/admin/userManagement">
+                    <Users className="h-4 w-4 mr-2" />
+                    User Management
+                  </Link>
+                </DropdownMenuItem>
 
                 <DropdownMenuItem>
                   <LinkIcon className="h-4 w-4 mr-2" />
