@@ -123,23 +123,6 @@ const Navbar: React.FC = () => {
             </motion.button>
           )}
 
-          {/* Notification bell with animation */}
-          <motion.button
-            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <div className="relative">
-              <BellIcon className="h-5 w-5 text-gray-600 dark:text-gray-300" />
-              <motion.div 
-                className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 dark:bg-red-400 rounded-full border-2 border-white dark:border-gray-900"
-                initial={{ scale: 0 }}
-                animate={{ scale: [0, 1.2, 1] }}
-                transition={{ duration: 0.3 }}
-              />
-            </div>
-          </motion.button>
-
           {/* Help/Bug button - conditional based on user role */}
           {currentUser?.role === 'Brand' ? (
             <motion.button

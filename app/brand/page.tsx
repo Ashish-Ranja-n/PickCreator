@@ -141,7 +141,7 @@ const Brand: NextPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
   const [openCityPopover, setOpenCityPopover] = useState(false);
-  const [sortBy, setSortBy] = useState<'followers' | 'instagramAnalytics.avgReelViews'>('followers');
+  const [sortBy, setSortBy] = useState<'followers'>('followers');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [selectedInfluencer, setSelectedInfluencer] = useState<Influencer | null>(null);
   const [pagination, setPagination] = useState<Pagination>(initialPagination);
@@ -289,20 +289,13 @@ const Brand: NextPage = () => {
   }, [selectedCity, sortBy, sortOrder]);
 
   // Toggle sort order and update sort
-  const toggleSort = (field: 'followers' | 'instagramAnalytics.avgReelViews') => {
-    if (sortBy === field) {
-      // Toggle sort order if same field
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-    } else {
-      // Set new field and default to descending
-      setSortBy(field);
-      setSortOrder('desc');
-    }
+  const toggleSort = (field: 'followers') => {
+    // Toggle sort order for followers
+    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
   };
 
   // Get sort icon based on current sort
-  const getSortIcon = (field: 'followers' | 'instagramAnalytics.avgReelViews') => {
-    if (sortBy !== field) return <ArrowUpDown className="h-4 w-4" />;
+  const getSortIcon = (field: 'followers') => {
     return sortOrder === 'asc' ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />;
   };
 
@@ -325,7 +318,7 @@ const Brand: NextPage = () => {
         size="sm"
         onClick={() => goToPage(1)}
         disabled={page === 1}
-        className={page === 1 ? "" : "dark:border-zinc-600 dark:text-white dark:hover:bg-zinc-800"}
+        className={page === 1 ? "bg-[#3B82F6] hover:bg-blue-600 text-white rounded-xl" : "border-gray-300 dark:border-zinc-600 text-[#283747] dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-800 rounded-xl"}
       >
         1
       </Button>
@@ -333,7 +326,7 @@ const Brand: NextPage = () => {
 
     // Add ellipsis if needed
     if (page > 3) {
-      pages.push(<span key="ellipsis1" className="px-2">...</span>);
+      pages.push(<span key="ellipsis1" className="px-2 text-gray-500">...</span>);
     }
 
     // Add pages around current page
@@ -345,7 +338,7 @@ const Brand: NextPage = () => {
           variant={page === i ? "default" : "outline"}
           size="sm"
           onClick={() => goToPage(i)}
-          className={page === i ? "" : "dark:border-zinc-600 dark:text-white dark:hover:bg-zinc-800"}
+          className={page === i ? "bg-[#3B82F6] hover:bg-blue-600 text-white rounded-xl" : "border-gray-300 dark:border-zinc-600 text-[#283747] dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-800 rounded-xl"}
         >
           {i}
         </Button>
@@ -354,7 +347,7 @@ const Brand: NextPage = () => {
 
     // Add ellipsis if needed
     if (page < totalPages - 2) {
-      pages.push(<span key="ellipsis2" className="px-2">...</span>);
+      pages.push(<span key="ellipsis2" className="px-2 text-gray-500">...</span>);
     }
 
     // Always show last page if there's more than one page
@@ -366,7 +359,7 @@ const Brand: NextPage = () => {
           size="sm"
           onClick={() => goToPage(totalPages)}
           disabled={page === totalPages}
-          className={page === totalPages ? "" : "dark:border-zinc-600 dark:text-white dark:hover:bg-zinc-800"}
+          className={page === totalPages ? "bg-[#3B82F6] hover:bg-blue-600 text-white rounded-xl" : "border-gray-300 dark:border-zinc-600 text-[#283747] dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-800 rounded-xl"}
         >
           {totalPages}
         </Button>
@@ -730,200 +723,356 @@ const Brand: NextPage = () => {
 
   return (
     <>
-    <div className="container mx-auto px-4 py-6 pb-16 max-w-7xl flex flex-col min-h-screen overflow-y-auto bg-gradient-to-br from-white via-blue-50 to-purple-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-violet-950/50 scrollbar-hide">
-      {/* Header */}
-
-
-      {/* Filters Section - Visible in both modes */}
-        {!isCampaignMode && <div>
-        <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-2 text-gray-900 dark:text-white kanit">
-          Search Influencers
-        </h1>
-        <p className="text-lg text-muted-foreground dark:text-zinc-300">
-          Find influencers and make a deal.
-        </p>
-        </div> }
-      <div className="flex flex-wrap gap-4 mb-8 items-center p-4 bg-gradient-to-br from-amber-50/95 via-yellow-50/90 to-orange-50/95 dark:from-amber-900/20 dark:via-yellow-900/15 dark:to-orange-900/20 backdrop-blur-sm rounded-xl shadow-lg border border-amber-200/60 dark:border-amber-700/30">
-        {/* City Filter */}
-        <div className="flex-1 min-w-[200px]">
-          <Popover open={openCityPopover} onOpenChange={setOpenCityPopover}>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                role="combobox"
-                type="button"
-                aria-expanded={openCityPopover}
-                className="w-full justify-between h-10"
-              >
-                <span className="text-gray-900 dark:text-white">{selectedCity || "Select a city"}</span>
-                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-full p-0 shadow-lg dark:bg-zinc-900 dark:border-zinc-700" align="start">
-              <div className="sticky top-0 bg-white dark:bg-zinc-900 p-2 rounded-t-md">
-                <div className="relative">
-                  <input
-                    className="flex h-10 w-full rounded-xl border-2 border-input bg-background dark:bg-zinc-800 dark:border-zinc-600 dark:text-white pl-4 pr-10 text-base focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                    placeholder="Type to search cities..."
-                    onChange={(e) => {
-                      const list = document.querySelector('.cities-list');
-                      const items = list?.querySelectorAll('.city-item');
-                      const search = e.target.value.toLowerCase();
-                      items?.forEach((item) => {
-                        const text = item.textContent?.toLowerCase() || '';
-                        item.classList.toggle('hidden', !text.includes(search));
-                      });
-                    }}
-                  />
-                </div>
-              </div>
-              <div className="cities-list max-h-[400px] overflow-auto">
-                {availableCities.length === 0 ? (
-                  <div className="text-base text-center py-8 text-muted-foreground dark:text-zinc-400">
-                    No cities found
-                  </div>
-                ) : (
-                  <>
-                    <div
-                      className="city-item relative flex cursor-pointer select-none items-center px-4 py-3 text-base hover:bg-accent/5 dark:hover:bg-zinc-700 border-b border-input/10 dark:border-zinc-700 text-gray-900 dark:text-white"
-                      onClick={() => {
-                        setSelectedCity(null);
-                        setOpenCityPopover(false);
-                      }}
-                    >
-                      All Cities
-                    </div>
-                    {availableCities.map(city => (
-                      <div
-                        key={city}
-                        className={cn(
-                          "city-item relative flex cursor-pointer select-none items-center px-4 py-3 text-base text-gray-900 dark:text-white",
-                          "hover:bg-accent/5 dark:hover:bg-zinc-700",
-                          "border-b border-input/10 dark:border-zinc-700",
-                          selectedCity === city && "bg-accent/5 dark:bg-zinc-700 font-medium"
-                        )}
-                        onClick={() => {
-                          setSelectedCity(city);
-                          setOpenCityPopover(false);
-                        }}
-                      >
-                        {city}
-                        {selectedCity === city && (
-                          <CheckIcon className="ml-auto h-5 w-5 text-primary" />
-                        )}
-                      </div>
-                    ))}
-                  </>
-                )}
-              </div>
-            </PopoverContent>
-          </Popover>
-        </div>
-
-        {/* Sort Buttons */}
-        <div className="flex gap-2 flex-wrap">
-          <Button
-            variant={sortBy === 'followers' ? "default" : "outline"}
-            size="sm"
-            onClick={() => toggleSort('followers')}
-            className={`flex items-center gap-1 ${sortBy === 'followers' ? 'bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800' : 'border-blue-200 dark:border-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/30 dark:text-white'}`}
+    <div className="min-h-screen bg-gradient-to-br from-[#F9FAF9] via-white to-gray-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-800">
+      {/* Floating Contact Button */}
+      <div className="fixed bottom-24 right-4 z-40 md:bottom-6">
+        <div className="flex flex-col gap-2">
+          <motion.a
+            href="tel:+917301677612"
+            className="flex items-center justify-center w-14 h-14 bg-[#ff9700] hover:bg-orange-600 text-white rounded-full shadow-lg transition-all duration-300"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            title="Call Support"
           >
-            <Users className="h-4 w-4 mr-1" />
-            Followers
-            {getSortIcon('followers')}
-          </Button>
-
-          <Button
-            variant={sortBy === 'instagramAnalytics.avgReelViews' ? "default" : "outline"}
-            size="sm"
-            onClick={() => toggleSort('instagramAnalytics.avgReelViews')}
-            className={`flex items-center gap-1 ${sortBy === 'instagramAnalytics.avgReelViews' ? 'bg-purple-600 hover:bg-purple-700 dark:bg-purple-700 dark:hover:bg-purple-800' : 'border-purple-200 dark:border-purple-700 hover:bg-purple-50 dark:hover:bg-purple-900/30 dark:text-white'}`}
+            <Phone className="w-6 h-6" />
+          </motion.a>
+          <motion.a
+            href="https://wa.me/917301677612"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center w-14 h-14 bg-[#25D366] hover:bg-green-600 text-white rounded-full shadow-lg transition-all duration-300"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            title="WhatsApp Support"
           >
-            <Zap className="h-4 w-4 mr-1" />
-            Avg. Reel Views
-            {getSortIcon('instagramAnalytics.avgReelViews')}
-          </Button>
-
-          {selectedCity && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setSelectedCity(null)}
-              className="flex items-center gap-1 dark:border-zinc-600 dark:text-white dark:hover:bg-zinc-800"
-            >
-              <MapPin className="h-4 w-4 mr-1" />
-              {selectedCity}
-              <XIcon className="h-4 w-4 ml-1" />
-            </Button>
-          )}
+            <MessageCircle className="w-6 h-6" />
+          </motion.a>
         </div>
       </div>
 
-      {/* Influencer Grid - Always visible */}
-      <div className="relative min-h-[500px]">
-        {loading ? (
-          // Loading state with skeletons
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="border rounded-lg p-6">
-                <div className="flex items-center gap-4 mb-4">
-                  <Skeleton className="h-16 w-16 rounded-full" />
-                  <div className="space-y-2">
-                    <Skeleton className="h-5 w-32" />
-                    <Skeleton className="h-4 w-24" />
+      <div className="container mx-auto px-4 py-8 pb-20 max-w-6xl">
+        {/* Header Section */}
+        {!isCampaignMode && (
+          <div className="mb-8">
+            <h1 className="text-2xl md:text-3xl font-bold mb-2 text-[#283747] dark:text-white tracking-tight">
+              Search Influencers
+            </h1>
+            <p className="text-base text-gray-600 dark:text-zinc-400 font-medium">
+              Find influencers and make a deal.
+            </p>
+          </div>
+        )}
+        {/* Filter Section */}
+        <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-gray-200 dark:border-zinc-700 p-6 mb-8">
+          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+            {/* City Filter - Full width on mobile, flex-1 on larger screens */}
+            <div className="w-full sm:flex-1">
+              <label className="block text-sm font-medium text-[#283747] dark:text-zinc-300 mb-2">
+                Location
+              </label>
+              <Popover open={openCityPopover} onOpenChange={setOpenCityPopover}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    type="button"
+                    aria-expanded={openCityPopover}
+                    className="w-full justify-between h-11 bg-white dark:bg-zinc-800 border-gray-300 dark:border-zinc-600 hover:border-[#3B82F6] dark:hover:border-blue-500 transition-colors"
+                  >
+                    <span className="text-[#283747] dark:text-white font-medium">{selectedCity || "Sitamarhi"}</span>
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0 shadow-xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-900" align="start">
+                  <div className="sticky top-0 bg-white dark:bg-zinc-900 p-3 border-b border-gray-100 dark:border-zinc-700">
+                    <div className="relative">
+                      <input
+                        className="flex h-10 w-full rounded-lg border border-gray-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 dark:text-white pl-4 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B82F6] focus:border-transparent"
+                        placeholder="Type to search cities..."
+                        onChange={(e) => {
+                          const list = document.querySelector('.cities-list');
+                          const items = list?.querySelectorAll('.city-item');
+                          const search = e.target.value.toLowerCase();
+                          items?.forEach((item) => {
+                            const text = item.textContent?.toLowerCase() || '';
+                            item.classList.toggle('hidden', !text.includes(search));
+                          });
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="cities-list max-h-[300px] overflow-auto">
+                    {availableCities.length === 0 ? (
+                      <div className="text-sm text-center py-6 text-gray-500 dark:text-zinc-400">
+                        No cities found
+                      </div>
+                    ) : (
+                      <>
+                        <div
+                          className="city-item relative flex cursor-pointer select-none items-center px-4 py-3 text-sm hover:bg-gray-50 dark:hover:bg-zinc-700 border-b border-gray-100 dark:border-zinc-700 text-[#283747] dark:text-white"
+                          onClick={() => {
+                            setSelectedCity(null);
+                            setOpenCityPopover(false);
+                          }}
+                        >
+                          All Cities
+                        </div>
+                        {availableCities.map(city => (
+                          <div
+                            key={city}
+                            className={cn(
+                              "city-item relative flex cursor-pointer select-none items-center px-4 py-3 text-sm text-[#283747] dark:text-white",
+                              "hover:bg-gray-50 dark:hover:bg-zinc-700",
+                              "border-b border-gray-100 dark:border-zinc-700",
+                              selectedCity === city && "bg-blue-50 dark:bg-zinc-700 font-medium text-[#3B82F6] dark:text-blue-400"
+                            )}
+                            onClick={() => {
+                              setSelectedCity(city);
+                              setOpenCityPopover(false);
+                            }}
+                          >
+                            {city}
+                            {selectedCity === city && (
+                              <CheckIcon className="ml-auto h-4 w-4 text-[#3B82F6] dark:text-blue-400" />
+                            )}
+                          </div>
+                        ))}
+                      </>
+                    )}
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            {/* Sort Button */}
+            <div className="flex flex-col sm:flex-row gap-3 sm:items-end">
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-[#283747] dark:text-zinc-300">
+                  Sort by
+                </label>
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={() => toggleSort('followers')}
+                  className="flex items-center gap-2 h-11 px-4 rounded-xl font-medium bg-[#3B82F6] hover:bg-blue-600 text-white shadow-md transition-all"
+                >
+                  <Users className="h-4 w-4" />
+                  Followers
+                  {getSortIcon('followers')}
+                </Button>
+              </div>
+
+              {selectedCity && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSelectedCity(null)}
+                  className="flex items-center gap-2 h-11 px-4 rounded-xl border-gray-300 dark:border-zinc-600 text-[#283747] dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-800"
+                >
+                  <MapPin className="h-4 w-4" />
+                  {selectedCity}
+                  <XIcon className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Influencer Grid */}
+        <div className="relative min-h-[500px]">
+          {loading ? (
+            // Loading state with skeletons
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 rounded-2xl p-6 shadow-sm">
+                  <div className="flex items-center gap-4 mb-4">
+                    <Skeleton className="h-16 w-16 rounded-full" />
+                    <div className="space-y-2">
+                      <Skeleton className="h-5 w-32" />
+                      <Skeleton className="h-4 w-24" />
+                    </div>
+                  </div>
+                  <Skeleton className="h-4 w-full mb-3" />
+                  <Skeleton className="h-4 w-5/6 mb-3" />
+                  <div className="flex gap-3 mt-4">
+                    <Skeleton className="h-10 w-24" />
+                    <Skeleton className="h-10 w-24" />
                   </div>
                 </div>
-                <Skeleton className="h-4 w-full mb-3" />
-                <Skeleton className="h-4 w-5/6 mb-3" />
-                <div className="flex gap-3 mt-4">
-                  <Skeleton className="h-10 w-24" />
-                  <Skeleton className="h-10 w-24" />
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : error ? (
-          // Error state
-          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6 text-center">
-            <p className="text-red-500 dark:text-red-400 mb-2">
-              {error}
-            </p>
-            <Button onClick={() => fetchInfluencers(1)} className="dark:bg-red-600 dark:hover:bg-red-700">
-              Try Again
-            </Button>
-          </div>
-        ) : influencers.length === 0 ? (
-          // Empty state
-          <div className="border-dashed border-2 border-gray-300 dark:border-zinc-600 rounded-lg p-10 text-center">
-            <h3 className="text-xl font-medium mb-2 text-gray-900 dark:text-white">No influencers found</h3>
-            <p className="text-muted-foreground dark:text-zinc-400 mb-4">
-              Try adjusting your filters or select a different city
-            </p>
-            {selectedCity && (
-              <Button onClick={() => setSelectedCity(null)} className="dark:bg-blue-600 dark:hover:bg-blue-700">
-                Clear Filters
-              </Button>
-            )}
-          </div>
-        ) : (
-          // Influencer cards
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {influencers.map((influencer) => (
-              <Card
-                key={influencer.id}
-                className={cn(
-                  "overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-blue-200/30 dark:hover:shadow-blue-900/30 border-2 border-blue-200/70 dark:border-zinc-600 bg-gradient-to-br from-blue-100/80 via-white to-indigo-50/70 dark:from-zinc-800/95 dark:via-zinc-700/90 dark:to-zinc-800/95 hover:from-blue-200/90 hover:via-blue-50/80 hover:to-indigo-100/80 dark:hover:from-zinc-700/95 dark:hover:via-zinc-600/90 dark:hover:to-zinc-700/95 hover:scale-[1.02] hover:-translate-y-1",
-                  isCampaignMode && selectedInfluencers.some(inf => inf.id === influencer.id) && "border-2 border-blue-500 dark:border-blue-400 from-blue-200/90 via-blue-100/80 to-indigo-200/70 shadow-lg shadow-blue-300/40"
-                )}
+              ))}
+            </div>
+          ) : error ? (
+            // Error state
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl p-8 text-center">
+              <p className="text-red-600 dark:text-red-400 mb-4 font-medium">
+                {error}
+              </p>
+              <Button
+                onClick={() => fetchInfluencers(1)}
+                className="bg-red-600 hover:bg-red-700 text-white rounded-xl px-6"
               >
-                <CardHeader className="p-4 pb-2">
-                  <div className="flex items-center gap-3">
-                    {isCampaignMode && (
-                      <div className="flex-shrink-0 mr-1">
-                        <input
-                          type="checkbox"
-                          checked={selectedInfluencers.some(inf => inf.id === influencer.id)}
-                          onChange={() => {
+                Try Again
+              </Button>
+            </div>
+          ) : influencers.length === 0 ? (
+            // Empty state
+            <div className="bg-white dark:bg-zinc-900 border-2 border-dashed border-gray-300 dark:border-zinc-600 rounded-2xl p-12 text-center">
+              <h3 className="text-xl font-semibold mb-2 text-[#283747] dark:text-white">No influencers found</h3>
+              <p className="text-gray-600 dark:text-zinc-400 mb-6">
+                Try adjusting your filters or select a different city
+              </p>
+              {selectedCity && (
+                <Button
+                  onClick={() => setSelectedCity(null)}
+                  className="bg-[#3B82F6] hover:bg-blue-600 text-white rounded-xl px-6"
+                >
+                  Clear Filters
+                </Button>
+              )}
+            </div>
+          ) : (
+            // Influencer cards
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {influencers.map((influencer) => (
+                <Card
+                  key={influencer.id}
+                  className={cn(
+                    "overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-gray-200/50 dark:hover:shadow-zinc-800/50 border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 hover:-translate-y-1 rounded-2xl",
+                    isCampaignMode && selectedInfluencers.some(inf => inf.id === influencer.id) && "border-2 border-[#3B82F6] dark:border-blue-400 shadow-lg shadow-blue-200/30"
+                  )}
+                >
+                  <CardHeader className="p-6 pb-4">
+                    <div className="flex items-start gap-4">
+                      {isCampaignMode && (
+                        <div className="flex-shrink-0 mt-1">
+                          <input
+                            type="checkbox"
+                            checked={selectedInfluencers.some(inf => inf.id === influencer.id)}
+                            onChange={() => {
+                              setSelectedInfluencers(prev => {
+                                const isSelected = prev.some(inf => inf.id === influencer.id);
+                                if (isSelected) {
+                                  return prev.filter(inf => inf.id !== influencer.id);
+                                } else {
+                                  return [...prev, influencer];
+                                }
+                              });
+                            }}
+                            className="h-5 w-5 rounded border-gray-300 text-[#3B82F6] focus:ring-[#3B82F6]"
+                          />
+                        </div>
+                      )}
+                      <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-100 dark:bg-zinc-700 flex-shrink-0 border-2 border-gray-200 dark:border-zinc-600 relative">
+                        {influencer.profilePictureUrl ? (
+                          <Image
+                            src={influencer.profilePictureUrl}
+                            alt={influencer.name}
+                            className="w-full h-full object-cover"
+                            width={64}
+                            height={64}
+                            unoptimized={isInstagramUrl(influencer.profilePictureUrl)}
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-gray-200 dark:bg-zinc-700 text-xl font-bold text-[#3B82F6]">
+                            {influencer.name.charAt(0)}
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <CardTitle className="text-lg font-semibold truncate text-[#283747] dark:text-white">
+                            {influencer.name}
+                          </CardTitle>
+                          {/* Show Instagram verified badge only if verified */}
+                          {influencer.isInstagramVerified && (
+                            <span title="Instagram Verified" className="inline-flex items-center">
+                              <Instagram className="w-5 h-5 text-pink-600" />
+                              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" className="ml-1">
+                                <circle cx="10" cy="10" r="9" fill="#22c55e" />
+                                <path d="M6.5 10.5l2.2 2 4-4" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                              </svg>
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex items-center text-gray-600 dark:text-zinc-400 gap-1 mb-2">
+                          <MapPinCheck className="w-4 h-4 flex-shrink-0 text-[#3B82F6]" />
+                          <span className="text-sm truncate">{influencer.city}</span>
+                        </div>
+                        {/* Followers count */}
+                        <div className="flex items-center gap-1">
+                          <Users className="w-4 h-4 text-[#3B82F6]" />
+                          <span className="text-sm font-semibold text-[#283747] dark:text-white">
+                            {formatCompactNumber(influencer.followers || 0)} Followers
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </CardHeader>
+
+                  <CardContent className="p-6 pt-0">
+                    {/* Bio */}
+                    <div className="mb-4">
+                      <p className="text-sm text-gray-600 dark:text-zinc-400 line-clamp-2">
+                        {influencer.bio || "Lifestyle influencer sharing daily inspiration and authentic moments."}
+                      </p>
+                    </div>
+
+                    {/* Brand Preferences (Preferred Industries) */}
+                    {influencer.brandPreferences?.preferredBrandTypes && influencer.brandPreferences.preferredBrandTypes.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {influencer.brandPreferences.preferredBrandTypes.slice(0, 3).map((brandType, index) => (
+                          <span
+                            key={brandType}
+                            className={`px-3 py-1 rounded-full text-xs font-medium ${
+                              index === 0
+                                ? 'bg-[#ff9700]/10 text-[#ff9700] border border-[#ff9700]/20'
+                                : 'bg-gray-100 dark:bg-zinc-700 text-gray-700 dark:text-zinc-300'
+                            }`}
+                          >
+                            {brandType}
+                          </span>
+                        ))}
+                        {influencer.brandPreferences.preferredBrandTypes.length > 3 && (
+                          <span className="px-3 py-1 rounded-full bg-gray-100 dark:bg-zinc-700 text-gray-600 dark:text-zinc-300 text-xs font-medium">
+                            +{influencer.brandPreferences.preferredBrandTypes.length - 3} more
+                          </span>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Professional Pricing Section */}
+                    {influencer.pricingModels?.fixedPricing?.enabled && (
+                      <div className="grid grid-cols-2 gap-2 mb-4">
+                        {[
+                          { label: 'Reel', price: influencer.pricingModels.fixedPricing.reelPrice, color: 'bg-[#ff9700]/10 text-[#ff9700] border-[#ff9700]/20' },
+                          { label: 'Post', price: influencer.pricingModels.fixedPricing.postPrice, color: 'bg-[#3B82F6]/10 text-[#3B82F6] border-[#3B82F6]/20' },
+                          { label: 'Story', price: influencer.pricingModels.fixedPricing.storyPrice, color: 'bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300 border-purple-200 dark:border-purple-700' },
+                          { label: 'Live', price: influencer.pricingModels.fixedPricing.livePrice, color: 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-300 border-green-200 dark:border-green-700' },
+                        ].filter(item => item.price).map(item => (
+                          <div key={item.label} className={`flex flex-col items-center border rounded-lg px-3 py-2 ${item.color} text-xs font-medium`}>
+                            <span className="font-semibold">{item.label}</span>
+                            <span>₹{item.price?.toLocaleString()}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </CardContent>
+
+                  <CardFooter className="p-6 pt-0 flex flex-col gap-3">
+                    {isCampaignMode ? (
+                      <div className="flex gap-2 w-full">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setSelectedInfluencer(influencer)}
+                          className="flex-1 border-gray-300 dark:border-zinc-600 text-[#283747] dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-800 rounded-xl font-medium"
+                        >
+                          View Profile
+                        </Button>
+                        <Button
+                          variant={selectedInfluencers.some(inf => inf.id === influencer.id) ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => {
                             setSelectedInfluencers(prev => {
                               const isSelected = prev.some(inf => inf.id === influencer.id);
                               if (isSelected) {
@@ -933,198 +1082,69 @@ const Brand: NextPage = () => {
                               }
                             });
                           }}
-                          className="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                        />
+                          className={selectedInfluencers.some(inf => inf.id === influencer.id) ?
+                            "flex-1 bg-[#3B82F6] hover:bg-blue-600 text-white rounded-xl font-medium" :
+                            "flex-1 border-gray-300 dark:border-zinc-600 text-[#283747] dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-800 rounded-xl font-medium"}
+                        >
+                          {selectedInfluencers.some(inf => inf.id === influencer.id) ? "Selected" : "Select"}
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="flex gap-2 w-full">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setSelectedInfluencer(influencer)}
+                          className="flex-1 border-gray-300 dark:border-zinc-600 text-[#283747] dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-800 rounded-xl font-medium"
+                        >
+                          View Profile
+                        </Button>
+                        <Button
+                          variant="default"
+                          size="sm"
+                          onClick={() => {
+                            setConnectInfluencer(influencer);
+                            setShowConnectPopup(true);
+                          }}
+                          className="flex-1 bg-[#3B82F6] hover:bg-blue-600 text-white rounded-xl font-medium shadow-sm"
+                        >
+                          Connect
+                        </Button>
                       </div>
                     )}
-                    <div className="w-20 h-20 rounded-full overflow-hidden bg-gradient-to-br from-blue-100 to-purple-200 flex-shrink-0 border-2 border-blue-200 shadow-lg relative">
-                      {influencer.profilePictureUrl ? (
-                        <Image
-                          src={influencer.profilePictureUrl}
-                          alt={influencer.name}
-                          className="w-full h-full object-cover"
-                          width={80}
-                          height={80}
-                          unoptimized={isInstagramUrl(influencer.profilePictureUrl)}
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-gray-200 text-2xl font-bold text-blue-600">
-                          {influencer.name.charAt(0)}
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <CardTitle className="text-xl font-semibold truncate text-gray-900 dark:text-white">
-                          {influencer.name}
-                        </CardTitle>
-                        {/* Show Instagram verified badge only if verified */}
-                        {influencer.isInstagramVerified && (
-                          <span title="Instagram Verified" className="inline-flex items-center ml-1">
-                            <Instagram className="w-6 h-6 text-pink-600" />
-                            <svg width="18" height="18" viewBox="0 0 20 20" fill="none" className="ml-1">
-                              <circle cx="10" cy="10" r="9" fill="#22c55e" />
-                              <path d="M6.5 10.5l2.2 2 4-4" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
-                          </span>
-                        )}
-                      </div>
-                      {/* Gender below name */}
-                      {influencer.gender && (
-                        <div className="text-xs font-medium text-blue-700 dark:text-blue-400 mb-1 capitalize">
-                          {influencer.gender === 'male' && 'Male'}
-                          {influencer.gender === 'female' && 'Female'}
-                          {influencer.gender === 'other' && 'Other'}
-                        </div>
-                      )}
-                      <div className="flex items-center text-muted-foreground dark:text-zinc-400 gap-1">
-                        <MapPinCheck className="w-4 h-4 flex-shrink-0 text-blue-500 dark:text-blue-400" />
-                        <span className="text-sm truncate font-medium">{influencer.city} <span className="ml-1">🇮🇳</span></span>
-                      </div>
-                    </div>
-                  </div>
-                </CardHeader>
+                  </CardFooter>
+                </Card>
+              ))}
+            </div>
+          )}
 
-                <CardContent className="p-4 pt-2">
-                  <div className="flex items-center gap-2 my-3">
-                    <div className="flex items-center gap-1 bg-blue-50 dark:bg-blue-900/30 rounded-md border border-blue-100 dark:border-blue-800 px-3 py-1">
-                      <Users className="w-4 h-4 text-blue-500 dark:text-blue-400 mr-1" />
-                      <span className="font-semibold text-blue-700 dark:text-blue-300 text-base">{formatCompactNumber(influencer.followers || 0)}</span>
-                      <span className="text-xs text-muted-foreground dark:text-zinc-400 ml-1">Followers</span>
-                    </div>
-                  </div>
+          {/* Pagination */}
+          {!loading && !error && influencers.length > 0 && (
+            <div className="flex justify-center mt-8 gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => goToPage(pagination.page - 1)}
+                disabled={pagination.page === 1}
+                className="border-gray-300 dark:border-zinc-600 text-[#283747] dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-800 rounded-xl"
+              >
+                Previous
+              </Button>
 
-                  <div className="mb-3">
-                    <p className="text-sm text-gray-700 dark:text-zinc-300 whitespace-pre-line">
-                      {influencer.bio || "No bio available"}
-                    </p>
-                  </div>
+              {renderPagination()}
 
-                  {/* Brand Preferences (Preferred Industries) */}
-                  {influencer.brandPreferences?.preferredBrandTypes && influencer.brandPreferences.preferredBrandTypes.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mb-2">
-                      {influencer.brandPreferences.preferredBrandTypes.slice(0, 3).map((brandType) => (
-                        <span key={brandType} className="px-2 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-medium">
-                          {brandType}
-                        </span>
-                      ))}
-                      {influencer.brandPreferences.preferredBrandTypes.length > 3 && (
-                        <span className="px-2 py-1 rounded-full bg-gray-100 dark:bg-zinc-700 text-gray-600 dark:text-zinc-300 text-xs font-medium">
-                          +{influencer.brandPreferences.preferredBrandTypes.length - 3} more
-                        </span>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Professional Pricing Section */}
-                  {influencer.pricingModels?.fixedPricing?.enabled && (
-                    <div className="flex flex-wrap gap-3 mb-4">
-                      {[
-                        { label: 'Reel', price: influencer.pricingModels.fixedPricing.reelPrice },
-                        { label: 'Post', price: influencer.pricingModels.fixedPricing.postPrice },
-                        { label: 'Story', price: influencer.pricingModels.fixedPricing.storyPrice },
-                        { label: 'Live', price: influencer.pricingModels.fixedPricing.livePrice },
-                      ].filter(item => item.price).map(item => (
-                        <div key={item.label} className="flex items-center border border-gray-200 dark:border-zinc-600 rounded-md px-3 py-1 bg-white dark:bg-zinc-800 text-gray-800 dark:text-zinc-200 text-xs font-medium shadow-sm">
-                          <span className="font-semibold mr-1">{item.label}:</span>
-                          <span>₹{item.price?.toLocaleString()}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </CardContent>
-
-                <CardFooter className="p-4 pt-0 flex justify-between items-center">
-                  <div className="text-xs text-muted-foreground dark:text-zinc-400">
-                    {influencer.lastUpdated ?
-                      `Last seen: ${format(new Date(influencer.lastUpdated), 'MMM d, yyyy')}` :
-                      'Last seen: Recently'}
-                  </div>
-                  {isCampaignMode ? (
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setSelectedInfluencer(influencer)}
-                        className="border-blue-200 text-blue-700 hover:bg-blue-50 hover:text-blue-800 rounded-full px-4 font-semibold"
-                      >
-                        View Profile
-                      </Button>
-                      <Button
-                        variant={selectedInfluencers.some(inf => inf.id === influencer.id) ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => {
-                          setSelectedInfluencers(prev => {
-                            const isSelected = prev.some(inf => inf.id === influencer.id);
-                            if (isSelected) {
-                              return prev.filter(inf => inf.id !== influencer.id);
-                            } else {
-                              return [...prev, influencer];
-                            }
-                          });
-                        }}
-                        className={selectedInfluencers.some(inf => inf.id === influencer.id) ?
-                          "bg-blue-600 hover:bg-blue-700 text-white rounded-full px-4 font-semibold" :
-                          "border-blue-200 text-blue-700 hover:bg-blue-50 hover:text-blue-800 rounded-full px-4 font-semibold"}
-                      >
-                        {selectedInfluencers.some(inf => inf.id === influencer.id) ? "Selected" : "Select"}
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setSelectedInfluencer(influencer)}
-                        className="border-blue-200 text-blue-700 hover:bg-blue-50 hover:text-blue-800 rounded-full px-4 font-semibold"
-                      >
-                        View Profile
-                      </Button>
-                      <Button
-                        variant="default"
-                        size="sm"
-                        onClick={() => {
-                          setConnectInfluencer(influencer);
-                          setShowConnectPopup(true);
-                        }}
-                        className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-4 font-semibold shadow"
-                      >
-                        Connect
-                      </Button>
-                    </div>
-                  )}
-                </CardFooter>
-              </Card>
-            ))}
-          </div>
-        )}
-
-        {/* Pagination */}
-        {!loading && !error && influencers.length > 0 && (
-          <div className="flex justify-center mt-8 gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => goToPage(pagination.page - 1)}
-              disabled={pagination.page === 1}
-              className="dark:border-zinc-600 dark:text-white dark:hover:bg-zinc-800"
-            >
-              Previous
-            </Button>
-
-            {renderPagination()}
-
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => goToPage(pagination.page + 1)}
-              disabled={pagination.page === pagination.totalPages}
-              className="dark:border-zinc-600 dark:text-white dark:hover:bg-zinc-800"
-            >
-              Next
-            </Button>
-          </div>
-        )}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => goToPage(pagination.page + 1)}
+                disabled={pagination.page === pagination.totalPages}
+                className="border-gray-300 dark:border-zinc-600 text-[#283747] dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-800 rounded-xl"
+              >
+                Next
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Individual Connect Request Popup */}
