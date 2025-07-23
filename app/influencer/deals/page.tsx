@@ -1,42 +1,17 @@
 'use client';
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent } from "@/components/ui/tabs";
-import { RefreshCw, Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 import { useToast } from "@/components/ui/use-toast";
 import { useCurrentUser } from "@/hook/useCurrentUser";
 
 // Import deal components
-import {
-  DealCard,
-  DealTabs,
-  EmptyState,
-  filterDealsByTab,
-  getEmptyStateMessage,
-  type Deal
-} from '@/components/deal';
+import { type Deal } from '@/components/deal';
+import { NativeDealsList } from '@/components/deal/NativeDealsList';
 
 
-
-// Client component that handles the search params
-const TabHandler = ({
-  setActiveTab
-}: {
-  setActiveTab: (tab: string) => void
-}) => {
-  const searchParams = useSearchParams();
-
-  useEffect(() => {
-    const tab = searchParams?.get('tab') || 'requested';
-    setActiveTab(tab);
-  }, [searchParams, setActiveTab]);
-
-  return null; // This component doesn't render anything
-};
 
 const InfluencerDealsPage = () => {
   const router = useRouter();
@@ -46,7 +21,6 @@ const InfluencerDealsPage = () => {
   const [deals, setDeals] = useState<Deal[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState('requested');
 
 
   useEffect(() => {
@@ -144,162 +118,30 @@ const InfluencerDealsPage = () => {
     }
   };
 
-  const filteredDeals = filterDealsByTab(deals, activeTab);
-
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen subtle-gradient-bg">
-        <div className="flex items-center space-x-2">
-          <Loader2 className="h-8 w-8 animate-spin text-fuchsia-400" />
-          <span className="text-lg font-medium text-gray-900 dark:text-white">Loading deals...</span>
-        </div>
-      </div>
-    );
-  }
-
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen subtle-gradient-bg">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 dark:bg-zinc-950">
         <p className="text-red-400 mb-4">{error}</p>
-        <Button onClick={fetchDeals} variant="outline" className="border-zinc-600 text-gray-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800">
+        <button onClick={fetchDeals} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
           Try Again
-        </Button>
+        </button>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-16 min-h-screen overflow-y-auto subtle-gradient-bg text-gray-900 dark:text-white">
-      {/* Wrap the TabHandler in a Suspense boundary */}
-      <Suspense fallback={null}>
-        <TabHandler setActiveTab={setActiveTab} />
-      </Suspense>
-
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-violet-600 to-fuchsia-600 dark:from-violet-400 dark:to-fuchsia-400 bg-clip-text text-transparent">
-            My Deals
-          </h1>
-          <p className="text-gray-600 dark:text-zinc-400 mt-2">
-            Manage your brand collaborations and track progress
-          </p>
-        </div>
-        <Button
-          onClick={fetchDeals}
-          variant="outline"
-          className="bg-gray-100 hover:bg-gray-200 dark:bg-zinc-800/80 dark:hover:bg-zinc-700/80 text-gray-800 dark:text-zinc-200 border border-gray-200 dark:border-zinc-600/50 shadow-lg hover:shadow-xl transition-all duration-200 backdrop-blur-sm"
-        >
-          <RefreshCw className="h-4 w-4 mr-2" /> Refresh
-        </Button>
+    <div className="min-h-screen bg-gray-50 dark:bg-zinc-950">
+      <div className="container mx-auto px-4 py-6 max-w-4xl">
+        <NativeDealsList
+          deals={deals}
+          userType="influencer"
+          loading={loading}
+          onDealAction={handleDealAction}
+          onContentSubmission={handleContentSubmission}
+          onChatAction={handleChatAction}
+          onRefresh={fetchDeals}
+        />
       </div>
-
-      <DealTabs
-        activeTab={activeTab}
-        onTabChange={(value) => {
-          setActiveTab(value);
-          router.push(`/influencer/deals?tab=${value}`);
-        }}
-        deals={deals}
-        userType="influencer"
-      />
-
-      <Tabs value={activeTab}>
-        <TabsContent value="requested">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredDeals.length > 0 ? (
-              filteredDeals.map((deal) => (
-                <DealCard
-                  key={deal._id}
-                  deal={deal}
-                  userType="influencer"
-                  onDealAction={handleDealAction}
-                  onContentSubmission={handleContentSubmission}
-                  onChatAction={handleChatAction}
-                />
-              ))
-            ) : (
-              <div className="col-span-full">
-                <EmptyState
-                  title={getEmptyStateMessage(activeTab, 'influencer').title}
-                  description={getEmptyStateMessage(activeTab, 'influencer').description}
-                />
-              </div>
-            )}
-          </div>
-        </TabsContent>
-
-        <TabsContent value="pending">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredDeals.length > 0 ? (
-              filteredDeals.map((deal) => (
-                <DealCard
-                  key={deal._id}
-                  deal={deal}
-                  userType="influencer"
-                  onDealAction={handleDealAction}
-                  onContentSubmission={handleContentSubmission}
-                  onChatAction={handleChatAction}
-                />
-              ))
-            ) : (
-              <div className="col-span-full">
-                <EmptyState
-                  title={getEmptyStateMessage(activeTab, 'influencer').title}
-                  description={getEmptyStateMessage(activeTab, 'influencer').description}
-                />
-              </div>
-            )}
-          </div>
-        </TabsContent>
-
-        <TabsContent value="ongoing">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredDeals.length > 0 ? (
-              filteredDeals.map((deal) => (
-                <DealCard
-                  key={deal._id}
-                  deal={deal}
-                  userType="influencer"
-                  onDealAction={handleDealAction}
-                  onContentSubmission={handleContentSubmission}
-                  onChatAction={handleChatAction}
-                />
-              ))
-            ) : (
-              <div className="col-span-full">
-                <EmptyState
-                  title={getEmptyStateMessage(activeTab, 'influencer').title}
-                  description={getEmptyStateMessage(activeTab, 'influencer').description}
-                />
-              </div>
-            )}
-          </div>
-        </TabsContent>
-
-        <TabsContent value="history">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredDeals.length > 0 ? (
-              filteredDeals.map((deal) => (
-                <DealCard
-                  key={deal._id}
-                  deal={deal}
-                  userType="influencer"
-                  onDealAction={handleDealAction}
-                  onContentSubmission={handleContentSubmission}
-                  onChatAction={handleChatAction}
-                />
-              ))
-            ) : (
-              <div className="col-span-full">
-                <EmptyState
-                  title={getEmptyStateMessage(activeTab, 'influencer').title}
-                  description={getEmptyStateMessage(activeTab, 'influencer').description}
-                />
-              </div>
-            )}
-          </div>
-        </TabsContent>
-      </Tabs>
     </div>
   );
 };

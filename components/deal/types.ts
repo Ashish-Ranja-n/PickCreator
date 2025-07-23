@@ -63,6 +63,8 @@ export interface DealCardProps {
   onContentSubmission?: (dealId: string, data: any) => void;
   onChatAction?: (dealId: string, otherUserId: string) => void;
   className?: string;
+  isMinimized?: boolean;
+  onToggleMinimized?: () => void;
 }
 
 export interface StatusBadgeProps {

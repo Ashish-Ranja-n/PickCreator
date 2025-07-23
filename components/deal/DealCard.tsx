@@ -21,8 +21,9 @@ import {
   Send,
   User,
   MessageCircle,
-  MessageSquare,
-  Loader2
+  Loader2,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { DealCardProps } from './types';
@@ -38,7 +39,9 @@ export const DealCard: React.FC<DealCardProps> = ({
   onContentAction,
   onContentSubmission,
   onChatAction,
-  className = ''
+  className = '',
+  isMinimized = false,
+  onToggleMinimized
 }) => {
   const [isNegotiating, setIsNegotiating] = useState(deal.isNegotiating || false);
   const [counterOffer, setCounterOffer] = useState<number>(0);
@@ -144,6 +147,90 @@ export const DealCard: React.FC<DealCardProps> = ({
 
   const progress = getProgressStatus();
 
+  const getOtherPartyName = () => {
+    if (userType === 'brand') {
+      // For brands, show the influencer name
+      if (deal.dealType === 'single' && deal.influencers.length > 0) {
+        return deal.influencers[0].name;
+      } else if (deal.dealType === 'multiple') {
+        return `${deal.influencers.length} Influencers`;
+      }
+      return 'Unknown Influencer';
+    } else {
+      // For influencers, show the brand name
+      return deal.brandName || 'Unknown Brand';
+    }
+  };
+
+  const getOtherPartyAvatar = () => {
+    if (userType === 'brand') {
+      // For brands, show the influencer avatar
+      if (deal.dealType === 'single' && deal.influencers.length > 0) {
+        return deal.influencers[0].profilePictureUrl || deal.influencers[0].avatar;
+      }
+      return null; // For multiple influencers, we'll show a group icon
+    } else {
+      // For influencers, show the brand avatar
+      return deal.brandProfilePic;
+    }
+  };
+
+  // Minimized card view
+  if (isMinimized) {
+    return (
+      <Card
+        className={`group overflow-hidden transition-all duration-300 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 hover:border-blue-300 dark:hover:border-purple-500 hover:shadow-lg cursor-pointer ${className}`}
+        onClick={onToggleMinimized}
+      >
+        <div className="p-4 flex items-center justify-between">
+          <div className="flex items-center gap-3 flex-1">
+            {/* Avatar */}
+            <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100 dark:bg-zinc-800 flex-shrink-0">
+              {getOtherPartyAvatar() ? (
+                <Image
+                  src={getOtherPartyAvatar()!}
+                  alt={getOtherPartyName()}
+                  className="w-full h-full object-cover"
+                  width={48}
+                  height={48}
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  {userType === 'brand' && deal.dealType === 'multiple' ? (
+                    <User className="h-6 w-6 text-gray-400" />
+                  ) : (
+                    <Building2 className="h-6 w-6 text-gray-400" />
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Name and Status */}
+            <div className="flex-1 min-w-0">
+              <h3 className="font-semibold text-gray-900 dark:text-white truncate">
+                {getOtherPartyName()}
+              </h3>
+              <div className="flex items-center gap-2 mt-1">
+                <StatusBadge status={deal.status} type="deal" />
+              </div>
+            </div>
+
+            {/* Amount */}
+            <div className="text-right flex-shrink-0">
+              <p className="font-semibold text-gray-900 dark:text-white flex items-center">
+                <IndianRupee className="h-4 w-4 mr-1" />
+                {formatAmount(deal.totalAmount)}
+              </p>
+            </div>
+
+            {/* Expand Icon */}
+            <ChevronDown className="h-5 w-5 text-gray-400 flex-shrink-0" />
+          </div>
+        </div>
+      </Card>
+    );
+  }
+
   return (
     <Card className={`group overflow-hidden hover:shadow-2xl hover:shadow-blue-500/10 dark:hover:shadow-purple-500/10 transition-all duration-300 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-sm border border-gray-200/50 dark:border-zinc-700/50 hover:border-blue-300/50 dark:hover:border-purple-500/50 hover:-translate-y-1 ${className}`}>
       <CardHeader className={`${userType === 'influencer' ? "border-b border-gray-200/50 dark:border-zinc-700/50 pb-6" : "pb-6"} relative`}>
@@ -232,7 +319,22 @@ export const DealCard: React.FC<DealCardProps> = ({
                 )}
               </div>
             </div>
-            <StatusBadge status={deal.status} type="deal" className="shrink-0" />
+            <div className="flex items-center gap-2">
+              <StatusBadge status={deal.status} type="deal" className="shrink-0" />
+              {onToggleMinimized && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onToggleMinimized();
+                  }}
+                  className="p-1 h-8 w-8 hover:bg-gray-100 dark:hover:bg-zinc-800"
+                >
+                  <ChevronUp className="h-4 w-4 text-gray-500" />
+                </Button>
+              )}
+            </div>
           </div>
 
           {/* Multiple influencers list for brand view */}
