@@ -131,7 +131,7 @@ const InfluencerDealsPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-zinc-950">
-      <div className="container mx-auto px-4 py-6 max-w-4xl">
+      <div className="container mx-auto px-4 pt-8 pb-6 max-w-4xl">
         <NativeDealsList
           deals={deals}
           userType="influencer"
