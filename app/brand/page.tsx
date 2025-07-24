@@ -1,15 +1,10 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
-import Fuse from 'fuse.js';
+import React, { useState, useEffect } from 'react';
 import { NextPage } from 'next';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger
-} from "@/components/ui/popover";
+
 import {
   Card,
   CardContent,
@@ -19,30 +14,17 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
-  ChevronDown,
   Users,
-  MapPin,
-  Heart,
-  Zap,
   X as XIcon,
-  ArrowUp,
-  ArrowDown,
-  ArrowUpDown,
   Loader2,
-  CheckIcon,
-  Plus,
   Send,
-  ExternalLink,
   Instagram,
-  ChevronsUpDown,
   MapPinCheck,
   Phone,
   MessageCircle,
-  Headphones,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { INDIAN_CITIES } from '../influencer/onboarding/data/indianCities';
-import { format } from 'date-fns';
+
 import { motion, AnimatePresence } from 'framer-motion';
 import { Skeleton } from '@/components/ui/skeleton';
 import Image from 'next/image';
@@ -139,21 +121,13 @@ const Brand: NextPage = () => {
   const [influencers, setInfluencers] = useState<Influencer[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedCity, setSelectedCity] = useState<string | null>(null);
-  const [openCityPopover, setOpenCityPopover] = useState(false);
-  const [sortBy, setSortBy] = useState<'followers'>('followers');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [selectedInfluencer, setSelectedInfluencer] = useState<Influencer | null>(null);
   const [pagination, setPagination] = useState<Pagination>(initialPagination);
-  // State for city search input (like onboarding page)
-  const [citySearchInput, setCitySearchInput] = useState('');
-  const [availableCities, setAvailableCities] = useState<string[]>([]);
 
   // New: Description for the deal (connect popup)
   const [connectDescription, setConnectDescription] = useState('');
 
-  // Contact button state
-  const [showContactOptions, setShowContactOptions] = useState(false);
+
 
   // Campaign creation states
   const isCampaignMode = false;
@@ -213,39 +187,7 @@ const Brand: NextPage = () => {
     return num.toString();
   };
 
-  // Load available cities on first render
-  useEffect(() => {
-    // Set available cities from the imported INDIAN_CITIES array (always new reference)
-    setAvailableCities([...(INDIAN_CITIES || [])]);
-  }, []);
 
-  // Preselect city based on brand's location
-  useEffect(() => {
-    if (brandProfile?.location && !selectedCity && availableCities.length > 0) {
-      // Check if the brand's location exists in the available cities list
-      const userLocation = brandProfile.location.trim();
-
-      // First try exact match (case-insensitive)
-      let matchingCity = availableCities.find(city =>
-        city.toLowerCase() === userLocation.toLowerCase()
-      );
-
-      // If no exact match, try partial match (in case user location contains extra info)
-      if (!matchingCity) {
-        matchingCity = availableCities.find(city =>
-          userLocation.toLowerCase().includes(city.toLowerCase()) ||
-          city.toLowerCase().includes(userLocation.toLowerCase())
-        );
-      }
-
-      if (matchingCity) {
-        console.log(`Preselecting city: ${matchingCity} based on brand location: ${userLocation}`);
-        setSelectedCity(matchingCity);
-      } else {
-        console.log(`Brand location "${userLocation}" not found in available cities list`);
-      }
-    }
-  }, [brandProfile?.location, selectedCity, availableCities]);
 
   // No useMemo, filter inline in render (like onboarding page)
 
@@ -255,11 +197,13 @@ const Brand: NextPage = () => {
     setError(null);
 
     try {
-      // Build the query parameters
+      // Build the query parameters - filter by brand's location if available
       const params = new URLSearchParams();
-      if (selectedCity) params.append('city', selectedCity);
-      params.append('sortBy', sortBy);
-      params.append('sortOrder', sortOrder);
+      if (brandProfile?.location) {
+        params.append('city', brandProfile.location);
+      }
+      params.append('sortBy', 'followers');
+      params.append('sortOrder', 'desc');
       params.append('page', page.toString());
       params.append('limit', '12'); // Show 12 influencers per page
 
@@ -283,21 +227,10 @@ const Brand: NextPage = () => {
     }
   };
 
-  // Effect to fetch influencers when filters change
+  // Effect to fetch influencers on component mount and when brand profile changes
   useEffect(() => {
-    fetchInfluencers(1); // Reset to page 1 when filters change
-  }, [selectedCity, sortBy, sortOrder]);
-
-  // Toggle sort order and update sort
-  const toggleSort = (field: 'followers') => {
-    // Toggle sort order for followers
-    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-  };
-
-  // Get sort icon based on current sort
-  const getSortIcon = (field: 'followers') => {
-    return sortOrder === 'asc' ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />;
-  };
+    fetchInfluencers(1);
+  }, [brandProfile?.location]);
 
   // Handle pagination
   const goToPage = (page: number) => {
@@ -318,7 +251,7 @@ const Brand: NextPage = () => {
         size="sm"
         onClick={() => goToPage(1)}
         disabled={page === 1}
-        className={page === 1 ? "bg-[#3B82F6] hover:bg-blue-600 text-white rounded-xl" : "border-gray-300 dark:border-zinc-600 text-[#283747] dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-800 rounded-xl"}
+        className={page === 1 ? "bg-[#3B82F6] active:bg-blue-700 text-white rounded-xl" : "border-gray-300 dark:border-zinc-600 text-[#283747] dark:text-white active:bg-gray-100 dark:active:bg-zinc-700 rounded-xl"}
       >
         1
       </Button>
@@ -338,7 +271,7 @@ const Brand: NextPage = () => {
           variant={page === i ? "default" : "outline"}
           size="sm"
           onClick={() => goToPage(i)}
-          className={page === i ? "bg-[#3B82F6] hover:bg-blue-600 text-white rounded-xl" : "border-gray-300 dark:border-zinc-600 text-[#283747] dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-800 rounded-xl"}
+          className={page === i ? "bg-[#3B82F6] active:bg-blue-700 text-white rounded-xl" : "border-gray-300 dark:border-zinc-600 text-[#283747] dark:text-white active:bg-gray-100 dark:active:bg-zinc-700 rounded-xl"}
         >
           {i}
         </Button>
@@ -359,7 +292,7 @@ const Brand: NextPage = () => {
           size="sm"
           onClick={() => goToPage(totalPages)}
           disabled={page === totalPages}
-          className={page === totalPages ? "bg-[#3B82F6] hover:bg-blue-600 text-white rounded-xl" : "border-gray-300 dark:border-zinc-600 text-[#283747] dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-800 rounded-xl"}
+          className={page === totalPages ? "bg-[#3B82F6] active:bg-blue-700 text-white rounded-xl" : "border-gray-300 dark:border-zinc-600 text-[#283747] dark:text-white active:bg-gray-100 dark:active:bg-zinc-700 rounded-xl"}
         >
           {totalPages}
         </Button>
@@ -729,8 +662,7 @@ const Brand: NextPage = () => {
         <div className="flex flex-col gap-2">
           <motion.a
             href="tel:+917301677612"
-            className="flex items-center justify-center w-14 h-14 bg-[#ff9700] hover:bg-orange-600 text-white rounded-full shadow-lg transition-all duration-300"
-            whileHover={{ scale: 1.1 }}
+            className="flex items-center justify-center w-14 h-14 bg-[#ff9700] active:bg-orange-700 text-white rounded-full shadow-lg transition-all duration-150"
             whileTap={{ scale: 0.95 }}
             title="Call Support"
           >
@@ -740,8 +672,7 @@ const Brand: NextPage = () => {
             href="https://wa.me/917301677612"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center w-14 h-14 bg-[#25D366] hover:bg-green-600 text-white rounded-full shadow-lg transition-all duration-300"
-            whileHover={{ scale: 1.1 }}
+            className="flex items-center justify-center w-14 h-14 bg-[#25D366] active:bg-green-700 text-white rounded-full shadow-lg transition-all duration-150"
             whileTap={{ scale: 0.95 }}
             title="WhatsApp Support"
           >
@@ -750,133 +681,60 @@ const Brand: NextPage = () => {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8 pb-20 max-w-6xl">
-        {/* Header Section */}
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50/30 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-800">
+        {/* Upper Section - Advertise Your Business */}
         {!isCampaignMode && (
-          <div className="mb-8">
-            <h1 className="text-2xl md:text-3xl font-bold mb-2 text-[#283747] dark:text-white tracking-tight">
-              Search Influencers
-            </h1>
-            <p className="text-base text-gray-600 dark:text-zinc-400 font-medium">
-              Find influencers and make a deal.
-            </p>
-          </div>
-        )}
-        {/* Filter Section */}
-        <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-gray-200 dark:border-zinc-700 p-6 mb-8">
-          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-            {/* City Filter - Full width on mobile, flex-1 on larger screens */}
-            <div className="w-full sm:flex-1">
-              <label className="block text-sm font-medium text-[#283747] dark:text-zinc-300 mb-2">
-                Location
-              </label>
-              <Popover open={openCityPopover} onOpenChange={setOpenCityPopover}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    type="button"
-                    aria-expanded={openCityPopover}
-                    className="w-full justify-between h-11 bg-white dark:bg-zinc-800 border-gray-300 dark:border-zinc-600 hover:border-[#3B82F6] dark:hover:border-blue-500 transition-colors"
-                  >
-                    <span className="text-[#283747] dark:text-white font-medium">{selectedCity || "Sitamarhi"}</span>
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-full p-0 shadow-xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-900" align="start">
-                  <div className="sticky top-0 bg-white dark:bg-zinc-900 p-3 border-b border-gray-100 dark:border-zinc-700">
-                    <div className="relative">
-                      <input
-                        className="flex h-10 w-full rounded-lg border border-gray-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 dark:text-white pl-4 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-[#3B82F6] focus:border-transparent"
-                        placeholder="Type to search cities..."
-                        onChange={(e) => {
-                          const list = document.querySelector('.cities-list');
-                          const items = list?.querySelectorAll('.city-item');
-                          const search = e.target.value.toLowerCase();
-                          items?.forEach((item) => {
-                            const text = item.textContent?.toLowerCase() || '';
-                            item.classList.toggle('hidden', !text.includes(search));
-                          });
-                        }}
-                      />
-                    </div>
-                  </div>
-                  <div className="cities-list max-h-[300px] overflow-auto">
-                    {availableCities.length === 0 ? (
-                      <div className="text-sm text-center py-6 text-gray-500 dark:text-zinc-400">
-                        No cities found
-                      </div>
-                    ) : (
-                      <>
-                        <div
-                          className="city-item relative flex cursor-pointer select-none items-center px-4 py-3 text-sm hover:bg-gray-50 dark:hover:bg-zinc-700 border-b border-gray-100 dark:border-zinc-700 text-[#283747] dark:text-white"
-                          onClick={() => {
-                            setSelectedCity(null);
-                            setOpenCityPopover(false);
-                          }}
-                        >
-                          All Cities
-                        </div>
-                        {availableCities.map(city => (
-                          <div
-                            key={city}
-                            className={cn(
-                              "city-item relative flex cursor-pointer select-none items-center px-4 py-3 text-sm text-[#283747] dark:text-white",
-                              "hover:bg-gray-50 dark:hover:bg-zinc-700",
-                              "border-b border-gray-100 dark:border-zinc-700",
-                              selectedCity === city && "bg-blue-50 dark:bg-zinc-700 font-medium text-[#3B82F6] dark:text-blue-400"
-                            )}
-                            onClick={() => {
-                              setSelectedCity(city);
-                              setOpenCityPopover(false);
-                            }}
-                          >
-                            {city}
-                            {selectedCity === city && (
-                              <CheckIcon className="ml-auto h-4 w-4 text-[#3B82F6] dark:text-blue-400" />
-                            )}
-                          </div>
-                        ))}
-                      </>
-                    )}
-                  </div>
-                </PopoverContent>
-              </Popover>
-            </div>
+          <div className="relative overflow-hidden">
+            {/* Premium gradient background with subtle pattern */}
+            <div className="absolute inset-0 bg-gradient-to-br from-white via-orange-50/40 to-blue-50/30 dark:from-zinc-900 dark:via-zinc-900/95 dark:to-zinc-800/80"></div>
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,151,0,0.05),transparent_50%)] dark:bg-[radial-gradient(circle_at_30%_20%,rgba(255,151,0,0.03),transparent_50%)]"></div>
 
-            {/* Sort Button */}
-            <div className="flex flex-col sm:flex-row gap-3 sm:items-end">
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-[#283747] dark:text-zinc-300">
-                  Sort by
-                </label>
+            <div className="relative container mx-auto px-4 py-16 text-center">
+              <div className="max-w-4xl mx-auto">
+                <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-8 text-[#283747] dark:text-white tracking-tight leading-tight">
+                  Advertise your business!
+                </h1>
+                <p className="text-base md:text-lg text-gray-600 dark:text-zinc-400 mb-10 max-w-2xl mx-auto leading-relaxed">
+                  Reach thousands of potential customers through authentic influencer partnerships
+                </p>
                 <Button
-                  variant="default"
-                  size="sm"
-                  onClick={() => toggleSort('followers')}
-                  className="flex items-center gap-2 h-11 px-4 rounded-xl font-medium bg-[#3B82F6] hover:bg-blue-600 text-white shadow-md transition-all"
+                  className="bg-gradient-to-r from-[#ff9700] to-[#ff7700] active:from-[#ff8600] active:to-[#ff6600] text-white font-semibold px-10 py-4 rounded-2xl shadow-lg active:shadow-md transition-all duration-150 active:scale-95"
+                  size="lg"
                 >
-                  <Users className="h-4 w-4" />
-                  Followers
-                  {getSortIcon('followers')}
+                  <span className="text-lg">Get Started</span>
                 </Button>
               </div>
-
-              {selectedCity && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setSelectedCity(null)}
-                  className="flex items-center gap-2 h-11 px-4 rounded-xl border-gray-300 dark:border-zinc-600 text-[#283747] dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-800"
-                >
-                  <MapPin className="h-4 w-4" />
-                  {selectedCity}
-                  <XIcon className="h-4 w-4" />
-                </Button>
-              )}
             </div>
           </div>
-        </div>
+        )}
+
+        {/* Visual Separator */}
+        {!isCampaignMode && (
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-gray-200 dark:via-zinc-700 to-transparent h-px"></div>
+            <div className="flex justify-center">
+              <div className="bg-white dark:bg-zinc-900 px-6 py-2 rounded-full shadow-sm border border-gray-200 dark:border-zinc-700">
+                <div className="w-2 h-2 bg-gradient-to-r from-[#ff9700] to-[#3B82F6] rounded-full"></div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Lower Section - Hire Individual Influencers */}
+        <div className="container mx-auto px-4 py-12 pb-20 max-w-6xl">
+          {!isCampaignMode && (
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-3 bg-white dark:bg-zinc-900 px-6 py-3 rounded-2xl shadow-sm border border-gray-200 dark:border-zinc-700 mb-8">
+                <div className="w-3 h-3 bg-gradient-to-r from-[#3B82F6] to-[#ff9700] rounded-full animate-pulse"></div>
+                <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-[#283747] dark:text-white tracking-tight leading-tight">
+                  Hire individual influencers!
+                </h2>
+              </div>
+              <p className="text-sm md:text-base text-gray-500 dark:text-zinc-500 max-w-xl mx-auto">
+                Browse through our curated list of verified influencers and find the perfect match for your brand
+              </p>
+            </div>
+          )}
 
         {/* Influencer Grid */}
         <div className="relative min-h-[500px]">
@@ -909,7 +767,7 @@ const Brand: NextPage = () => {
               </p>
               <Button
                 onClick={() => fetchInfluencers(1)}
-                className="bg-red-600 hover:bg-red-700 text-white rounded-xl px-6"
+                className="bg-red-600 active:bg-red-700 text-white rounded-xl px-6"
               >
                 Try Again
               </Button>
@@ -919,16 +777,8 @@ const Brand: NextPage = () => {
             <div className="bg-white dark:bg-zinc-900 border-2 border-dashed border-gray-300 dark:border-zinc-600 rounded-2xl p-12 text-center">
               <h3 className="text-xl font-semibold mb-2 text-[#283747] dark:text-white">No influencers found</h3>
               <p className="text-gray-600 dark:text-zinc-400 mb-6">
-                Try adjusting your filters or select a different city
+                We couldn't find any influencers at the moment. Please try again later.
               </p>
-              {selectedCity && (
-                <Button
-                  onClick={() => setSelectedCity(null)}
-                  className="bg-[#3B82F6] hover:bg-blue-600 text-white rounded-xl px-6"
-                >
-                  Clear Filters
-                </Button>
-              )}
             </div>
           ) : (
             // Influencer cards
@@ -937,7 +787,7 @@ const Brand: NextPage = () => {
                 <Card
                   key={influencer.id}
                   className={cn(
-                    "overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-gray-200/50 dark:hover:shadow-zinc-800/50 border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 hover:-translate-y-1 rounded-2xl",
+                    "overflow-hidden transition-all duration-150 active:scale-[0.98] border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 rounded-2xl shadow-sm",
                     isCampaignMode && selectedInfluencers.some(inf => inf.id === influencer.id) && "border-2 border-[#3B82F6] dark:border-blue-400 shadow-lg shadow-blue-200/30"
                   )}
                 >
@@ -1065,7 +915,7 @@ const Brand: NextPage = () => {
                           variant="outline"
                           size="sm"
                           onClick={() => setSelectedInfluencer(influencer)}
-                          className="flex-1 border-gray-300 dark:border-zinc-600 text-[#283747] dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-800 rounded-xl font-medium"
+                          className="flex-1 border-gray-300 dark:border-zinc-600 text-[#283747] dark:text-white active:bg-gray-100 dark:active:bg-zinc-700 rounded-xl font-medium"
                         >
                           View Profile
                         </Button>
@@ -1083,8 +933,8 @@ const Brand: NextPage = () => {
                             });
                           }}
                           className={selectedInfluencers.some(inf => inf.id === influencer.id) ?
-                            "flex-1 bg-[#3B82F6] hover:bg-blue-600 text-white rounded-xl font-medium" :
-                            "flex-1 border-gray-300 dark:border-zinc-600 text-[#283747] dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-800 rounded-xl font-medium"}
+                            "flex-1 bg-[#3B82F6] active:bg-blue-700 text-white rounded-xl font-medium" :
+                            "flex-1 border-gray-300 dark:border-zinc-600 text-[#283747] dark:text-white active:bg-gray-100 dark:active:bg-zinc-700 rounded-xl font-medium"}
                         >
                           {selectedInfluencers.some(inf => inf.id === influencer.id) ? "Selected" : "Select"}
                         </Button>
@@ -1095,7 +945,7 @@ const Brand: NextPage = () => {
                           variant="outline"
                           size="sm"
                           onClick={() => setSelectedInfluencer(influencer)}
-                          className="flex-1 border-gray-300 dark:border-zinc-600 text-[#283747] dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-800 rounded-xl font-medium"
+                          className="flex-1 border-gray-300 dark:border-zinc-600 text-[#283747] dark:text-white active:bg-gray-100 dark:active:bg-zinc-700 rounded-xl font-medium"
                         >
                           View Profile
                         </Button>
@@ -1106,7 +956,7 @@ const Brand: NextPage = () => {
                             setConnectInfluencer(influencer);
                             setShowConnectPopup(true);
                           }}
-                          className="flex-1 bg-[#3B82F6] hover:bg-blue-600 text-white rounded-xl font-medium shadow-sm"
+                          className="flex-1 bg-[#3B82F6] active:bg-blue-700 text-white rounded-xl font-medium shadow-sm"
                         >
                           Connect
                         </Button>
@@ -1126,7 +976,7 @@ const Brand: NextPage = () => {
                 size="sm"
                 onClick={() => goToPage(pagination.page - 1)}
                 disabled={pagination.page === 1}
-                className="border-gray-300 dark:border-zinc-600 text-[#283747] dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-800 rounded-xl"
+                className="border-gray-300 dark:border-zinc-600 text-[#283747] dark:text-white active:bg-gray-100 dark:active:bg-zinc-700 rounded-xl"
               >
                 Previous
               </Button>
@@ -1138,7 +988,7 @@ const Brand: NextPage = () => {
                 size="sm"
                 onClick={() => goToPage(pagination.page + 1)}
                 disabled={pagination.page === pagination.totalPages}
-                className="border-gray-300 dark:border-zinc-600 text-[#283747] dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-800 rounded-xl"
+                className="border-gray-300 dark:border-zinc-600 text-[#283747] dark:text-white active:bg-gray-100 dark:active:bg-zinc-700 rounded-xl"
               >
                 Next
               </Button>
@@ -1196,7 +1046,7 @@ const Brand: NextPage = () => {
                   variant="ghost"
                   size="icon"
                   onClick={() => setShowConnectPopup(false)}
-                  className="h-8 w-8 rounded-full hover:bg-gray-100 dark:hover:bg-zinc-700"
+                  className="h-8 w-8 rounded-full active:bg-gray-200 dark:active:bg-zinc-600"
                 >
                   <XIcon className="h-5 w-5" />
                 </Button>
@@ -1240,7 +1090,7 @@ const Brand: NextPage = () => {
                               className={`p-3 rounded-lg border cursor-pointer transition-colors ${
                                 selectedPackage === pkg
                                   ? "bg-blue-50 dark:bg-blue-900/30 border-blue-300 dark:border-blue-600"
-                                  : "bg-white dark:bg-zinc-800 border-gray-200 dark:border-zinc-600 hover:bg-blue-50/50 dark:hover:bg-blue-900/20"
+                                  : "bg-white dark:bg-zinc-800 border-gray-200 dark:border-zinc-600 active:bg-blue-50/50 dark:active:bg-blue-900/20"
                               }`}
                               onClick={() => setSelectedPackage(pkg)}
                             >
@@ -1524,7 +1374,7 @@ const Brand: NextPage = () => {
                 )}
 
                 <Button
-                  className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 dark:from-blue-600 dark:to-blue-700 dark:hover:from-blue-700 dark:hover:to-blue-800 text-white h-12 rounded-xl shadow-md flex items-center justify-center gap-2 transition-all"
+                  className="w-full bg-gradient-to-r from-blue-500 to-blue-600 active:from-blue-600 active:to-blue-700 dark:from-blue-600 dark:to-blue-700 dark:active:from-blue-700 dark:active:to-blue-800 text-white h-12 rounded-xl shadow-md flex items-center justify-center gap-2 transition-all duration-150 active:scale-95"
                   onClick={handleConnectRequest}
                   disabled={connectLoading}
                 >
@@ -1564,7 +1414,8 @@ const Brand: NextPage = () => {
       </AnimatePresence>
 
       {/* Chat Confirmation Popup removed - using Connect functionality instead */}
-    </div>
+        </div>
+      </div>
     </>
   );
 };

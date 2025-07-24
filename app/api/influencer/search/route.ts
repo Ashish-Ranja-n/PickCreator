@@ -40,9 +40,9 @@ export async function GET(request: NextRequest) {
       ]
     };
 
-    // Add city filter if provided
-    if (city && city !== 'all') {
-      filters.city = city;
+    // Add city filter if provided (case-insensitive)
+    if (city) {
+      filters.city = { $regex: new RegExp(`^${city.trim()}$`, 'i') };
     }
 
     // Sort configuration
