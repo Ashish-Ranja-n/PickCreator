@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 import axios from 'axios';
+import { saveSessionState, clearSessionState, updateSessionActivity } from '@/utils/sessionRecovery';
+import { savePersistentAuthState, clearPersistentAuthState, updatePersistentAuthActivity } from '@/utils/persistentAuth';
 
 // Define the user interface
 export interface User {
@@ -122,6 +124,12 @@ export const useUserStore = create<UserState>((set, get) => ({
           console.log(`UserStore: Removing localStorage key: ${key}`);
           localStorage.removeItem(key);
         });
+
+        // Clear session recovery state
+        clearSessionState();
+
+        // Clear persistent auth state
+        clearPersistentAuthState();
       } catch (e) {
         console.warn('Error removing items from localStorage:', e);
       }
@@ -171,6 +179,18 @@ async function fetchFromAPI() {
       try {
         localStorage.setItem('currentUser', JSON.stringify(userData));
         localStorage.setItem('currentUserTimestamp', Date.now().toString());
+
+        // Save session state for recovery
+        saveSessionState(userData);
+
+        // Save persistent auth state
+        savePersistentAuthState(userData);
+
+        // Update session activity
+        updateSessionActivity();
+
+        // Update persistent auth activity
+        updatePersistentAuthActivity();
       } catch (e) {
         console.warn('Error saving to localStorage:', e);
       }

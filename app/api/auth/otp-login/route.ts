@@ -67,7 +67,7 @@ export async function POST(req: Request) {
     }
     const token = await new SignJWT(tokenData)
       .setProtectedHeader({ alg: "HS256" })
-      .setExpirationTime("7d")
+      .setExpirationTime("30d") // Extended from 7d to 30d for better persistence
       .sign(new TextEncoder().encode(jwtSecret));
 
     const response = NextResponse.json({
@@ -78,7 +78,7 @@ export async function POST(req: Request) {
     response.cookies.set("token", token, {
       httpOnly: true,
       secure: true,
-      maxAge: 7 * 24 * 60 * 60, // 7 days
+      maxAge: 30 * 24 * 60 * 60, // 30 days for native app-like persistence
       sameSite: "lax",
       path: "/",
     });

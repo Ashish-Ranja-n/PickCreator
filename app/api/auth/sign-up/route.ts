@@ -79,10 +79,10 @@ export async function POST(request: Request) {
                 } : {})
             };
             
-            // Sign token using jose
+            // Sign token using jose with extended expiration for native app-like persistence
             const token = await new SignJWT(tokenData)
                 .setProtectedHeader({ alg: 'HS256' })
-                .setExpirationTime('1d')
+                .setExpirationTime('30d') // Extended from 1d to 30d for better persistence
                 .sign(new TextEncoder().encode(process.env.JWT_SECRET!));
             
             
@@ -100,7 +100,9 @@ export async function POST(request: Request) {
             response.cookies.set("token", token, {
                 httpOnly: true,
                 secure: true,
-                maxAge: 24 * 60 * 60, // 1 day in seconds
+                maxAge: 30 * 24 * 60 * 60, // 30 days in seconds for native app-like persistence
+                sameSite: "lax",
+                path: "/",
             });
 
             return response;

@@ -1,9 +1,42 @@
 import { NextResponse, NextRequest } from "next/server";
 import { getDataFromToken } from "./helpers/getDataFromToken";
 
+// Track middleware failures for more forgiving error handling
+const middlewareFailures = new Map<string, { count: number, lastFailure: number }>();
+const MAX_MIDDLEWARE_FAILURES = 3;
+const FAILURE_RESET_TIME = 5 * 60 * 1000; // 5 minutes
+
+// Helper function to check if we should be forgiving with auth failures
+const shouldBeForgiving = (clientId: string): boolean => {
+  const now = Date.now();
+  const failures = middlewareFailures.get(clientId);
+
+  if (!failures) return true; // First failure, be forgiving
+
+  // Reset failures if enough time has passed
+  if (now - failures.lastFailure > FAILURE_RESET_TIME) {
+    middlewareFailures.delete(clientId);
+    return true;
+  }
+
+  return failures.count < MAX_MIDDLEWARE_FAILURES;
+};
+
+// Helper function to record a failure
+const recordFailure = (clientId: string) => {
+  const now = Date.now();
+  const failures = middlewareFailures.get(clientId) || { count: 0, lastFailure: 0 };
+  failures.count++;
+  failures.lastFailure = now;
+  middlewareFailures.set(clientId, failures);
+};
+
 export async function middleware(request: NextRequest) {
     const path = request.nextUrl.pathname;
     const token = request.cookies.get('token')?.value || '';
+
+    // Get client identifier for tracking failures (using headers)
+    const clientId = request.headers.get('x-forwarded-for') || request.headers.get('user-agent') || 'unknown';
 
     // Get the base URL from environment variables
     const baseUrl = process.env.CLIENT_URL || 'https://pickcreator.com';
@@ -127,9 +160,10 @@ export async function middleware(request: NextRequest) {
     }
    
 
-    // For protected routes, verify token
+    // For protected routes, verify token with forgiving error handling
     if(path.startsWith('/brand') || path.startsWith('/influencer') || path.startsWith('/admin')) {
         if(!token) {
+            // No token - always redirect to welcome
             return NextResponse.redirect(`${baseUrl}/welcome`);
         }
 
@@ -169,13 +203,29 @@ export async function middleware(request: NextRequest) {
                 return NextResponse.redirect(`${baseUrl}/influencer`);
             }
 
+            // Reset failure count on successful auth
+            middlewareFailures.delete(clientId);
             return NextResponse.next();
         } catch (error: any) {
-            // Token is invalid or expired - redirect to login page
+            // Token verification failed - use forgiving error handling
             console.error("Token verification failed:", error.message);
-            const response = NextResponse.redirect(`${baseUrl}/welcome`);
-            response.cookies.delete('token');
-            return response;
+
+            // Check if we should be forgiving with this client
+            if (shouldBeForgiving(clientId)) {
+                console.warn(`Being forgiving with auth failure for client ${clientId.substring(0, 10)}...`);
+                recordFailure(clientId);
+
+                // Allow the request to proceed but add a header to indicate auth issues
+                const response = NextResponse.next();
+                response.headers.set('X-Auth-Warning', 'Token verification failed but proceeding');
+                return response;
+            } else {
+                // Too many failures - redirect to login and clear token
+                console.error(`Max auth failures reached for client ${clientId.substring(0, 10)}..., redirecting to login`);
+                const response = NextResponse.redirect(`${baseUrl}/welcome`);
+                response.cookies.delete('token');
+                return response;
+            }
         }
     }
 

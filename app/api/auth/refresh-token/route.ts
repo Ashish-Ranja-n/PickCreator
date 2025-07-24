@@ -56,10 +56,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "JWT secret not configured", success: false }, { status: 500 });
     }
 
-    // Sign a new token
+    // Sign a new token with extended expiration
     const newToken = await new SignJWT(tokenData)
       .setProtectedHeader({ alg: 'HS256' })
-      .setExpirationTime('7d')
+      .setExpirationTime('30d') // Extended from 7d to 30d for better persistence
       .sign(new TextEncoder().encode(jwtSecret));
 
     // Create the response
@@ -73,7 +73,7 @@ export async function GET(request: NextRequest) {
     response.cookies.set("token", newToken, {
       httpOnly: true,
       secure: true,
-      maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
+      maxAge: 30 * 24 * 60 * 60, // 30 days in seconds for native app-like persistence
       sameSite: "lax",
       path: "/",
     });
