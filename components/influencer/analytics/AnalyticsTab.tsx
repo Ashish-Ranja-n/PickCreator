@@ -37,8 +37,7 @@ export default function AnalyticsTab() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [open, setOpen] = useState(false);
   const [isPinned, setIsPinned] = useState(false);
-  const [verifiedInfluencers, setVerifiedInfluencers] = useState<any[]>([]);
-  const [loadingInfluencers, setLoadingInfluencers] = useState(true);
+
   const { toast } = useToast();
   const currentUser = useCurrentUser();
   const isAdmin = currentUser?.role === 'Admin';
@@ -166,42 +165,9 @@ export default function AnalyticsTab() {
     fetchNotices();
   }, []);
 
-  // Fetch verified influencers
-  useEffect(() => {
-    async function fetchInfluencers() {
-      try {
-        setLoadingInfluencers(true);
-        const res = await fetch('/api/influencer/search?sortBy=followers&sortOrder=desc&limit=30');
-        if (!res.ok) throw new Error('Failed to fetch influencers');
-        const data = await res.json();
-        setVerifiedInfluencers(data.influencers || []);
-      } catch (e) {
-        setVerifiedInfluencers([]);
-      } finally {
-        setLoadingInfluencers(false);
-      }
-    }
-    fetchInfluencers();
-  }, []);
 
-  // Shuffle influencers for random order per user session
-  function shuffleArray(array: any[]) {
-    // Fisher-Yates shuffle
-    const arr = array.slice();
-    for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-    return arr;
-  }
 
-  // Memoize the shuffled influencers for the session
-  const [shuffledInfluencers, setShuffledInfluencers] = useState<any[]>([]);
-  useEffect(() => {
-    if (verifiedInfluencers.length > 0) {
-      setShuffledInfluencers(shuffleArray(verifiedInfluencers));
-    }
-  }, [verifiedInfluencers]);
+
 
   return (
     <div className="w-full max-w-md mx-auto mb-8 px-3 py-6 bg-gradient-to-br from-white via-blue-50/30 to-white dark:bg-gradient-to-br dark:from-gray-900 dark:to-black transition-colors overflow-hidden">
@@ -332,25 +298,7 @@ export default function AnalyticsTab() {
           </form>
         </DialogContent>
       </Dialog>
-      {/* Influencer section below notice board */}
-      <section className="mt-12 w-full">
-        <h3 className="text-xl sm:text-2xl font-extrabold mb-4 tracking-tight text-center text-black dark:text-white px-2">
-          Influencers on our Platform
-        </h3>
-        {loadingInfluencers ? (
-          <div className="flex justify-center items-center h-20">
-            <Loader2 className="h-6 w-6 animate-spin text-[#C4B5FD] dark:text-white" />
-          </div>
-        ) : shuffledInfluencers.length === 0 ? (
-          <div className="text-center text-gray-700 dark:text-gray-300 text-sm px-4">No verified influencers found.</div>
-        ) : (
-          <div className="space-y-4 w-full">
-            {shuffledInfluencers.map((influencer) => (
-              <InfluencerFlatBlock key={influencer._id} influencer={influencer} />
-            ))}
-          </div>
-        )}
-      </section>
+
     </div>
   );
 }
@@ -490,59 +438,3 @@ function CompactNoticeCard({ notice, isPinned, isAdmin, onDelete }: CompactNotic
   );
 }
 
-// Flat, minimal influencer block with improved design and dark mode
-function InfluencerFlatBlock({ influencer }: { influencer: any }) {
-  const instaUrl = influencer.instagramUsername ? `https://instagram.com/${influencer.instagramUsername}` : undefined;
-
-  return (
-    <div className="flex flex-row items-center w-full bg-white dark:bg-gray-800/50 rounded-2xl p-3 border border-[#C4B5FD]/30 dark:border-gray-700 transition-all duration-200 hover:shadow-md hover:border-[#C4B5FD]/50 dark:hover:border-gray-600">
-      {/* Profile Picture */}
-      <div className="flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20">
-        {influencer.profilePictureUrl ? (
-          <img
-            src={influencer.profilePictureUrl}
-            alt={influencer.name}
-            className="w-full h-full object-cover rounded-xl border-2 border-[#C4B5FD]/30 dark:border-gray-600"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-[#C4B5FD]/20 dark:bg-gray-700 rounded-xl text-xl font-bold text-gray-700 dark:text-white">
-            {influencer.name ? influencer.name.charAt(0).toUpperCase() : '?'}
-          </div>
-        )}
-      </div>
-
-      {/* Info to the right of the picture */}
-      <div className="flex flex-col justify-center flex-1 pl-3 min-w-0">
-        <div className="text-sm font-bold text-gray-900 dark:text-white mb-1 truncate">
-          {instaUrl ? (
-            <a
-              href={instaUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:underline hover:text-[#3B82F6] dark:hover:text-[#3B82F6] transition-colors"
-            >
-              @{influencer.instagramUsername}
-            </a>
-          ) : (
-            `@${influencer.name}`
-          )}
-        </div>
-        <div className="text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">
-          {formatFollowers(influencer.followers || 0)} followers
-        </div>
-        {influencer.bio && (
-          <div className="text-xs text-gray-600 dark:text-gray-300 line-clamp-2 leading-relaxed">
-            {influencer.bio}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function formatFollowers(count: number) {
-  if (count >= 1000) {
-    return (count / 1000).toFixed(count % 1000 === 0 ? 0 : 1) + 'K';
-  }
-  return count.toLocaleString();
-}
