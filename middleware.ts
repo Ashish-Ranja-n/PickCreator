@@ -176,10 +176,10 @@ export async function middleware(request: NextRequest) {
                 return NextResponse.redirect(`${baseUrl}/pickRole`);
             }
 
-            // Influencer onboarding check
-            if (path.startsWith('/influencer') && role === 'Influencer' && onboardingCompleted === false && !path.startsWith('/influencer/onboarding')) {
-                return NextResponse.redirect(`${baseUrl}/influencer/onboarding/basic-info`);
-            }
+            // // Influencer onboarding check
+            // if (path.startsWith('/influencer') && role === 'Influencer' && onboardingCompleted === false && !path.startsWith('/influencer/onboarding')) {
+            //     return NextResponse.redirect(`${baseUrl}/influencer/onboarding/basic-info`);
+            // }
 
             // Role-based access control
             if(path.startsWith('/brand') && role !== 'Brand') {
