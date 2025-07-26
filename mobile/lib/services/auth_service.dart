@@ -473,7 +473,7 @@ class AuthService {
       // Create multipart request
       final request = http.MultipartRequest(
         'POST',
-        Uri.parse('${AppConfig.apiBaseUrl}/api/verify-instagram'),
+        Uri.parse('${AppConfig.apiBaseUrl}/verify-instagram'),
       );
 
       // Add headers
