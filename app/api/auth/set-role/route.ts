@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
 
     if (!token) {
       console.log("Set-role API: No token found, returning 401");
-      return NextResponse.json({ error: "Unauthorized - No token" }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized - No token found (UPDATED API)" }, { status: 401 });
     }
 
     console.log("Set-role API: Calling getDataFromToken");

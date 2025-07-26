@@ -7,14 +7,11 @@ import '../models/user_model.dart';
 
 class AuthService {
   static const _storage = FlutterSecureStorage();
-  static final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
+  static final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   // Send OTP to email
   static Future<Map<String, dynamic>> sendOtp(String email) async {
     try {
-      print('Sending OTP to: $email');
-      print('API URL: ${AppConfig.apiBaseUrl}${AppConfig.sendOtpEndpoint}');
-
       final response = await http.post(
         Uri.parse('${AppConfig.apiBaseUrl}${AppConfig.sendOtpEndpoint}'),
         headers: {
@@ -23,9 +20,6 @@ class AuthService {
         },
         body: jsonEncode({'email': email}),
       );
-
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         return {'success': true, 'message': 'OTP sent successfully'};
@@ -44,20 +38,17 @@ class AuthService {
           };
         }
       }
-    } on FormatException catch (e) {
-      print('Format error: $e');
+    } on FormatException {
       return {
         'success': false,
         'message': 'Invalid response format from server',
       };
-    } on http.ClientException catch (e) {
-      print('HTTP client error: $e');
+    } on http.ClientException {
       return {
         'success': false,
         'message': 'Connection failed. Please check your internet connection.',
       };
     } catch (e) {
-      print('General error: $e');
       return {'success': false, 'message': 'Network error: $e'};
     }
   }
@@ -115,15 +106,8 @@ class AuthService {
         }
 
         if (token != null) {
-          print('OTP Login: Token received, length: ${token.length}');
-          print(
-            'OTP Login: Token preview: ${token.substring(0, token.length > 20 ? 20 : token.length)}...',
-          );
           await saveToken(token);
           await saveUserData(data['user']);
-          print('OTP Login: Token and user data saved');
-        } else {
-          print('OTP Login: No token received in cookies');
         }
 
         return {
@@ -165,22 +149,9 @@ class AuthService {
   static Future<Map<String, dynamic>> setRole(String role) async {
     try {
       final token = await getToken();
-      print('SetRole: Token exists: ${token != null}');
-      print('SetRole: Token length: ${token?.length ?? 0}');
-      if (token != null) {
-        print(
-          'SetRole: Token preview: ${token.substring(0, token.length > 20 ? 20 : token.length)}...',
-        );
-      }
-
       if (token == null) {
         return {'success': false, 'message': 'No authentication token'};
       }
-
-      print(
-        'SetRole: Making request to: ${AppConfig.apiBaseUrl}${AppConfig.setRoleEndpoint}',
-      );
-      print('SetRole: Role: $role');
 
       final response = await http.post(
         Uri.parse('${AppConfig.apiBaseUrl}${AppConfig.setRoleEndpoint}'),
@@ -190,9 +161,6 @@ class AuthService {
         },
         body: jsonEncode({'role': role}),
       );
-
-      print('SetRole: Response status: ${response.statusCode}');
-      print('SetRole: Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
