@@ -163,6 +163,16 @@ class AuthService {
       );
 
       if (response.statusCode == 200) {
+        // Extract and save any new token from cookies
+        final cookies = response.headers['set-cookie'];
+        if (cookies != null) {
+          final tokenMatch = RegExp(r'token=([^;]+)').firstMatch(cookies);
+          final newToken = tokenMatch?.group(1);
+          if (newToken != null) {
+            await saveToken(newToken);
+          }
+        }
+
         final data = jsonDecode(response.body);
         await _storage.write(key: AppConfig.roleKey, value: role);
         return {'success': true, 'role': data['role']};
@@ -255,7 +265,7 @@ class AuthService {
       }
 
       final response = await http.post(
-        Uri.parse('${AppConfig.apiBaseUrl}/api/brand/onboarding'),
+        Uri.parse('${AppConfig.apiBaseUrl}/brand/onboarding'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -268,18 +278,182 @@ class AuthService {
         }),
       );
 
-      final data = json.decode(response.body);
-
       if (response.statusCode == 200) {
-        return {'success': true, 'data': data};
+        // Extract and save any new token from cookies
+        final cookies = response.headers['set-cookie'];
+        if (cookies != null) {
+          final tokenMatch = RegExp(r'token=([^;]+)').firstMatch(cookies);
+          final newToken = tokenMatch?.group(1);
+          if (newToken != null) {
+            await saveToken(newToken);
+          }
+        }
+
+        // Handle empty response body
+        if (response.body.isEmpty) {
+          return {'success': true, 'data': {}};
+        }
+
+        try {
+          final data = json.decode(response.body);
+          return {'success': true, 'data': data};
+        } catch (e) {
+          // If JSON parsing fails, still consider it success if status is 200
+          return {'success': true, 'data': {}};
+        }
       } else {
-        return {
-          'success': false,
-          'message': data['error'] ?? 'Failed to complete onboarding',
-        };
+        // Handle error response
+        try {
+          final data = json.decode(response.body);
+          return {
+            'success': false,
+            'message': data['error'] ?? 'Failed to complete onboarding',
+          };
+        } catch (e) {
+          return {
+            'success': false,
+            'message':
+                'Failed to complete onboarding (Status: ${response.statusCode})',
+          };
+        }
       }
     } catch (e) {
       return {'success': false, 'message': 'Network error: $e'};
+    }
+  }
+
+  // Complete influencer onboarding
+  static Future<Map<String, dynamic>> completeInfluencerOnboarding({
+    required String fullName,
+    required int age,
+    required String gender,
+    required String mobile,
+    required String bio,
+    required String city,
+  }) async {
+    try {
+      final token = await getToken();
+      if (token == null) {
+        return {'success': false, 'message': 'Not authenticated'};
+      }
+
+      final response = await http.put(
+        Uri.parse('${AppConfig.apiBaseUrl}/influencer/onboarding'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: json.encode({
+          'name': fullName,
+          'age': age,
+          'gender': gender,
+          'mobile': mobile,
+          'bio': bio,
+          'city': city,
+          'onboardingCompleted': true,
+          'onboardingStep': 3,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        // Extract and save any new token from cookies
+        final cookies = response.headers['set-cookie'];
+        if (cookies != null) {
+          final tokenMatch = RegExp(r'token=([^;]+)').firstMatch(cookies);
+          final newToken = tokenMatch?.group(1);
+          if (newToken != null) {
+            await saveToken(newToken);
+          }
+        }
+
+        // Handle empty response body
+        if (response.body.isEmpty) {
+          return {'success': true, 'data': {}};
+        }
+
+        try {
+          final data = json.decode(response.body);
+          return {'success': true, 'data': data};
+        } catch (e) {
+          // If JSON parsing fails, still consider it success if status is 200
+          return {'success': true, 'data': {}};
+        }
+      } else {
+        // Handle error response
+        try {
+          final data = json.decode(response.body);
+          return {
+            'success': false,
+            'message': data['error'] ?? 'Failed to complete onboarding',
+          };
+        } catch (e) {
+          return {
+            'success': false,
+            'message':
+                'Failed to complete onboarding (Status: ${response.statusCode})',
+          };
+        }
+      }
+    } catch (e) {
+      return {'success': false, 'message': 'Network error: $e'};
+    }
+  }
+
+  // Complete comprehensive influencer onboarding
+  static Future<Map<String, dynamic>> completeInfluencerOnboardingComprehensive(
+    Map<String, dynamic> onboardingData,
+  ) async {
+    try {
+      final token = await getToken();
+      if (token == null) {
+        return {'success': false, 'message': 'Not authenticated'};
+      }
+
+      final response = await http.put(
+        Uri.parse('${AppConfig.apiBaseUrl}/influencer/onboarding'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: json.encode(onboardingData),
+      );
+
+      if (response.statusCode == 200) {
+        // Extract and save any new token from cookies
+        final cookies = response.headers['set-cookie'];
+        if (cookies != null) {
+          final tokenMatch = RegExp(r'token=([^;]+)').firstMatch(cookies);
+          final newToken = tokenMatch?.group(1);
+          if (newToken != null) {
+            await saveToken(newToken);
+          }
+        }
+
+        // Try to parse response body
+        try {
+          final responseData = json.decode(response.body);
+          return {
+            'success': true,
+            'message': 'Onboarding completed successfully',
+            'data': responseData,
+          };
+        } catch (e) {
+          // If response body is empty or invalid JSON, still consider success
+          return {
+            'success': true,
+            'message': 'Onboarding completed successfully',
+          };
+        }
+      } else {
+        print('Onboarding error: ${response.statusCode} - ${response.body}');
+        return {
+          'success': false,
+          'message': 'Failed to complete onboarding: ${response.statusCode}',
+        };
+      }
+    } catch (e) {
+      print('Onboarding exception: $e');
+      return {'success': false, 'message': 'Failed to complete onboarding'};
     }
   }
 }

@@ -148,13 +148,19 @@ export async function middleware(request: NextRequest) {
         }
 
         // For all other API routes, verify token
-        if(!token) {
+        // Support both cookie and Authorization header for mobile apps
+        const cookieToken = request.cookies.get("token")?.value;
+        const authHeader = request.headers.get("authorization");
+        const bearerToken = authHeader?.startsWith("Bearer ") ? authHeader.substring(7) : null;
+        const finalToken = cookieToken || bearerToken || "";
+
+        if(!finalToken) {
             const response = NextResponse.json({ error: "Unauthorized - Authentication required" }, { status: 401 });
             return addCorsHeaders(response);
         }
 
         try {
-            const payload = await getDataFromToken(request, token);
+            const payload = await getDataFromToken(request, finalToken);
             if(!payload) {
                 const response = NextResponse.json({ error: "Unauthorized - Invalid token" }, { status: 401 });
                 return addCorsHeaders(response);

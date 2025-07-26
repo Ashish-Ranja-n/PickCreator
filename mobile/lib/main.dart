@@ -91,20 +91,22 @@ class _AuthWrapperState extends State<AuthWrapper> {
       final isLoggedIn = await AuthService.isLoggedIn();
       if (isLoggedIn) {
         final user = await AuthService.getUserData();
-        final authValid = await AuthService.checkAuthStatus();
 
-        if (authValid && user != null) {
+        // For mobile app: Trust local token, don't validate with server
+        // This ensures persistent login - users stay logged in forever
+        if (user != null) {
           setState(() {
             _isLoggedIn = true;
             _user = user;
           });
         } else {
-          // Token invalid, logout
+          // Only logout if user data is completely missing
           await AuthService.logout();
         }
       }
     } catch (e) {
-      // Auth check error - silently handle
+      print('Auth check error: $e');
+      // Don't logout on errors - keep user logged in
     } finally {
       setState(() {
         _isLoading = false;

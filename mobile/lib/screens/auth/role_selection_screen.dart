@@ -5,7 +5,7 @@ import '../../services/auth_service.dart';
 import '../../models/user_model.dart';
 import '../../main.dart';
 import '../brand/brand_onboarding_screen.dart';
-import '../influencer/influencer_dashboard.dart';
+import '../influencer/influencer_onboarding_screen.dart';
 
 class RoleSelectionScreen extends StatefulWidget {
   const RoleSelectionScreen({super.key});
@@ -78,7 +78,7 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
         destination = const BrandOnboardingScreen();
         break;
       case AppConfig.influencerRole:
-        destination = const InfluencerDashboard();
+        destination = const InfluencerOnboardingScreen();
         break;
       default:
         return; // Should not happen
