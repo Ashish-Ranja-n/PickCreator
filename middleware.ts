@@ -33,7 +33,12 @@ const recordFailure = (clientId: string) => {
 
 export async function middleware(request: NextRequest) {
     const path = request.nextUrl.pathname;
-    const token = request.cookies.get('token')?.value || '';
+
+    // Support both cookie and Authorization header for mobile apps
+    const cookieToken = request.cookies.get('token')?.value;
+    const authHeader = request.headers.get('authorization');
+    const bearerToken = authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : null;
+    const token = cookieToken || bearerToken || '';
 
     // Get client identifier for tracking failures (using headers)
     const clientId = request.headers.get('x-forwarded-for') || request.headers.get('user-agent') || 'unknown';
