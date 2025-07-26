@@ -9,19 +9,31 @@ const isValidRole = (role: string) => ["Brand", "Influencer"].includes(role);
 
 export async function POST(req: NextRequest) {
   try {
+    console.log("Set-role API: Request received");
+
     // Support both cookie and Authorization header for mobile apps
     const cookieToken = req.cookies.get("token")?.value;
     const authHeader = req.headers.get("authorization");
     const bearerToken = authHeader?.startsWith("Bearer ") ? authHeader.substring(7) : null;
     const token = cookieToken || bearerToken;
 
+    console.log("Set-role API: Cookie token exists:", !!cookieToken);
+    console.log("Set-role API: Auth header:", authHeader ? "exists" : "missing");
+    console.log("Set-role API: Bearer token exists:", !!bearerToken);
+    console.log("Set-role API: Final token exists:", !!token);
+
     if (!token) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      console.log("Set-role API: No token found, returning 401");
+      return NextResponse.json({ error: "Unauthorized - No token" }, { status: 401 });
     }
 
+    console.log("Set-role API: Calling getDataFromToken");
     const userData = await getDataFromToken(req, token);
+    console.log("Set-role API: getDataFromToken result:", userData ? "success" : "failed");
+
     if (!userData?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      console.log("Set-role API: No user data or ID, returning 401");
+      return NextResponse.json({ error: "Unauthorized - Authentication required" }, { status: 401 });
     }
 
     const { role } = await req.json();
