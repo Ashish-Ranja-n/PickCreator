@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -445,15 +446,77 @@ class AuthService {
           };
         }
       } else {
-        print('Onboarding error: ${response.statusCode} - ${response.body}');
+        // Log error for debugging
         return {
           'success': false,
           'message': 'Failed to complete onboarding: ${response.statusCode}',
         };
       }
     } catch (e) {
-      print('Onboarding exception: $e');
+      // Log exception for debugging
       return {'success': false, 'message': 'Failed to complete onboarding'};
+    }
+  }
+
+  // Submit Instagram verification request
+  static Future<Map<String, dynamic>> submitInstagramVerification({
+    required String instagramId,
+    required int followerCount,
+    required File profilePicture,
+  }) async {
+    try {
+      final token = await getToken();
+      if (token == null) {
+        return {'success': false, 'message': 'Authentication required'};
+      }
+
+      // Create multipart request
+      final request = http.MultipartRequest(
+        'POST',
+        Uri.parse('${AppConfig.apiBaseUrl}/api/verify-instagram'),
+      );
+
+      // Add headers
+      request.headers.addAll({
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      });
+
+      // Add form fields
+      request.fields['instagramId'] = instagramId;
+      request.fields['followerCount'] = followerCount.toString();
+
+      // Add profile picture file
+      request.files.add(
+        await http.MultipartFile.fromPath('profilePic', profilePicture.path),
+      );
+
+      // Send request
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return {
+          'success': data['success'] ?? false,
+          'message': data['message'] ?? 'Verification request sent',
+        };
+      } else {
+        try {
+          final error = jsonDecode(response.body);
+          return {
+            'success': false,
+            'message': error['message'] ?? 'Failed to submit verification',
+          };
+        } catch (parseError) {
+          return {
+            'success': false,
+            'message': 'Server error: ${response.statusCode}',
+          };
+        }
+      }
+    } catch (e) {
+      return {'success': false, 'message': 'Failed to submit verification: $e'};
     }
   }
 }

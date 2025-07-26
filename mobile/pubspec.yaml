@@ -51,8 +51,8 @@ dependencies:
   # Authentication
   google_sign_in: ^6.2.1
 
-  # Media & File Handling (commented out for Linux compatibility)
-  # image_picker: ^1.0.7
+  # Media & File Handling
+  image_picker: ^1.0.7
   # file_picker: ^6.1.1
   cached_network_image: ^3.3.1
 

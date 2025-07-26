@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pickcreator_mobile/services/auth_service.dart';
-import 'package:pickcreator_mobile/screens/influencer/influencer_dashboard.dart';
+import 'instagram_verification_screen.dart';
 
 class InfluencerOnboardingScreen extends StatefulWidget {
   const InfluencerOnboardingScreen({super.key});
@@ -21,7 +21,6 @@ class _InfluencerOnboardingScreenState extends State<InfluencerOnboardingScreen>
   // Beautiful color scheme inspired by the gradient image
   static const Color primaryColor = Color(0xFFE91E63); // Vibrant magenta-pink
   static const Color secondaryColor = Color(0xFF9C27B0); // Rich purple
-  static const Color accentColor = Color(0xFFF48FB1); // Soft pink
   static const Color backgroundColor = Color(0xFFF8F6FA); // Light background
   static const Color textPrimary = Color(0xFF2D1B69); // Dark purple text
   static const Color textSecondary = Color(0xFF8E24AA); // Medium purple text
@@ -173,7 +172,7 @@ class _InfluencerOnboardingScreenState extends State<InfluencerOnboardingScreen>
           Row(
             children: [
               Text(
-                'Step ${_currentPage + 1} of 5',
+                'Step ${_currentPage + 1} of 4',
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
@@ -212,83 +211,6 @@ class _InfluencerOnboardingScreenState extends State<InfluencerOnboardingScreen>
                 ),
               ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildProgressIndicator() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-      child: Column(
-        children: [
-          Text(
-            'Complete Your Profile',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: textPrimary,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Tell brands about yourself and your collaboration preferences',
-            style: TextStyle(fontSize: 16, color: textSecondary),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 24),
-
-          // Progress steps
-          Row(
-            children: List.generate(5, (index) {
-              final isActive = index <= _currentPage;
-              final isCompleted = index < _currentPage;
-
-              return Expanded(
-                child: Column(
-                  children: [
-                    Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: isActive ? primaryColor : Colors.grey[300],
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Center(
-                        child: isCompleted
-                            ? const Icon(
-                                Icons.check,
-                                color: Colors.white,
-                                size: 20,
-                              )
-                            : Text(
-                                '${index + 1}',
-                                style: TextStyle(
-                                  color: isActive
-                                      ? Colors.white
-                                      : Colors.grey[600],
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      _stepTitles[index],
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: isActive ? primaryColor : Colors.grey[600],
-                        fontWeight: isActive
-                            ? FontWeight.w600
-                            : FontWeight.normal,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              );
-            }),
           ),
         ],
       ),
@@ -373,39 +295,6 @@ class _InfluencerOnboardingScreenState extends State<InfluencerOnboardingScreen>
     'Lucknow',
     'Surat',
     'Kanpur',
-  ];
-
-  final List<String> _genderOptions = ['male', 'female', 'other'];
-
-  final List<Map<String, dynamic>> _bioOptions = [
-    {
-      'category': 'Content Creation',
-      'options': [
-        'Creative content creator passionate about storytelling through visuals.',
-        'Lifestyle influencer sharing daily inspiration and authentic moments.',
-      ],
-    },
-    {
-      'category': 'Fashion & Beauty',
-      'options': [
-        'Fashion enthusiast with an eye for emerging trends and timeless style.',
-        'Beauty expert exploring the latest products and sharing honest reviews.',
-      ],
-    },
-    {
-      'category': 'Health & Travel',
-      'options': [
-        'Fitness advocate promoting wellness and balanced, healthy living.',
-        'Travel enthusiast showcasing hidden gems and unforgettable experiences.',
-      ],
-    },
-    {
-      'category': 'Tech & Food',
-      'options': [
-        'Tech reviewer providing insightful analysis on the latest gadgets.',
-        'Food lover exploring culinary delights and sharing delicious recipes.',
-      ],
-    },
   ];
 
   // Brand types matching web version
@@ -506,7 +395,7 @@ class _InfluencerOnboardingScreenState extends State<InfluencerOnboardingScreen>
         if (result['success']) {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
-              builder: (context) => const InfluencerDashboard(),
+              builder: (context) => const InstagramVerificationScreen(),
             ),
           );
         } else {
@@ -785,7 +674,7 @@ class _InfluencerOnboardingScreenState extends State<InfluencerOnboardingScreen>
     final value = _pricingControllers[key]!.text.trim();
 
     return Container(
-      height: 140,
+      height: 120, // Reduced from 140 to 120
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -823,63 +712,75 @@ class _InfluencerOnboardingScreenState extends State<InfluencerOnboardingScreen>
           borderRadius: BorderRadius.circular(20),
           onTap: () => _showPriceInput(title, key, icon),
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(16), // Reduced from 20 to 16
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min, // Added to prevent overflow
               children: [
                 Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(6), // Reduced from 8 to 6
                       decoration: BoxDecoration(
                         color: hasValue
                             ? primaryColor
                             : Colors.grey.withValues(alpha: 0.3),
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(
+                          10,
+                        ), // Reduced from 12 to 10
                       ),
-                      child: Icon(icon, color: Colors.white, size: 20),
+                      child: Icon(
+                        icon,
+                        color: Colors.white,
+                        size: 18,
+                      ), // Reduced from 20 to 18
                     ),
                     const Spacer(),
                     if (hasValue)
                       Container(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
+                          horizontal: 6, // Reduced from 8 to 6
+                          vertical: 3, // Reduced from 4 to 3
                         ),
                         decoration: BoxDecoration(
                           color: primaryColor.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(
+                            6,
+                          ), // Reduced from 8 to 6
                         ),
                         child: Text(
                           '₹$value',
                           style: TextStyle(
                             color: primaryColor,
-                            fontSize: 12,
+                            fontSize: 11, // Reduced from 12 to 11
                             fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
                   ],
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 8), // Reduced from 12 to 8
                 Text(
                   title,
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 16, // Reduced from 18 to 16
                     fontWeight: FontWeight.bold,
                     color: textPrimary,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 2), // Reduced from 4 to 2
                 Text(
                   subtitle,
-                  style: TextStyle(fontSize: 12, color: textSecondary),
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: textSecondary,
+                  ), // Reduced from 12 to 11
                 ),
                 const Spacer(),
                 Text(
                   hasValue ? 'Tap to edit' : 'Tap to set price',
                   style: TextStyle(
-                    fontSize: 11,
+                    fontSize: 10, // Reduced from 11 to 10
                     color: hasValue ? primaryColor : textSecondary,
                     fontWeight: FontWeight.w500,
                   ),
@@ -1064,76 +965,6 @@ class _InfluencerOnboardingScreenState extends State<InfluencerOnboardingScreen>
           ),
         ),
       ),
-    );
-  }
-
-  // Modern price input fields
-  Widget _buildPriceField(String label, String key, IconData icon) {
-    final hasValue = _pricingControllers[key]!.text.trim().isNotEmpty;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            color: textPrimary,
-          ),
-        ),
-        const SizedBox(height: 12),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: hasValue ? primaryColor : Colors.grey[300]!,
-              width: 1.5,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
-                blurRadius: 10,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: TextField(
-            controller: _pricingControllers[key],
-            keyboardType: TextInputType.number,
-            onChanged: (_) => setState(() {}),
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-            decoration: InputDecoration(
-              hintText: 'Enter amount',
-              hintStyle: TextStyle(
-                color: Colors.grey[400],
-                fontSize: 16,
-                fontWeight: FontWeight.normal,
-              ),
-              prefixIcon: Container(
-                margin: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: primaryColor.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(icon, color: primaryColor, size: 20),
-              ),
-              prefixText: '₹ ',
-              prefixStyle: TextStyle(
-                color: textPrimary,
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 20,
-              ),
-            ),
-          ),
-        ),
-      ],
     );
   }
 
