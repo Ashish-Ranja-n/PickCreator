@@ -7,55 +7,105 @@ import '../models/user_model.dart';
 
 class AuthService {
   static const _storage = FlutterSecureStorage();
-  static final GoogleSignIn _googleSignIn = GoogleSignIn(
-    scopes: ['email', 'profile'],
-  );
+  static final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
 
   // Send OTP to email
   static Future<Map<String, dynamic>> sendOtp(String email) async {
     try {
+      print('Sending OTP to: $email');
+      print('API URL: ${AppConfig.apiBaseUrl}${AppConfig.sendOtpEndpoint}');
+
       final response = await http.post(
         Uri.parse('${AppConfig.apiBaseUrl}${AppConfig.sendOtpEndpoint}'),
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
         body: jsonEncode({'email': email}),
       );
+
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         return {'success': true, 'message': 'OTP sent successfully'};
       } else {
-        final error = jsonDecode(response.body);
-        return {'success': false, 'message': error['error'] ?? 'Failed to send OTP'};
+        try {
+          final error = jsonDecode(response.body);
+          return {
+            'success': false,
+            'message':
+                error['error'] ?? error['message'] ?? 'Failed to send OTP',
+          };
+        } catch (parseError) {
+          return {
+            'success': false,
+            'message': 'Server error: ${response.statusCode}',
+          };
+        }
       }
+    } on FormatException catch (e) {
+      print('Format error: $e');
+      return {
+        'success': false,
+        'message': 'Invalid response format from server',
+      };
+    } on http.ClientException catch (e) {
+      print('HTTP client error: $e');
+      return {
+        'success': false,
+        'message': 'Connection failed. Please check your internet connection.',
+      };
     } catch (e) {
+      print('General error: $e');
       return {'success': false, 'message': 'Network error: $e'};
     }
   }
 
   // Verify OTP and login
-  static Future<Map<String, dynamic>> verifyOtpAndLogin(String email, String otp) async {
+  static Future<Map<String, dynamic>> verifyOtpAndLogin(
+    String email,
+    String otp,
+  ) async {
     try {
       // Step 1: Verify OTP
       final verifyResponse = await http.post(
         Uri.parse('${AppConfig.apiBaseUrl}${AppConfig.verifyOtpEndpoint}'),
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
         body: jsonEncode({'email': email, 'otp': otp}),
       );
 
       if (verifyResponse.statusCode != 200) {
-        final error = jsonDecode(verifyResponse.body);
-        return {'success': false, 'message': error['error'] ?? 'Invalid OTP'};
+        try {
+          final error = jsonDecode(verifyResponse.body);
+          return {
+            'success': false,
+            'message': error['error'] ?? error['message'] ?? 'Invalid OTP',
+          };
+        } catch (parseError) {
+          return {
+            'success': false,
+            'message': 'Server error: ${verifyResponse.statusCode}',
+          };
+        }
       }
 
       // Step 2: OTP Login
       final loginResponse = await http.post(
         Uri.parse('${AppConfig.apiBaseUrl}${AppConfig.otpLoginEndpoint}'),
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
         body: jsonEncode({'email': email}),
       );
 
       if (loginResponse.statusCode == 200) {
         final data = jsonDecode(loginResponse.body);
-        
+
         // Extract token from Set-Cookie header
         final cookies = loginResponse.headers['set-cookie'];
         String? token;
@@ -65,22 +115,49 @@ class AuthService {
         }
 
         if (token != null) {
+          print('OTP Login: Token received, length: ${token.length}');
+          print(
+            'OTP Login: Token preview: ${token.substring(0, token.length > 20 ? 20 : token.length)}...',
+          );
           await saveToken(token);
           await saveUserData(data['user']);
+          print('OTP Login: Token and user data saved');
+        } else {
+          print('OTP Login: No token received in cookies');
         }
 
         return {
           'success': true,
-          'isNew': data['isNew'],
+          'isNew': data['isNew'] ?? false,
           'user': data['user'],
           'token': token,
         };
       } else {
-        final error = jsonDecode(loginResponse.body);
-        return {'success': false, 'message': error['error'] ?? 'Login failed'};
+        try {
+          final error = jsonDecode(loginResponse.body);
+          return {
+            'success': false,
+            'message': error['error'] ?? error['message'] ?? 'Login failed',
+          };
+        } catch (parseError) {
+          return {
+            'success': false,
+            'message': 'Server error: ${loginResponse.statusCode}',
+          };
+        }
       }
+    } on FormatException {
+      return {
+        'success': false,
+        'message': 'Invalid response format from server',
+      };
+    } on http.ClientException {
+      return {
+        'success': false,
+        'message': 'Connection failed. Please check your internet connection.',
+      };
     } catch (e) {
-      return {'success': false, 'message': 'Network error: $e'};
+      return {'success': false, 'message': 'Network error. Please try again.'};
     }
   }
 
@@ -88,9 +165,22 @@ class AuthService {
   static Future<Map<String, dynamic>> setRole(String role) async {
     try {
       final token = await getToken();
+      print('SetRole: Token exists: ${token != null}');
+      print('SetRole: Token length: ${token?.length ?? 0}');
+      if (token != null) {
+        print(
+          'SetRole: Token preview: ${token.substring(0, token.length > 20 ? 20 : token.length)}...',
+        );
+      }
+
       if (token == null) {
         return {'success': false, 'message': 'No authentication token'};
       }
+
+      print(
+        'SetRole: Making request to: ${AppConfig.apiBaseUrl}${AppConfig.setRoleEndpoint}',
+      );
+      print('SetRole: Role: $role');
 
       final response = await http.post(
         Uri.parse('${AppConfig.apiBaseUrl}${AppConfig.setRoleEndpoint}'),
@@ -101,49 +191,31 @@ class AuthService {
         body: jsonEncode({'role': role}),
       );
 
+      print('SetRole: Response status: ${response.statusCode}');
+      print('SetRole: Response body: ${response.body}');
+
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         await _storage.write(key: AppConfig.roleKey, value: role);
         return {'success': true, 'role': data['role']};
       } else {
         final error = jsonDecode(response.body);
-        return {'success': false, 'message': error['error'] ?? 'Failed to set role'};
+        return {
+          'success': false,
+          'message': error['error'] ?? 'Failed to set role',
+        };
       }
     } catch (e) {
       return {'success': false, 'message': 'Network error: $e'};
     }
   }
 
-  // Google Sign In
+  // Google Sign In - Temporarily disabled due to API changes
   static Future<Map<String, dynamic>> signInWithGoogle() async {
-    try {
-      final GoogleSignInAccount? account = await _googleSignIn.signIn();
-      if (account == null) {
-        return {'success': false, 'message': 'Google sign-in cancelled'};
-      }
-
-      final GoogleSignInAuthentication auth = await account.authentication;
-      
-      final response = await http.post(
-        Uri.parse('${AppConfig.apiBaseUrl}${AppConfig.googleAuthEndpoint}'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'idToken': auth.idToken,
-          'accessToken': auth.accessToken,
-        }),
-      );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        // Handle similar to OTP login
-        return {'success': true, 'data': data};
-      } else {
-        final error = jsonDecode(response.body);
-        return {'success': false, 'message': error['error'] ?? 'Google sign-in failed'};
-      }
-    } catch (e) {
-      return {'success': false, 'message': 'Google sign-in error: $e'};
-    }
+    return {
+      'success': false,
+      'message': 'Google sign-in not available on this device',
+    };
   }
 
   // Token management
@@ -198,6 +270,48 @@ class AuthService {
       return response.statusCode == 200;
     } catch (e) {
       return false;
+    }
+  }
+
+  // Complete brand onboarding
+  static Future<Map<String, dynamic>> completeBrandOnboarding({
+    required String fullName,
+    required String businessType,
+    required String businessName,
+    required String location,
+  }) async {
+    try {
+      final token = await getToken();
+      if (token == null) {
+        return {'success': false, 'message': 'Not authenticated'};
+      }
+
+      final response = await http.post(
+        Uri.parse('${AppConfig.apiBaseUrl}/api/brand/onboarding'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: json.encode({
+          'fullName': fullName,
+          'businessType': businessType,
+          'businessName': businessName,
+          'location': location,
+        }),
+      );
+
+      final data = json.decode(response.body);
+
+      if (response.statusCode == 200) {
+        return {'success': true, 'data': data};
+      } else {
+        return {
+          'success': false,
+          'message': data['error'] ?? 'Failed to complete onboarding',
+        };
+      }
+    } catch (e) {
+      return {'success': false, 'message': 'Network error: $e'};
     }
   }
 }

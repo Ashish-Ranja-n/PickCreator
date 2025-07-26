@@ -9,12 +9,17 @@ const isValidRole = (role: string) => ["Brand", "Influencer"].includes(role);
 
 export async function POST(req: NextRequest) {
   try {
-    const cookie = req.cookies.get("token");
-    if (!cookie) {
+    // Support both cookie and Authorization header for mobile apps
+    const cookieToken = req.cookies.get("token")?.value;
+    const authHeader = req.headers.get("authorization");
+    const bearerToken = authHeader?.startsWith("Bearer ") ? authHeader.substring(7) : null;
+    const token = cookieToken || bearerToken;
+
+    if (!token) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const userData = await getDataFromToken(req, cookie.value);
+    const userData = await getDataFromToken(req, token);
     if (!userData?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

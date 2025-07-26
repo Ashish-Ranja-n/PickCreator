@@ -7,7 +7,12 @@ import { SignJWT } from "jose";
 export async function POST(req: NextRequest) {
   try {
     await connect();
-    const token = req.cookies.get("token")?.value || "";
+    // Support both cookie and Authorization header for mobile apps
+    const cookieToken = req.cookies.get("token")?.value;
+    const authHeader = req.headers.get("authorization");
+    const bearerToken = authHeader?.startsWith("Bearer ") ? authHeader.substring(7) : null;
+    const token = cookieToken || bearerToken || "";
+
     const userData = await getDataFromToken(req, token);
     if (!userData || !userData._id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

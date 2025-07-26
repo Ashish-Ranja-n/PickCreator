@@ -71,8 +71,12 @@ class UserModel {
       onboardingCompleted: json['onboardingCompleted'],
       instagramConnected: json['instagramConnected'],
       isInstagramVerified: json['isInstagramVerified'],
-      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
-      updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'])
+          : null,
+      updatedAt: json['updatedAt'] != null
+          ? DateTime.parse(json['updatedAt'])
+          : null,
       // Brand fields
       companyName: json['companyName'],
       businessType: json['businessType'],
@@ -86,8 +90,8 @@ class UserModel {
       gender: json['gender'],
       socialMediaLinks: json['socialMediaLinks'] != null
           ? (json['socialMediaLinks'] as List)
-              .map((link) => SocialMediaLink.fromJson(link))
-              .toList()
+                .map((link) => SocialMediaLink.fromJson(link))
+                .toList()
           : null,
       followers: json['followers'],
       profilePicture: json['profilePicture'],
@@ -120,7 +124,9 @@ class UserModel {
       // Influencer fields
       'age': age,
       'gender': gender,
-      'socialMediaLinks': socialMediaLinks?.map((link) => link.toJson()).toList(),
+      'socialMediaLinks': socialMediaLinks
+          ?.map((link) => link.toJson())
+          .toList(),
       'followers': followers,
       'profilePicture': profilePicture,
       'onboardingStep': onboardingStep,
@@ -130,6 +136,62 @@ class UserModel {
   bool get isBrand => role == 'Brand';
   bool get isInfluencer => role == 'Influencer';
   bool get isAdmin => role == 'Admin';
+
+  UserModel copyWith({
+    String? id,
+    String? name,
+    String? email,
+    String? phoneNumber,
+    String? role,
+    String? avatar,
+    bool? isVerified,
+    bool? onboardingCompleted,
+    bool? instagramConnected,
+    bool? isInstagramVerified,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    String? companyName,
+    String? businessType,
+    String? website,
+    String? logo,
+    String? bio,
+    String? location,
+    bool? verifiedBrand,
+    int? age,
+    String? gender,
+    List<SocialMediaLink>? socialMediaLinks,
+    int? followers,
+    String? profilePicture,
+    int? onboardingStep,
+  }) {
+    return UserModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      email: email ?? this.email,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      role: role ?? this.role,
+      avatar: avatar ?? this.avatar,
+      isVerified: isVerified ?? this.isVerified,
+      onboardingCompleted: onboardingCompleted ?? this.onboardingCompleted,
+      instagramConnected: instagramConnected ?? this.instagramConnected,
+      isInstagramVerified: isInstagramVerified ?? this.isInstagramVerified,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      companyName: companyName ?? this.companyName,
+      businessType: businessType ?? this.businessType,
+      website: website ?? this.website,
+      logo: logo ?? this.logo,
+      bio: bio ?? this.bio,
+      location: location ?? this.location,
+      verifiedBrand: verifiedBrand ?? this.verifiedBrand,
+      age: age ?? this.age,
+      gender: gender ?? this.gender,
+      socialMediaLinks: socialMediaLinks ?? this.socialMediaLinks,
+      followers: followers ?? this.followers,
+      profilePicture: profilePicture ?? this.profilePicture,
+      onboardingStep: onboardingStep ?? this.onboardingStep,
+    );
+  }
 }
 
 class SocialMediaLink {
@@ -139,16 +201,10 @@ class SocialMediaLink {
   SocialMediaLink({this.platform, this.url});
 
   factory SocialMediaLink.fromJson(Map<String, dynamic> json) {
-    return SocialMediaLink(
-      platform: json['platform'],
-      url: json['url'],
-    );
+    return SocialMediaLink(platform: json['platform'], url: json['url']);
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'platform': platform,
-      'url': url,
-    };
+    return {'platform': platform, 'url': url};
   }
 }

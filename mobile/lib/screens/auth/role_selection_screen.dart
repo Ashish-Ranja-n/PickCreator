@@ -4,7 +4,7 @@ import '../../config/app_config.dart';
 import '../../services/auth_service.dart';
 import '../../models/user_model.dart';
 import '../../main.dart';
-import '../brand/brand_dashboard.dart';
+import '../brand/brand_onboarding_screen.dart';
 import '../influencer/influencer_dashboard.dart';
 
 class RoleSelectionScreen extends StatefulWidget {
@@ -71,13 +71,14 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
   }
 
   void _navigateToRoleDashboard(String role) {
-    Widget dashboard;
+    Widget destination;
     switch (role) {
       case AppConfig.brandRole:
-        dashboard = const BrandDashboard();
+        // Navigate to brand onboarding first
+        destination = const BrandOnboardingScreen();
         break;
       case AppConfig.influencerRole:
-        dashboard = const InfluencerDashboard();
+        destination = const InfluencerDashboard();
         break;
       default:
         return; // Should not happen
@@ -85,7 +86,7 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
 
     Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(builder: (context) => dashboard),
+      MaterialPageRoute(builder: (context) => destination),
       (route) => false,
     );
   }
@@ -196,7 +197,7 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withValues(alpha: 0.1),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -217,7 +218,7 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withValues(alpha: 0.05),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
                     ),
@@ -258,7 +259,7 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
                       subtitle,
                       style: TextStyle(
                         fontSize: 16,
-                        color: textColor.withOpacity(0.8),
+                        color: textColor.withValues(alpha: 0.8),
                         fontWeight: FontWeight.w500,
                       ),
                     ),

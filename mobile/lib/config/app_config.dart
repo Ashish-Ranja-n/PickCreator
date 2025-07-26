@@ -1,13 +1,7 @@
 class AppConfig {
-  // API Configuration
-  // For testing without CORS issues, use a CORS proxy temporarily
-  static const String apiBaseUrl =
-      'https://cors-anywhere.herokuapp.com/https://pickcreator.com/api';
+  // API Configuration - CORS is now fixed in middleware
+  static const String apiBaseUrl = 'https://pickcreator.com/api';
   static const String socketUrl = 'https://pickcreator.com:3001';
-
-  // Production URLs (use after CORS is fixed)
-  // static const String apiBaseUrl = 'https://pickcreator.com/api';
-  // static const String socketUrl = 'https://pickcreator.com:3001';
 
   // Development URLs (for local development)
   // static const String apiBaseUrl = 'http://localhost:3000/api';

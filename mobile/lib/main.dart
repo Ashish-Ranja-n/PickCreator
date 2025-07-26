@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'config/app_config.dart';
 import 'services/auth_service.dart';
@@ -10,6 +11,19 @@ import 'screens/admin/admin_dashboard.dart';
 import 'models/user_model.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Configure system UI overlay style for status bar
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+      statusBarBrightness: Brightness.light,
+      systemNavigationBarColor: Colors.white,
+      systemNavigationBarIconBrightness: Brightness.dark,
+    ),
+  );
+
   runApp(const PickCreatorApp());
 }
 
@@ -34,7 +48,12 @@ class PickCreatorApp extends StatelessWidget {
             backgroundColor: Colors.white,
             foregroundColor: Colors.black,
             elevation: 0,
+            systemOverlayStyle: SystemUiOverlayStyle(
+              statusBarColor: Colors.transparent,
+              statusBarIconBrightness: Brightness.dark,
+            ),
           ),
+          scaffoldBackgroundColor: Colors.white,
         ),
         home: const AuthWrapper(),
         routes: {
