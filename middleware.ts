@@ -66,6 +66,29 @@ export async function middleware(request: NextRequest) {
 
     // Handle API routes
     if(path.startsWith('/api/')) {
+        // Handle CORS preflight requests
+        if (request.method === 'OPTIONS') {
+            // Always use production-ready CORS settings
+            const allowedOrigins = [
+                process.env.CLIENT_URL || 'https://pickcreator.com',
+                'https://app.pickcreator.com',
+                '*' // Allow all origins for mobile app compatibility
+            ];
+
+            const origin = request.headers.get('origin');
+            const corsOrigin = allowedOrigins.includes('*') ? '*' :
+                (origin && allowedOrigins.includes(origin)) ? origin : '*';
+
+            const headers: Record<string, string> = {
+                'Access-Control-Allow-Origin': corsOrigin,
+                'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+                'Access-Control-Allow-Credentials': 'true',
+            };
+
+            return new Response(null, { status: 200, headers });
+        }
+
         // Define public API routes that don't need authentication
         const publicApiRoutes = [
             '/api/auth/otp-login',
@@ -93,27 +116,52 @@ export async function middleware(request: NextRequest) {
             '/api/auth/google'
         ];
 
+        // Helper function to add CORS headers to response
+        const addCorsHeaders = (response: NextResponse) => {
+            // Always use production-ready CORS settings
+            const allowedOrigins = [
+                process.env.CLIENT_URL || 'https://pickcreator.com',
+                'https://app.pickcreator.com',
+                '*' // Allow all origins for mobile app compatibility
+            ];
+
+            const origin = request.headers.get('origin');
+            const corsOrigin = allowedOrigins.includes('*') ? '*' :
+                (origin && allowedOrigins.includes(origin)) ? origin : '*';
+
+            response.headers.set('Access-Control-Allow-Origin', corsOrigin);
+            response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+            response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+            response.headers.set('Access-Control-Allow-Credentials', 'true');
+            return response;
+        };
+
         // Check if the current path is a public API route
         if(publicApiRoutes.some(route => path.startsWith(route))) {
-            return NextResponse.next();
+            const response = NextResponse.next();
+            return addCorsHeaders(response);
         }
 
         // For all other API routes, verify token
         if(!token) {
-            return NextResponse.json({ error: "Unauthorized - Authentication required" }, { status: 401 });
+            const response = NextResponse.json({ error: "Unauthorized - Authentication required" }, { status: 401 });
+            return addCorsHeaders(response);
         }
 
         try {
             const payload = await getDataFromToken(request, token);
             if(!payload) {
-                return NextResponse.json({ error: "Unauthorized - Invalid token" }, { status: 401 });
+                const response = NextResponse.json({ error: "Unauthorized - Invalid token" }, { status: 401 });
+                return addCorsHeaders(response);
             }
 
             // Token is valid, proceed with the request
-            return NextResponse.next();
+            const response = NextResponse.next();
+            return addCorsHeaders(response);
         } catch (error: any) {
             console.error("API authentication error:", error.message);
-            return NextResponse.json({ error: "Unauthorized - Authentication failed" }, { status: 401 });
+            const response = NextResponse.json({ error: "Unauthorized - Authentication failed" }, { status: 401 });
+            return addCorsHeaders(response);
         }
     }
 
