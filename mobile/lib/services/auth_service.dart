@@ -189,12 +189,75 @@ class AuthService {
     }
   }
 
-  // Google Sign In - Temporarily disabled due to API changes
+  // Google Sign In
   static Future<Map<String, dynamic>> signInWithGoogle() async {
-    return {
-      'success': false,
-      'message': 'Google sign-in not available on this device',
-    };
+    try {
+      final GoogleSignIn googleSignIn = GoogleSignIn(
+        scopes: ['email', 'profile'],
+      );
+
+      // Sign out first to ensure fresh sign-in
+      await googleSignIn.signOut();
+
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+
+      if (googleUser == null) {
+        return {'success': false, 'message': 'Google sign-in was cancelled'};
+      }
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      if (googleAuth.accessToken == null) {
+        return {
+          'success': false,
+          'message': 'Failed to get Google access token',
+        };
+      }
+
+      // Send the access token to your backend mobile endpoint
+      final response = await http.post(
+        Uri.parse('${AppConfig.apiBaseUrl}/auth/google/mobile'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'accessToken': googleAuth.accessToken,
+          'idToken': googleAuth.idToken,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+
+        if (data['success']) {
+          // Store the token using the correct key
+          await saveToken(data['token']);
+          await saveUserData(data['user']);
+
+          return {
+            'success': true,
+            'user': data['user'],
+            'isNew': data['isNew'] ?? false,
+          };
+        } else {
+          return {
+            'success': false,
+            'message': data['message'] ?? 'Google sign-in failed',
+          };
+        }
+      } else {
+        final errorData = json.decode(response.body);
+        return {
+          'success': false,
+          'message':
+              errorData['message'] ?? 'Server error during Google sign-in',
+        };
+      }
+    } catch (e) {
+      return {
+        'success': false,
+        'message': 'Google sign-in error: ${e.toString()}',
+      };
+    }
   }
 
   // Token management

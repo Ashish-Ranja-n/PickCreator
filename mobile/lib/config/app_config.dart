@@ -1,7 +1,7 @@
 class AppConfig {
   // API Configuration - CORS is now fixed in middleware
   static const String apiBaseUrl = 'https://pickcreator.com/api';
-  static const String socketUrl = 'https://pickcreator.com:3001';
+  static const String socketUrl = 'https://socket.pickcreator.com';
 
   // Development URLs (for local development)
   // static const String apiBaseUrl = 'http://localhost:3000/api';
