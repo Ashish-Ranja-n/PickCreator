@@ -13,20 +13,8 @@ connect();
  */
 export async function GET(request: NextRequest) {
   try {
-    // Get token from cookies
-    const cookieHeader = request.headers.get("cookie") || "";
-    const tokenCookie = cookieHeader
-      .split("; ")
-      .find((cookie) => cookie.startsWith("token="));
-
-    if (!tokenCookie) {
-      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
-    }
-
-    const token = tokenCookie.split("=")[1];
-
-    // Verify and decode token
-    const tokenData = await getDataFromToken(request, token);
+    // Get user data from token (automatically checks Authorization header and cookies)
+    const tokenData = await getDataFromToken(request);
     if (!tokenData || !tokenData._id) {
       return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
