@@ -8,7 +8,11 @@ import '../models/user_model.dart';
 
 class AuthService {
   static const _storage = FlutterSecureStorage();
-  static final GoogleSignIn _googleSignIn = GoogleSignIn();
+  static final GoogleSignIn _googleSignIn = GoogleSignIn(
+    scopes: ['email', 'profile'],
+    serverClientId:
+        '161161982096-7hd225g7d9079cm3agd2e0v6s4koret9.apps.googleusercontent.com',
+  );
 
   // Send OTP to email
   static Future<Map<String, dynamic>> sendOtp(String email) async {
@@ -192,24 +196,17 @@ class AuthService {
   // Google Sign In
   static Future<Map<String, dynamic>> signInWithGoogle() async {
     try {
-      // Configure Google Sign-In with proper client ID
-      final GoogleSignIn googleSignIn = GoogleSignIn(
-        scopes: ['email', 'profile'],
-        // Use the WEB client ID from Google Cloud Console (NOT the Android client ID)
-        // This is the same client ID used by your web app
-        serverClientId:
-            '161161982096-7hd225g7d9079cm3agd2e0v6s4koret9.apps.googleusercontent.com',
-      );
-
       // Sign out first to ensure fresh sign-in
-      await googleSignIn.signOut();
+      await _googleSignIn.signOut();
 
-      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      // Sign in with Google
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
       if (googleUser == null) {
         return {'success': false, 'message': 'Google sign-in was cancelled'};
       }
 
+      // Get authentication details
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
 

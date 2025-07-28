@@ -4,11 +4,9 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(request: Request) {
   try {
     const req = request as NextRequest;
-    // Get the actual token from request
-    const token = req.cookies.get("token")?.value || "";
-    
-    // Get user data from token
-    const userData = await getDataFromToken(req, token);
+
+    // Get user data from token (automatically checks Authorization header and cookies)
+    const userData = await getDataFromToken(req);
     
     // If we can get the user data, the token is valid
     if (!userData) {

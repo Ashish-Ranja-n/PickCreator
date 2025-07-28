@@ -12,7 +12,21 @@ export interface UserData {
 
 export const getDataFromToken = async (request: NextRequest, providedToken?: string): Promise<UserData | null> => {
     try {
-        const token = providedToken || request.cookies.get("token")?.value || "";
+        // Priority order: providedToken > Authorization header > cookie
+        let token = providedToken;
+
+        if (!token) {
+            // Check Authorization header (for mobile apps)
+            const authHeader = request.headers.get("authorization");
+            if (authHeader && authHeader.startsWith("Bearer ")) {
+                token = authHeader.substring(7); // Remove "Bearer " prefix
+            }
+        }
+
+        if (!token) {
+            // Check cookie (for web apps)
+            token = request.cookies.get("token")?.value || "";
+        }
 
         if (!token) {
             return null;

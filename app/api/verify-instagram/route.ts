@@ -11,13 +11,8 @@ export async function POST(req: NextRequest) {
   // LOG: Start request
   console.log('[VerifyInstagram] POST request received');
   try {
-    // Get user from token (support both cookie and Authorization header)
-    const cookieToken = req.cookies.get("token")?.value;
-    const authHeader = req.headers.get("authorization");
-    const bearerToken = authHeader?.startsWith("Bearer ") ? authHeader.substring(7) : null;
-    const finalToken = cookieToken || bearerToken || "";
-
-    const userData = await (await import('@/helpers/getDataFromToken')).getDataFromToken(req, finalToken);
+    // Get user from token (automatically checks Authorization header and cookies)
+    const userData = await (await import('@/helpers/getDataFromToken')).getDataFromToken(req);
     if (!userData) {
       console.error('[VerifyInstagram] Unauthorized: no userData from token');
       return NextResponse.json({ message: 'Unauthorized: user not authenticated' }, { status: 401 });

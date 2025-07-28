@@ -129,14 +129,8 @@ export async function GET(request: NextRequest) {
 // PUT: Update influencer onboarding data
 export async function PUT(request: NextRequest) {
   try {
-    // Get token from both cookie and Authorization header for mobile app support
-    const cookieToken = request.cookies.get('token')?.value;
-    const authHeader = request.headers.get('authorization');
-    const bearerToken = authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : null;
-    const token = cookieToken || bearerToken || '';
-
-    // Get user data from token
-    const userData = await getDataFromToken(request, token);
+    // Get user data from token (automatically checks Authorization header and cookies)
+    const userData = await getDataFromToken(request);
     if (!userData) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

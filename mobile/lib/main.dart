@@ -35,6 +35,7 @@ class PickCreatorApp extends StatelessWidget {
     return MultiProvider(
       providers: [ChangeNotifierProvider(create: (_) => AuthProvider())],
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: AppConfig.appName,
         theme: ThemeData(
           primarySwatch: Colors.blue,

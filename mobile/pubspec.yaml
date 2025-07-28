@@ -46,7 +46,7 @@ dependencies:
   shared_preferences: ^2.2.2
 
   # Real-time Communication
-  socket_io_client: ^2.0.3+1
+  socket_io_client: ^3.1.2
 
   # Authentication
   google_sign_in: ^6.2.1
@@ -61,6 +61,9 @@ dependencies:
   # lottie: ^2.7.0
   shimmer: ^3.0.0
 
+  # URL Launcher
+  url_launcher: ^6.2.4
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -70,7 +73,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

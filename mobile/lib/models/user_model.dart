@@ -208,3 +208,233 @@ class SocialMediaLink {
     return {'platform': platform, 'url': url};
   }
 }
+
+// Deal Model
+class DealModel {
+  final String? id;
+  final String? brandId;
+  final String? influencerId;
+  final String? status;
+  final String? description;
+  final double? amount;
+  final String? currency;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
+  final DateTime? deadline;
+  final bool? paymentReleased;
+  final List<ContentSubmission>? contentSubmissions;
+  final BrandInfo? brandInfo;
+  final InfluencerInfo? influencerInfo;
+  final String? rejectionReason;
+  final double? counterOffer;
+
+  DealModel({
+    this.id,
+    this.brandId,
+    this.influencerId,
+    this.status,
+    this.description,
+    this.amount,
+    this.currency,
+    this.createdAt,
+    this.updatedAt,
+    this.deadline,
+    this.paymentReleased,
+    this.contentSubmissions,
+    this.brandInfo,
+    this.influencerInfo,
+    this.rejectionReason,
+    this.counterOffer,
+  });
+
+  factory DealModel.fromJson(Map<String, dynamic> json) {
+    return DealModel(
+      id: json['_id'] ?? json['id'],
+      brandId: json['brandId'],
+      influencerId: json['influencerId'],
+      status: json['status'],
+      description: json['description'],
+      amount: json['amount']?.toDouble(),
+      currency: json['currency'] ?? 'INR',
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'])
+          : null,
+      updatedAt: json['updatedAt'] != null
+          ? DateTime.parse(json['updatedAt'])
+          : null,
+      deadline: json['deadline'] != null
+          ? DateTime.parse(json['deadline'])
+          : null,
+      paymentReleased: json['paymentReleased'],
+      contentSubmissions: json['contentSubmissions'] != null
+          ? (json['contentSubmissions'] as List)
+                .map((content) => ContentSubmission.fromJson(content))
+                .toList()
+          : null,
+      brandInfo: json['brandInfo'] != null
+          ? BrandInfo.fromJson(json['brandInfo'])
+          : null,
+      influencerInfo: json['influencerInfo'] != null
+          ? InfluencerInfo.fromJson(json['influencerInfo'])
+          : null,
+      rejectionReason: json['rejectionReason'],
+      counterOffer: json['counterOffer']?.toDouble(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'brandId': brandId,
+      'influencerId': influencerId,
+      'status': status,
+      'description': description,
+      'amount': amount,
+      'currency': currency,
+      'createdAt': createdAt?.toIso8601String(),
+      'updatedAt': updatedAt?.toIso8601String(),
+      'deadline': deadline?.toIso8601String(),
+      'paymentReleased': paymentReleased,
+      'contentSubmissions': contentSubmissions
+          ?.map((content) => content.toJson())
+          .toList(),
+      'brandInfo': brandInfo?.toJson(),
+      'influencerInfo': influencerInfo?.toJson(),
+      'rejectionReason': rejectionReason,
+      'counterOffer': counterOffer,
+    };
+  }
+}
+
+// Content Submission Model
+class ContentSubmission {
+  final String? id;
+  final String? type;
+  final String? url;
+  final String? caption;
+  final String? status;
+  final DateTime? submittedAt;
+  final String? rejectionComment;
+
+  ContentSubmission({
+    this.id,
+    this.type,
+    this.url,
+    this.caption,
+    this.status,
+    this.submittedAt,
+    this.rejectionComment,
+  });
+
+  factory ContentSubmission.fromJson(Map<String, dynamic> json) {
+    return ContentSubmission(
+      id: json['_id'] ?? json['id'],
+      type: json['type'],
+      url: json['url'],
+      caption: json['caption'],
+      status: json['status'],
+      submittedAt: json['submittedAt'] != null
+          ? DateTime.parse(json['submittedAt'])
+          : null,
+      rejectionComment: json['rejectionComment'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'type': type,
+      'url': url,
+      'caption': caption,
+      'status': status,
+      'submittedAt': submittedAt?.toIso8601String(),
+      'rejectionComment': rejectionComment,
+    };
+  }
+}
+
+// Brand Info Model (for deals)
+class BrandInfo {
+  final String? id;
+  final String? name;
+  final String? avatar;
+  final String? companyName;
+  final String? location;
+
+  BrandInfo({this.id, this.name, this.avatar, this.companyName, this.location});
+
+  factory BrandInfo.fromJson(Map<String, dynamic> json) {
+    return BrandInfo(
+      id: json['_id'] ?? json['id'],
+      name: json['name'],
+      avatar: json['avatar'],
+      companyName: json['companyName'],
+      location: json['location'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'avatar': avatar,
+      'companyName': companyName,
+      'location': location,
+    };
+  }
+}
+
+// Influencer Info Model (for deals and browsing)
+class InfluencerInfo {
+  final String? id;
+  final String? name;
+  final String? avatar;
+  final String? bio;
+  final String? location;
+  final int? followers;
+  final List<SocialMediaLink>? socialMediaLinks;
+  final bool? isInstagramVerified;
+
+  InfluencerInfo({
+    this.id,
+    this.name,
+    this.avatar,
+    this.bio,
+    this.location,
+    this.followers,
+    this.socialMediaLinks,
+    this.isInstagramVerified,
+  });
+
+  factory InfluencerInfo.fromJson(Map<String, dynamic> json) {
+    return InfluencerInfo(
+      id: json['_id'] ?? json['id'],
+      name: json['name'],
+      avatar: json['avatar'],
+      bio: json['bio'],
+      location: json['location'],
+      followers: json['followers'],
+      socialMediaLinks: json['socialMediaLinks'] != null
+          ? (json['socialMediaLinks'] as List)
+                .map((link) => SocialMediaLink.fromJson(link))
+                .toList()
+          : null,
+      isInstagramVerified: json['isInstagramVerified'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'avatar': avatar,
+      'bio': bio,
+      'location': location,
+      'followers': followers,
+      'socialMediaLinks': socialMediaLinks
+          ?.map((link) => link.toJson())
+          .toList(),
+      'isInstagramVerified': isInstagramVerified,
+    };
+  }
+}

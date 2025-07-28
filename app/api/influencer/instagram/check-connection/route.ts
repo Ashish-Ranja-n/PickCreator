@@ -13,33 +13,10 @@ export async function GET(request: NextRequest) {
     await connect();
     console.log("Instagram check: Connected to database");
     
-    // Get token from cookies first, then try Authorization header as fallback
-    let token = request.cookies.get('token')?.value || '';
-    
-    if (!token) {
-      // If no cookie token, try Authorization header
-      const authHeader = request.headers.get('Authorization');
-      if (authHeader && authHeader.startsWith('Bearer ')) {
-        token = authHeader.substring(7);
-        console.log("Instagram check: Token found in Authorization header");
-      }
-    } else {
-      console.log("Instagram check: Token found in cookies");
-    }
-    
-    if (!token) {
-      console.log("Instagram check: No token provided");
-      return NextResponse.json({ 
-        isConnected: false, 
-        error: 'Unauthorized - No token provided',
-        status: 'unauthorized'
-      }, { status: 401 });
-    }
-    
-    // Get user data from token
-    const userData = await getDataFromToken(request, token);
+    // Get user data from token (automatically checks Authorization header and cookies)
+    const userData = await getDataFromToken(request);
     console.log("Instagram check: User data from token:", userData ? "Found" : "Not found");
-    
+
     if (!userData) {
       console.log("Instagram check: Invalid token");
       return NextResponse.json({ 
