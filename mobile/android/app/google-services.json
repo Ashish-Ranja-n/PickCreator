@@ -1,41 +1,41 @@
 {
   "project_info": {
-    "project_number": "123456789012",
+    "project_number": "161161982096",
     "project_id": "pickcreator-mobile",
     "storage_bucket": "pickcreator-mobile.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:123456789012:android:abcdef1234567890abcdef",
+        "mobilesdk_app_id": "1:161161982096:android:4bm6eb44dpp6eb4ec32ovlkuhure",
         "android_client_info": {
           "package_name": "com.pickcreator.pickcreator_mobile"
         }
       },
       "oauth_client": [
         {
-          "client_id": "123456789012-abcdefghijklmnopqrstuvwxyz123456.apps.googleusercontent.com",
+          "client_id": "161161982096-4bm6eb44dpp6eb4ec32ovlkuhure.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.pickcreator.pickcreator_mobile",
-            "certificate_hash": "abcdefghijklmnopqrstuvwxyz1234567890abcdef"
+            "certificate_hash": "550a69a6233cec9ffdfef0483d88399ffdb96fc1"
           }
         },
         {
-          "client_id": "123456789012-abcdefghijklmnopqrstuvwxyz123456.apps.googleusercontent.com",
+          "client_id": "161161982096-7hd225g7d9079cm3agd2e0v6s4koret9.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAbCdEfGhIjKlMnOpQrStUvWxYz1234567"
+          "current_key": "AIzaSyC4B5FD6GhIjKlMnOpQrStUvWxYz1234567"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "123456789012-abcdefghijklmnopqrstuvwxyz123456.apps.googleusercontent.com",
+              "client_id": "161161982096-7hd225g7d9079cm3agd2e0v6s4koret9.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

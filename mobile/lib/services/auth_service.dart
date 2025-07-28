@@ -192,8 +192,13 @@ class AuthService {
   // Google Sign In
   static Future<Map<String, dynamic>> signInWithGoogle() async {
     try {
+      // Configure Google Sign-In with proper client ID
       final GoogleSignIn googleSignIn = GoogleSignIn(
         scopes: ['email', 'profile'],
+        // Use the WEB client ID from Google Cloud Console (NOT the Android client ID)
+        // This is the same client ID used by your web app
+        serverClientId:
+            '161161982096-7hd225g7d9079cm3agd2e0v6s4koret9.apps.googleusercontent.com',
       );
 
       // Sign out first to ensure fresh sign-in
@@ -218,10 +223,16 @@ class AuthService {
       // Send the access token to your backend mobile endpoint
       final response = await http.post(
         Uri.parse('${AppConfig.apiBaseUrl}/auth/google/mobile'),
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
         body: json.encode({
           'accessToken': googleAuth.accessToken,
           'idToken': googleAuth.idToken,
+          'email': googleUser.email,
+          'displayName': googleUser.displayName,
+          'photoUrl': googleUser.photoUrl,
         }),
       );
 
@@ -245,13 +256,30 @@ class AuthService {
           };
         }
       } else {
-        final errorData = json.decode(response.body);
-        return {
-          'success': false,
-          'message':
-              errorData['message'] ?? 'Server error during Google sign-in',
-        };
+        try {
+          final errorData = json.decode(response.body);
+          return {
+            'success': false,
+            'message':
+                errorData['message'] ?? 'Server error during Google sign-in',
+          };
+        } catch (parseError) {
+          return {
+            'success': false,
+            'message': 'Server error: ${response.statusCode}',
+          };
+        }
       }
+    } on FormatException {
+      return {
+        'success': false,
+        'message': 'Invalid response format from server',
+      };
+    } on http.ClientException {
+      return {
+        'success': false,
+        'message': 'Connection failed. Please check your internet connection.',
+      };
     } catch (e) {
       return {
         'success': false,

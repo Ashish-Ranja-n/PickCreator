@@ -46,3 +46,18 @@ next-env.d.ts
 
 .vercel
 .env*.local
+
+# Flutter/Mobile App
+mobile/android/app/google-services.json
+mobile/ios/Runner/GoogleService-Info.plist
+mobile/android/key.properties
+mobile/android/app/upload-keystore.jks
+mobile/android/app/release-keystore.jks
+mobile/.flutter-plugins
+mobile/.flutter-plugins-dependencies
+mobile/.dart_tool/
+mobile/build/
+mobile/ios/Pods/
+mobile/ios/.symlinks/
+mobile/ios/Flutter/Flutter.framework
+mobile/ios/Flutter/Flutter.podspec
