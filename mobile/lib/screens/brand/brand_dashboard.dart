@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../../config/app_config.dart';
 import '../../main.dart';
 import '../../models/user_model.dart';
 import '../../services/brand_service.dart';
+import '../../providers/theme_provider.dart';
 import '../../widgets/brand/influencer_card.dart';
 import '../../widgets/brand/connect_request_dialog.dart';
 import '../../widgets/brand/deal_card.dart';
@@ -29,24 +29,51 @@ class _BrandDashboardState extends State<BrandDashboard> {
     const BrandProfileTab(),
   ];
 
+  String _getAppBarTitle() {
+    return 'pickcreator | studio';
+  }
+
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context);
-    final user = authProvider.user;
-
     return Scaffold(
       backgroundColor: const Color(0xFFF9FAF9), // Light gray-green background
       appBar: AppBar(
-        backgroundColor: Colors.white,
         elevation: 0,
-        title: Text(
-          'Welcome, ${user?.name ?? 'Brand'}',
-          style: const TextStyle(
-            color: Color(AppConfig.darkBlueGray),
-            fontWeight: FontWeight.bold,
+        title: Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            _getAppBarTitle(),
+            style: TextStyle(
+              color: Theme.of(context).textTheme.headlineMedium?.color,
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
           ),
         ),
         actions: [
+          // Dark mode toggle
+          Consumer<ThemeProvider>(
+            builder: (context, themeProvider, child) {
+              return IconButton(
+                icon: Icon(
+                  themeProvider.isDarkMode
+                      ? Icons.light_mode_outlined
+                      : Icons.dark_mode_outlined,
+                ),
+                onPressed: () {
+                  themeProvider.toggleTheme();
+                },
+                tooltip: themeProvider.isDarkMode ? 'Light Mode' : 'Dark Mode',
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.notifications_outlined),
+            onPressed: () {
+              // TODO: Navigate to notifications
+            },
+          ),
+          // Chat button moved to Instagram-style position (replacing 3-dot menu)
           IconButton(
             icon: const Icon(Icons.chat_bubble_outline),
             onPressed: () {
@@ -58,71 +85,9 @@ class _BrandDashboardState extends State<BrandDashboard> {
               );
             },
           ),
-          IconButton(
-            icon: const Icon(Icons.notifications_outlined),
-            onPressed: () {
-              // TODO: Navigate to notifications
-            },
-          ),
-          PopupMenuButton<String>(
-            onSelected: (value) async {
-              if (value == 'logout') {
-                await authProvider.logout();
-                if (mounted) {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const WelcomeScreen(),
-                    ),
-                    (route) => false,
-                  );
-                }
-              }
-            },
-            itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: 'logout',
-                child: Row(
-                  children: [
-                    Icon(Icons.logout),
-                    SizedBox(width: 8),
-                    Text('Logout'),
-                  ],
-                ),
-              ),
-            ],
-          ),
         ],
       ),
-      body: Stack(
-        children: [
-          _pages[_selectedIndex],
-
-          // Floating Contact Buttons
-          Positioned(
-            bottom: 100,
-            right: 16,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                FloatingActionButton(
-                  heroTag: "call",
-                  onPressed: () => _makePhoneCall(),
-                  backgroundColor: const Color(AppConfig.primaryOrange),
-                  child: const Icon(Icons.phone, color: Colors.white),
-                ),
-                const SizedBox(height: 12),
-                FloatingActionButton(
-                  heroTag: "whatsapp",
-                  onPressed: () => _openWhatsApp(),
-                  backgroundColor: const Color(0xFF25D366), // WhatsApp green
-                  child: const Icon(Icons.chat, color: Colors.white),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+      body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: (index) => setState(() => _selectedIndex = index),
@@ -140,68 +105,6 @@ class _BrandDashboardState extends State<BrandDashboard> {
         ],
       ),
     );
-  }
-
-  Future<void> _makePhoneCall() async {
-    const phoneNumber = '+917301677612';
-    final Uri phoneUri = Uri(scheme: 'tel', path: phoneNumber);
-
-    try {
-      if (await canLaunchUrl(phoneUri)) {
-        await launchUrl(phoneUri);
-      } else {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Could not launch phone app'),
-              backgroundColor: Colors.red,
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
-        }
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Error making phone call'),
-            backgroundColor: Colors.red,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
-    }
-  }
-
-  Future<void> _openWhatsApp() async {
-    const phoneNumber = '917301677612';
-    final Uri whatsappUri = Uri.parse('https://wa.me/$phoneNumber');
-
-    try {
-      if (await canLaunchUrl(whatsappUri)) {
-        await launchUrl(whatsappUri, mode: LaunchMode.externalApplication);
-      } else {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Could not open WhatsApp'),
-              backgroundColor: Colors.red,
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
-        }
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Error opening WhatsApp'),
-            backgroundColor: Colors.red,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
-    }
   }
 }
 
@@ -550,8 +453,6 @@ class _BrandInfluencersTabState extends State<BrandInfluencersTab> {
   int _currentPage = 1;
   bool _hasMoreData = true;
   final _scrollController = ScrollController();
-  final _searchController = TextEditingController();
-  String _searchQuery = '';
 
   @override
   void initState() {
@@ -563,7 +464,6 @@ class _BrandInfluencersTabState extends State<BrandInfluencersTab> {
   @override
   void dispose() {
     _scrollController.dispose();
-    _searchController.dispose();
     super.dispose();
   }
 
@@ -587,10 +487,7 @@ class _BrandInfluencersTabState extends State<BrandInfluencersTab> {
     }
 
     try {
-      final result = await BrandService.getInfluencers(
-        page: _currentPage,
-        search: _searchQuery.isNotEmpty ? _searchQuery : null,
-      );
+      final result = await BrandService.getInfluencers(page: _currentPage);
 
       if (result['success']) {
         final newInfluencers = result['influencers'] as List<InfluencerInfo>;
@@ -602,7 +499,9 @@ class _BrandInfluencersTabState extends State<BrandInfluencersTab> {
           } else {
             _influencers.addAll(newInfluencers);
           }
-          _hasMoreData = pagination['hasNextPage'] ?? false;
+          // Check if there are more pages available
+          final totalPages = pagination['totalPages'] ?? 0;
+          _hasMoreData = _currentPage < totalPages;
           _isLoading = false;
           _isLoadingMore = false;
           _error = null;
@@ -628,23 +527,10 @@ class _BrandInfluencersTabState extends State<BrandInfluencersTab> {
 
     setState(() {
       _isLoadingMore = true;
-      _currentPage++;
     });
 
+    _currentPage++;
     await _loadInfluencers();
-  }
-
-  void _onSearchChanged(String query) {
-    setState(() {
-      _searchQuery = query;
-    });
-
-    // Debounce search
-    Future.delayed(const Duration(milliseconds: 500), () {
-      if (_searchQuery == query) {
-        _loadInfluencers(refresh: true);
-      }
-    });
   }
 
   Future<void> _showConnectDialog(InfluencerInfo influencer) async {
@@ -714,59 +600,7 @@ class _BrandInfluencersTabState extends State<BrandInfluencersTab> {
   Widget build(BuildContext context) {
     return RefreshIndicator(
       onRefresh: () => _loadInfluencers(refresh: true),
-      child: Column(
-        children: [
-          // Header section
-          Container(
-            padding: const EdgeInsets.all(16),
-            color: Colors.white,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Hire individual influencers!',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Color(AppConfig.darkBlueGray),
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                // Search bar
-                TextField(
-                  controller: _searchController,
-                  onChanged: _onSearchChanged,
-                  decoration: InputDecoration(
-                    hintText: 'Search influencers...',
-                    prefixIcon: const Icon(Icons.search),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.grey.shade300),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.grey.shade300),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(
-                        color: Color(AppConfig.primaryOrange),
-                        width: 2,
-                      ),
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey.shade50,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Content
-          Expanded(child: _buildContent()),
-        ],
-      ),
+      child: _buildContent(),
     );
   }
 
@@ -819,31 +653,58 @@ class _BrandInfluencersTabState extends State<BrandInfluencersTab> {
       );
     }
 
-    return ListView.builder(
+    return CustomScrollView(
       controller: _scrollController,
-      padding: const EdgeInsets.all(16),
-      itemCount: _influencers.length + (_hasMoreData ? 1 : 0),
-      itemBuilder: (context, index) {
-        if (index == _influencers.length) {
-          return const Padding(
-            padding: EdgeInsets.all(16),
-            child: Center(
-              child: CircularProgressIndicator(
-                color: Color(AppConfig.primaryOrange),
+      physics: const BouncingScrollPhysics(),
+      cacheExtent: 1000, // Cache more items for smoother scrolling
+      slivers: [
+        // Header
+        SliverToBoxAdapter(
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+            child: const Text(
+              'Hire individual influencers!',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF1A1A1A),
+                letterSpacing: -0.5,
               ),
             ),
-          );
-        }
-
-        final influencer = _influencers[index];
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 16),
-          child: InfluencerCard(
-            influencer: influencer,
-            onConnect: () => _showConnectDialog(influencer),
           ),
-        );
-      },
+        ),
+        // Influencers List
+        SliverPadding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          sliver: SliverList.builder(
+            itemCount:
+                _influencers.length + (_hasMoreData && _isLoadingMore ? 1 : 0),
+            itemBuilder: (context, index) {
+              if (index == _influencers.length) {
+                // Loading indicator for infinite scroll
+                return Container(
+                  padding: const EdgeInsets.all(16),
+                  child: const Center(
+                    child: CircularProgressIndicator(
+                      color: Color(AppConfig.primaryOrange),
+                      strokeWidth: 2,
+                    ),
+                  ),
+                );
+              }
+
+              final influencer = _influencers[index];
+              return Container(
+                margin: const EdgeInsets.only(bottom: 16),
+                child: InfluencerCard(
+                  influencer: influencer,
+                  onConnect: () => _showConnectDialog(influencer),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }
@@ -855,33 +716,14 @@ class BrandDealsTab extends StatefulWidget {
   State<BrandDealsTab> createState() => _BrandDealsTabState();
 }
 
-class _BrandDealsTabState extends State<BrandDealsTab>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+class _BrandDealsTabState extends State<BrandDealsTab> {
   List<DealModel> _deals = [];
   bool _isLoading = true;
   String? _error;
-  String _selectedTab = 'all';
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
-    _tabController.addListener(_onTabChanged);
-    _loadDeals();
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
-
-  void _onTabChanged() {
-    final tabs = ['all', 'requested', 'ongoing', 'completed'];
-    setState(() {
-      _selectedTab = tabs[_tabController.index];
-    });
     _loadDeals();
   }
 
@@ -898,12 +740,9 @@ class _BrandDealsTabState extends State<BrandDealsTab>
 
       if (result['success']) {
         final allDeals = result['deals'] as List<DealModel>;
-        final filteredDeals = _selectedTab == 'all'
-            ? allDeals
-            : allDeals.where((deal) => deal.status == _selectedTab).toList();
 
         setState(() {
-          _deals = filteredDeals;
+          _deals = allDeals;
           _isLoading = false;
           _error = null;
         });
@@ -1040,7 +879,7 @@ class _BrandDealsTabState extends State<BrandDealsTab>
         builder: (context) => BrandChatScreen(
           conversationId: null, // Will be created if needed
           dealId: deal.id,
-          influencerName: deal.influencerInfo?.name,
+          influencerName: deal.firstInfluencer?.name,
         ),
       ),
     );
@@ -1063,88 +902,41 @@ class _BrandDealsTabState extends State<BrandDealsTab>
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        // Header
-        Container(
-          padding: const EdgeInsets.all(16),
-          color: Colors.white,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  const Text(
-                    'MY deals',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Color(AppConfig.darkBlueGray),
-                    ),
-                  ),
-                  const Spacer(),
-                  TextButton.icon(
-                    onPressed: () => _loadDeals(refresh: true),
-                    icon: _isLoading
-                        ? const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Color(AppConfig.primaryBlue),
-                            ),
-                          )
-                        : const Icon(
-                            Icons.refresh,
-                            size: 16,
-                            color: Color(AppConfig.primaryBlue),
-                          ),
-                    label: const Text(
-                      'refresh',
-                      style: TextStyle(
-                        color: Color(AppConfig.primaryBlue),
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 16),
-
-              // Tab bar
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
-                  borderRadius: BorderRadius.circular(12),
+    return Container(
+      color: const Color(0xFFFAFBFC),
+      child: Column(
+        children: [
+          // Header
+          Container(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Color(0x0A000000),
+                  blurRadius: 8,
+                  offset: Offset(0, 2),
                 ),
-                child: TabBar(
-                  controller: _tabController,
-                  indicator: BoxDecoration(
-                    color: const Color(AppConfig.primaryOrange),
-                    borderRadius: BorderRadius.circular(12),
+              ],
+            ),
+            child: Row(
+              children: [
+                const Text(
+                  'My deals',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF1A1A1A),
+                    letterSpacing: -0.5,
                   ),
-                  labelColor: Colors.white,
-                  unselectedLabelColor: Colors.grey[600],
-                  labelStyle: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  tabs: const [
-                    Tab(text: 'All'),
-                    Tab(text: 'Requested'),
-                    Tab(text: 'Ongoing'),
-                    Tab(text: 'Completed'),
-                  ],
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-
-        // Content
-        Expanded(child: _buildContent()),
-      ],
+          // Content
+          Expanded(child: _buildContent()),
+        ],
+      ),
     );
   }
 
@@ -1157,61 +949,116 @@ class _BrandDealsTabState extends State<BrandDealsTab>
 
     if (_error != null && _deals.isEmpty) {
       return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.error_outline, size: 64, color: Colors.grey[400]),
-            const SizedBox(height: 16),
-            Text(
-              _error!,
-              style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () => _loadDeals(refresh: true),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(AppConfig.primaryOrange),
-                foregroundColor: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: Colors.red.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.error_outline_rounded,
+                  size: 48,
+                  color: Colors.red[400],
+                ),
               ),
-              child: const Text('Retry'),
-            ),
-          ],
+              const SizedBox(height: 24),
+              Text(
+                _error!,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF1A1A1A),
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: () => _loadDeals(refresh: true),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(AppConfig.primaryOrange),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32,
+                    vertical: 12,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 0,
+                ),
+                child: const Text(
+                  'Try Again',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                ),
+              ),
+            ],
+          ),
         ),
       );
     }
 
     if (_deals.isEmpty) {
       return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.handshake_outlined, size: 64, color: Colors.grey[400]),
-            const SizedBox(height: 16),
-            Text(
-              'No deals found',
-              style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Start connecting with influencers to see deals here',
-              style: TextStyle(fontSize: 14, color: Colors.grey[500]),
-              textAlign: TextAlign.center,
-            ),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: const Color(
+                    AppConfig.primaryOrange,
+                  ).withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.handshake_outlined,
+                  size: 48,
+                  color: const Color(AppConfig.primaryOrange),
+                ),
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                'No deals found',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF1A1A1A),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Start connecting with influencers to see deals here',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey[600],
+                  height: 1.4,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
       );
     }
 
     return RefreshIndicator(
       onRefresh: () => _loadDeals(refresh: true),
+      color: const Color(AppConfig.primaryOrange),
+      backgroundColor: Colors.white,
       child: ListView.builder(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
         itemCount: _deals.length,
         itemBuilder: (context, index) {
           final deal = _deals[index];
           return Padding(
-            padding: const EdgeInsets.only(bottom: 16),
+            padding: const EdgeInsets.only(bottom: 20),
             child: DealCard(
               deal: deal,
               onDealAction: (action, {data}) =>
@@ -1327,36 +1174,40 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
 
     return RefreshIndicator(
       onRefresh: _loadBrandProfile,
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Profile Header
-            _buildProfileHeader(),
+      child: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFFF9FAF9), Color(0xFFFFFFFF)],
+          ),
+        ),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Profile Header
+              _buildProfileHeader(),
 
-            const SizedBox(height: 24),
+              const SizedBox(height: 28),
 
-            // Company Information
-            _buildCompanyInfo(),
+              // Company Information
+              _buildCompanyInfo(),
 
-            const SizedBox(height: 24),
+              const SizedBox(height: 28),
 
-            // Settings Section
-            _buildSettingsSection(),
+              // Settings Section
+              _buildSettingsSection(),
 
-            const SizedBox(height: 24),
+              const SizedBox(height: 28),
 
-            // Analytics Section
-            _buildAnalyticsSection(),
+              // Analytics Section
+              _buildAnalyticsSection(),
 
-            const SizedBox(height: 32),
-
-            // Logout Button
-            _buildLogoutButton(),
-
-            const SizedBox(height: 32),
-          ],
+              const SizedBox(height: 40),
+            ],
+          ),
         ),
       ),
     );
@@ -1364,28 +1215,42 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
 
   Widget _buildProfileHeader() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
             const Color(AppConfig.primaryOrange),
-            const Color(AppConfig.primaryOrange).withValues(alpha: 0.8),
+            const Color(AppConfig.primaryOrange).withValues(alpha: 0.85),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(AppConfig.primaryOrange).withValues(alpha: 0.3),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       child: Column(
         children: [
           // Profile Avatar
           Container(
-            width: 80,
-            height: 80,
+            width: 90,
+            height: 90,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: Colors.white,
-              border: Border.all(color: Colors.white, width: 3),
+              border: Border.all(color: Colors.white, width: 4),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.1),
+                  blurRadius: 15,
+                  offset: const Offset(0, 5),
+                ),
+              ],
             ),
             child: ClipOval(
               child: _brandProfile?.avatar != null
@@ -1399,28 +1264,49 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
             ),
           ),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
 
           // Brand Name
           Text(
             _brandProfile?.companyName ?? 'Brand Name',
             style: const TextStyle(
-              fontSize: 24,
+              fontSize: 26,
               fontWeight: FontWeight.bold,
               color: Colors.white,
+              letterSpacing: 0.5,
             ),
             textAlign: TextAlign.center,
           ),
 
+          const SizedBox(height: 8),
+
           // Location
           if (_brandProfile?.location != null)
-            Text(
-              _brandProfile!.location!,
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.white.withValues(alpha: 0.9),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(20),
               ),
-              textAlign: TextAlign.center,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.location_on,
+                    size: 16,
+                    color: Colors.white.withValues(alpha: 0.9),
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    _brandProfile!.location!,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.white.withValues(alpha: 0.9),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
             ),
         ],
       ),
@@ -1457,31 +1343,50 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
 
   Widget _buildCompanyInfo() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Company Information',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Color(AppConfig.darkBlueGray),
-            ),
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(
+                    AppConfig.primaryOrange,
+                  ).withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(
+                  Icons.business,
+                  color: Color(AppConfig.primaryOrange),
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              const Text(
+                'Company Information',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color(AppConfig.darkBlueGray),
+                ),
+              ),
+            ],
           ),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
 
           _buildInfoRow(
             Icons.business,
@@ -1502,15 +1407,27 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
           ),
 
           _buildInfoRow(
+            Icons.email,
+            'Email',
+            _brandProfile?.email ?? 'Not specified',
+          ),
+
+          _buildInfoRow(
+            Icons.phone,
+            'Phone',
+            _brandProfile?.phoneNumber ?? 'Not specified',
+          ),
+
+          _buildInfoRow(
             Icons.language,
             'Website',
-            'Not specified', // TODO: Add website field to BrandInfo
+            _brandProfile?.website ?? 'Not specified',
           ),
 
           _buildInfoRow(
             Icons.description,
             'Description',
-            'No description available', // TODO: Add description field to BrandInfo
+            _brandProfile?.bio ?? 'No description available',
             isMultiline: true,
           ),
         ],
@@ -1524,13 +1441,32 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
     String value, {
     bool isMultiline = false,
   }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8F9FA),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE9ECEF), width: 1),
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 20, color: const Color(AppConfig.primaryOrange)),
-          const SizedBox(width: 12),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: const Color(
+                AppConfig.primaryOrange,
+              ).withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(
+              icon,
+              size: 18,
+              color: const Color(AppConfig.primaryOrange),
+            ),
+          ),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1538,17 +1474,19 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
                 Text(
                   label,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 13,
                     color: Colors.grey[600],
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.3,
                   ),
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: 6),
                 Text(
                   value,
                   style: const TextStyle(
-                    fontSize: 14,
+                    fontSize: 15,
                     color: Color(AppConfig.darkBlueGray),
+                    fontWeight: FontWeight.w500,
                   ),
                   maxLines: isMultiline ? null : 1,
                   overflow: isMultiline ? null : TextOverflow.ellipsis,
@@ -1633,6 +1571,10 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
               );
             },
           ),
+
+          const Divider(height: 32),
+
+          _buildLogoutItem(),
         ],
       ),
     );
@@ -1804,20 +1746,70 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
     );
   }
 
-  Widget _buildLogoutButton() {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton.icon(
-        onPressed: _logout,
-        icon: const Icon(Icons.logout),
-        label: const Text('Logout'),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.red,
-          foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
+  Widget _buildLogoutItem() {
+    return InkWell(
+      onTap: () {
+        // Show confirmation dialog
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Logout'),
+              content: const Text('Are you sure you want to logout?'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    _logout();
+                  },
+                  style: TextButton.styleFrom(foregroundColor: Colors.red),
+                  child: const Text('Logout'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.red.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(Icons.logout, size: 20, color: Colors.red),
+            ),
+            const SizedBox(width: 12),
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Logout',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.red,
+                    ),
+                  ),
+                  SizedBox(height: 2),
+                  Text(
+                    'Sign out of your account',
+                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+          ],
         ),
       ),
     );

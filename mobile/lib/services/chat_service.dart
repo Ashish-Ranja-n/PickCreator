@@ -12,8 +12,15 @@ class ChatService {
         return {'success': false, 'message': 'Not authenticated'};
       }
 
+      // Get user ID from token
+      final userData = await AuthService.getUserData();
+      if (userData == null || userData.id == null) {
+        return {'success': false, 'message': 'User data not found'};
+      }
+
+      final userId = userData.id;
       final response = await http.get(
-        Uri.parse('${AppConfig.apiBaseUrl}/conversations'),
+        Uri.parse('${AppConfig.apiBaseUrl}/conversation/$userId'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
@@ -40,9 +47,7 @@ class ChatService {
       }
 
       final response = await http.get(
-        Uri.parse(
-          '${AppConfig.apiBaseUrl}/conversations/$conversationId/messages',
-        ),
+        Uri.parse('${AppConfig.apiBaseUrl}/messages/$conversationId'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
@@ -51,7 +56,7 @@ class ChatService {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        return {'success': true, 'messages': data};
+        return {'success': true, 'data': data};
       } else {
         return {'success': false, 'message': 'Failed to fetch messages'};
       }
@@ -72,15 +77,23 @@ class ChatService {
         return {'success': false, 'message': 'Not authenticated'};
       }
 
+      // Get user ID for sender
+      final userData = await AuthService.getUserData();
+      if (userData == null || userData.id == null) {
+        return {'success': false, 'message': 'User data not found'};
+      }
+
       final response = await http.post(
-        Uri.parse(
-          '${AppConfig.apiBaseUrl}/conversations/$conversationId/messages',
-        ),
+        Uri.parse('${AppConfig.apiBaseUrl}/messages'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
         },
-        body: jsonEncode({'message': message, 'type': type ?? 'text'}),
+        body: jsonEncode({
+          'conversationId': conversationId,
+          'sender': userData.id,
+          'text': message,
+        }),
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -199,14 +212,21 @@ class ChatService {
         return {'success': false, 'message': 'Not authenticated'};
       }
 
+      // Get current user ID
+      final userData = await AuthService.getUserData();
+      if (userData == null || userData.id == null) {
+        return {'success': false, 'message': 'User data not found'};
+      }
+
       final response = await http.post(
-        Uri.parse('${AppConfig.apiBaseUrl}/conversations'),
+        Uri.parse('${AppConfig.apiBaseUrl}/conversation/initiate'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
         },
         body: jsonEncode({
-          'participantId': participantId,
+          'currentUserId': userData.id,
+          'otherUserId': participantId,
           'initialMessage': initialMessage,
         }),
       );
@@ -230,50 +250,46 @@ class ChatService {
 // Message Model
 class MessageModel {
   final String? id;
-  final String? conversationId;
-  final String? senderId;
-  final String? message;
-  final String? type;
-  final DateTime? timestamp;
-  final bool? isRead;
-  final Map<String, dynamic>? senderInfo;
+  final String? conversation;
+  final String? sender;
+  final String? text;
+  final List<dynamic>? media;
+  final DateTime? createdAt;
+  final List<String>? seenBy;
 
   MessageModel({
     this.id,
-    this.conversationId,
-    this.senderId,
-    this.message,
-    this.type,
-    this.timestamp,
-    this.isRead,
-    this.senderInfo,
+    this.conversation,
+    this.sender,
+    this.text,
+    this.media,
+    this.createdAt,
+    this.seenBy,
   });
 
   factory MessageModel.fromJson(Map<String, dynamic> json) {
     return MessageModel(
       id: json['_id'] ?? json['id'],
-      conversationId: json['conversationId'],
-      senderId: json['senderId'],
-      message: json['message'],
-      type: json['type'],
-      timestamp: json['timestamp'] != null
-          ? DateTime.parse(json['timestamp'])
+      conversation: json['conversation'],
+      sender: json['sender'],
+      text: json['text'],
+      media: json['media'],
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'])
           : null,
-      isRead: json['isRead'],
-      senderInfo: json['senderInfo'],
+      seenBy: json['seenBy'] != null ? List<String>.from(json['seenBy']) : null,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'conversationId': conversationId,
-      'senderId': senderId,
-      'message': message,
-      'type': type,
-      'timestamp': timestamp?.toIso8601String(),
-      'isRead': isRead,
-      'senderInfo': senderInfo,
+      'conversation': conversation,
+      'sender': sender,
+      'text': text,
+      'media': media,
+      'createdAt': createdAt?.toIso8601String(),
+      'seenBy': seenBy,
     };
   }
 }
@@ -281,46 +297,68 @@ class MessageModel {
 // Conversation Model
 class ConversationModel {
   final String? id;
-  final List<String>? participants;
-  final MessageModel? lastMessage;
+  final String? name;
+  final String? role;
+  final String? avatar;
+  final String? profilePictureUrl;
+  final String? lastMessage;
+  final DateTime? lastMessageTime;
+  final String? userId;
+  final int? unreadCount;
   final DateTime? updatedAt;
   final Map<String, dynamic>? participantInfo;
-  final int? unreadCount;
 
   ConversationModel({
     this.id,
-    this.participants,
+    this.name,
+    this.role,
+    this.avatar,
+    this.profilePictureUrl,
     this.lastMessage,
+    this.lastMessageTime,
+    this.userId,
+    this.unreadCount,
     this.updatedAt,
     this.participantInfo,
-    this.unreadCount,
   });
 
   factory ConversationModel.fromJson(Map<String, dynamic> json) {
     return ConversationModel(
       id: json['_id'] ?? json['id'],
-      participants: json['participants'] != null
-          ? List<String>.from(json['participants'])
+      name: json['name'],
+      role: json['role'],
+      avatar: json['avatar'],
+      profilePictureUrl: json['profilePictureUrl'],
+      lastMessage: json['lastMessage'],
+      lastMessageTime: json['lastMessageTime'] != null
+          ? DateTime.parse(json['lastMessageTime'])
           : null,
-      lastMessage: json['lastMessage'] != null
-          ? MessageModel.fromJson(json['lastMessage'])
-          : null,
-      updatedAt: json['updatedAt'] != null
-          ? DateTime.parse(json['updatedAt'])
-          : null,
-      participantInfo: json['participantInfo'],
+      userId: json['userId'],
       unreadCount: json['unreadCount'],
+      updatedAt: json['lastMessageTime'] != null
+          ? DateTime.parse(json['lastMessageTime'])
+          : null,
+      participantInfo: {
+        'name': json['name'],
+        'role': json['role'],
+        'avatar': json['avatar'],
+        'userId': json['userId'],
+      },
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'participants': participants,
-      'lastMessage': lastMessage?.toJson(),
-      'updatedAt': updatedAt?.toIso8601String(),
-      'participantInfo': participantInfo,
+      'name': name,
+      'role': role,
+      'avatar': avatar,
+      'profilePictureUrl': profilePictureUrl,
+      'lastMessage': lastMessage,
+      'lastMessageTime': lastMessageTime?.toIso8601String(),
+      'userId': userId,
       'unreadCount': unreadCount,
+      'participantInfo': participantInfo,
     };
   }
 }

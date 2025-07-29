@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'config/app_config.dart';
 import 'services/auth_service.dart';
+import 'providers/theme_provider.dart';
 import 'screens/auth/welcome_screen.dart';
 import 'screens/auth/role_selection_screen.dart';
 import 'screens/brand/brand_dashboard.dart';
@@ -33,36 +34,29 @@ class PickCreatorApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => AuthProvider())],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: AppConfig.appName,
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-          primaryColor: Color(AppConfig.primaryBlue),
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: Color(AppConfig.primaryBlue),
-            primary: Color(AppConfig.primaryBlue),
-          ),
-          useMaterial3: true,
-          appBarTheme: const AppBarTheme(
-            backgroundColor: Colors.white,
-            foregroundColor: Colors.black,
-            elevation: 0,
-            systemOverlayStyle: SystemUiOverlayStyle(
-              statusBarColor: Colors.transparent,
-              statusBarIconBrightness: Brightness.dark,
-            ),
-          ),
-          scaffoldBackgroundColor: Colors.white,
-        ),
-        home: const AuthWrapper(),
-        routes: {
-          '/welcome': (context) => const WelcomeScreen(),
-          '/role-selection': (context) => const RoleSelectionScreen(),
-          '/brand-dashboard': (context) => const BrandDashboard(),
-          '/influencer-dashboard': (context) => const InfluencerDashboard(),
-          '/admin-dashboard': (context) => const AdminDashboard(),
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+      ],
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, child) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: AppConfig.appName,
+            theme: themeProvider.lightTheme,
+            darkTheme: themeProvider.darkTheme,
+            themeMode: themeProvider.isDarkMode
+                ? ThemeMode.dark
+                : ThemeMode.light,
+            home: const AuthWrapper(),
+            routes: {
+              '/welcome': (context) => const WelcomeScreen(),
+              '/role-selection': (context) => const RoleSelectionScreen(),
+              '/brand-dashboard': (context) => const BrandDashboard(),
+              '/influencer-dashboard': (context) => const InfluencerDashboard(),
+              '/admin-dashboard': (context) => const AdminDashboard(),
+            },
+          );
         },
       ),
     );

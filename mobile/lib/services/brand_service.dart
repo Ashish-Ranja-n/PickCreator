@@ -5,7 +5,7 @@ import '../models/user_model.dart';
 import 'auth_service.dart';
 
 class BrandService {
-  // Get brand dashboard stats
+  // Get brand dashboard stats by aggregating deals data
   static Future<Map<String, dynamic>> getDashboardStats() async {
     try {
       final token = await AuthService.getToken();
@@ -13,23 +13,58 @@ class BrandService {
         return {'success': false, 'message': 'Not authenticated'};
       }
 
-      final response = await http.get(
-        Uri.parse('${AppConfig.apiBaseUrl}/brand/dashboard-stats'),
+      // Get deals data to calculate stats
+      final dealsResponse = await http.get(
+        Uri.parse('${AppConfig.apiBaseUrl}/deals'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
         },
       );
 
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        return {'success': true, 'data': data};
-      } else {
-        return {
-          'success': false,
-          'message': 'Failed to fetch dashboard stats',
-        };
+      if (dealsResponse.statusCode == 200) {
+        final dealsData = jsonDecode(dealsResponse.body);
+        if (dealsData['success']) {
+          final deals = dealsData['deals'] as List;
+
+          // Calculate stats from deals
+          final activeDeals = deals
+              .where(
+                (deal) =>
+                    deal['status'] == 'ongoing' ||
+                    deal['status'] == 'accepted' ||
+                    deal['status'] == 'content_approved',
+              )
+              .length;
+
+          final completedDeals = deals
+              .where((deal) => deal['status'] == 'completed')
+              .length;
+
+          final totalSpent = deals
+              .where((deal) => deal['status'] == 'completed')
+              .fold(0.0, (sum, deal) => sum + (deal['totalAmount'] ?? 0.0));
+
+          final totalInfluencers = deals
+              .expand((deal) => deal['influencers'] ?? [])
+              .map((inf) => inf['id'])
+              .toSet()
+              .length;
+
+          return {
+            'success': true,
+            'data': {
+              'activeDeals': activeDeals,
+              'completedDeals': completedDeals,
+              'totalSpent': totalSpent,
+              'totalInfluencers': totalInfluencers,
+              'totalCampaigns': deals.length,
+            },
+          };
+        }
       }
+
+      return {'success': false, 'message': 'Failed to fetch dashboard stats'};
     } catch (e) {
       return {'success': false, 'message': 'Network error: $e'};
     }
@@ -51,18 +86,20 @@ class BrandService {
       final queryParams = <String, String>{
         'page': page.toString(),
         'limit': limit.toString(),
+        'sortBy': 'followers',
+        'sortOrder': 'desc',
       };
 
       if (search != null && search.isNotEmpty) {
-        queryParams['search'] = search;
+        queryParams['city'] = search; // Use city filter for search
       }
       if (location != null && location.isNotEmpty) {
-        queryParams['location'] = location;
+        queryParams['city'] = location; // Use city filter for location
       }
 
-      final uri = Uri.parse('${AppConfig.apiBaseUrl}/influencers').replace(
-        queryParameters: queryParams,
-      );
+      final uri = Uri.parse(
+        '${AppConfig.apiBaseUrl}/influencer/search',
+      ).replace(queryParameters: queryParams);
 
       final response = await http.get(
         uri,
@@ -74,18 +111,22 @@ class BrandService {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        return {
-          'success': true,
-          'influencers': (data['influencers'] as List)
-              .map((influencer) => InfluencerInfo.fromJson(influencer))
-              .toList(),
-          'pagination': data['pagination'],
-        };
+        if (data['success']) {
+          return {
+            'success': true,
+            'influencers': (data['influencers'] as List)
+                .map((influencer) => InfluencerInfo.fromJson(influencer))
+                .toList(),
+            'pagination': data['pagination'],
+          };
+        } else {
+          return {
+            'success': false,
+            'message': data['error'] ?? 'Failed to fetch influencers',
+          };
+        }
       } else {
-        return {
-          'success': false,
-          'message': 'Failed to fetch influencers',
-        };
+        return {'success': false, 'message': 'Failed to fetch influencers'};
       }
     } catch (e) {
       return {'success': false, 'message': 'Network error: $e'};
@@ -111,15 +152,37 @@ class BrandService {
           'Content-Type': 'application/json',
         },
         body: jsonEncode({
-          'influencerId': influencerId,
+          'dealType': 'single',
+          'dealName': 'Connect Request',
           'description': description,
-          'amount': amount,
+          'influencers': [
+            {
+              'id': influencerId,
+              'name': 'Influencer', // This will be updated by the backend
+              'profilePictureUrl': '',
+            },
+          ],
+          'payPerInfluencer': amount,
+          'totalAmount': amount,
+          'contentRequirements': {
+            'reels': 1,
+            'posts': 0,
+            'stories': 0,
+            'lives': 0,
+          },
         }),
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = jsonDecode(response.body);
-        return {'success': true, 'deal': DealModel.fromJson(data)};
+        if (data['success']) {
+          return {'success': true, 'deal': data['deal']};
+        } else {
+          return {
+            'success': false,
+            'message': data['error'] ?? 'Failed to send connect request',
+          };
+        }
       } else {
         final error = jsonDecode(response.body);
         return {
@@ -150,17 +213,21 @@ class BrandService {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        return {
-          'success': true,
-          'deals': (data as List)
-              .map((deal) => DealModel.fromJson(deal))
-              .toList(),
-        };
+        if (data['success']) {
+          return {
+            'success': true,
+            'deals': (data['deals'] as List)
+                .map((deal) => DealModel.fromJson(deal))
+                .toList(),
+          };
+        } else {
+          return {
+            'success': false,
+            'message': data['error'] ?? 'Failed to fetch deals',
+          };
+        }
       } else {
-        return {
-          'success': false,
-          'message': 'Failed to fetch deals',
-        };
+        return {'success': false, 'message': 'Failed to fetch deals'};
       }
     } catch (e) {
       return {'success': false, 'message': 'Network error: $e'};
@@ -216,7 +283,9 @@ class BrandService {
         return {'success': false, 'message': 'Not authenticated'};
       }
 
-      final endpoint = action == 'approve' ? 'approve-content' : 'reject-content';
+      final endpoint = action == 'approve'
+          ? 'approve-content'
+          : 'reject-content';
       final body = <String, dynamic>{'contentId': contentId};
       if (comment != null) {
         body['comment'] = comment;
@@ -264,11 +333,13 @@ class BrandService {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        return {'success': true, 'profile': data};
+        final brandInfo = BrandInfo.fromJson(data);
+        return {'success': true, 'profile': brandInfo};
       } else {
+        final error = jsonDecode(response.body);
         return {
           'success': false,
-          'message': 'Failed to fetch profile',
+          'message': error['error'] ?? 'Failed to fetch profile',
         };
       }
     } catch (e) {
@@ -286,7 +357,7 @@ class BrandService {
         return {'success': false, 'message': 'Not authenticated'};
       }
 
-      final response = await http.put(
+      final response = await http.patch(
         Uri.parse('${AppConfig.apiBaseUrl}/brand/profile'),
         headers: {
           'Authorization': 'Bearer $token',

@@ -32,6 +32,9 @@ class _BrandChatScreenState extends State<BrandChatScreen> {
   @override
   void initState() {
     super.initState();
+    _messageController.addListener(() {
+      setState(() {}); // Update send button state
+    });
     _loadConversation();
   }
 
@@ -54,8 +57,9 @@ class _BrandChatScreenState extends State<BrandChatScreen> {
         final result = await ChatService.getMessages(widget.conversationId!);
 
         if (result['success']) {
+          final data = result['data'];
           setState(() {
-            _messages = (result['messages'] as List)
+            _messages = (data['messages'] as List)
                 .map((m) => MessageModel.fromJson(m))
                 .toList();
             _isLoading = false;
@@ -309,11 +313,14 @@ class _BrandChatScreenState extends State<BrandChatScreen> {
 
     return ListView.builder(
       controller: _scrollController,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+      physics: const BouncingScrollPhysics(),
+      reverse: true, // Show newest messages at bottom
       itemCount: _messages.length,
       itemBuilder: (context, index) {
-        final message = _messages[index];
-        final isMe = message.senderId == currentUserId;
+        final reversedIndex = _messages.length - 1 - index;
+        final message = _messages[reversedIndex];
+        final isMe = message.sender == currentUserId;
 
         return _buildMessageBubble(message, isMe);
       },
@@ -377,7 +384,7 @@ class _BrandChatScreenState extends State<BrandChatScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    message.message ?? '',
+                    message.text ?? '',
                     style: TextStyle(
                       fontSize: 14,
                       color: isMe
@@ -387,7 +394,7 @@ class _BrandChatScreenState extends State<BrandChatScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    _formatTime(message.timestamp),
+                    _formatTime(message.createdAt),
                     style: TextStyle(
                       fontSize: 10,
                       color: isMe
@@ -428,9 +435,10 @@ class _BrandChatScreenState extends State<BrandChatScreen> {
 
   Widget _buildMessageInput() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
       decoration: BoxDecoration(
         color: Colors.white,
+        border: Border(top: BorderSide(color: Colors.grey[200]!, width: 1)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
@@ -439,51 +447,103 @@ class _BrandChatScreenState extends State<BrandChatScreen> {
           ),
         ],
       ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Container(
+      child: SafeArea(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            // Attachment button
+            Container(
+              margin: const EdgeInsets.only(right: 8, bottom: 4),
               decoration: BoxDecoration(
                 color: Colors.grey[100],
-                borderRadius: BorderRadius.circular(25),
+                shape: BoxShape.circle,
               ),
-              child: TextField(
-                controller: _messageController,
-                decoration: const InputDecoration(
-                  hintText: 'Type a message...',
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
+              child: IconButton(
+                onPressed: () {
+                  // TODO: Add attachment functionality
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Attachment feature coming soon'),
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+                },
+                icon: Icon(
+                  Icons.attach_file,
+                  color: Colors.grey[600],
+                  size: 20,
                 ),
-                maxLines: null,
-                textCapitalization: TextCapitalization.sentences,
-                onSubmitted: (_) => _sendMessage(),
+                constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                padding: EdgeInsets.zero,
               ),
             ),
-          ),
-          const SizedBox(width: 12),
-          Container(
-            decoration: const BoxDecoration(
-              color: Color(AppConfig.primaryOrange),
-              shape: BoxShape.circle,
+            // Message input
+            Expanded(
+              child: Container(
+                constraints: const BoxConstraints(maxHeight: 120),
+                decoration: BoxDecoration(
+                  color: Colors.grey[50],
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.grey[300]!, width: 1),
+                ),
+                child: TextField(
+                  controller: _messageController,
+                  decoration: InputDecoration(
+                    hintText: 'Type a message...',
+                    hintStyle: TextStyle(color: Colors.grey[500], fontSize: 15),
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 10,
+                    ),
+                  ),
+                  maxLines: null,
+                  minLines: 1,
+                  textCapitalization: TextCapitalization.sentences,
+                  style: const TextStyle(fontSize: 15),
+                  onSubmitted: (_) => _sendMessage(),
+                ),
+              ),
             ),
-            child: IconButton(
-              onPressed: _isSending ? null : _sendMessage,
-              icon: _isSending
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
-                    )
-                  : const Icon(Icons.send, color: Colors.white, size: 20),
+            const SizedBox(width: 8),
+            // Send button
+            Container(
+              margin: const EdgeInsets.only(bottom: 4),
+              decoration: BoxDecoration(
+                color: _messageController.text.trim().isEmpty
+                    ? Colors.grey[400]
+                    : const Color(AppConfig.primaryOrange),
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(
+                      AppConfig.primaryOrange,
+                    ).withValues(alpha: 0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: IconButton(
+                onPressed: _isSending || _messageController.text.trim().isEmpty
+                    ? null
+                    : _sendMessage,
+                icon: _isSending
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : const Icon(Icons.send, color: Colors.white, size: 18),
+                constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+                padding: EdgeInsets.zero,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

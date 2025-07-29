@@ -35,6 +35,7 @@ class AppConfig {
   static const int primaryOrange = 0xFFFF9700;
   static const int lightPurple = 0xFFC4B5FD;
   static const int darkBlueGray = 0xFF283747;
+  static const int lightGrayGreen = 0xFFF9FAF9;
 
   // Socket Events
   static const String messageEvent = 'message';

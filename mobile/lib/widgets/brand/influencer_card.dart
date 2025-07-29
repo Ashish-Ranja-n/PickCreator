@@ -178,6 +178,39 @@ class InfluencerCard extends StatelessWidget {
 
               const SizedBox(height: 16),
 
+              // Pricing information
+              if (influencer.pricingModels?.fixedPricing?.enabled == true)
+                Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(
+                      AppConfig.primaryBlue,
+                    ).withValues(alpha: 0.05),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: const Color(
+                        AppConfig.primaryBlue,
+                      ).withValues(alpha: 0.1),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Pricing',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: Color(AppConfig.primaryBlue),
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      _buildPricingRow(),
+                    ],
+                  ),
+                ),
+
               // Connect button
               SizedBox(
                 width: double.infinity,
@@ -254,6 +287,67 @@ class InfluencerCard extends StatelessWidget {
       return '${(count / 1000).toStringAsFixed(1)}K';
     } else {
       return count.toString();
+    }
+  }
+
+  Widget _buildPricingRow() {
+    final pricing = influencer.pricingModels?.fixedPricing;
+    if (pricing == null) return const SizedBox.shrink();
+
+    final prices = <String, double?>{
+      'Story': pricing.storyPrice,
+      'Reel': pricing.reelPrice,
+      'Post': pricing.postPrice,
+      'Live': pricing.livePrice,
+    };
+
+    // Filter out null prices and get the first two available
+    final availablePrices = prices.entries
+        .where((entry) => entry.value != null && entry.value! > 0)
+        .take(2)
+        .toList();
+
+    if (availablePrices.isEmpty) {
+      return const Text(
+        'Pricing available on request',
+        style: TextStyle(
+          fontSize: 11,
+          color: Color(AppConfig.primaryBlue),
+          fontStyle: FontStyle.italic,
+        ),
+      );
+    }
+
+    return Wrap(
+      spacing: 8,
+      runSpacing: 4,
+      children: availablePrices.map((entry) {
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+            color: const Color(AppConfig.primaryBlue).withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Text(
+            '${entry.key}: ₹${_formatPrice(entry.value!)}',
+            style: const TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w500,
+              color: Color(AppConfig.primaryBlue),
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  String _formatPrice(double price) {
+    if (price >= 100000) {
+      return '${(price / 100000).toStringAsFixed(1)}L';
+    } else if (price >= 1000) {
+      return '${(price / 1000).toStringAsFixed(1)}K';
+    } else {
+      return price.toStringAsFixed(0);
     }
   }
 }

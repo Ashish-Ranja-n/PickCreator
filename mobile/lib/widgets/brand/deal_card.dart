@@ -58,9 +58,9 @@ class DealCard extends StatelessWidget {
                       border: Border.all(color: Colors.grey.shade200, width: 2),
                     ),
                     child: ClipOval(
-                      child: deal.influencerInfo?.avatar != null
+                      child: deal.firstInfluencer?.profilePictureUrl != null
                           ? Image.network(
-                              deal.influencerInfo!.avatar!,
+                              deal.firstInfluencer!.profilePictureUrl!,
                               fit: BoxFit.cover,
                               errorBuilder: (context, error, stackTrace) =>
                                   _buildDefaultAvatar(),
@@ -76,7 +76,7 @@ class DealCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          deal.influencerInfo?.name ?? 'Unknown Influencer',
+                          deal.firstInfluencer?.name ?? 'Unknown Influencer',
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -85,9 +85,9 @@ class DealCard extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        if (deal.influencerInfo?.location != null)
+                        if (deal.firstInfluencer?.city != null)
                           Text(
-                            deal.influencerInfo!.location!,
+                            deal.firstInfluencer!.city!,
                             style: TextStyle(
                               fontSize: 12,
                               color: Colors.grey[600],
@@ -164,7 +164,7 @@ class DealCard extends StatelessWidget {
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            deal.amount?.toStringAsFixed(0) ?? '0',
+                            deal.totalAmount?.toStringAsFixed(0) ?? '0',
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
@@ -176,47 +176,13 @@ class DealCard extends StatelessWidget {
                     ),
                   ),
 
-                  if (deal.deadline != null) ...[
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: const Color(
-                            AppConfig.primaryBlue,
-                          ).withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(
-                              Icons.schedule,
-                              size: 16,
-                              color: Color(AppConfig.primaryBlue),
-                            ),
-                            const SizedBox(width: 4),
-                            Expanded(
-                              child: Text(
-                                _formatDate(deal.deadline!),
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: Color(AppConfig.primaryBlue),
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
+                  // Deadline removed from new model
                 ],
               ),
 
               // Content submissions (for ongoing deals)
               if (deal.status == 'ongoing' &&
-                  deal.contentSubmissions?.isNotEmpty == true) ...[
+                  deal.submittedContent?.isNotEmpty == true) ...[
                 const SizedBox(height: 12),
                 _buildContentSubmissions(),
               ],
@@ -247,8 +213,8 @@ class DealCard extends StatelessWidget {
       ),
       child: Center(
         child: Text(
-          (deal.influencerInfo?.name?.isNotEmpty == true)
-              ? deal.influencerInfo!.name![0].toUpperCase()
+          (deal.firstInfluencer?.name?.isNotEmpty == true)
+              ? deal.firstInfluencer!.name![0].toUpperCase()
               : 'I',
           style: const TextStyle(
             color: Colors.white,
@@ -273,9 +239,7 @@ class DealCard extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        ...deal.contentSubmissions!.map(
-          (content) => _buildContentItem(content),
-        ),
+        ...deal.submittedContent!.map((content) => _buildContentItem(content)),
       ],
     );
   }
@@ -501,21 +465,6 @@ class DealCard extends StatelessWidget {
         return Colors.red;
       default:
         return Colors.grey;
-    }
-  }
-
-  String _formatDate(DateTime date) {
-    final now = DateTime.now();
-    final difference = date.difference(now).inDays;
-
-    if (difference < 0) {
-      return 'Overdue';
-    } else if (difference == 0) {
-      return 'Today';
-    } else if (difference == 1) {
-      return 'Tomorrow';
-    } else {
-      return '${difference}d left';
     }
   }
 }

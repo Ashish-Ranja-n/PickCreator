@@ -162,7 +162,7 @@ class _BrandConversationsScreenState extends State<BrandConversationsScreen> {
   Widget _buildConversationCard(ConversationModel conversation) {
     final participantInfo = conversation.participantInfo;
     final participantName = participantInfo?['name'] ?? 'Unknown';
-    final lastMessage = conversation.lastMessage?.message ?? 'No messages yet';
+    final lastMessage = conversation.lastMessage ?? 'No messages yet';
     final unreadCount = conversation.unreadCount ?? 0;
 
     return Card(
