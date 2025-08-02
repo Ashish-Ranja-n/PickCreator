@@ -463,15 +463,23 @@ class _BrandInfluencersTabState extends State<BrandInfluencersTab> {
 
   @override
   void dispose() {
+    _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     super.dispose();
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels >=
-            _scrollController.position.maxScrollExtent - 200 &&
+    // Check if we're near the bottom of the scroll view
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final currentScroll = _scrollController.position.pixels;
+    final delta = maxScroll - currentScroll;
+
+    // Trigger load more when within 200px of bottom for better UX
+    if (delta <= 200 &&
         !_isLoadingMore &&
-        _hasMoreData) {
+        _hasMoreData &&
+        !_isLoading &&
+        _influencers.isNotEmpty) {
       _loadMoreInfluencers();
     }
   }
@@ -483,15 +491,21 @@ class _BrandInfluencersTabState extends State<BrandInfluencersTab> {
         _hasMoreData = true;
         _isLoading = true;
         _error = null;
+        _influencers.clear();
+      });
+    } else {
+      setState(() {
+        _isLoading = true;
+        _error = null;
       });
     }
 
     try {
       final result = await BrandService.getInfluencers(page: _currentPage);
 
-      if (result['success']) {
+      if (result['success'] == true) {
         final newInfluencers = result['influencers'] as List<InfluencerInfo>;
-        final pagination = result['pagination'];
+        final pagination = result['pagination'] as Map<String, dynamic>;
 
         setState(() {
           if (refresh || _currentPage == 1) {
@@ -499,38 +513,83 @@ class _BrandInfluencersTabState extends State<BrandInfluencersTab> {
           } else {
             _influencers.addAll(newInfluencers);
           }
-          // Check if there are more pages available
+
+          // Update pagination info from API response
+          final currentPage = pagination['page'] ?? _currentPage;
           final totalPages = pagination['totalPages'] ?? 0;
-          _hasMoreData = _currentPage < totalPages;
+
+          _currentPage = currentPage;
+          _hasMoreData = currentPage < totalPages && newInfluencers.isNotEmpty;
           _isLoading = false;
           _isLoadingMore = false;
           _error = null;
         });
       } else {
         setState(() {
-          _error = result['message'];
+          _error = result['message'] ?? 'Failed to load influencers';
           _isLoading = false;
           _isLoadingMore = false;
+          _hasMoreData = false;
         });
       }
     } catch (e) {
       setState(() {
-        _error = 'Failed to load influencers';
+        _error = 'Failed to load influencers: $e';
         _isLoading = false;
         _isLoadingMore = false;
+        _hasMoreData = false;
       });
     }
   }
 
   Future<void> _loadMoreInfluencers() async {
-    if (_isLoadingMore || !_hasMoreData) return;
+    if (_isLoadingMore || !_hasMoreData || _isLoading) {
+      return;
+    }
 
     setState(() {
       _isLoadingMore = true;
     });
 
-    _currentPage++;
-    await _loadInfluencers();
+    try {
+      final nextPage = _currentPage + 1;
+      final result = await BrandService.getInfluencers(page: nextPage);
+
+      if (mounted && result['success'] == true) {
+        final newInfluencers = result['influencers'] as List<InfluencerInfo>;
+        final pagination = result['pagination'] as Map<String, dynamic>;
+
+        if (mounted) {
+          setState(() {
+            if (newInfluencers.isNotEmpty) {
+              _influencers.addAll(newInfluencers);
+              _currentPage = pagination['page'] ?? nextPage;
+            }
+
+            // Check if there are more pages available based on API response
+            final totalPages = pagination['totalPages'] ?? 0;
+            final currentPage = pagination['page'] ?? _currentPage;
+            _hasMoreData =
+                currentPage < totalPages && newInfluencers.isNotEmpty;
+            _isLoadingMore = false;
+          });
+        }
+      } else {
+        if (mounted) {
+          setState(() {
+            _isLoadingMore = false;
+            _hasMoreData = false;
+          });
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoadingMore = false;
+          _hasMoreData = false;
+        });
+      }
+    }
   }
 
   Future<void> _showConnectDialog(InfluencerInfo influencer) async {
@@ -655,8 +714,10 @@ class _BrandInfluencersTabState extends State<BrandInfluencersTab> {
 
     return CustomScrollView(
       controller: _scrollController,
-      physics: const BouncingScrollPhysics(),
-      cacheExtent: 1000, // Cache more items for smoother scrolling
+      physics: const BouncingScrollPhysics(
+        parent: AlwaysScrollableScrollPhysics(),
+      ),
+      cacheExtent: 3000, // Cache more items for smoother scrolling
       slivers: [
         // Header
         SliverToBoxAdapter(
@@ -678,32 +739,79 @@ class _BrandInfluencersTabState extends State<BrandInfluencersTab> {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           sliver: SliverList.builder(
             itemCount:
-                _influencers.length + (_hasMoreData && _isLoadingMore ? 1 : 0),
+                _influencers.length +
+                (_isLoadingMore ? 1 : 0) +
+                (!_hasMoreData && _influencers.isNotEmpty && !_isLoading
+                    ? 1
+                    : 0),
+            addAutomaticKeepAlives: false,
+            addRepaintBoundaries: true,
             itemBuilder: (context, index) {
               if (index == _influencers.length) {
-                // Loading indicator for infinite scroll
-                return Container(
-                  padding: const EdgeInsets.all(16),
-                  child: const Center(
-                    child: CircularProgressIndicator(
-                      color: Color(AppConfig.primaryOrange),
-                      strokeWidth: 2,
+                if (_isLoadingMore) {
+                  // Loading indicator for infinite scroll
+                  return Container(
+                    padding: const EdgeInsets.all(20),
+                    child: const Center(
+                      child: CircularProgressIndicator(
+                        color: Color(AppConfig.primaryOrange),
+                        strokeWidth: 2,
+                      ),
                     ),
-                  ),
-                );
+                  );
+                } else if (!_hasMoreData &&
+                    _influencers.isNotEmpty &&
+                    !_isLoading) {
+                  // End of list message
+                  return Container(
+                    padding: const EdgeInsets.all(20),
+                    child: const Center(
+                      child: Text(
+                        "You've reached the end!",
+                        style: TextStyle(
+                          color: Color(0xFF666666),
+                          fontSize: 14,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                    ),
+                  );
+                }
+                return const SizedBox.shrink();
               }
 
               final influencer = _influencers[index];
               return Container(
-                margin: const EdgeInsets.only(bottom: 16),
-                child: InfluencerCard(
-                  influencer: influencer,
-                  onConnect: () => _showConnectDialog(influencer),
+                margin: const EdgeInsets.only(bottom: 12),
+                child: RepaintBoundary(
+                  child: InfluencerCard(
+                    key: ValueKey(influencer.id),
+                    influencer: influencer,
+                    onConnect: () => _showConnectDialog(influencer),
+                  ),
                 ),
               );
             },
           ),
         ),
+
+        // Add some bottom padding and a message if no more data
+        if (!_hasMoreData && _influencers.isNotEmpty)
+          SliverToBoxAdapter(
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              child: Center(
+                child: Text(
+                  'You\'ve reached the end!',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[600],
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ),
+            ),
+          ),
       ],
     );
   }

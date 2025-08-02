@@ -510,7 +510,7 @@ class PricingModels {
       fixedPricing: json['fixedPricing'] != null
           ? FixedPricing.fromJson(json['fixedPricing'])
           : null,
-      negotiablePricing: json['negotiablePricing'],
+      negotiablePricing: _parseBool(json['negotiablePricing']),
       packageDeals: json['packageDeals'] != null
           ? PackageDeals.fromJson(json['packageDeals'])
           : null,
@@ -518,6 +518,16 @@ class PricingModels {
           ? BarterDeals.fromJson(json['barterDeals'])
           : null,
     );
+  }
+
+  // Helper method to safely parse boolean values from JSON
+  static bool? _parseBool(dynamic value) {
+    if (value == null) return null;
+    if (value is bool) return value;
+    if (value is String) {
+      return value.toLowerCase() == 'true';
+    }
+    return null;
   }
 }
 
@@ -538,12 +548,22 @@ class FixedPricing {
 
   factory FixedPricing.fromJson(Map<String, dynamic> json) {
     return FixedPricing(
-      enabled: json['enabled'],
+      enabled: _parseBool(json['enabled']),
       storyPrice: json['storyPrice']?.toDouble(),
       reelPrice: json['reelPrice']?.toDouble(),
       postPrice: json['postPrice']?.toDouble(),
       livePrice: json['livePrice']?.toDouble(),
     );
+  }
+
+  // Helper method to safely parse boolean values from JSON
+  static bool? _parseBool(dynamic value) {
+    if (value == null) return null;
+    if (value is bool) return value;
+    if (value is String) {
+      return value.toLowerCase() == 'true';
+    }
+    return null;
   }
 }
 
@@ -555,13 +575,23 @@ class PackageDeals {
 
   factory PackageDeals.fromJson(Map<String, dynamic> json) {
     return PackageDeals(
-      enabled: json['enabled'],
+      enabled: _parseBool(json['enabled']),
       packages: json['packages'] != null
           ? (json['packages'] as List)
                 .map((p) => PackageDeal.fromJson(p))
                 .toList()
           : null,
     );
+  }
+
+  // Helper method to safely parse boolean values from JSON
+  static bool? _parseBool(dynamic value) {
+    if (value == null) return null;
+    if (value is bool) return value;
+    if (value is String) {
+      return value.toLowerCase() == 'true';
+    }
+    return null;
   }
 }
 
@@ -590,12 +620,22 @@ class BarterDeals {
 
   factory BarterDeals.fromJson(Map<String, dynamic> json) {
     return BarterDeals(
-      enabled: json['enabled'],
+      enabled: _parseBool(json['enabled']),
       acceptedCategories: json['acceptedCategories'] != null
           ? List<String>.from(json['acceptedCategories'])
           : null,
       restrictions: json['restrictions'],
     );
+  }
+
+  // Helper method to safely parse boolean values from JSON
+  static bool? _parseBool(dynamic value) {
+    if (value == null) return null;
+    if (value is bool) return value;
+    if (value is String) {
+      return value.toLowerCase() == 'true';
+    }
+    return null;
   }
 }
 
@@ -636,11 +676,21 @@ class InfluencerInfo {
                 .map((link) => SocialMediaLink.fromJson(link))
                 .toList()
           : null,
-      isInstagramVerified: json['isInstagramVerified'],
+      isInstagramVerified: _parseBool(json['isInstagramVerified']),
       pricingModels: json['pricingModels'] != null
           ? PricingModels.fromJson(json['pricingModels'])
           : null,
     );
+  }
+
+  // Helper method to safely parse boolean values from JSON
+  static bool? _parseBool(dynamic value) {
+    if (value == null) return null;
+    if (value is bool) return value;
+    if (value is String) {
+      return value.toLowerCase() == 'true';
+    }
+    return null;
   }
 
   Map<String, dynamic> toJson() {

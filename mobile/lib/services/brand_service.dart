@@ -110,20 +110,28 @@ class BrandService {
       );
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        if (data['success']) {
-          return {
-            'success': true,
-            'influencers': (data['influencers'] as List)
+        try {
+          final data = jsonDecode(response.body);
+
+          if (data['success'] == true) {
+            final influencersData = data['influencers'] as List;
+            final influencers = influencersData
                 .map((influencer) => InfluencerInfo.fromJson(influencer))
-                .toList(),
-            'pagination': data['pagination'],
-          };
-        } else {
-          return {
-            'success': false,
-            'message': data['error'] ?? 'Failed to fetch influencers',
-          };
+                .toList();
+
+            return {
+              'success': true,
+              'influencers': influencers,
+              'pagination': data['pagination'],
+            };
+          } else {
+            return {
+              'success': false,
+              'message': data['error'] ?? 'Failed to fetch influencers',
+            };
+          }
+        } catch (e) {
+          return {'success': false, 'message': 'Failed to parse response: $e'};
         }
       } else {
         return {'success': false, 'message': 'Failed to fetch influencers'};
