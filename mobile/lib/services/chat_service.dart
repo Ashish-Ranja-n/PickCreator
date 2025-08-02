@@ -8,30 +8,53 @@ class ChatService {
   static Future<Map<String, dynamic>> getConversations() async {
     try {
       final token = await AuthService.getToken();
+
       if (token == null) {
         return {'success': false, 'message': 'Not authenticated'};
       }
 
       // Get user ID from token
       final userData = await AuthService.getUserData();
+
       if (userData == null || userData.id == null) {
         return {'success': false, 'message': 'User data not found'};
       }
 
       final userId = userData.id;
-      final response = await http.get(
-        Uri.parse('${AppConfig.apiBaseUrl}/conversation/$userId'),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-      );
+      final uri = Uri.parse('${AppConfig.apiBaseUrl}/conversation/$userId');
+
+      final response = await http
+          .get(
+            uri,
+            headers: {
+              'Authorization': 'Bearer $token',
+              'Content-Type': 'application/json',
+            },
+          )
+          .timeout(
+            const Duration(seconds: 10),
+            onTimeout: () {
+              throw Exception('Request timeout');
+            },
+          );
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        return {'success': true, 'conversations': data};
+
+        // The API returns conversations directly as an array
+        if (data is List) {
+          return {'success': true, 'conversations': data};
+        } else {
+          return {
+            'success': false,
+            'message': 'Invalid response format: expected array',
+          };
+        }
       } else {
-        return {'success': false, 'message': 'Failed to fetch conversations'};
+        return {
+          'success': false,
+          'message': 'Failed to fetch conversations: ${response.statusCode}',
+        };
       }
     } catch (e) {
       return {'success': false, 'message': 'Network error: $e'};
@@ -56,7 +79,14 @@ class ChatService {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        return {'success': true, 'data': data};
+        // The API returns: { messages: [...], otherUser: {...}, nextCursor: "...", hasMore: true/false }
+        return {
+          'success': true,
+          'messages': data['messages'] ?? [],
+          'otherUser': data['otherUser'],
+          'nextCursor': data['nextCursor'],
+          'hasMore': data['hasMore'] ?? false,
+        };
       } else {
         return {'success': false, 'message': 'Failed to fetch messages'};
       }
@@ -247,11 +277,11 @@ class ChatService {
   }
 }
 
-// Message Model
+// Message Model with User Information
 class MessageModel {
   final String? id;
   final String? conversation;
-  final String? sender;
+  final dynamic sender; // Can be String (ID) or Map (full user object)
   final String? text;
   final List<dynamic>? media;
   final DateTime? createdAt;
@@ -267,11 +297,66 @@ class MessageModel {
     this.seenBy,
   });
 
+  // Get sender ID whether sender is string or object
+  String? get senderId {
+    if (sender is String) return sender;
+    if (sender is Map<String, dynamic>) return sender['_id'] ?? sender['id'];
+    return null;
+  }
+
+  // Get sender name
+  String get senderName {
+    if (sender is Map<String, dynamic>) {
+      return sender['name'] ?? 'Unknown User';
+    }
+    return 'Unknown User';
+  }
+
+  // Get sender avatar/profile picture
+  String get senderAvatar {
+    if (sender is Map<String, dynamic>) {
+      final senderData = sender as Map<String, dynamic>;
+
+      // Check for avatar field (populated by API)
+      if (senderData['avatar'] != null &&
+          senderData['avatar'].toString().isNotEmpty) {
+        return senderData['avatar'];
+      }
+
+      // Check for profilePicture field
+      if (senderData['profilePicture'] != null &&
+          senderData['profilePicture'].toString().isNotEmpty) {
+        return senderData['profilePicture'];
+      }
+
+      // Check for profilePictureUrl field
+      if (senderData['profilePictureUrl'] != null &&
+          senderData['profilePictureUrl'].toString().isNotEmpty) {
+        return senderData['profilePictureUrl'];
+      }
+
+      // Check for Instagram profile picture
+      if (senderData['instagram'] != null &&
+          senderData['instagram']['profilePicture'] != null &&
+          senderData['instagram']['profilePicture'].toString().isNotEmpty) {
+        return senderData['instagram']['profilePicture'];
+      }
+
+      // Generate default avatar with user's name
+      final name = senderData['name'] ?? 'user';
+      return 'https://api.dicebear.com/7.x/avataaars/svg?seed=$name';
+    }
+
+    // Default avatar for string sender IDs
+    return 'https://api.dicebear.com/7.x/avataaars/svg?seed=default';
+  }
+
   factory MessageModel.fromJson(Map<String, dynamic> json) {
     return MessageModel(
       id: json['_id'] ?? json['id'],
       conversation: json['conversation'],
-      sender: json['sender'],
+      sender:
+          json['sender'], // Keep as dynamic to handle both string and object
       text: json['text'],
       media: json['media'],
       createdAt: json['createdAt'] != null
@@ -307,6 +392,7 @@ class ConversationModel {
   final int? unreadCount;
   final DateTime? updatedAt;
   final Map<String, dynamic>? participantInfo;
+  final Map<String, dynamic>? otherUser;
 
   ConversationModel({
     this.id,
@@ -320,6 +406,7 @@ class ConversationModel {
     this.unreadCount,
     this.updatedAt,
     this.participantInfo,
+    this.otherUser,
   });
 
   factory ConversationModel.fromJson(Map<String, dynamic> json) {
@@ -344,6 +431,15 @@ class ConversationModel {
         'avatar': json['avatar'],
         'userId': json['userId'],
       },
+      otherUser:
+          json['otherUser'] ??
+          {
+            'name': json['name'],
+            'role': json['role'],
+            'avatar': json['avatar'],
+            'profilePictureUrl': json['profilePictureUrl'],
+            'userId': json['userId'],
+          },
     );
   }
 
@@ -359,6 +455,7 @@ class ConversationModel {
       'userId': userId,
       'unreadCount': unreadCount,
       'participantInfo': participantInfo,
+      'otherUser': otherUser,
     };
   }
 }

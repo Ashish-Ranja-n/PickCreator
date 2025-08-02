@@ -90,6 +90,15 @@ class _AuthWrapperState extends State<AuthWrapper> {
         // For mobile app: Trust local token, don't validate with server
         // This ensures persistent login - users stay logged in forever
         if (user != null) {
+          // Update AuthProvider with user data
+          if (mounted) {
+            final authProvider = Provider.of<AuthProvider>(
+              context,
+              listen: false,
+            );
+            await authProvider.login(user);
+          }
+
           setState(() {
             _isLoggedIn = true;
             _user = user;
@@ -100,7 +109,6 @@ class _AuthWrapperState extends State<AuthWrapper> {
         }
       }
     } catch (e) {
-      print('Auth check error: $e');
       // Don't logout on errors - keep user logged in
     } finally {
       setState(() {

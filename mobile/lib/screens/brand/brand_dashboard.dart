@@ -985,8 +985,7 @@ class _BrandDealsTabState extends State<BrandDealsTab> {
       context,
       MaterialPageRoute(
         builder: (context) => BrandChatScreen(
-          conversationId: null, // Will be created if needed
-          dealId: deal.id,
+          conversationId: deal.id ?? '', // Use deal ID as conversation ID
           influencerName: deal.firstInfluencer?.name,
         ),
       ),
