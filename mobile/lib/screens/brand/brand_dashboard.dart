@@ -65,6 +65,21 @@ class _BrandDashboardState extends State<BrandDashboard> with TickerProviderStat
     }
   }
 
+  String _getAppBarSubtitle() {
+    switch (_selectedIndex) {
+      case 0:
+        return 'Your brand overview';
+      case 1:
+        return 'Find amazing creators';
+      case 2:
+        return 'Manage your campaigns';
+      case 3:
+        return 'Account & settings';
+      default:
+        return 'PickCreator Studio';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -105,19 +120,36 @@ class _BrandDashboardState extends State<BrandDashboard> with TickerProviderStat
       scrolledUnderElevation: 0,
       backgroundColor: isDark ? const Color(0xFF0A0A0A) : const Color(0xFFF8FAFC),
       surfaceTintColor: Colors.transparent,
-      title: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 200),
-        child: Text(
-          _getAppBarTitle(),
-          key: ValueKey(_selectedIndex),
-          style: TextStyle(
-            color: isDark ? Colors.white : const Color(0xFF0F172A),
-            fontWeight: FontWeight.w800,
-            fontSize: 28,
-            letterSpacing: -0.5,
+      toolbarHeight: 70, // Increased height for better layout
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 200),
+            child: Text(
+              _getAppBarTitle(),
+              key: ValueKey(_selectedIndex),
+              style: TextStyle(
+                color: isDark ? Colors.white : const Color(0xFF0F172A),
+                fontWeight: FontWeight.w800,
+                fontSize: 24,
+                letterSpacing: -0.3,
+                height: 1.2,
+              ),
+            ),
           ),
-        ),
+          const SizedBox(height: 2),
+          Text(
+            _getAppBarSubtitle(),
+            style: TextStyle(
+              color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
       ),
+      titleSpacing: 20,
       actions: [
         // Notifications with badge
         Stack(
@@ -256,9 +288,16 @@ class _BrandDashboardState extends State<BrandDashboard> with TickerProviderStat
   }
 
   Widget _buildEnhancedBottomNav(bool isDark) {
+    // Respect device bottom safe area to avoid overflow on devices with
+    // gesture/navigation bars. Add the inset to the container height and
+    // bottom margin so the nav sits above system UI.
+    final bottomInset = MediaQuery.of(context).padding.bottom;
+    final bottomMargin = 16.0 + bottomInset;
+    final navHeight = 80.0 + bottomInset;
+
     return Container(
-      margin: const EdgeInsets.fromLTRB(20, 0, 20, 24),
-      height: 80,
+      margin: EdgeInsets.fromLTRB(20, 0, 20, bottomMargin),
+      height: navHeight,
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF1E293B) : Colors.white,
         borderRadius: BorderRadius.circular(24),
@@ -281,8 +320,10 @@ class _BrandDashboardState extends State<BrandDashboard> with TickerProviderStat
           ),
         ],
       ),
+      // Add internal padding that accounts for the extra bottom inset so the
+      // nav items remain vertically centered and not clipped.
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: EdgeInsets.fromLTRB(16, 12, 16, 12 + bottomInset),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -2360,7 +2401,7 @@ class _BrandDealsTabState extends State<BrandDealsTab> {
     final letter = (name != null && name.isNotEmpty)
         ? name[0].toUpperCase()
         : 'C';
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+  // NOTE: brightness can be read by callers if needed; not required here.
 
     return Container(
       decoration: BoxDecoration(
@@ -2534,19 +2575,30 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
       final result = await BrandService.getBrandProfile();
 
       if (result['success']) {
+        final profile = result['profile'];
+
+        if (profile == null) {
+          setState(() {
+            _error = 'Profile not found';
+            _isLoading = false;
+          });
+          return;
+        }
+
         setState(() {
-          _brandProfile = result['profile'] as BrandInfo;
+          _brandProfile = profile as BrandInfo;
           _isLoading = false;
         });
       } else {
         setState(() {
-          _error = result['message'];
+          _error = result['message'] ?? 'Failed to load profile';
           _isLoading = false;
         });
       }
     } catch (e) {
+      print('Error loading brand profile: $e');
       setState(() {
-        _error = 'Failed to load profile';
+        _error = 'Failed to load profile: $e';
         _isLoading = false;
       });
     }
@@ -2634,7 +2686,7 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  _error!,
+                  _error ?? 'Unknown error',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
@@ -2660,6 +2712,30 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
                 ),
               ],
             ),
+          ),
+        ),
+      );
+    }
+
+    // If _brandProfile is null, show a clear fallback for the entire tab
+    if (_brandProfile == null) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(32),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              isDark ? const Color(0xFF0A0A0A) : const Color(0xFFF8FAFC),
+              isDark ? const Color(0xFF1E293B) : const Color(0xFFFFFFFF),
+            ],
+          ),
+        ),
+        child: const Center(
+          child: Text(
+            'No profile data available',
+            style: TextStyle(color: Colors.white, fontSize: 18),
           ),
         ),
       );
@@ -2721,6 +2797,36 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
   }
 
   Widget _buildModernProfileHeader(bool isDark) {
+    // Defensive: If _brandProfile is null, show a fallback UI
+    if (_brandProfile == null) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(32),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [
+              Color(0xFF6366F1),
+              Color(0xFF8B5CF6),
+              Color(0xFFA855F7),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(24),
+        ),
+        child: const Center(
+          child: Text(
+            'No profile data available',
+            style: TextStyle(color: Colors.white, fontSize: 18),
+          ),
+        ),
+      );
+    }
+
+    final avatarUrl = _brandProfile?.avatar;
+    final companyName = _brandProfile?.companyName ?? 'Brand Name';
+    final location = _brandProfile?.location;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(32),
@@ -2761,19 +2867,18 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
               ],
             ),
             child: ClipOval(
-              child: _brandProfile?.avatar != null
+              child: (avatarUrl != null && avatarUrl.isNotEmpty)
                   ? Image.network(
-                      _brandProfile!.avatar!,
+                      avatarUrl,
                       fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) =>
-                          _buildDefaultLogo(),
+                      errorBuilder: (context, error, stackTrace) => _buildDefaultLogo(),
                     )
                   : _buildDefaultLogo(),
             ),
           ),
           const SizedBox(height: 24),
           Text(
-            _brandProfile?.companyName ?? 'Brand Name',
+            companyName,
             style: const TextStyle(
               fontSize: 32,
               fontWeight: FontWeight.w800,
@@ -2784,7 +2889,7 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 12),
-          if (_brandProfile?.location != null)
+          if (location != null && location.isNotEmpty)
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
@@ -2805,7 +2910,7 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
                   ),
                   const SizedBox(width: 6),
                   Text(
-                    _brandProfile!.location!,
+                    location,
                     style: TextStyle(
                       fontSize: 15,
                       color: Colors.white.withOpacity(0.95),
@@ -2822,6 +2927,12 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
   }
 
   Widget _buildQuickStatsSection(bool isDark) {
+    // Use safe defaults if _brandProfile is null
+    final activeDeals = '0';
+    final totalSpent = '₹0';
+    final campaigns = '0';
+    final creators = '0';
+    // If you want to use real stats, you can extend BrandInfo and BrandService to provide these fields.
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -2840,7 +2951,7 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
             Expanded(
               child: _buildModernStatCard(
                 'Active Deals',
-                '12',
+                activeDeals,
                 Icons.handshake_rounded,
                 const Color(0xFF10B981),
                 const Color(0xFFD1FAE5),
@@ -2851,7 +2962,7 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
             Expanded(
               child: _buildModernStatCard(
                 'Total Spent',
-                '₹45K',
+                totalSpent,
                 Icons.currency_rupee_rounded,
                 const Color(0xFF6366F1),
                 const Color(0xFFE0E7FF),
@@ -2866,7 +2977,7 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
             Expanded(
               child: _buildModernStatCard(
                 'Campaigns',
-                '8',
+                campaigns,
                 Icons.campaign_rounded,
                 const Color(0xFFF59E0B),
                 const Color(0xFFFEF3C7),
@@ -2877,7 +2988,7 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
             Expanded(
               child: _buildModernStatCard(
                 'Creators',
-                '24',
+                creators,
                 Icons.people_rounded,
                 const Color(0xFFEF4444),
                 const Color(0xFFFEE2E2),
@@ -2926,7 +3037,7 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
             ),
             child: Icon(icon, size: 24, color: primaryColor),
           ),
-          const Spacer(),
+          const SizedBox(height: 16),
           Text(
             value,
             style: TextStyle(
@@ -2966,7 +3077,7 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
       child: Center(
         child: Text(
           (_brandProfile?.companyName?.isNotEmpty == true)
-              ? _brandProfile!.companyName![0].toUpperCase()
+              ? (_brandProfile!.companyName![0].toUpperCase())
               : 'B',
           style: const TextStyle(
             color: Colors.white,
@@ -2979,6 +3090,7 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
   }
 
   Widget _buildModernCompanyInfo(bool isDark) {
+    final profile = _brandProfile;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -3050,43 +3162,43 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
               _buildModernInfoRow(
                 Icons.business_rounded,
                 'Company Name',
-                _brandProfile?.companyName ?? 'Not specified',
+                profile?.companyName ?? 'Not specified',
                 const Color(0xFF6366F1),
               ),
               _buildModernInfoRow(
                 Icons.person_rounded,
                 'Contact Person',
-                _brandProfile?.name ?? 'Not specified',
+                profile?.name ?? 'Not specified',
                 const Color(0xFF10B981),
               ),
               _buildModernInfoRow(
                 Icons.location_on_rounded,
                 'Location',
-                _brandProfile?.location ?? 'Not specified',
+                profile?.location ?? 'Not specified',
                 Colors.green,
               ),
               _buildModernInfoRow(
                 Icons.email_rounded,
                 'Email Address',
-                _brandProfile?.email ?? 'Not specified',
+                profile?.email ?? 'Not specified',
                 const Color(0xFFF59E0B),
               ),
               _buildModernInfoRow(
                 Icons.phone_rounded,
                 'Phone Number',
-                _brandProfile?.phoneNumber ?? 'Not specified',
+                profile?.phoneNumber ?? 'Not specified',
                 Colors.orange,
               ),
               _buildModernInfoRow(
                 Icons.language_rounded,
                 'Website',
-                _brandProfile?.website ?? 'Not specified',
+                profile?.website ?? 'Not specified',
                 Colors.teal,
               ),
               _buildModernInfoRow(
                 Icons.description_rounded,
                 'Description',
-                _brandProfile?.bio ?? 'No description available',
+                profile?.bio ?? 'No description available',
                 Colors.indigo,
                 isLast: true,
                 isMultiline: true,
@@ -3101,11 +3213,12 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
   Widget _buildModernInfoRow(
     IconData icon,
     String label,
-    String value,
+    String? value,
     Color iconColor, {
     bool isLast = false,
     bool isMultiline = false,
   }) {
+    final safeValue = (value == null || value.isEmpty) ? 'Not specified' : value;
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16),
       decoration: BoxDecoration(
@@ -3147,7 +3260,7 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  value,
+                  safeValue,
                   style: TextStyle(
                     fontSize: 16,
                     color: Theme.of(context).brightness == Brightness.dark

@@ -381,7 +381,9 @@ class BrandService {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        final brandInfo = BrandInfo.fromJson(data);
+        // Handle both wrapped and direct response structures
+        final profileData = data['data'] ?? data;
+        final brandInfo = BrandInfo.fromJson(profileData);
         return {'success': true, 'profile': brandInfo};
       } else {
         final error = jsonDecode(response.body);
