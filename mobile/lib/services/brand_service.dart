@@ -260,7 +260,8 @@ class BrandService {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
         },
-        body: data != null ? jsonEncode(data) : null,
+        // Always send JSON body like the web app does (even if empty)
+        body: jsonEncode(data ?? {}),
       );
 
       if (response.statusCode == 200) {
@@ -316,6 +317,45 @@ class BrandService {
         return {
           'success': false,
           'message': error['error'] ?? 'Failed to perform content action',
+        };
+      }
+    } catch (e) {
+      return {'success': false, 'message': 'Network error: $e'};
+    }
+  }
+
+  // Influencer submits content for a deal
+  static Future<Map<String, dynamic>> submitContent({
+    required String dealId,
+    required String contentType,
+    required String contentUrl,
+  }) async {
+    try {
+      final token = await AuthService.getToken();
+      if (token == null) {
+        return {'success': false, 'message': 'Not authenticated'};
+      }
+
+      final response = await http.post(
+        Uri.parse('${AppConfig.apiBaseUrl}/deals/$dealId/submit'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'contentType': contentType,
+          'contentUrl': contentUrl,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        return {'success': true, 'data': responseData};
+      } else {
+        final error = jsonDecode(response.body);
+        return {
+          'success': false,
+          'message': error['error'] ?? 'Failed to submit content',
         };
       }
     } catch (e) {
