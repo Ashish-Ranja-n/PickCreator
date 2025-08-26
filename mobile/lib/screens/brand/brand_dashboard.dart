@@ -18,8 +18,10 @@ class BrandDashboard extends StatefulWidget {
   State<BrandDashboard> createState() => _BrandDashboardState();
 }
 
-class _BrandDashboardState extends State<BrandDashboard> with TickerProviderStateMixin {
+class _BrandDashboardState extends State<BrandDashboard>
+    with TickerProviderStateMixin {
   int _selectedIndex = 0;
+  late TabController _tabController;
   late AnimationController _fabAnimationController;
   late Animation<double> _fabAnimation;
 
@@ -33,6 +35,10 @@ class _BrandDashboardState extends State<BrandDashboard> with TickerProviderStat
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: _pages.length, vsync: this);
+    _tabController.addListener(() {
+      setState(() => _selectedIndex = _tabController.index);
+    });
     _fabAnimationController = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
@@ -46,6 +52,7 @@ class _BrandDashboardState extends State<BrandDashboard> with TickerProviderStat
 
   @override
   void dispose() {
+    _tabController.dispose();
     _fabAnimationController.dispose();
     super.dispose();
   }
@@ -84,9 +91,11 @@ class _BrandDashboardState extends State<BrandDashboard> with TickerProviderStat
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    
+
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0A0A0A) : const Color(0xFFF8FAFC),
+      backgroundColor: isDark
+          ? const Color(0xFF0A0A0A)
+          : const Color(0xFFF8FAFC),
       extendBody: true,
       appBar: _buildModernAppBar(context, isDark),
       body: AnimatedSwitcher(
@@ -95,13 +104,16 @@ class _BrandDashboardState extends State<BrandDashboard> with TickerProviderStat
           return FadeTransition(
             opacity: animation,
             child: SlideTransition(
-              position: Tween<Offset>(
-                begin: const Offset(0.1, 0),
-                end: Offset.zero,
-              ).animate(CurvedAnimation(
-                parent: animation,
-                curve: Curves.easeOutCubic,
-              )),
+              position:
+                  Tween<Offset>(
+                    begin: const Offset(0.1, 0),
+                    end: Offset.zero,
+                  ).animate(
+                    CurvedAnimation(
+                      parent: animation,
+                      curve: Curves.easeOutCubic,
+                    ),
+                  ),
               child: child,
             ),
           );
@@ -109,7 +121,9 @@ class _BrandDashboardState extends State<BrandDashboard> with TickerProviderStat
         child: _pages[_selectedIndex],
       ),
       bottomNavigationBar: _buildEnhancedBottomNav(isDark),
-      floatingActionButton: _selectedIndex == 1 ? _buildFloatingActionButton() : null,
+      floatingActionButton: _selectedIndex == 1
+          ? _buildFloatingActionButton()
+          : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
@@ -118,38 +132,57 @@ class _BrandDashboardState extends State<BrandDashboard> with TickerProviderStat
     return AppBar(
       elevation: 0,
       scrolledUnderElevation: 0,
-      backgroundColor: isDark ? const Color(0xFF0A0A0A) : const Color(0xFFF8FAFC),
+      backgroundColor: isDark
+          ? const Color(0xFF0A0A0A)
+          : const Color(0xFFF8FAFC),
       surfaceTintColor: Colors.transparent,
       toolbarHeight: 70, // Increased height for better layout
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          AnimatedSwitcher(
-            duration: const Duration(milliseconds: 200),
-            child: Text(
-              _getAppBarTitle(),
-              key: ValueKey(_selectedIndex),
-              style: TextStyle(
-                color: isDark ? Colors.white : const Color(0xFF0F172A),
-                fontWeight: FontWeight.w800,
-                fontSize: 24,
-                letterSpacing: -0.3,
-                height: 1.2,
+      title: Padding(
+        padding: const EdgeInsets.only(
+          left: 16.0,
+        ), // Add left padding for visual balance
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 200),
+                    child: Text(
+                      _getAppBarTitle(),
+                      key: ValueKey(_selectedIndex),
+                      style: TextStyle(
+                        color: isDark ? Colors.white : const Color(0xFF0F172A),
+                        fontWeight: FontWeight.w800,
+                        fontSize: 24,
+                        letterSpacing: -0.3,
+                        height: 1.2,
+                      ),
+                      textAlign: TextAlign.left,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    _getAppBarSubtitle(),
+                    style: TextStyle(
+                      color: isDark
+                          ? const Color(0xFF94A3B8)
+                          : const Color(0xFF64748B),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    textAlign: TextAlign.left,
+                  ),
+                ],
               ),
             ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            _getAppBarSubtitle(),
-            style: TextStyle(
-              color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
-      titleSpacing: 20,
+      titleSpacing: 0,
       actions: [
         // Notifications with badge
         Stack(
@@ -160,7 +193,9 @@ class _BrandDashboardState extends State<BrandDashboard> with TickerProviderStat
                 color: isDark ? const Color(0xFF1E293B) : Colors.white,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+                  color: isDark
+                      ? const Color(0xFF334155)
+                      : const Color(0xFFE2E8F0),
                   width: 1,
                 ),
                 boxShadow: [
@@ -194,7 +229,9 @@ class _BrandDashboardState extends State<BrandDashboard> with TickerProviderStat
                   color: const Color(0xFFEF4444),
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: isDark ? const Color(0xFF0A0A0A) : const Color(0xFFF8FAFC),
+                    color: isDark
+                        ? const Color(0xFF0A0A0A)
+                        : const Color(0xFFF8FAFC),
                     width: 2,
                   ),
                 ),
@@ -202,7 +239,7 @@ class _BrandDashboardState extends State<BrandDashboard> with TickerProviderStat
             ),
           ],
         ),
-        
+
         // Chat button
         Container(
           margin: const EdgeInsets.only(right: 8),
@@ -238,7 +275,7 @@ class _BrandDashboardState extends State<BrandDashboard> with TickerProviderStat
             tooltip: 'Messages',
           ),
         ),
-        
+
         // Theme toggle
         Consumer<ThemeProvider>(
           builder: (context, themeProvider, child) {
@@ -255,9 +292,11 @@ class _BrandDashboardState extends State<BrandDashboard> with TickerProviderStat
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: (themeProvider.isDarkMode 
-                        ? const Color(0xFFFBBF24) 
-                        : const Color(0xFF6366F1)).withOpacity(0.3),
+                    color:
+                        (themeProvider.isDarkMode
+                                ? const Color(0xFFFBBF24)
+                                : const Color(0xFF6366F1))
+                            .withOpacity(0.3),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -288,42 +327,31 @@ class _BrandDashboardState extends State<BrandDashboard> with TickerProviderStat
   }
 
   Widget _buildEnhancedBottomNav(bool isDark) {
-    // Respect device bottom safe area to avoid overflow on devices with
-    // gesture/navigation bars. Add the inset to the container height and
-    // bottom margin so the nav sits above system UI.
     final bottomInset = MediaQuery.of(context).padding.bottom;
     final bottomMargin = 16.0 + bottomInset;
-    final navHeight = 80.0 + bottomInset;
+    final navHeight = 72.0; // Fixed height, safe area handled by margin
 
     return Container(
       margin: EdgeInsets.fromLTRB(20, 0, 20, bottomMargin),
       height: navHeight,
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF1E293B) : Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.4 : 0.1),
-            blurRadius: 24,
-            offset: const Offset(0, 8),
-            spreadRadius: 0,
-          ),
-          BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.2 : 0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            color: Colors.black.withOpacity(isDark ? 0.3 : 0.08),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
             spreadRadius: 0,
           ),
         ],
       ),
-      // Add internal padding that accounts for the extra bottom inset so the
-      // nav items remain vertically centered and not clipped.
       child: Padding(
-        padding: EdgeInsets.fromLTRB(16, 12, 16, 12 + bottomInset),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -340,59 +368,74 @@ class _BrandDashboardState extends State<BrandDashboard> with TickerProviderStat
   Widget _buildNavItem(int index, IconData icon, String label, bool isDark) {
     final isSelected = _selectedIndex == index;
     final primaryColor = const Color(0xFF6366F1);
-    
-    return GestureDetector(
-      onTap: () => setState(() => _selectedIndex = index),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOutCubic,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected 
-              ? primaryColor.withOpacity(0.1)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOutCubic,
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: isSelected ? primaryColor : Colors.transparent,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: isSelected ? [
-                  BoxShadow(
-                    color: primaryColor.withOpacity(0.3),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
-                  ),
-                ] : null,
+
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => setState(() => _selectedIndex = index),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOutCubic,
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? primaryColor.withOpacity(0.1)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOutCubic,
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: isSelected ? primaryColor : Colors.transparent,
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: isSelected
+                      ? [
+                          BoxShadow(
+                            color: primaryColor.withOpacity(0.25),
+                            blurRadius: 6,
+                            offset: const Offset(0, 1),
+                          ),
+                        ]
+                      : null,
+                ),
+                child: Icon(
+                  icon,
+                  size: 22,
+                  color: isSelected
+                      ? Colors.white
+                      : (isDark
+                            ? const Color(0xFF94A3B8)
+                            : const Color(0xFF64748B)),
+                ),
               ),
-              child: Icon(
-                icon,
-                size: 24,
-                color: isSelected 
-                    ? Colors.white 
-                    : (isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
+              const SizedBox(height: 1),
+              AnimatedDefaultTextStyle(
+                duration: const Duration(milliseconds: 300),
+                style: TextStyle(
+                  fontSize: 9,
+                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                  color: isSelected
+                      ? primaryColor
+                      : (isDark
+                            ? const Color(0xFF94A3B8)
+                            : const Color(0xFF64748B)),
+                  letterSpacing: 0.05,
+                  height: 1.0,
+                ),
+                child: Text(
+                  label,
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-            ),
-            const SizedBox(height: 4),
-            AnimatedDefaultTextStyle(
-              duration: const Duration(milliseconds: 300),
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                color: isSelected 
-                    ? primaryColor 
-                    : (isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
-                letterSpacing: 0.2,
-              ),
-              child: Text(label),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -413,9 +456,7 @@ class _BrandDashboardState extends State<BrandDashboard> with TickerProviderStat
           'Find Creators',
           style: TextStyle(fontWeight: FontWeight.w600),
         ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
     );
   }
@@ -428,7 +469,8 @@ class BrandHomeTab extends StatefulWidget {
   State<BrandHomeTab> createState() => _BrandHomeTabState();
 }
 
-class _BrandHomeTabState extends State<BrandHomeTab> with TickerProviderStateMixin {
+class _BrandHomeTabState extends State<BrandHomeTab>
+    with TickerProviderStateMixin {
   Map<String, dynamic>? _dashboardStats;
   bool _isLoading = true;
   String? _error;
@@ -447,14 +489,14 @@ class _BrandHomeTabState extends State<BrandHomeTab> with TickerProviderStateMix
       parent: _animationController,
       curve: Curves.easeOutCubic,
     );
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.3),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeOutCubic,
-    ));
-    
+    _slideAnimation =
+        Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero).animate(
+          CurvedAnimation(
+            parent: _animationController,
+            curve: Curves.easeOutCubic,
+          ),
+        );
+
     _loadDashboardStats();
   }
 
@@ -497,13 +539,15 @@ class _BrandHomeTabState extends State<BrandHomeTab> with TickerProviderStateMix
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    
+
     return RefreshIndicator(
       onRefresh: _loadDashboardStats,
       color: const Color(0xFF6366F1),
       backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
       child: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+        physics: const BouncingScrollPhysics(
+          parent: AlwaysScrollableScrollPhysics(),
+        ),
         padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -511,15 +555,15 @@ class _BrandHomeTabState extends State<BrandHomeTab> with TickerProviderStateMix
             // Welcome Section
             _buildWelcomeSection(isDark),
             const SizedBox(height: 32),
-            
+
             // Stats Section
             _buildStatsSection(isDark),
             const SizedBox(height: 32),
-            
+
             // Quick Actions
             _buildQuickActionsSection(isDark),
             const SizedBox(height: 32),
-            
+
             // Recent Activity
             _buildRecentActivitySection(isDark),
           ],
@@ -538,11 +582,7 @@ class _BrandHomeTabState extends State<BrandHomeTab> with TickerProviderStateMix
           padding: const EdgeInsets.all(28),
           decoration: BoxDecoration(
             gradient: const LinearGradient(
-              colors: [
-                Color(0xFF6366F1),
-                Color(0xFF8B5CF6),
-                Color(0xFFA855F7),
-              ],
+              colors: [Color(0xFF6366F1), Color(0xFF8B5CF6), Color(0xFFA855F7)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -609,26 +649,7 @@ class _BrandHomeTabState extends State<BrandHomeTab> with TickerProviderStateMix
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
-              ElevatedButton.icon(
-                onPressed: () {
-                  DefaultTabController.of(context).animateTo(1);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: const Color(0xFF6366F1),
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  elevation: 0,
-                ),
-                icon: const Icon(Icons.explore_rounded, size: 20),
-                label: const Text(
-                  'Discover Creators',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                ),
-              ),
+              // Removed 'Discover Creators' button as it's redundant with the AppBar
             ],
           ),
         ),
@@ -741,11 +762,7 @@ class _BrandHomeTabState extends State<BrandHomeTab> with TickerProviderStateMix
               color: isDark ? primaryColor.withOpacity(0.2) : backgroundColor,
               borderRadius: BorderRadius.circular(16),
             ),
-            child: Icon(
-              icon,
-              size: 24,
-              color: primaryColor,
-            ),
+            child: Icon(icon, size: 24, color: primaryColor),
           ),
           const Spacer(),
           Text(
@@ -832,10 +849,7 @@ class _BrandHomeTabState extends State<BrandHomeTab> with TickerProviderStateMix
         decoration: BoxDecoration(
           color: isDark ? const Color(0xFF1E293B) : Colors.white,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: color.withOpacity(0.2),
-            width: 1,
-          ),
+          border: Border.all(color: color.withOpacity(0.2), width: 1),
           boxShadow: [
             BoxShadow(
               color: color.withOpacity(0.1),
@@ -869,7 +883,9 @@ class _BrandHomeTabState extends State<BrandHomeTab> with TickerProviderStateMix
               subtitle,
               style: TextStyle(
                 fontSize: 14,
-                color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                color: isDark
+                    ? const Color(0xFF94A3B8)
+                    : const Color(0xFF64748B),
               ),
             ),
           ],
@@ -915,7 +931,9 @@ class _BrandHomeTabState extends State<BrandHomeTab> with TickerProviderStateMix
               color: isDark ? const Color(0xFF1E293B) : Colors.white,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+                color: isDark
+                    ? const Color(0xFF334155)
+                    : const Color(0xFFE2E8F0),
                 width: 1,
               ),
               boxShadow: [
@@ -931,7 +949,9 @@ class _BrandHomeTabState extends State<BrandHomeTab> with TickerProviderStateMix
                 Icon(
                   Icons.timeline_rounded,
                   size: 48,
-                  color: isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8),
+                  color: isDark
+                      ? const Color(0xFF64748B)
+                      : const Color(0xFF94A3B8),
                 ),
                 const SizedBox(height: 16),
                 Text(
@@ -947,7 +967,9 @@ class _BrandHomeTabState extends State<BrandHomeTab> with TickerProviderStateMix
                   'Your recent deals and activities will appear here',
                   style: TextStyle(
                     fontSize: 14,
-                    color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                    color: isDark
+                        ? const Color(0xFF94A3B8)
+                        : const Color(0xFF64748B),
                     height: 1.4,
                   ),
                   textAlign: TextAlign.center,
@@ -999,7 +1021,9 @@ class _BrandHomeTabState extends State<BrandHomeTab> with TickerProviderStateMix
                 color: isDark ? const Color(0xFF1E293B) : Colors.white,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+                  color: isDark
+                      ? const Color(0xFF334155)
+                      : const Color(0xFFE2E8F0),
                   width: 1,
                 ),
                 boxShadow: [
@@ -1016,20 +1040,21 @@ class _BrandHomeTabState extends State<BrandHomeTab> with TickerProviderStateMix
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: (isDark ? Colors.white : Colors.black).withOpacity(0.1),
+                      color: (isDark ? Colors.white : Colors.black).withOpacity(
+                        0.1,
+                      ),
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    child: const SizedBox(
-                      width: 24,
-                      height: 24,
-                    ),
+                    child: const SizedBox(width: 24, height: 24),
                   ),
                   const Spacer(),
                   Container(
                     width: 60,
                     height: 24,
                     decoration: BoxDecoration(
-                      color: (isDark ? Colors.white : Colors.black).withOpacity(0.1),
+                      color: (isDark ? Colors.white : Colors.black).withOpacity(
+                        0.1,
+                      ),
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
@@ -1038,7 +1063,9 @@ class _BrandHomeTabState extends State<BrandHomeTab> with TickerProviderStateMix
                     width: 40,
                     height: 16,
                     decoration: BoxDecoration(
-                      color: (isDark ? Colors.white : Colors.black).withOpacity(0.1),
+                      color: (isDark ? Colors.white : Colors.black).withOpacity(
+                        0.1,
+                      ),
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
@@ -1105,7 +1132,10 @@ class _BrandHomeTabState extends State<BrandHomeTab> with TickerProviderStateMix
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF6366F1),
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -1403,7 +1433,10 @@ class _BrandInfluencersTabState extends State<BrandInfluencersTab> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF6366F1),
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32,
+                    vertical: 16,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
@@ -1452,7 +1485,9 @@ class _BrandInfluencersTabState extends State<BrandInfluencersTab> {
                 'Start discovering amazing creators for your brand',
                 style: TextStyle(
                   fontSize: 16,
-                  color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                  color: isDark
+                      ? const Color(0xFF94A3B8)
+                      : const Color(0xFF64748B),
                   height: 1.4,
                 ),
                 textAlign: TextAlign.center,
@@ -1463,39 +1498,33 @@ class _BrandInfluencersTabState extends State<BrandInfluencersTab> {
       );
     }
 
+    // Calculate bottom safe area and navigation bar height
+    final bottomInset = MediaQuery.of(context).padding.bottom;
+    final navBarHeight =
+        80.0 + bottomInset; // Navigation bar height + safe area
+    final additionalBottomPadding = 20.0; // Extra padding for visual spacing
+
     return CustomScrollView(
       controller: _scrollController,
-      physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+      physics: const BouncingScrollPhysics(
+        parent: AlwaysScrollableScrollPhysics(),
+      ),
       slivers: [
-        SliverPadding(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
-          sliver: SliverToBoxAdapter(
-            child: Text(
-              'Discover Creators',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.w800,
-                color: isDark ? Colors.white : const Color(0xFF0F172A),
-                letterSpacing: -0.5,
-              ),
-            ),
-          ),
-        ),
+        // Removed 'Discover Creators' heading for cleaner UI
         SliverPadding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           sliver: SliverList.builder(
             itemCount: _influencers.length + (_isLoadingMore ? 1 : 0),
-            addAutomaticKeepAlives: false,
+            addAutomaticKeepAlives: true,
             addRepaintBoundaries: true,
             itemBuilder: (context, index) {
               if (index == _influencers.length) {
                 return Container(
-                  padding: const EdgeInsets.all(20),
-                  child: const Center(
-                    child: CircularProgressIndicator(
-                      color: Color(0xFF6366F1),
-                      strokeWidth: 2,
-                    ),
+                  height: 60,
+                  alignment: Alignment.center,
+                  child: const CircularProgressIndicator(
+                    color: Color(0xFF6366F1),
+                    strokeWidth: 2,
                   ),
                 );
               }
@@ -1523,13 +1552,19 @@ class _BrandInfluencersTabState extends State<BrandInfluencersTab> {
                   'You\'ve discovered all creators!',
                   style: TextStyle(
                     fontSize: 14,
-                    color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                    color: isDark
+                        ? const Color(0xFF94A3B8)
+                        : const Color(0xFF64748B),
                     fontStyle: FontStyle.italic,
                   ),
                 ),
               ),
             ),
           ),
+        // Add bottom padding to prevent overflow
+        SliverToBoxAdapter(
+          child: SizedBox(height: navBarHeight + additionalBottomPadding),
+        ),
       ],
     );
   }
@@ -1788,71 +1823,74 @@ class _BrandDealsTabState extends State<BrandDealsTab> {
             bottom: false,
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 12, 20, 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Row(
                 children: [
-                  Row(
-                    children: [
-                      const Expanded(
-                        child: Text(
-                          'My Deals',
-                          style: TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.w800,
-                            color: Color(0xFF0F172A),
-                            letterSpacing: -0.5,
-                          ),
-                        ),
+                  OutlinedButton.icon(
+                    onPressed: () =>
+                        setState(() => _showHistory = !_showHistory),
+                    style: OutlinedButton.styleFrom(
+                      backgroundColor: isDark
+                          ? const Color(0xFF1E293B)
+                          : Colors.white,
+                      foregroundColor: const Color(0xFF0F172A),
+                      side: BorderSide(
+                        color: isDark
+                            ? const Color(0xFF334155)
+                            : const Color(0xFFE2E8F0),
                       ),
-                      OutlinedButton.icon(
-                        onPressed: () => setState(() => _showHistory = !_showHistory),
-                        style: OutlinedButton.styleFrom(
-                          backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
-                          foregroundColor: const Color(0xFF0F172A),
-                          side: BorderSide(
-                            color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
-                          ),
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
-                        icon: const Icon(Icons.history, size: 18),
-                        label: Text(
-                          _showHistory ? 'Show Active' : 'History',
-                          style: const TextStyle(fontWeight: FontWeight.w600),
-                        ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
                       ),
-                      const SizedBox(width: 10),
-                      OutlinedButton(
-                        onPressed: () => _loadDeals(refresh: true),
-                        style: OutlinedButton.styleFrom(
-                          backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
-                          side: BorderSide(
-                            color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
-                          ),
-                          padding: const EdgeInsets.all(12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
-                        child: Icon(
-                          Icons.refresh_rounded,
-                          color: isDark ? Colors.white : const Color(0xFF0F172A),
-                        ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
                       ),
-                    ],
+                    ),
+                    icon: const Icon(Icons.history, size: 18),
+                    label: Text(
+                      _showHistory ? 'Show Active' : 'History',
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
                   ),
-                  const SizedBox(height: 10),
-                  Text(
-                    '${_filteredDeals().length} ${_showHistory ? 'completed' : 'active'} deal${_filteredDeals().length == 1 ? '' : 's'}',
-                    style: TextStyle(
-                      color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
+                  const SizedBox(width: 10),
+                  OutlinedButton(
+                    onPressed: () => _loadDeals(refresh: true),
+                    style: OutlinedButton.styleFrom(
+                      backgroundColor: isDark
+                          ? const Color(0xFF1E293B)
+                          : Colors.white,
+                      side: BorderSide(
+                        color: isDark
+                            ? const Color(0xFF334155)
+                            : const Color(0xFFE2E8F0),
+                      ),
+                      padding: const EdgeInsets.all(12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                    child: Icon(
+                      Icons.refresh_rounded,
+                      color: isDark ? Colors.white : const Color(0xFF0F172A),
                     ),
                   ),
                 ],
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                '${_filteredDeals().length} ${_showHistory ? 'completed' : 'active'} deal${_filteredDeals().length == 1 ? '' : 's'}',
+                style: TextStyle(
+                  color: isDark
+                      ? const Color(0xFF94A3B8)
+                      : const Color(0xFF64748B),
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ),
@@ -1865,6 +1903,13 @@ class _BrandDealsTabState extends State<BrandDealsTab> {
   Widget _buildContent() {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+
+    // Calculate bottom safe area and navigation bar height
+    final bottomInset = MediaQuery.of(context).padding.bottom;
+    final navBarHeight =
+        80.0 + bottomInset; // Navigation bar height + safe area
+    final additionalBottomPadding = 20.0; // Extra padding for visual spacing
+    final totalBottomPadding = navBarHeight + additionalBottomPadding;
 
     if (_isLoading && _deals.isEmpty) {
       return const Center(
@@ -1907,7 +1952,10 @@ class _BrandDealsTabState extends State<BrandDealsTab> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF6366F1),
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32,
+                    vertical: 16,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
@@ -1956,7 +2004,9 @@ class _BrandDealsTabState extends State<BrandDealsTab> {
                 'Start connecting with creators to see deals here',
                 style: TextStyle(
                   fontSize: 16,
-                  color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                  color: isDark
+                      ? const Color(0xFF94A3B8)
+                      : const Color(0xFF64748B),
                   height: 1.4,
                 ),
                 textAlign: TextAlign.center,
@@ -1972,7 +2022,7 @@ class _BrandDealsTabState extends State<BrandDealsTab> {
       color: const Color(0xFF6366F1),
       backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
       child: ListView.builder(
-        padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+        padding: EdgeInsets.fromLTRB(20, 20, 20, totalBottomPadding),
         itemCount: _filteredDeals().length,
         itemBuilder: (context, index) {
           final deal = _filteredDeals()[index];
@@ -2025,7 +2075,8 @@ class _BrandDealsTabState extends State<BrandDealsTab> {
                           height: 5,
                           margin: const EdgeInsets.only(bottom: 12),
                           decoration: BoxDecoration(
-                            color: Theme.of(context).brightness == Brightness.dark
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
                                 ? const Color(0xFF334155)
                                 : const Color(0xFFE2E8F0),
                             borderRadius: BorderRadius.circular(3),
@@ -2058,7 +2109,8 @@ class _BrandDealsTabState extends State<BrandDealsTab> {
                               : const Color(0xFFF8FAFC),
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                            color: Theme.of(context).brightness == Brightness.dark
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
                                 ? const Color(0xFF334155)
                                 : const Color(0xFFE2E8F0),
                           ),
@@ -2137,11 +2189,15 @@ class _BrandDealsTabState extends State<BrandDealsTab> {
                               onPressed: () => Navigator.of(context).pop(),
                               style: OutlinedButton.styleFrom(
                                 side: BorderSide(
-                                  color: Theme.of(context).brightness == Brightness.dark
+                                  color:
+                                      Theme.of(context).brightness ==
+                                          Brightness.dark
                                       ? const Color(0xFF334155)
                                       : const Color(0xFFE2E8F0),
                                 ),
-                                padding: const EdgeInsets.symmetric(vertical: 14),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 14,
+                                ),
                               ),
                               child: const Text('Cancel'),
                             ),
@@ -2153,26 +2209,40 @@ class _BrandDealsTabState extends State<BrandDealsTab> {
                                   ? null
                                   : () async {
                                       Navigator.of(context).pop();
-                                      setState(() => _isPerformingAction = true);
-                                      final result = await BrandService.performDealAction(
-                                        dealId: deal.id!,
-                                        action: 'pay',
+                                      setState(
+                                        () => _isPerformingAction = true,
                                       );
+                                      final result =
+                                          await BrandService.performDealAction(
+                                            dealId: deal.id!,
+                                            action: 'pay',
+                                          );
                                       if (!mounted) return;
-                                      setState(() => _isPerformingAction = false);
+                                      setState(
+                                        () => _isPerformingAction = false,
+                                      );
                                       if (result['success'] == true) {
                                         _loadDeals(refresh: true);
-                                        ScaffoldMessenger.of(context).showSnackBar(
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
                                           const SnackBar(
-                                            content: Text('Payment processed successfully'),
+                                            content: Text(
+                                              'Payment processed successfully',
+                                            ),
                                             backgroundColor: Color(0xFF6366F1),
                                             behavior: SnackBarBehavior.floating,
                                           ),
                                         );
                                       } else {
-                                        ScaffoldMessenger.of(context).showSnackBar(
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
                                           SnackBar(
-                                            content: Text(result['message'] ?? 'Payment failed'),
+                                            content: Text(
+                                              result['message'] ??
+                                                  'Payment failed',
+                                            ),
                                             backgroundColor: Colors.red,
                                             behavior: SnackBarBehavior.floating,
                                           ),
@@ -2181,7 +2251,9 @@ class _BrandDealsTabState extends State<BrandDealsTab> {
                                     },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFF6366F1),
-                                padding: const EdgeInsets.symmetric(vertical: 14),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 14,
+                                ),
                               ),
                               child: const Text(
                                 'Pay now',
@@ -2255,7 +2327,9 @@ class _BrandDealsTabState extends State<BrandDealsTab> {
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text(result['message'] ?? 'Failed to approve content'),
+                            content: Text(
+                              result['message'] ?? 'Failed to approve content',
+                            ),
                             backgroundColor: Colors.red,
                             behavior: SnackBarBehavior.floating,
                           ),
@@ -2327,7 +2401,8 @@ class _BrandDealsTabState extends State<BrandDealsTab> {
                 height: 56,
                 decoration: const BoxDecoration(shape: BoxShape.circle),
                 child: ClipOval(
-                  child: (influencer != null &&
+                  child:
+                      (influencer != null &&
                           influencer.profilePictureUrl != null &&
                           influencer.profilePictureUrl!.isNotEmpty)
                       ? Image.network(
@@ -2378,7 +2453,9 @@ class _BrandDealsTabState extends State<BrandDealsTab> {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w800,
-                          color: isDark ? Colors.white : const Color(0xFF0F172A),
+                          color: isDark
+                              ? Colors.white
+                              : const Color(0xFF0F172A),
                         ),
                       ),
                     ],
@@ -2386,7 +2463,9 @@ class _BrandDealsTabState extends State<BrandDealsTab> {
                   const SizedBox(height: 6),
                   Icon(
                     Icons.keyboard_arrow_down_rounded,
-                    color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                    color: isDark
+                        ? const Color(0xFF94A3B8)
+                        : const Color(0xFF64748B),
                   ),
                 ],
               ),
@@ -2401,7 +2480,7 @@ class _BrandDealsTabState extends State<BrandDealsTab> {
     final letter = (name != null && name.isNotEmpty)
         ? name[0].toUpperCase()
         : 'C';
-  // NOTE: brightness can be read by callers if needed; not required here.
+    // NOTE: brightness can be read by callers if needed; not required here.
 
     return Container(
       decoration: BoxDecoration(
@@ -2554,15 +2633,28 @@ class BrandProfileTab extends StatefulWidget {
   State<BrandProfileTab> createState() => _BrandProfileTabState();
 }
 
-class _BrandProfileTabState extends State<BrandProfileTab> {
+class _BrandProfileTabState extends State<BrandProfileTab>
+    with TickerProviderStateMixin {
   BrandInfo? _brandProfile;
   bool _isLoading = true;
   String? _error;
+  int _selectedTab = 0; // 0 for Dashboard, 1 for Account Settings
+  late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      setState(() => _selectedTab = _tabController.index);
+    });
     _loadBrandProfile();
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadBrandProfile() async {
@@ -2624,91 +2716,29 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
 
     if (_isLoading) {
       return Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              isDark ? const Color(0xFF0A0A0A) : const Color(0xFFF8FAFC),
-              isDark ? const Color(0xFF1E293B) : const Color(0xFFFFFFFF),
-            ],
-          ),
-        ),
+        color: isDark ? const Color(0xFF0A0A0A) : const Color(0xFFF8FAFC),
         child: const Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircularProgressIndicator(color: Color(0xFF6366F1), strokeWidth: 3),
-              SizedBox(height: 16),
-              Text(
-                'Loading profile...',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Color(0xFF64748B),
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
+          child: CircularProgressIndicator(color: Color(0xFF6366F1)),
         ),
       );
     }
 
     if (_error != null) {
       return Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              isDark ? const Color(0xFF0A0A0A) : const Color(0xFFF8FAFC),
-              isDark ? const Color(0xFF1E293B) : const Color(0xFFFFFFFF),
-            ],
-          ),
-        ),
+        color: isDark ? const Color(0xFF0A0A0A) : const Color(0xFFF8FAFC),
         child: Center(
           child: Padding(
             padding: const EdgeInsets.all(32),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFEF4444).withOpacity(0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    Icons.error_outline_rounded,
-                    size: 48,
-                    color: const Color(0xFFEF4444),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  _error ?? 'Unknown error',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: isDark ? Colors.white : const Color(0xFF0F172A),
-                  ),
-                  textAlign: TextAlign.center,
-                ),
+                Icon(Icons.error_outline_rounded, size: 48, color: Colors.red),
+                const SizedBox(height: 16),
+                Text(_error!, textAlign: TextAlign.center),
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: _loadBrandProfile,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF6366F1),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                  child: const Text(
-                    'Try Again',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                  ),
+                  child: const Text('Try Again'),
                 ),
               ],
             ),
@@ -2717,81 +2747,98 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
       );
     }
 
-    // If _brandProfile is null, show a clear fallback for the entire tab
-    if (_brandProfile == null) {
-      return Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(32),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              isDark ? const Color(0xFF0A0A0A) : const Color(0xFFF8FAFC),
-              isDark ? const Color(0xFF1E293B) : const Color(0xFFFFFFFF),
-            ],
+    return Container(
+      color: isDark ? const Color(0xFF0A0A0A) : const Color(0xFFF8FAFC),
+      child: Column(
+        children: [
+          // Profile Header
+          Container(
+            margin: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+            child: _buildModernProfileHeader(isDark),
           ),
-        ),
-        child: const Center(
-          child: Text(
-            'No profile data available',
-            style: TextStyle(color: Colors.white, fontSize: 18),
-          ),
-        ),
-      );
-    }
 
+          // Tab Bar
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF1E293B) : Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: isDark
+                    ? const Color(0xFF334155)
+                    : const Color(0xFFE2E8F0),
+                width: 1,
+              ),
+            ),
+            child: TabBar(
+              controller: _tabController,
+              indicator: BoxDecoration(
+                color: _selectedTab == 0
+                    ? const Color(0xFF6366F1)
+                    : const Color(0xFF10B981),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              indicatorSize: TabBarIndicatorSize.tab,
+              labelColor: Colors.white,
+              unselectedLabelColor: isDark ? Colors.white70 : Colors.black87,
+              tabs: const [
+                Tab(
+                  text: 'Dashboard',
+                  icon: Icon(Icons.dashboard_rounded, size: 20),
+                ),
+                Tab(
+                  text: 'Account Settings',
+                  icon: Icon(Icons.settings_rounded, size: 20),
+                ),
+              ],
+            ),
+          ),
+
+          // Tab Content
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                _buildDashboardTab(isDark),
+                _buildAccountSettingsTab(isDark),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDashboardTab(bool isDark) {
     return RefreshIndicator(
       onRefresh: _loadBrandProfile,
       color: const Color(0xFF6366F1),
       backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              isDark ? const Color(0xFF0A0A0A) : const Color(0xFFF8FAFC),
-              isDark ? const Color(0xFF1E293B) : const Color(0xFFFFFFFF),
-            ],
-          ),
-        ),
-        child: CustomScrollView(
-          physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-          slivers: [
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
-              sliver: SliverToBoxAdapter(
-                child: _buildModernProfileHeader(isDark),
-              ),
-            ),
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
-              sliver: SliverToBoxAdapter(
-                child: _buildQuickStatsSection(isDark),
-              ),
-            ),
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
-              sliver: SliverToBoxAdapter(
-                child: _buildModernCompanyInfo(isDark),
-              ),
-            ),
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
-              sliver: SliverToBoxAdapter(
-                child: _buildActionCardsSection(isDark),
-              ),
-            ),
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
-              sliver: SliverToBoxAdapter(
-                child: _buildModernSettingsSection(isDark),
-              ),
-            ),
-            const SliverToBoxAdapter(child: SizedBox(height: 32)),
-          ],
-        ),
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
+        children: [
+          // Profile Enhancement Cards
+          _buildProfileEnhancementSection(isDark),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAccountSettingsTab(bool isDark) {
+    return RefreshIndicator(
+      onRefresh: _loadBrandProfile,
+      color: const Color(0xFF6366F1),
+      backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
+        children: [
+          // Account Security Section
+          _buildAccountSecuritySection(isDark),
+          const SizedBox(height: 32),
+
+          // Preferences Section
+          _buildPreferencesSection(isDark),
+        ],
       ),
     );
   }
@@ -2804,11 +2851,7 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
         padding: const EdgeInsets.all(32),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
-            colors: [
-              Color(0xFF6366F1),
-              Color(0xFF8B5CF6),
-              Color(0xFFA855F7),
-            ],
+            colors: [Color(0xFF6366F1), Color(0xFF8B5CF6), Color(0xFFA855F7)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -2832,11 +2875,7 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
       padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [
-            Color(0xFF6366F1),
-            Color(0xFF8B5CF6),
-            Color(0xFFA855F7),
-          ],
+          colors: [Color(0xFF6366F1), Color(0xFF8B5CF6), Color(0xFFA855F7)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -2871,7 +2910,8 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
                   ? Image.network(
                       avatarUrl,
                       fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => _buildDefaultLogo(),
+                      errorBuilder: (context, error, stackTrace) =>
+                          _buildDefaultLogo(),
                     )
                   : _buildDefaultLogo(),
             ),
@@ -3218,17 +3258,16 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
     bool isLast = false,
     bool isMultiline = false,
   }) {
-    final safeValue = (value == null || value.isEmpty) ? 'Not specified' : value;
+    final safeValue = (value == null || value.isEmpty)
+        ? 'Not specified'
+        : value;
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16),
       decoration: BoxDecoration(
         border: isLast
             ? null
             : Border(
-                bottom: BorderSide(
-                  color: const Color(0xFFF1F3F4),
-                  width: 1,
-                ),
+                bottom: BorderSide(color: const Color(0xFFF1F3F4), width: 1),
               ),
       ),
       child: Row(
@@ -3338,10 +3377,7 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
         decoration: BoxDecoration(
           color: isDark ? const Color(0xFF1E293B) : Colors.white,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: color.withOpacity(0.2),
-            width: 1,
-          ),
+          border: Border.all(color: color.withOpacity(0.2), width: 1),
           boxShadow: [
             BoxShadow(
               color: color.withOpacity(0.1),
@@ -3375,7 +3411,9 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
               subtitle,
               style: TextStyle(
                 fontSize: 14,
-                color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                color: isDark
+                    ? const Color(0xFF94A3B8)
+                    : const Color(0xFF64748B),
               ),
             ),
           ],
@@ -3541,10 +3579,7 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: const BoxDecoration(
           border: Border(
-            bottom: BorderSide(
-              color: Color(0xFFF1F3F4),
-              width: 1,
-            ),
+            bottom: BorderSide(color: Color(0xFFF1F3F4), width: 1),
           ),
         ),
         child: Row(
@@ -3633,19 +3668,13 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
                   const SizedBox(width: 12),
                   const Text(
                     'Logout',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                    ),
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
                   ),
                 ],
               ),
               content: const Text(
                 'Are you sure you want to logout from your account?',
-                style: TextStyle(
-                  fontSize: 16,
-                  height: 1.4,
-                ),
+                style: TextStyle(fontSize: 16, height: 1.4),
               ),
               actions: [
                 TextButton(
@@ -3689,10 +3718,7 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
                   ),
                   child: const Text(
                     'Logout',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                 ),
               ],
@@ -3757,6 +3783,797 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  // Dashboard Tab Methods
+  Widget _buildProfileEnhancementSection(bool isDark) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    const Color(0xFF6366F1),
+                    const Color(0xFF6366F1).withOpacity(0.8),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF6366F1).withOpacity(0.3),
+                    blurRadius: 12,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Icons.trending_up_rounded,
+                color: Colors.white,
+                size: 24,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Text(
+              'Improve Your Profile',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w800,
+                color: isDark ? Colors.white : const Color(0xFF0F172A),
+                letterSpacing: -0.3,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 20),
+
+        // Complete Profile Card
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF1E293B) : Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(isDark ? 0.3 : 0.08),
+                blurRadius: 16,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF6366F1).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: const Icon(
+                      Icons.edit_rounded,
+                      size: 24,
+                      color: Color(0xFF6366F1),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Complete Your Profile',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: isDark
+                                ? Colors.white
+                                : const Color(0xFF0F172A),
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Add more details to your profile to be more discoverable by relevant influencers.',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: isDark
+                                ? const Color(0xFF94A3B8)
+                                : const Color(0xFF64748B),
+                            height: 1.4,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Edit profile coming soon'),
+                      backgroundColor: Color(0xFF6366F1),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF6366F1),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text('Edit Profile'),
+              ),
+            ],
+          ),
+        ),
+
+        const SizedBox(height: 20),
+
+        // Create Deal Card
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF1E293B) : Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(isDark ? 0.3 : 0.08),
+                blurRadius: 16,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF10B981).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: const Icon(
+                      Icons.handshake_rounded,
+                      size: 24,
+                      color: Color(0xFF10B981),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Create Your First Deal',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: isDark
+                                ? Colors.white
+                                : const Color(0xFF0F172A),
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Start collaborating with influencers by creating your first deal proposal.',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: isDark
+                                ? const Color(0xFF94A3B8)
+                                : const Color(0xFF64748B),
+                            height: 1.4,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Create deal coming soon'),
+                      backgroundColor: Color(0xFF10B981),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF10B981),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text('Create Deal'),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Account Settings Tab Methods
+  Widget _buildAccountSecuritySection(bool isDark) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    const Color(0xFF6366F1),
+                    const Color(0xFF6366F1).withOpacity(0.8),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF6366F1).withOpacity(0.3),
+                    blurRadius: 12,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Icons.security_rounded,
+                color: Colors.white,
+                size: 24,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Text(
+              'Account Security',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w800,
+                color: isDark ? Colors.white : const Color(0xFF0F172A),
+                letterSpacing: -0.3,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 20),
+        Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF1E293B) : Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(isDark ? 0.3 : 0.08),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              _buildAccountSettingItem(
+                Icons.key_rounded,
+                'Reset Password',
+                'Update your account password',
+                const Color(0xFFF59E0B),
+                () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Reset password coming soon'),
+                      backgroundColor: Color(0xFFF59E0B),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 16),
+              Container(
+                height: 1,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.transparent,
+                      const Color(0xFFE5E7EB),
+                      Colors.transparent,
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              _buildAccountSettingItem(
+                Icons.logout_rounded,
+                'Logout',
+                'Sign out of your account',
+                Colors.red,
+                () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        title: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.red.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const Icon(
+                                Icons.logout_rounded,
+                                color: Colors.red,
+                                size: 20,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            const Text(
+                              'Logout',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
+                        ),
+                        content: const Text(
+                          'Are you sure you want to logout from your account?',
+                          style: TextStyle(fontSize: 16, height: 1.4),
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: const Text('Cancel'),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                              _logout();
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                              foregroundColor: Colors.white,
+                            ),
+                            child: const Text('Logout'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+              ),
+              const SizedBox(height: 16),
+              Container(
+                height: 1,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.transparent,
+                      const Color(0xFFE5E7EB),
+                      Colors.transparent,
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              _buildAccountSettingItem(
+                Icons.delete_forever_rounded,
+                'Delete Account',
+                'Permanently delete your account',
+                Colors.red,
+                () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        title: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.red.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const Icon(
+                                Icons.delete_forever_rounded,
+                                color: Colors.red,
+                                size: 20,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            const Text(
+                              'Delete Account',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
+                        ),
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'This action cannot be undone. This will permanently delete your account and remove your data from our servers.',
+                              style: TextStyle(fontSize: 16, height: 1.4),
+                            ),
+                            const SizedBox(height: 16),
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Colors.red.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: Colors.red.withOpacity(0.3),
+                                ),
+                              ),
+                              child: const Row(
+                                children: [
+                                  Icon(
+                                    Icons.warning_rounded,
+                                    color: Colors.red,
+                                  ),
+                                  SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      'All your brand information, deals, and messages will be permanently deleted.',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Color(0xFFD32F2F),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: const Text('Cancel'),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Account deletion coming soon'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                              foregroundColor: Colors.white,
+                            ),
+                            child: const Text('Delete Account'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPreferencesSection(bool isDark) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    const Color(0xFF10B981),
+                    const Color(0xFF10B981).withOpacity(0.8),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF10B981).withOpacity(0.3),
+                    blurRadius: 12,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Icons.settings_rounded,
+                color: Colors.white,
+                size: 24,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Text(
+              'Preferences',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w800,
+                color: isDark ? Colors.white : const Color(0xFF0F172A),
+                letterSpacing: -0.3,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 20),
+        Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF1E293B) : Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(isDark ? 0.3 : 0.08),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              _buildPreferenceItem(
+                Icons.notifications_rounded,
+                'Notification Settings',
+                'Manage your notification preferences',
+                const Color(0xFF6366F1),
+                () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Notification settings coming soon'),
+                      backgroundColor: Color(0xFF6366F1),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 16),
+              Container(
+                height: 1,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.transparent,
+                      const Color(0xFFE5E7EB),
+                      Colors.transparent,
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              _buildPreferenceItem(
+                Icons.question_answer_rounded,
+                'Frequently Asked Questions',
+                'Get answers to common questions',
+                const Color(0xFFF59E0B),
+                () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('FAQ coming soon'),
+                      backgroundColor: Color(0xFFF59E0B),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 16),
+              Container(
+                height: 1,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.transparent,
+                      const Color(0xFFE5E7EB),
+                      Colors.transparent,
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              _buildPreferenceItem(
+                Icons.mail_rounded,
+                'Contact Support',
+                'Get help and contact support',
+                const Color(0xFF10B981),
+                () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Contact support coming soon'),
+                      backgroundColor: Color(0xFF10B981),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAccountSettingItem(
+    IconData icon,
+    String title,
+    String subtitle,
+    Color iconColor,
+    VoidCallback onTap,
+  ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return GestureDetector(
+      onTap: onTap,
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: iconColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Icon(icon, size: 24, color: iconColor),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: isDark ? Colors.white : const Color(0xFF0F172A),
+                    letterSpacing: -0.1,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: isDark
+                        ? const Color(0xFF94A3B8)
+                        : const Color(0xFF64748B),
+                    fontWeight: FontWeight.w500,
+                    height: 1.3,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: iconColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              Icons.arrow_forward_ios_rounded,
+              size: 16,
+              color: iconColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPreferenceItem(
+    IconData icon,
+    String title,
+    String subtitle,
+    Color iconColor,
+    VoidCallback onTap,
+  ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return GestureDetector(
+      onTap: onTap,
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: iconColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Icon(icon, size: 24, color: iconColor),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: isDark ? Colors.white : const Color(0xFF0F172A),
+                    letterSpacing: -0.1,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: isDark
+                        ? const Color(0xFF94A3B8)
+                        : const Color(0xFF64748B),
+                    fontWeight: FontWeight.w500,
+                    height: 1.3,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: iconColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              Icons.arrow_forward_ios_rounded,
+              size: 16,
+              color: iconColor,
+            ),
+          ),
+        ],
       ),
     );
   }
