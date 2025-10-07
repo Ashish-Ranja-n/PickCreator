@@ -10,19 +10,76 @@ const BrandsSection: React.FC = () => {
 
   const benefits = [
     {
-      icon: <MapPin size={28} className="text-blue-600" />,
+      icon: (
+        <svg viewBox="0 0 32 32" className="w-8 h-8" fill="none">
+          <defs>
+            <radialGradient id="locationGradient" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="currentColor" stopOpacity="0.8"/>
+              <stop offset="70%" stopColor="currentColor" stopOpacity="0.4"/>
+              <stop offset="100%" stopColor="currentColor" stopOpacity="0.1"/>
+            </radialGradient>
+            <radialGradient id="searchGradient" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="currentColor" stopOpacity="0.9"/>
+              <stop offset="100%" stopColor="currentColor" stopOpacity="0.3"/>
+            </radialGradient>
+          </defs>
+
+          {/* Outer location ring with gradient */}
+          <circle cx="16" cy="16" r="13" fill="url(#locationGradient)" stroke="currentColor" strokeWidth="1.5" opacity="0.2"/>
+
+          {/* Middle location ring */}
+          <circle cx="16" cy="16" r="9" stroke="currentColor" strokeWidth="2" opacity="0.6"/>
+
+          {/* Inner location ring */}
+          <circle cx="16" cy="16" r="5" stroke="currentColor" strokeWidth="2.5"/>
+
+          {/* Location center dot with gradient */}
+          <circle cx="16" cy="16" r="2.5" fill="url(#searchGradient)"/>
+
+          {/* Magnifying glass lens with subtle gradient */}
+          <circle cx="20" cy="20" r="5" fill="url(#searchGradient)" stroke="currentColor" strokeWidth="2.5" opacity="0.8"/>
+
+          {/* Magnifying glass handle */}
+          <path d="m25 25 4 4" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
+
+          {/* Search result indicators - pulsing dots */}
+          <circle cx="18" cy="18.5" r="1.2" fill="currentColor" opacity="0.7">
+            <animate attributeName="opacity" values="0.3;0.9;0.3" dur="2s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="19.5" cy="19.8" r="0.9" fill="currentColor" opacity="0.5">
+            <animate attributeName="opacity" values="0.2;0.7;0.2" dur="2s" begin="0.3s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="21" cy="20.5" r="0.7" fill="currentColor" opacity="0.4">
+            <animate attributeName="opacity" values="0.1;0.5;0.1" dur="2s" begin="0.6s" repeatCount="indefinite"/>
+          </circle>
+
+          {/* Highlight ring for premium feel */}
+          <circle cx="16" cy="16" r="11" stroke="currentColor" strokeWidth="0.8" opacity="0.3" fill="none"/>
+        </svg>
+      ),
       title: "Find Influencers in Your City",
       description: "Reach the perfect audience right in your local area with verified creators.",
       gradient: "from-blue-500 to-indigo-600"
     },
     {
-      icon: <MessageSquare size={28} className="text-indigo-600" />,
+      icon: (
+        <svg viewBox="0 0 24 24" className="w-7 h-7" fill="none">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M8 9h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+          <path d="M8 13h6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+        </svg>
+      ),
       title: "Direct Communication, Clear Deals",
       description: "No middlemen - connect directly and finalize partnerships efficiently.",
       gradient: "from-indigo-500 to-purple-600"
     },
     {
-      icon: <TrendingUp size={28} className="text-purple-600" />,
+      icon: (
+        <svg viewBox="0 0 24 24" className="w-7 h-7" fill="none">
+          <path d="M23 6l-8.5 8.5-5-5L1 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M17 6h6v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      ),
       title: "Boost Sales and Brand Awareness",
       description: "Attract new customers through authentic influencer content that converts.",
       gradient: "from-purple-500 to-pink-600"

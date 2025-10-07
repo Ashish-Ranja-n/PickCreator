@@ -11,26 +11,45 @@ const PricingSection: React.FC = () => {
 
   const features = [
     {
-      icon: <Gift size={28} className="text-emerald-600" />,
+      icon: (
+        <svg viewBox="0 0 24 24" className="w-7 h-7" fill="none">
+          <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
+        </svg>
+      ),
       title: "Completely Free",
       description: "No subscription fees, no hidden charges. 100% free forever.",
       gradient: "from-emerald-500 to-teal-600",
       highlight: true
     },
     {
-      icon: <ShieldCheck size={28} className="text-blue-600" />,
+      icon: (
+        <svg viewBox="0 0 24 24" className="w-7 h-7" fill="none">
+          <rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" strokeWidth="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="currentColor" strokeWidth="2"/>
+          <circle cx="12" cy="16" r="1" fill="currentColor"/>
+        </svg>
+      ),
       title: "Secure Payment Protection",
       description: "Our advanced escrow system keeps all transactions completely safe.",
       gradient: "from-blue-500 to-indigo-600"
     },
     {
-      icon: <RefreshCcw size={28} className="text-purple-600" />,
+      icon: (
+        <svg viewBox="0 0 24 24" className="w-7 h-7" fill="none">
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      ),
       title: "Quick Refund Process",
       description: "Lightning-fast refunds when conditions are met, no questions asked.",
       gradient: "from-purple-500 to-violet-600"
     },
     {
-      icon: <Zap size={28} className="text-orange-600" />,
+      icon: (
+        <svg viewBox="0 0 24 24" className="w-7 h-7" fill="none">
+          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      ),
       title: "Instant Payments",
       description: "Get paid immediately after content approval. No waiting periods.",
       gradient: "from-orange-500 to-red-600"

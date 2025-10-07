@@ -17,8 +17,19 @@ const Footer: React.FC = () => {
 
   const socialLinks = [
     { icon: <Instagram size={24} />, href: "https://instagram.com/pickcreator", label: "Instagram", color: "from-pink-500 to-purple-600" },
-    { icon: <Facebook size={24} />, href: "#facebook", label: "Facebook", color: "from-blue-600 to-blue-700" },
-    { icon: <Twitter size={24} />, href: "#twitter", label: "Twitter", color: "from-blue-400 to-blue-500" }
+    {
+      icon: (
+        <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none">
+          <path
+            fill="#ffffff"
+            d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.61 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.47 20.75,12C20.75,12.53 20.5,12.92 20.16,13.19L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z"
+          />
+        </svg>
+      ),
+      href: "https://play.google.com/store/apps/details?id=com.pickcreator.twa",
+      label: "Google Play Store",
+      color: "from-green-500 to-green-600"
+    }
   ];
 
   const quickStats = [
@@ -131,7 +142,7 @@ const Footer: React.FC = () => {
 
           {/* Navigation and links */}
           <div className="md:col-span-7">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -178,31 +189,6 @@ const Footer: React.FC = () => {
                     </li>
                   ))}
                 </ul>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.3 }}
-                className="sm:col-span-2 lg:col-span-1"
-              >
-                <h3 className="text-xl font-bold text-white mb-6 flex items-center">
-                  <div className="w-2 h-6 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full mr-3" />
-                  Newsletter
-                </h3>
-                <p className="text-gray-300 mb-4 text-sm">
-                  Stay updated with the latest features and creator opportunities.
-                </p>
-                <div className="flex">
-                  <input
-                    type="email"
-                    placeholder="Enter your email"
-                    className="flex-1 px-4 py-3 bg-white/10 border border-white/20 rounded-l-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
-                  />
-                  <button className="px-6 py-3 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white rounded-r-xl hover:from-violet-700 hover:to-fuchsia-700 transition-all duration-300 font-semibold">
-                    Subscribe
-                  </button>
-                </div>
               </motion.div>
             </div>
           </div>

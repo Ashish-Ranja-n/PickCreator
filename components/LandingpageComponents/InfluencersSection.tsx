@@ -10,19 +10,37 @@ const InfluencersSection: React.FC = () => {
 
   const benefits = [
     {
-      icon: <DollarSign size={28} className="text-violet-600" />,
+      icon: (
+        <svg viewBox="0 0 24 24" className="w-7 h-7" fill="none">
+          <rect x="2" y="3" width="20" height="14" rx="2" stroke="currentColor" strokeWidth="2"/>
+          <line x1="2" y1="9" x2="22" y2="9" stroke="currentColor" strokeWidth="2"/>
+          <circle cx="12" cy="15" r="1" fill="currentColor"/>
+        </svg>
+      ),
       title: "Earn Money Easily",
       description: "Generate direct income through brand collaborations with transparent payment system.",
       gradient: "from-violet-500 to-purple-600"
     },
     {
-      icon: <Camera size={28} className="text-fuchsia-600" />,
+      icon: (
+        <svg viewBox="0 0 24 24" className="w-7 h-7" fill="none">
+          <rect x="3" y="4" width="18" height="12" rx="2" stroke="currentColor" strokeWidth="2"/>
+          <circle cx="8" cy="9" r="2" stroke="currentColor" strokeWidth="2"/>
+          <path d="M16 7v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+          <path d="M20 7v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+        </svg>
+      ),
       title: "Showcase Your Creativity",
       description: "Create engaging content and grow your follower base with authentic storytelling.",
       gradient: "from-fuchsia-500 to-pink-600"
     },
     {
-      icon: <Handshake size={28} className="text-indigo-600" />,
+      icon: (
+        <svg viewBox="0 0 24 24" className="w-7 h-7" fill="none">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2"/>
+          <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2"/>
+        </svg>
+      ),
       title: "Work With Local Brands",
       description: "Support businesses in your city and secure exciting partnership deals that matter.",
       gradient: "from-indigo-500 to-blue-600"
