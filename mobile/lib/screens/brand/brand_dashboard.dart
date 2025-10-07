@@ -2360,11 +2360,19 @@ class _BrandDealsTabState extends State<BrandDealsTab> {
   List<DealModel> _filteredDeals() {
     if (_showHistory) {
       return _deals
-          .where((d) => d.status == 'completed' || d.status == 'cancelled')
+          .where(
+            (d) =>
+                (d.status ?? '') == 'completed' ||
+                (d.status ?? '') == 'cancelled',
+          )
           .toList();
     }
     return _deals
-        .where((d) => d.status != 'completed' && d.status != 'cancelled')
+        .where(
+          (d) =>
+              (d.status ?? '') != 'completed' &&
+              (d.status ?? '') != 'cancelled',
+        )
         .toList();
   }
 
@@ -2638,22 +2646,35 @@ class _BrandProfileTabState extends State<BrandProfileTab>
   BrandInfo? _brandProfile;
   bool _isLoading = true;
   String? _error;
-  int _selectedTab = 0; // 0 for Dashboard, 1 for Account Settings
-  late TabController _tabController;
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-    _tabController.addListener(() {
-      setState(() => _selectedTab = _tabController.index);
-    });
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 1000),
+      vsync: this,
+    );
+    _fadeAnimation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeOutCubic,
+    );
+    _slideAnimation =
+        Tween<Offset>(begin: const Offset(0, 0.2), end: Offset.zero).animate(
+          CurvedAnimation(
+            parent: _animationController,
+            curve: Curves.easeOutCubic,
+          ),
+        );
+
     _loadBrandProfile();
   }
 
   @override
   void dispose() {
-    _tabController.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 
@@ -2681,6 +2702,8 @@ class _BrandProfileTabState extends State<BrandProfileTab>
           _brandProfile = profile as BrandInfo;
           _isLoading = false;
         });
+        // Start the animation after profile is loaded
+        _animationController.forward();
       } else {
         setState(() {
           _error = result['message'] ?? 'Failed to load profile';
@@ -2749,62 +2772,55 @@ class _BrandProfileTabState extends State<BrandProfileTab>
 
     return Container(
       color: isDark ? const Color(0xFF0A0A0A) : const Color(0xFFF8FAFC),
-      child: Column(
-        children: [
-          // Profile Header
-          Container(
-            margin: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-            child: _buildModernProfileHeader(isDark),
-          ),
+      child: FadeTransition(
+        opacity: _fadeAnimation,
+        child: SlideTransition(
+          position: _slideAnimation,
+          child: RefreshIndicator(
+            onRefresh: _loadBrandProfile,
+            color: const Color(0xFF6366F1),
+            backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+            child: CustomScrollView(
+              physics: const BouncingScrollPhysics(),
+              slivers: [
+                // Hero Profile Section
+                SliverToBoxAdapter(
+                  child: Container(
+                    margin: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                    child: _buildHeroProfileSection(isDark),
+                  ),
+                ),
 
-          // Tab Bar
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF1E293B) : Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: isDark
-                    ? const Color(0xFF334155)
-                    : const Color(0xFFE2E8F0),
-                width: 1,
-              ),
-            ),
-            child: TabBar(
-              controller: _tabController,
-              indicator: BoxDecoration(
-                color: _selectedTab == 0
-                    ? const Color(0xFF6366F1)
-                    : const Color(0xFF10B981),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              indicatorSize: TabBarIndicatorSize.tab,
-              labelColor: Colors.white,
-              unselectedLabelColor: isDark ? Colors.white70 : Colors.black87,
-              tabs: const [
-                Tab(
-                  text: 'Dashboard',
-                  icon: Icon(Icons.dashboard_rounded, size: 20),
+                // Quick Actions Grid
+                SliverToBoxAdapter(
+                  child: Container(
+                    margin: const EdgeInsets.fromLTRB(20, 24, 20, 0),
+                    child: _buildQuickActionsGrid(isDark),
+                  ),
                 ),
-                Tab(
-                  text: 'Account Settings',
-                  icon: Icon(Icons.settings_rounded, size: 20),
+
+                // Profile Insights
+                SliverToBoxAdapter(
+                  child: Container(
+                    margin: const EdgeInsets.fromLTRB(20, 24, 20, 0),
+                    child: _buildProfileInsights(isDark),
+                  ),
                 ),
+
+                // Account Management Section
+                SliverToBoxAdapter(
+                  child: Container(
+                    margin: const EdgeInsets.fromLTRB(20, 24, 20, 0),
+                    child: _buildAccountManagementSection(isDark),
+                  ),
+                ),
+
+                // Bottom spacing
+                const SliverToBoxAdapter(child: SizedBox(height: 100)),
               ],
             ),
           ),
-
-          // Tab Content
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                _buildDashboardTab(isDark),
-                _buildAccountSettingsTab(isDark),
-              ],
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -2817,8 +2833,232 @@ class _BrandProfileTabState extends State<BrandProfileTab>
       child: ListView(
         padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
         children: [
-          // Profile Enhancement Cards
-          _buildProfileEnhancementSection(isDark),
+          // Profile Enhancement Card
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF1E293B) : Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: isDark
+                    ? const Color(0xFF334155)
+                    : const Color(0xFFE2E8F0),
+                width: 1,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(isDark ? 0.3 : 0.08),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            const Color(0xFF6366F1),
+                            const Color(0xFF6366F1).withOpacity(0.8),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF6366F1).withOpacity(0.3),
+                            blurRadius: 12,
+                            offset: const Offset(0, 6),
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.trending_up_rounded,
+                        color: Colors.white,
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Text(
+                      'Improve Your Profile',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w800,
+                        color: isDark ? Colors.white : const Color(0xFF0F172A),
+                        letterSpacing: -0.3,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                // Complete Profile Section
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF6366F1).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: const Color(0xFF6366F1).withOpacity(0.2),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF6366F1).withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Icon(
+                              Icons.edit_rounded,
+                              size: 20,
+                              color: Color(0xFF6366F1),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              'Complete Your Profile',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: isDark
+                                    ? Colors.white
+                                    : const Color(0xFF0F172A),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Add more details to your profile to be more discoverable by relevant influencers.',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: isDark
+                              ? const Color(0xFF94A3B8)
+                              : const Color(0xFF64748B),
+                          height: 1.4,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Edit profile coming soon'),
+                              backgroundColor: Color(0xFF6366F1),
+                            ),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF6366F1),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 10,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: const Text('Edit Profile'),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                // Create Deal Section
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF10B981).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: const Color(0xFF10B981).withOpacity(0.2),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF10B981).withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Icon(
+                              Icons.handshake_rounded,
+                              size: 20,
+                              color: Color(0xFF10B981),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              'Create Your First Deal',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: isDark
+                                    ? Colors.white
+                                    : const Color(0xFF0F172A),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Start collaborating with influencers by creating your first deal proposal.',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: isDark
+                              ? const Color(0xFF94A3B8)
+                              : const Color(0xFF64748B),
+                          height: 1.4,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Create deal coming soon'),
+                              backgroundColor: Color(0xFF10B981),
+                            ),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF10B981),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 10,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: const Text('Create Deal'),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -2832,12 +3072,455 @@ class _BrandProfileTabState extends State<BrandProfileTab>
       child: ListView(
         padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
         children: [
-          // Account Security Section
-          _buildAccountSecuritySection(isDark),
-          const SizedBox(height: 32),
-
-          // Preferences Section
-          _buildPreferencesSection(isDark),
+          // Account Management Card
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF1E293B) : Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: isDark
+                    ? const Color(0xFF334155)
+                    : const Color(0xFFE2E8F0),
+                width: 1,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(isDark ? 0.3 : 0.08),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            const Color(0xFF6366F1),
+                            const Color(0xFF6366F1).withOpacity(0.8),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF6366F1).withOpacity(0.3),
+                            blurRadius: 12,
+                            offset: const Offset(0, 6),
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.settings_rounded,
+                        color: Colors.white,
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Text(
+                      'Account Management',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w800,
+                        color: isDark ? Colors.white : const Color(0xFF0F172A),
+                        letterSpacing: -0.3,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                // Account Security Section
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF6366F1).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: const Color(0xFF6366F1).withOpacity(0.2),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF6366F1).withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Icon(
+                              Icons.security_rounded,
+                              size: 20,
+                              color: Color(0xFF6366F1),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              'Account Security',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: isDark
+                                    ? Colors.white
+                                    : const Color(0xFF0F172A),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      _buildAccountSettingItem(
+                        Icons.key_rounded,
+                        'Reset Password',
+                        'Update your account password',
+                        const Color(0xFFF59E0B),
+                        () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Reset password coming soon'),
+                              backgroundColor: Color(0xFFF59E0B),
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      Container(
+                        height: 1,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.transparent,
+                              const Color(0xFFE5E7EB),
+                              Colors.transparent,
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      _buildAccountSettingItem(
+                        Icons.logout_rounded,
+                        'Logout',
+                        'Sign out of your account',
+                        Colors.red,
+                        () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                title: Row(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: Colors.red.withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: const Icon(
+                                        Icons.logout_rounded,
+                                        color: Colors.red,
+                                        size: 20,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    const Text(
+                                      'Logout',
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                content: const Text(
+                                  'Are you sure you want to logout from your account?',
+                                  style: TextStyle(fontSize: 16, height: 1.4),
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(),
+                                    child: const Text('Cancel'),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                      _logout();
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.red,
+                                      foregroundColor: Colors.white,
+                                    ),
+                                    child: const Text('Logout'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      Container(
+                        height: 1,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.transparent,
+                              const Color(0xFFE5E7EB),
+                              Colors.transparent,
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      _buildAccountSettingItem(
+                        Icons.delete_forever_rounded,
+                        'Delete Account',
+                        'Permanently delete your account',
+                        Colors.red,
+                        () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                title: Row(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: Colors.red.withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: const Icon(
+                                        Icons.delete_forever_rounded,
+                                        color: Colors.red,
+                                        size: 20,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    const Text(
+                                      'Delete Account',
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'This action cannot be undone. This will permanently delete your account and remove your data from our servers.',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        height: 1.4,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Container(
+                                      padding: const EdgeInsets.all(12),
+                                      decoration: BoxDecoration(
+                                        color: Colors.red.withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(
+                                          color: Colors.red.withOpacity(0.3),
+                                        ),
+                                      ),
+                                      child: const Row(
+                                        children: [
+                                          Icon(
+                                            Icons.warning_rounded,
+                                            color: Colors.red,
+                                          ),
+                                          SizedBox(width: 8),
+                                          Expanded(
+                                            child: Text(
+                                              'All your brand information, deals, and messages will be permanently deleted.',
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                color: Color(0xFFD32F2F),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(),
+                                    child: const Text('Cancel'),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            'Account deletion coming soon',
+                                          ),
+                                          backgroundColor: Colors.red,
+                                        ),
+                                      );
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.red,
+                                      foregroundColor: Colors.white,
+                                    ),
+                                    child: const Text('Delete Account'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                // Preferences Section
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF10B981).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: const Color(0xFF10B981).withOpacity(0.2),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF10B981).withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Icon(
+                              Icons.settings_rounded,
+                              size: 20,
+                              color: Color(0xFF10B981),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              'Preferences',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: isDark
+                                    ? Colors.white
+                                    : const Color(0xFF0F172A),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      _buildPreferenceItem(
+                        Icons.notifications_rounded,
+                        'Notification Settings',
+                        'Manage your notification preferences',
+                        const Color(0xFF6366F1),
+                        () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Notification settings coming soon',
+                              ),
+                              backgroundColor: Color(0xFF6366F1),
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      Container(
+                        height: 1,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.transparent,
+                              const Color(0xFFE5E7EB),
+                              Colors.transparent,
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      _buildPreferenceItem(
+                        Icons.question_answer_rounded,
+                        'Frequently Asked Questions',
+                        'Get answers to common questions',
+                        const Color(0xFFF59E0B),
+                        () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('FAQ coming soon'),
+                              backgroundColor: Color(0xFFF59E0B),
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      Container(
+                        height: 1,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.transparent,
+                              const Color(0xFFE5E7EB),
+                              Colors.transparent,
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      _buildPreferenceItem(
+                        Icons.mail_rounded,
+                        'Contact Support',
+                        'Get help and contact support',
+                        const Color(0xFF10B981),
+                        () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Contact support coming soon'),
+                              backgroundColor: Color(0xFF10B981),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -2869,6 +3552,10 @@ class _BrandProfileTabState extends State<BrandProfileTab>
     final avatarUrl = _brandProfile?.avatar;
     final companyName = _brandProfile?.companyName ?? 'Brand Name';
     final location = _brandProfile?.location;
+    final email = _brandProfile?.email;
+    final phoneNumber = _brandProfile?.phoneNumber;
+    final website = _brandProfile?.website;
+    final bio = _brandProfile?.bio;
 
     return Container(
       width: double.infinity,
@@ -2890,77 +3577,279 @@ class _BrandProfileTabState extends State<BrandProfileTab>
       ),
       child: Column(
         children: [
-          Container(
-            width: 100,
-            height: 100,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white,
-              border: Border.all(color: Colors.white, width: 5),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
-                  blurRadius: 20,
-                  offset: const Offset(0, 8),
+          // Profile Image with Edit Button
+          Stack(
+            children: [
+              Container(
+                width: 100,
+                height: 100,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white,
+                  border: Border.all(color: Colors.white, width: 5),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 20,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            child: ClipOval(
-              child: (avatarUrl != null && avatarUrl.isNotEmpty)
-                  ? Image.network(
-                      avatarUrl,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) =>
-                          _buildDefaultLogo(),
-                    )
-                  : _buildDefaultLogo(),
-            ),
-          ),
-          const SizedBox(height: 24),
-          Text(
-            companyName,
-            style: const TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.w800,
-              color: Colors.white,
-              letterSpacing: -0.5,
-              height: 1.2,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 12),
-          if (location != null && location.isNotEmpty)
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.25),
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(
-                  color: Colors.white.withOpacity(0.3),
-                  width: 1,
+                child: ClipOval(
+                  child: (avatarUrl != null && avatarUrl.isNotEmpty)
+                      ? Image.network(
+                          avatarUrl,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              _buildDefaultLogo(),
+                        )
+                      : _buildDefaultLogo(),
                 ),
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.location_on_rounded,
-                    size: 18,
-                    color: Colors.white.withOpacity(0.95),
+              Positioned(
+                bottom: 0,
+                right: 0,
+                child: GestureDetector(
+                  onTap: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Edit profile coming soon'),
+                        backgroundColor: Color(0xFF6366F1),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.edit_rounded,
+                      size: 16,
+                      color: Color(0xFF6366F1),
+                    ),
                   ),
-                  const SizedBox(width: 6),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          // Name and Company Badge
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                companyName,
+                style: const TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.white,
+                  letterSpacing: -0.5,
+                  height: 1.2,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          // Contact Info
+          Column(
+            children: [
+              if (location != null && location.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.location_on_rounded,
+                        size: 16,
+                        color: Colors.white.withOpacity(0.9),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        location,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.white.withOpacity(0.9),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              if (email != null && email.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.email_rounded,
+                        size: 16,
+                        color: Colors.white.withOpacity(0.9),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        email,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.white.withOpacity(0.9),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              if (phoneNumber != null && phoneNumber.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.phone_rounded,
+                        size: 16,
+                        color: Colors.white.withOpacity(0.9),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        phoneNumber,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.white.withOpacity(0.9),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              if (website != null && website.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.language_rounded,
+                        size: 16,
+                        color: Colors.white.withOpacity(0.9),
+                      ),
+                      const SizedBox(width: 6),
+                      GestureDetector(
+                        onTap: () {
+                          // TODO: Open website
+                        },
+                        child: Text(
+                          website.startsWith('http')
+                              ? website
+                                    .replaceFirst('https://', '')
+                                    .replaceFirst('http://', '')
+                              : website,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.white.withOpacity(0.9),
+                            fontWeight: FontWeight.w500,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+          // Bio
+          if (bio != null && bio.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 16),
+              child: Text(
+                bio,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.white.withOpacity(0.8),
+                  height: 1.4,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          // Stats
+          const SizedBox(height: 24),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Connections
+              Column(
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.people_rounded,
+                        size: 16,
+                        color: Colors.white.withOpacity(0.9),
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '0', // TODO: Add real connections count
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
                   Text(
-                    location,
+                    'Connections',
                     style: TextStyle(
-                      fontSize: 15,
-                      color: Colors.white.withOpacity(0.95),
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 0.2,
+                      fontSize: 12,
+                      color: Colors.white.withOpacity(0.7),
                     ),
                   ),
                 ],
               ),
-            ),
+              const SizedBox(width: 32),
+              // Rating
+              Column(
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.star_rounded,
+                        size: 16,
+                        color: Colors.yellow.withOpacity(0.9),
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '0', // TODO: Add real rating
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Rating',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.white.withOpacity(0.7),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ],
       ),
     );
@@ -4574,6 +5463,929 @@ class _BrandProfileTabState extends State<BrandProfileTab>
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  // New completely different profile tab methods
+  Widget _buildHeroProfileSection(bool isDark) {
+    final avatarUrl = _brandProfile?.avatar;
+    final companyName = _brandProfile?.companyName ?? 'Brand Name';
+
+    return Container(
+      padding: const EdgeInsets.all(32),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            const Color(0xFF6366F1),
+            const Color(0xFF8B5CF6),
+            const Color(0xFFEC4899),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(32),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF6366F1).withOpacity(0.4),
+            blurRadius: 32,
+            offset: const Offset(0, 16),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          // Large centered avatar
+          Container(
+            width: 120,
+            height: 120,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.white.withOpacity(0.2),
+              border: Border.all(color: Colors.white, width: 4),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.3),
+                  blurRadius: 24,
+                  offset: const Offset(0, 12),
+                ),
+              ],
+            ),
+            child: ClipOval(
+              child: (avatarUrl != null && avatarUrl.isNotEmpty)
+                  ? Image.network(
+                      avatarUrl,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) =>
+                          _buildHeroDefaultLogo(),
+                    )
+                  : _buildHeroDefaultLogo(),
+            ),
+          ),
+          const SizedBox(height: 24),
+
+          // Company name with modern typography
+          Text(
+            companyName,
+            style: const TextStyle(
+              fontSize: 32,
+              fontWeight: FontWeight.w900,
+              color: Colors.white,
+              letterSpacing: -1,
+              height: 1.1,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 12),
+
+          // Tagline
+          Text(
+            'Building amazing brand experiences',
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.white.withOpacity(0.9),
+              fontWeight: FontWeight.w500,
+              letterSpacing: 0.5,
+            ),
+            textAlign: TextAlign.center,
+          ),
+
+          const SizedBox(height: 32),
+
+          // Action buttons row
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildHeroActionButton(
+                'Edit Profile',
+                Icons.edit_rounded,
+                const Color(0xFF10B981),
+                () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Edit profile coming soon'),
+                      backgroundColor: Color(0xFF10B981),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(width: 16),
+              _buildHeroActionButton(
+                'Settings',
+                Icons.settings_rounded,
+                const Color(0xFFF59E0B),
+                () {
+                  // Scroll to account management section
+                  // This would require a scroll controller
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeroActionButton(
+    String label,
+    IconData icon,
+    Color color,
+    VoidCallback onTap,
+  ) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.15),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.white.withOpacity(0.3), width: 1),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, size: 18, color: Colors.white),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeroDefaultLogo() {
+    return Container(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: LinearGradient(
+          colors: [
+            Colors.white.withOpacity(0.3),
+            Colors.white.withOpacity(0.1),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: Center(
+        child: Text(
+          (_brandProfile?.companyName?.isNotEmpty == true)
+              ? (_brandProfile!.companyName![0].toUpperCase())
+              : 'B',
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 48,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildQuickActionsGrid(bool isDark) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Quick Actions',
+          style: TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.w900,
+            color: isDark ? Colors.white : const Color(0xFF0F172A),
+            letterSpacing: -0.5,
+          ),
+        ),
+        const SizedBox(height: 24),
+
+        // Grid of action cards
+        GridView.count(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          crossAxisCount: 2,
+          crossAxisSpacing: 16,
+          mainAxisSpacing: 16,
+          childAspectRatio: 1.1,
+          children: [
+            _buildActionGridCard(
+              'Find Creators',
+              'Discover perfect matches',
+              Icons.search_rounded,
+              const Color(0xFF6366F1),
+              isDark,
+              () => DefaultTabController.of(context).animateTo(1),
+            ),
+            _buildActionGridCard(
+              'Active Deals',
+              'Manage campaigns',
+              Icons.handshake_rounded,
+              const Color(0xFF10B981),
+              isDark,
+              () => DefaultTabController.of(context).animateTo(2),
+            ),
+            _buildActionGridCard(
+              'Analytics',
+              'View insights',
+              Icons.analytics_rounded,
+              const Color(0xFFF59E0B),
+              isDark,
+              () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Analytics coming soon'),
+                    backgroundColor: Color(0xFFF59E0B),
+                  ),
+                );
+              },
+            ),
+            _buildActionGridCard(
+              'Messages',
+              'Chat with creators',
+              Icons.chat_bubble_rounded,
+              const Color(0xFFEC4899),
+              isDark,
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const BrandConversationsScreen(),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildActionGridCard(
+    String title,
+    String subtitle,
+    IconData icon,
+    Color color,
+    bool isDark,
+    VoidCallback onTap,
+  ) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF1E293B) : Colors.white,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(
+            color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+            width: 1,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: color.withOpacity(0.1),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Icon(icon, size: 28, color: color),
+            ),
+            const Spacer(),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+                color: isDark ? Colors.white : const Color(0xFF0F172A),
+                letterSpacing: -0.3,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              subtitle,
+              style: TextStyle(
+                fontSize: 12,
+                color: isDark
+                    ? const Color(0xFF94A3B8)
+                    : const Color(0xFF64748B),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProfileInsights(bool isDark) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Profile Insights',
+          style: TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.w900,
+            color: isDark ? Colors.white : const Color(0xFF0F172A),
+            letterSpacing: -0.5,
+          ),
+        ),
+        const SizedBox(height: 24),
+
+        // Insights cards in a horizontal scroll
+        SizedBox(
+          height: 140,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            children: [
+              _buildInsightCard(
+                'Profile Completion',
+                '85%',
+                'Almost complete!',
+                Icons.trending_up_rounded,
+                const Color(0xFF10B981),
+                isDark,
+              ),
+              const SizedBox(width: 16),
+              _buildInsightCard(
+                'Active Deals',
+                '3',
+                'This month',
+                Icons.handshake_rounded,
+                const Color(0xFF6366F1),
+                isDark,
+              ),
+              const SizedBox(width: 16),
+              _buildInsightCard(
+                'Total Spent',
+                '₹25K',
+                'This quarter',
+                Icons.currency_rupee_rounded,
+                const Color(0xFFF59E0B),
+                isDark,
+              ),
+              const SizedBox(width: 16),
+              _buildInsightCard(
+                'Response Rate',
+                '94%',
+                'Last 30 days',
+                Icons.thumb_up_rounded,
+                const Color(0xFFEC4899),
+                isDark,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildInsightCard(
+    String title,
+    String value,
+    String subtitle,
+    IconData icon,
+    Color color,
+    bool isDark,
+  ) {
+    return Container(
+      width: 160,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF1E293B) : Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.1),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, size: 20, color: color),
+          ),
+          const Spacer(),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w900,
+              color: isDark ? Colors.white : const Color(0xFF0F172A),
+              letterSpacing: -0.5,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            subtitle,
+            style: TextStyle(
+              fontSize: 10,
+              color: color,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAccountManagementSection(bool isDark) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Account & Security',
+          style: TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.w900,
+            color: isDark ? Colors.white : const Color(0xFF0F172A),
+            letterSpacing: -0.5,
+          ),
+        ),
+        const SizedBox(height: 24),
+
+        // Security settings card
+        Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF1E293B) : Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(isDark ? 0.3 : 0.08),
+                blurRadius: 24,
+                offset: const Offset(0, 12),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF6366F1).withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: const Icon(
+                      Icons.security_rounded,
+                      size: 24,
+                      color: Color(0xFF6366F1),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Text(
+                    'Security Settings',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800,
+                      color: isDark ? Colors.white : const Color(0xFF0F172A),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+
+              _buildSecurityOption(
+                Icons.key_rounded,
+                'Change Password',
+                'Update your account password',
+                const Color(0xFFF59E0B),
+                () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Password change coming soon'),
+                      backgroundColor: Color(0xFFF59E0B),
+                    ),
+                  );
+                },
+              ),
+
+              const SizedBox(height: 16),
+              _buildSecurityOption(
+                Icons.smartphone_rounded,
+                'Two-Factor Auth',
+                'Add extra security to your account',
+                const Color(0xFF10B981),
+                () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('2FA setup coming soon'),
+                      backgroundColor: Color(0xFF10B981),
+                    ),
+                  );
+                },
+              ),
+
+              const SizedBox(height: 24),
+
+              // Danger zone
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.red.withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.red.withOpacity(0.2)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.warning_rounded,
+                          size: 20,
+                          color: Colors.red,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Danger Zone',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.red,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+
+                    _buildDangerOption(
+                      'Logout',
+                      'Sign out from all devices',
+                      Colors.orange,
+                      () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              title: const Text('Logout'),
+                              content: const Text(
+                                'Are you sure you want to logout from your account?',
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.of(context).pop(),
+                                  child: const Text('Cancel'),
+                                ),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                    _logout();
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.orange,
+                                  ),
+                                  child: const Text('Logout'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                    ),
+
+                    const SizedBox(height: 12),
+                    _buildDangerOption(
+                      'Delete Account',
+                      'Permanently delete your account',
+                      Colors.red,
+                      () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              title: const Text('Delete Account'),
+                              content: const Text(
+                                'This action cannot be undone. All your data will be permanently deleted.',
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.of(context).pop(),
+                                  child: const Text('Cancel'),
+                                ),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'Account deletion coming soon',
+                                        ),
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.red,
+                                  ),
+                                  child: const Text('Delete'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        const SizedBox(height: 24),
+
+        // Support card
+        Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF1E293B) : Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(isDark ? 0.3 : 0.08),
+                blurRadius: 24,
+                offset: const Offset(0, 12),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEC4899).withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: const Icon(
+                      Icons.help_rounded,
+                      size: 24,
+                      color: Color(0xFFEC4899),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Text(
+                    'Help & Support',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800,
+                      color: isDark ? Colors.white : const Color(0xFF0F172A),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+
+              _buildSupportOption(
+                Icons.question_answer_rounded,
+                'FAQ',
+                'Find answers to common questions',
+                const Color(0xFF6366F1),
+                () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('FAQ coming soon'),
+                      backgroundColor: Color(0xFF6366F1),
+                    ),
+                  );
+                },
+              ),
+
+              const SizedBox(height: 16),
+              _buildSupportOption(
+                Icons.mail_rounded,
+                'Contact Support',
+                'Get help from our team',
+                const Color(0xFF10B981),
+                () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Support contact coming soon'),
+                      backgroundColor: Color(0xFF10B981),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSecurityOption(
+    IconData icon,
+    String title,
+    String subtitle,
+    Color color,
+    VoidCallback onTap,
+  ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.05),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: color.withOpacity(0.2), width: 1),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, size: 20, color: color),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: isDark ? Colors.white : const Color(0xFF0F172A),
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: isDark
+                          ? const Color(0xFF94A3B8)
+                          : const Color(0xFF64748B),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(Icons.arrow_forward_ios_rounded, size: 16, color: color),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDangerOption(
+    String title,
+    String subtitle,
+    Color color,
+    VoidCallback onTap,
+  ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return GestureDetector(
+      onTap: onTap,
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: color,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isDark
+                        ? const Color(0xFF94A3B8)
+                        : const Color(0xFF64748B),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Icon(Icons.arrow_forward_ios_rounded, size: 14, color: color),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSupportOption(
+    IconData icon,
+    String title,
+    String subtitle,
+    Color color,
+    VoidCallback onTap,
+  ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.05),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: color.withOpacity(0.2), width: 1),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, size: 20, color: color),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: isDark ? Colors.white : const Color(0xFF0F172A),
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: isDark
+                          ? const Color(0xFF94A3B8)
+                          : const Color(0xFF64748B),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(Icons.arrow_forward_ios_rounded, size: 16, color: color),
+          ],
+        ),
       ),
     );
   }

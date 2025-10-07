@@ -502,7 +502,7 @@ class _BrandOnboardingScreenState extends State<BrandOnboardingScreen> {
             ],
           ),
           child: DropdownButtonFormField<String>(
-            value: value,
+            initialValue: value,
             hint: Row(
               children: [
                 Icon(icon, color: const Color(0xFF64748B)),

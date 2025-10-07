@@ -532,7 +532,7 @@ class _InfluencerOnboardingScreenState extends State<InfluencerOnboardingScreen>
               ],
             ),
             child: DropdownButtonFormField<String>(
-              value: _selectedCity,
+              initialValue: _selectedCity,
               onChanged: (value) {
                 setState(() {
                   _selectedCity = value;
@@ -1175,7 +1175,7 @@ class _InfluencerOnboardingScreenState extends State<InfluencerOnboardingScreen>
               ],
             ),
             child: DropdownButtonFormField<String>(
-              value: _selectedGender,
+              initialValue: _selectedGender,
               onChanged: (value) {
                 setState(() {
                   _selectedGender = value;
