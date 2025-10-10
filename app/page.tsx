@@ -190,7 +190,7 @@ export default function Home() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.3 }}
-                    className="text-5xl md:text-7xl lg:text-8xl font-black mb-10 leading-tight"
+                    className="text-5xl md:text-7xl lg:text-8xl font-black mt-12 mb-10 leading-tight"
                   >
                     <div className="flex flex-wrap justify-center items-center gap-2 md:gap-4">
                       {/* "where" in elegant text */}
@@ -200,7 +200,7 @@ export default function Home() {
 
                       {/* "influencer" with animated gradient */}
                       <span className="relative">
-                        <span className="absolute inset-0 bg-gradient-to-r from-violet-600 via-fuchsia-600 via-violet-600 to-fuchsia-600 bg-clip-text text-transparent animate-liquid-gradient bg-[length:400%_100%] font-black">
+                        <span className="absolute inset-0 bg-gradient-to-r from-violet-600 via-fuchsia-600 to-fuchsia-600 bg-clip-text text-transparent animate-liquid-gradient bg-[length:400%_100%] font-black">
                           influencer
                         </span>
                         <span className="opacity-0 font-black">influencer</span>
